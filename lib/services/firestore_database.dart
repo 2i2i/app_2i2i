@@ -60,9 +60,22 @@ class FirestoreDatabase {
         }
       },
       queryBuilder: (query) {
-        if (tags.isEmpty) return query;
-        return query.where('tags', arrayContainsAny: tags);
+        if (tags.isEmpty) return query.orderBy('status', descending: true);
+        return query.where('tags', arrayContainsAny: tags).orderBy('status');
       },
+      // sort: (UserModel? u1, UserModel? u2) {
+      //   if (u1 == null && u2 == null) return 1;
+      //   if (u1 == null && u2 != null) return 1;
+      //   if (u1 != null && u2 == null) return -1;
+      //   if (u1!.status == 'ONLINE' && u2!.status != 'ONLINE') return 1;
+      //   if (u1.status != 'ONLINE' && u2!.status == 'ONLINE') return -1;
+      //   if (u1.status != 'ONLINE' && u2!.status != 'ONLINE') {
+      //     if (u1.locked && !u2.locked) return 1;
+      //     if (!u1.locked && u2.locked) return -1;
+      //   }
+
+      //   return 1;
+      // },
     );
   }
 
