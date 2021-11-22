@@ -1,0 +1,46 @@
+// https://firebase.google.com/docs/firestore/security/rules-structure?authuser=0#granular_operations
+// https://firebase.google.com/docs/reference/rules/rules.MapDiff
+// get, list; create, update, delete
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // general
+    function isAOrB() {
+      return resource.data.A == request.auth.uid || resource.data.B == request.auth.uid;
+    }
+
+    // users
+    match /users/{userId} {
+      allow read: if request.auth != null; // any logged in user can read
+      allow write: if request.auth != null && request.auth.uid == userId; // only self user can write
+    }
+
+    match /users/{userId}/private/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // bids
+    match /bids/{bidId} {
+      allow read: if request.auth != null;
+    }
+    match /bids/{bidId}/private/{document=**} {
+      allow read: if request.auth != null && isAOrB();
+    }
+
+    // meeting
+    match /meetings/{meetingId} {
+      allow read: if request.auth != null && isAOrB();
+    }
+    // the following allows spamming by an attacker
+    // possible solution: make meetId include A and B
+    match /meetings/{meetingId}/{subCollectionId}/{document=**} {
+      allow read, write: if request.auth != null && subCollectionId.matches('.*' + request.auth.uid + '.*');
+    }
+  }
+}

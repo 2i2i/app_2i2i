@@ -1,0 +1,6 @@
+firebase use
+firebase functions:shell
+flutter run
+flutter build web
+firebase deploy --only hosting
+flutter build web && firebase deploy --only hosting

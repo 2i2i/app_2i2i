@@ -1,0 +1,89 @@
+// schema
+// private-id: read/write for self
+// private-A: read/write for A
+// private-system: read/write for system only
+// TODO
+// add A addr, B addr. budget to meeting
+{
+  users: [ // read all, private if user itself // collection
+    id-> { // doc // write: self // read: all
+      status: 'OFFLINE', // OFFLINE/ONLINE
+      locked: false, // can be set by targets of bidsOut
+      currentMeeting: null, // meeting id
+      bidsIn: [], // array of bid ids
+      
+      bio: null,
+      name: null, // calculated [string/null]
+      tags: null, // calculated [array/null]
+
+      upvotes: 0, // changed at end of each day to avoid easy deduction after meeting
+      downvotes: 0, // changed at end of each day to avoid easy deduction after meeting
+      
+      private: [ // subcollection
+        id-> { // doc // read/write: self
+          bidsOut: [], // array of objects with bid ids and user ids
+          blocked: [], // array of user ids - blocked user' bids are not shown to user
+          friends: [], // array of user ids - friend users appear top on search
+        },
+      ]
+    }
+  ],
+
+  bids: [ // readable by all; writable by A
+    id-> { // all fields immutable unless marked as mutable
+      B // from bid
+      speed // from bid
+      net // from bid
+      status // mutable
+      
+      private: [ // subcollection; readable by A or B
+        main-> { // doc // only A or B can read
+          A // from bid
+          B // from bid // duplicate data for now for rules
+          addrA // write by A
+          budget // from bixd
+        },
+      ]
+    }
+  ],
+
+  meetings: [ // no one outside A,B can read or list
+    id-> { // all fields immutable unless marked as mutable
+
+      // written by system
+      bid // from bid
+      A // from bid
+      B // from bid
+      speed // from bid
+      budget // from bid
+      net // from bid
+
+      txId // write by system (provided by A)
+      addrA // write by system (provided by A)
+      addrB // write by system (provided by B)
+
+      initTime // write by system
+      cancelTime // write by system
+      startTime // write by system
+      endTime // write by system
+      maxEndTime // write by system
+
+      status // write by system: INIT, LOCK_COINS_STARTED, LOCK_COINS_CONFIRMED, ACTIVE, END_A, END_B, END_SYSTEM, SETTLED
+      
+      // subcollections
+      AId->BId // A write; mutable
+      BId->AId // B write; mutable
+      
+      AId/main: { // A can read and write
+        heartbeat
+        vote
+      }
+      BId/main: { // B can read and write
+        heartbeat
+        vote
+      }
+    }
+  ]
+  ],
+}
+
