@@ -35,7 +35,7 @@ class AddBidPageViewModel {
   String duration(
       int numAccount, int speedNum, int assetIndex, double budgetPercentage) {
     if (speedNum == 0) return 'forever';
-    final balance = balances[numAccount][assetIndex].amount;
+    final balance = balances[numAccount - 1][assetIndex].amount;
     final budget = balance * budgetPercentage / 100;
     final seconds = budget / speedNum;
     return secondsToSensibleTimePeriod(seconds.round());

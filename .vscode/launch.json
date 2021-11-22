@@ -8,7 +8,7 @@
       "name": "app_2i2i",
       "request": "launch",
       "type": "dart",
-      "args": ["--web-port", "52130"]
+      // "args": ["--web-port", "52130"]
     },
     {
       "name": "app_2i2i (profile mode)",
