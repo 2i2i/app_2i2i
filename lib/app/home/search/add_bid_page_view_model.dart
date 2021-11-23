@@ -49,7 +49,7 @@ class AddBidPageViewModel {
         assetId: speedAssetId, account: account, net: balance.net);
     log('AddBidPageViewModel - addBid - budget=$budget');
     if (budget == null) throw NullThrownError(); // TODO show user something
-    final actualBudget = budget * budgetPercentage / 100;
+    final actualBudget = (budget * budgetPercentage / 100).floor();
 
     final speed = Speed(num: speedNum, assetId: speedAssetId);
     log('AddBidPageViewModel - addBid - speed=$speed');

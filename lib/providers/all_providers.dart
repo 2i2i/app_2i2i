@@ -245,7 +245,7 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
   final String currentMeeting = user.data!.value.currentMeeting!;
   // log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
   final meeting = ref.watch(meetingProvider(currentMeeting));
-  // log('lockedUserViewModelProvider - meeting=$meeting');
+  // log('lockedUserViewMrodelProvider - meeting=$meeting');
 
   if (meeting is AsyncLoading || meeting is AsyncError) return null;
 
