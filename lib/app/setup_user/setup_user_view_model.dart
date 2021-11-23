@@ -1,4 +1,5 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/services/algorand_service.dart';
 import 'package:app_2i2i/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,8 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     message = 'creating algorand account';
     notifyListeners();
-    final account = LocalAccount.create(
+    if (0 < await accountService.getNumAccounts()) return;
+    final account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);

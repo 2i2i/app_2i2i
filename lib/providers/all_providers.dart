@@ -1,6 +1,7 @@
 // TODO break up file into multiple files
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/app/home/models/bid.dart';
 import 'package:app_2i2i/app/home/models/meeting.dart';
 import 'package:app_2i2i/app/home/models/user.dart';
@@ -133,13 +134,14 @@ final algorandProvider = Provider((ref) {
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
-final algorandAddressProvider = Provider.family<String, int>((ref, numAccount) {
+final algorandAddressProvider =
+    FutureProvider.family<String, int>((ref, numAccount) async {
   // does not matter which net we use here
   // log('algorandAddressProvider');
   final accountService = ref.watch(accountServiceProvider);
   final algorandLib = ref.watch(algorandLibProvider);
   final storage = ref.watch(storageProvider);
-  final account = LocalAccount.fromNumAccount(
+  final account = await LocalAccount.fromNumAccount(
       numAccount: numAccount,
       algorandLib: algorandLib,
       storage: storage,
@@ -175,7 +177,7 @@ final myUserPageViewModelProvider = Provider((ref) {
       database: database,
       functions: functions,
       user: user.data!.value,
-      algorandAddress: algorandAddress,
+      algorandAddress: algorandAddress.data!.value,
       userModelChanger: userModelChanger);
 });
 
@@ -360,12 +362,12 @@ final accountInfoViewModelProvider =
     Provider.family<AccountInfoViewModel?, int>((ref, numAccount) {
   final algorand = ref.watch(algorandProvider);
   final account = ref.watch(accountProvider(numAccount));
-  return AccountInfoViewModel(
-      account: account, algorand: algorand);
+  if (account is AsyncLoading) return null;
+  return AccountInfoViewModel(account: account.data!.value, algorand: algorand);
 });
 
 final accountProvider =
-    Provider.family<AbstractAccount, int>((ref, numAccount) {
+    FutureProvider.family<AbstractAccount, int>((ref, numAccount) {
   final accountService = ref.watch(accountServiceProvider);
   final algorandLib = ref.watch(algorandLibProvider);
   final storage = ref.watch(storageProvider);
