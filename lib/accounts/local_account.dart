@@ -25,7 +25,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._createAndStoreAccount();
-    await account.updateBalanaces();
+    await account.updateBalances();
     return account;
   }
 
@@ -41,7 +41,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromStorage(numAccount);
-    await account.updateBalanaces();
+    await account.updateBalances();
     return account;
   }
 
@@ -139,7 +139,7 @@ class LocalAccount extends AbstractAccount {
   late List<Balance> _balances;
   List<Balance> get balances => _balances;
 
-  Future updateBalanaces() async {
+  Future updateBalances() async {
     log('LocalAccount - updateBalanaces');
     final mainnetAssetHoldings =
         await _getAssetHoldings(address: _address, net: AlgorandNet.mainnet);
