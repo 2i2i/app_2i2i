@@ -1,4 +1,6 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_2i2i/app/logging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,12 +9,19 @@ import 'package:app_2i2i/app/home/models/user.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
-      {required this.auth, required this.database, required this.algorand}) {
+      {required this.auth,
+      required this.database,
+      required this.algorandLib,
+      required this.accountService,
+      required this.storage}) {
     log('SignUpViewModel');
+    createAuthAndStartAlgorand();
   }
   final FirebaseAuth auth;
   final FirestoreDatabase database;
-  final AlgorandService algorand;
+  final SecureStorage storage;
+  final AccountService accountService;
+  final AlgorandLib algorandLib;
 
   bool signUpInProcess = false;
   String message = '';
@@ -72,13 +81,11 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     message = 'creating algorand account';
     notifyListeners();
-    final account = await algorand.createAccount();
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.publicAddress}');
-
-    message = 'saving account locally in secure storage';
-    notifyListeners();
-    await algorand.saveAccountLocally(account);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.saveAccountLocally');
+    final account = LocalAccount.create(
+        algorandLib: algorandLib,
+        storage: storage,
+        accountService: accountService);
+    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
     // TODO uncomment try
     // try {

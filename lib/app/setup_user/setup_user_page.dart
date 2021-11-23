@@ -8,7 +8,14 @@ import 'package:app_2i2i/app/logging.dart';
 import 'package:app_2i2i/providers/all_providers.dart';
 import 'package:go_router/go_router.dart';
 
-class SetupUserPage extends ConsumerWidget {
+class SetupUserPage extends ConsumerStatefulWidget {
+  SetupUserPage({Key? key}) : super(key: key);
+
+  @override
+  _SetupUserPageState createState() => _SetupUserPageState();
+}
+
+class _SetupUserPageState extends ConsumerState<SetupUserPage> {
   void pressGo(BuildContext context, SetupUserViewModel signUpViewModel) async {
     log('SignUpPage - pressGo');
     await signUpViewModel.createDatabaseUser();
@@ -23,10 +30,9 @@ class SetupUserPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     log('SetupUserPage - build');
     final setupUserViewModel = ref.watch(setupUserViewModelProvider);
-    setupUserViewModel.createAuthAndStartAlgorand();
     log('SetupUserPage - build - setupUserViewModel=$setupUserViewModel');
     return TestBanner(Scaffold(
         appBar: AppBar(

@@ -13,7 +13,7 @@ class RingingPageViewModel {
       required this.functions}) {
     if (meeting.currentStatus() == MeetingValue.LOCK_COINS_STARTED)
       _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: meeting.lockTxId!);
+          txId: meeting.lockTxId!, net: meeting.net);
   }
 
   final FirebaseFunctions functions;
@@ -55,7 +55,7 @@ class RingingPageViewModel {
 
     // update meeting
     await _updateMeetingAsLockCoinsStarted(txId: txId);
-    await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(txId: txId);
+    await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(txId: txId, net: meeting.net);
   }
 
   Future _updateMeetingAsLockCoinsStarted({required String txId}) async {
@@ -71,11 +71,11 @@ class RingingPageViewModel {
   }
 
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-      {required String txId}) async {
+      {required String txId, required AlgorandNet net}) async {
     // wait for transaction to confirm
     log(F +
         'RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
-    await algorand.waitForConfirmation(txId: txId);
+    await algorand.waitForConfirmation(txId: txId, net: net);
 
     // update meeting
     // message = 'updating meeting';

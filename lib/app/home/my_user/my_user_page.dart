@@ -20,8 +20,6 @@ class MyUserPage extends ConsumerWidget {
     log('MyUserPage - build - userPrivateAsyncValue=$userPrivateAsyncValue');
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
     log('MyUserPage - build - myUserPageViewModel=$myUserPageViewModel');
-    // final algorandAddressValue = ref.watch(algorandAddressProvider);
-    // log('MyUserPage - build - algorandAddressValue=$algorandAddressValue');
 
     if (myUserPageViewModel == null) return WaitPage();
 

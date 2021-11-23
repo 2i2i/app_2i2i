@@ -1,3 +1,4 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/app/logging.dart';
 import 'package:app_2i2i/providers/all_providers.dart';
@@ -17,11 +18,13 @@ class AddBidPage extends ConsumerStatefulWidget {
 class _AddBidPageState extends ConsumerState<AddBidPage> {
   _AddBidPageState({required this.uid});
   final String uid;
+  AbstractAccount? account;
+  Balance? balance;
   int speedNum = 0;
-  int assetIndex = 0;
+  // int assetIndex = 0;
   double budgetPercentage = 100.0;
-  late String chosenAssetString;
-  int numAccount = 1;
+  // late String chosenAssetString;
+  // int numAccount = 0;
 
   AppBar appBar(String name) {
     return AppBar(
@@ -45,23 +48,22 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();
 
-    final balancesTestnet = ref.watch(balancesTestnetProvider);
-    log('_AddBidPageState - balancesTestnet=$balancesTestnet');
-    if (balancesTestnet is AsyncLoading || balancesTestnet.data == null)
-      return WaitPage();
+    // final balancesTestnet = ref.watch(balancesTestnetProvider);
+    // log('_AddBidPageState - balancesTestnet=$balancesTestnet');
+    // if (balancesTestnet is AsyncLoading || balancesTestnet.data == null)
+      // return WaitPage();
 
-    if (balancesTestnet.data!.value.isEmpty)
-      return Scaffold(
-        appBar: appBar(addBidPageViewModel.user.name),
-        body: Center(
-          child: Text('No accounts connected'),
-        ),
-      );
+    // if (balancesTestnet.data!.value.isEmpty)
+    //   return Scaffold(
+    //     appBar: appBar(addBidPageViewModel.user.name),
+    //     body: Center(
+    //       child: Text('No accounts connected'),
+    //     ),
+    //   );
+    // log('addBidPageViewModel.balancesStrings=${addBidPageViewModel.balancesStrings}');
 
-    log('addBidPageViewModel.balancesStrings=${addBidPageViewModel.balancesStrings}');
-
-    chosenAssetString =
-        addBidPageViewModel.balancesStrings(numAccount)[assetIndex];
+    // chosenAssetString =
+    //     addBidPageViewModel.balancesStrings(numAccount: numAccount)[assetIndex];
 
     return Scaffold(
       appBar: appBar(addBidPageViewModel.user.name),
@@ -87,57 +89,57 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             padding:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             child: Text(
-              'Num Account',
+              'Account',
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
           Container(
               padding: const EdgeInsets.only(
                   top: 0, left: 20, right: 20, bottom: 100),
-              child: DropdownButton<int>(
-                onChanged: (int? newValue) {
+              child: DropdownButton<AbstractAccount>(
+                onChanged: (AbstractAccount? newAccount) {
                   setState(() {
-                    numAccount = newValue!;
+                    account = newAccount!;
                   });
                 },
-                value: numAccount,
+                value: account,
                 items: [
-                  for (var i = 1; i <= addBidPageViewModel.balances.length; i++)
-                    DropdownMenuItem<int>(
-                      child: Text(i.toString()),
-                      value: i,
+                  for (var i = 0; i < addBidPageViewModel.accounts.length; i++)
+                    DropdownMenuItem<AbstractAccount>(
+                      child: Text(addBidPageViewModel.accounts[i].address.substring(0, 4)),
+                      value: addBidPageViewModel.accounts[i],
                     )
                 ],
               )),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Asset ID',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          Container(
-              padding: const EdgeInsets.only(
-                  top: 0, left: 20, right: 20, bottom: 100),
-              child: DropdownButton<String>(
-                onChanged: (String? newValue) {
-                  setState(() {
-                    assetIndex = addBidPageViewModel
-                        .balancesStrings(numAccount)
-                        .indexOf(newValue!);
-                    chosenAssetString = newValue;
-                  });
-                },
-                value: chosenAssetString,
-                items: addBidPageViewModel
-                    .balancesStrings(numAccount)
-                    .map((e) => DropdownMenuItem<String>(
-                          child: Text(e),
-                          value: e,
-                        ))
-                    .toList(),
-              )),
+          // Container(
+          //   padding:
+          //       const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+          //   child: Text(
+          //     'Asset ID',
+          //     style: Theme.of(context).textTheme.headline6,
+          //   ),
+          // ),
+          // Container(
+          //     padding: const EdgeInsets.only(
+          //         top: 0, left: 20, right: 20, bottom: 100),
+          //     child: DropdownButton<String>(
+          //       onChanged: (String? newValue) {
+          //         setState(() {
+          //           assetIndex = addBidPageViewModel
+          //               .balancesStrings(numAccount: numAccount)
+          //               .indexOf(newValue!);
+          //           chosenAssetString = newValue;
+          //         });
+          //       },
+          //       value: chosenAssetString,
+          //       items: addBidPageViewModel
+          //           .balancesStrings(numAccount: numAccount)
+          //           .map((e) => DropdownMenuItem<String>(
+          //                 child: Text(e),
+          //                 value: e,
+          //               ))
+          //           .toList(),
+          //     )),
           Container(
             padding:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
@@ -158,30 +160,30 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                   });
                 }),
           ),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Max duration: ' +
-                  addBidPageViewModel.duration(
-                      numAccount, speedNum, assetIndex, budgetPercentage),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: addBidPageViewModel.submitting
-                ? null
-                : () async {
-                    log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
-                    await addBidPageViewModel.addBid(
-                        numAccount: numAccount,
-                        assetIndex: assetIndex,
-                        speedNum: speedNum,
-                        budgetPercentage: budgetPercentage);
-                    context.goNamed('user', params: {'uid': uid});
-                  },
-            child: Text('Add', style: Theme.of(context).textTheme.headline6),
-          ),
+          // Container(
+          //   padding:
+          //       const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+          //   child: Text(
+          //     'Max duration: ' +
+          //         addBidPageViewModel.duration(
+          //             numAccount, speedNum, assetIndex, budgetPercentage),
+          //     style: Theme.of(context).textTheme.headline6,
+          //   ),
+          // ),
+          // ElevatedButton(
+          //   onPressed: addBidPageViewModel.submitting
+          //       ? null
+          //       : () async {
+          //           log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
+          //           await addBidPageViewModel.addBid(
+          //               numAccount: numAccount,
+          //               assetIndex: assetIndex,
+          //               speedNum: speedNum,
+          //               budgetPercentage: budgetPercentage);
+          //           context.goNamed('user', params: {'uid': uid});
+          //         },
+          //   child: Text('Add', style: Theme.of(context).textTheme.headline6),
+          // ),
         ],
       ),
     );
