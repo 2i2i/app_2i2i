@@ -106,11 +106,13 @@ final setupUserViewModelProvider =
   final algorandLib = ref.watch(algorandLibProvider);
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
+  final algorand = ref.watch(algorandProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
       auth: auth,
       database: database,
       algorandLib: algorandLib,
+      algorand: algorand,
       storage: storage,
       accountService: accountService);
 });
