@@ -76,7 +76,7 @@ class AccountInfo extends ConsumerWidget {
             leading: IconButton(
                 color: Color.fromRGBO(116, 117, 109, 1),
                 iconSize: 35,
-                onPressed: () {}, //accountInfoViewModel.refreshBalances,
+                onPressed: () => accountInfoViewModel.updateBalances(),
                 icon: Icon(Icons.replay_circle_filled)),
           ),
           SizedBox(
@@ -96,4 +96,7 @@ class AccountInfoViewModel {
   AccountInfoViewModel({required this.account, required this.algorand});
   final AlgorandService algorand;
   final AbstractAccount account;
+  Future updateBalances() {
+    return account.updateBalances();
+  }
 }

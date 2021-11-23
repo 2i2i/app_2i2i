@@ -119,4 +119,6 @@ abstract class AbstractAccount {
 
   Future<bool> isOptedInToASA({required int assetId, required AlgorandNet net});
   Future<Uint8List> sign(RawTransaction txn);
+
+  Future updateBalances();
 }
