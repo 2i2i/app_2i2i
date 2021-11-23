@@ -1,4 +1,7 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_2i2i/app/logging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,11 +10,20 @@ import 'package:app_2i2i/app/home/models/user.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
-      {required this.auth, required this.database, required this.algorand}) {
+      {required this.auth,
+      required this.database,
+      required this.algorandLib,
+      required this.accountService,
+      required this.algorand,
+      required this.storage}) {
     log('SignUpViewModel');
+    createAuthAndStartAlgorand();
   }
   final FirebaseAuth auth;
   final FirestoreDatabase database;
+  final SecureStorage storage;
+  final AccountService accountService;
+  final AlgorandLib algorandLib;
   final AlgorandService algorand;
 
   bool signUpInProcess = false;
@@ -72,35 +84,37 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     message = 'creating algorand account';
     notifyListeners();
-    final account = await algorand.createAccount();
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.publicAddress}');
-
-    message = 'saving account locally in secure storage';
-    notifyListeners();
-    await algorand.saveAccountLocally(account);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.saveAccountLocally');
+    if (0 < await accountService.getNumAccounts()) return;
+    final account = await LocalAccount.create(
+        algorandLib: algorandLib,
+        storage: storage,
+        accountService: accountService);
+    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
     // TODO uncomment try
-    // try {
-    message = 'gifting your some (test) ALGOs and TESTCOINs';
-    notifyListeners();
-    // await algorand.giftALGO(account.publicAddress);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-    // DEBUG - off for faster debugging
-    // final optInToStateAppFuture =
-    //     algorand.optInToApp(account: account, appId: AlgorandService.SYSTEM_ID[algorand.net]!);
-    // final optInAndGiftASAFuture = algorand
-    //     .optInToASA(account: account, assetId: AlgorandService.NOVALUE_ASSET_ID[algorand.net]!)
-    //     .then((_) => algorand.giftASA(account.publicAddress,
-    //         waitForConfirmation: false));
-    // final algorandResults =
-    //     await Future.wait([optInToStateAppFuture, optInAndGiftASAFuture]);
-    // final optInStateTxId = algorandResults[0];
-    // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - algorandResults=$algorandResults - optInStateTxId=$optInStateTxId');
-    // await algorand.waitForConfirmation(txId: optInStateTxId);
-    // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
-    // } catch (e) {
-    //   // TODO - we can continue the app; this was a luxury
-    // }
+    try {
+      message = 'gifting your some (test) ALGOs and TESTCOINs';
+      notifyListeners();
+      await algorand.giftALGO(account);
+      log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+      // DEBUG - off for faster debugging
+      final optInToStateAppFuture = account.optInToDapp(
+          dappId: AlgorandService.SYSTEM_ID[AlgorandNet.testnet]!,
+          net: AlgorandNet.testnet);
+      final optInToASAFuture = account.optInToASA(
+          assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+          net: AlgorandNet.testnet);
+      final optInAndGiftASAFuture = optInToASAFuture.then(
+          (value) => algorand.giftASA(account, waitForConfirmation: false));
+      final algorandResults =
+          await Future.wait([optInToStateAppFuture, optInAndGiftASAFuture]);
+      final optInStateTxId = algorandResults[0];
+      log('SetupUserViewModel - setupAlgorandAccount - Future.wait - algorandResults=$algorandResults - optInStateTxId=$optInStateTxId');
+      await algorand.waitForConfirmation(
+          txId: optInStateTxId, net: AlgorandNet.testnet);
+      log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
+    } catch (e) {
+      // TODO - we can continue the app; this was a luxury
+    }
   }
 }

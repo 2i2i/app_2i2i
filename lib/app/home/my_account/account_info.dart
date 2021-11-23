@@ -1,4 +1,4 @@
-import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/providers/all_providers.dart';
 import 'package:app_2i2i/services/algorand_service.dart';
 import 'package:flutter/material.dart';
@@ -9,21 +9,23 @@ class AccountInfo extends ConsumerWidget {
   const AccountInfo({Key? key, required this.numAccount}) : super(key: key);
   final int numAccount;
 
-  Widget balancesList(List<AssetHolding> assetHoldings) {
+  Widget balancesList(List<Balance> balances) {
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: assetHoldings.length,
+        itemCount: balances.length,
         itemBuilder: (_, ix) {
-          final assetId = assetHoldings[ix].assetId;
-          final assetName =
-              assetId == 0 ? 'ALGO' : assetHoldings[ix].assetId.toString();
-          final assetAmount = assetHoldings[ix].amount;
+          final assetId = balances[ix].assetHolding.assetId;
+          final assetName = assetId == 0
+              ? 'ALGO'
+              : balances[ix].assetHolding.assetId.toString();
+          final assetAmount = balances[ix].assetHolding.amount;
+          final net = balances[ix].net;
           return Container(
               margin: const EdgeInsets.only(
                   top: 10, left: 20, right: 20, bottom: 10),
               color: Color.fromRGBO(197, 234, 197, 1),
               child: ListTile(
-                title: Text('$assetName - $assetAmount'),
+                title: Text('$assetName - $assetAmount - $net'),
               ));
         });
   }
@@ -33,7 +35,7 @@ class AccountInfo extends ConsumerWidget {
     final accountInfoViewModel =
         ref.watch(accountInfoViewModelProvider(numAccount));
     if (accountInfoViewModel == null) return Container();
-    
+
     return Container(
       child: Column(
         children: [
@@ -58,10 +60,10 @@ class AccountInfo extends ConsumerWidget {
                   top: 10, left: 20, right: 20, bottom: 10),
               color: Color.fromRGBO(223, 239, 223, 1),
               child: ListTile(
-                  title: Text(accountInfoViewModel.account.publicAddress),
+                  title: Text(accountInfoViewModel.account.address),
                   trailing: IconButton(
                       onPressed: () => Clipboard.setData(ClipboardData(
-                          text: accountInfoViewModel.account.publicAddress)),
+                          text: accountInfoViewModel.account.address)),
                       icon: Icon(Icons.copy)))),
           SizedBox(
             height: 50,
@@ -74,13 +76,13 @@ class AccountInfo extends ConsumerWidget {
             leading: IconButton(
                 color: Color.fromRGBO(116, 117, 109, 1),
                 iconSize: 35,
-                onPressed: (){},//accountInfoViewModel.refreshBalances,
+                onPressed: () {}, //accountInfoViewModel.refreshBalances,
                 icon: Icon(Icons.replay_circle_filled)),
           ),
           SizedBox(
             height: 20,
           ),
-          balancesList(accountInfoViewModel.balances),
+          balancesList(accountInfoViewModel.account.balances),
           SizedBox(
             height: 20,
           ),
@@ -91,14 +93,7 @@ class AccountInfo extends ConsumerWidget {
 }
 
 class AccountInfoViewModel {
-  AccountInfoViewModel({required this.account, required this.algorand, required this.balances}) {
-    // refreshBalances();
-  }
+  AccountInfoViewModel({required this.account, required this.algorand});
   final AlgorandService algorand;
-  final Account account;
-
-  final List<AssetHolding> balances;
-  // void refreshBalances() async {
-  //   balances = await algorand.getAssetHoldings(account.publicAddress);
-  // }
+  final AbstractAccount account;
 }

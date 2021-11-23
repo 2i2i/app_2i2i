@@ -1,3 +1,4 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/app/logging.dart';
 import 'package:app_2i2i/providers/all_providers.dart';
@@ -17,11 +18,10 @@ class AddBidPage extends ConsumerStatefulWidget {
 class _AddBidPageState extends ConsumerState<AddBidPage> {
   _AddBidPageState({required this.uid});
   final String uid;
+  AbstractAccount? account;
+  Balance? balance;
   int speedNum = 0;
-  int assetIndex = 0;
   double budgetPercentage = 100.0;
-  late String chosenAssetString;
-  int numAccount = 1;
 
   AppBar appBar(String name) {
     return AppBar(
@@ -44,24 +44,6 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     log('_AddBidPageState - addBidPageViewModel=$addBidPageViewModel');
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();
-
-    final balancesTestnet = ref.watch(balancesTestnetProvider);
-    log('_AddBidPageState - balancesTestnet=$balancesTestnet');
-    if (balancesTestnet is AsyncLoading || balancesTestnet.data == null)
-      return WaitPage();
-
-    if (balancesTestnet.data!.value.isEmpty)
-      return Scaffold(
-        appBar: appBar(addBidPageViewModel.user.name),
-        body: Center(
-          child: Text('No accounts connected'),
-        ),
-      );
-
-    log('addBidPageViewModel.balancesStrings=${addBidPageViewModel.balancesStrings}');
-
-    chosenAssetString =
-        addBidPageViewModel.balancesStrings(numAccount)[assetIndex];
 
     return Scaffold(
       appBar: appBar(addBidPageViewModel.user.name),
@@ -87,25 +69,29 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             padding:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             child: Text(
-              'Num Account',
+              'Account',
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
           Container(
               padding: const EdgeInsets.only(
                   top: 0, left: 20, right: 20, bottom: 100),
-              child: DropdownButton<int>(
-                onChanged: (int? newValue) {
+              child: DropdownButton<AbstractAccount>(
+                onChanged: (AbstractAccount? newAccount) {
                   setState(() {
-                    numAccount = newValue!;
+                    if (newAccount != null && account != newAccount) {
+                      account = newAccount;
+                      balance = account!.balances[0];
+                    }
                   });
                 },
-                value: numAccount,
+                value: account,
                 items: [
-                  for (var i = 1; i <= addBidPageViewModel.balances.length; i++)
-                    DropdownMenuItem<int>(
-                      child: Text(i.toString()),
-                      value: i,
+                  for (var i = 0; i < addBidPageViewModel.accounts.length; i++)
+                    DropdownMenuItem<AbstractAccount>(
+                      child: Text(addBidPageViewModel.accounts[i].address
+                          .substring(0, 4)),
+                      value: addBidPageViewModel.accounts[i],
                     )
                 ],
               )),
@@ -113,31 +99,36 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             padding:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             child: Text(
-              'Asset ID',
+              'Asset',
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          Container(
-              padding: const EdgeInsets.only(
-                  top: 0, left: 20, right: 20, bottom: 100),
-              child: DropdownButton<String>(
-                onChanged: (String? newValue) {
-                  setState(() {
-                    assetIndex = addBidPageViewModel
-                        .balancesStrings(numAccount)
-                        .indexOf(newValue!);
-                    chosenAssetString = newValue;
-                  });
-                },
-                value: chosenAssetString,
-                items: addBidPageViewModel
-                    .balancesStrings(numAccount)
-                    .map((e) => DropdownMenuItem<String>(
-                          child: Text(e),
-                          value: e,
-                        ))
-                    .toList(),
-              )),
+          balance == null
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 0, left: 20, right: 20, bottom: 100),
+                  child: DropdownButton<Balance>(
+                    onChanged: (Balance? newBalance) {
+                      setState(() {
+                        balance = newBalance;
+                      });
+                    },
+                    value: balance,
+                    items: [
+                      for (var i = 0; i < account!.balances.length; i++)
+                        DropdownMenuItem<Balance>(
+                          child: Text(account!.balances[i].assetHolding.assetId
+                                  .toString() +
+                              ' - ' +
+                              account!.balances[i].assetHolding.amount
+                                  .toString() +
+                              ' - ' +
+                              account!.balances[i].net.toString()),
+                          value: account!.balances[i],
+                        )
+                    ],
+                  )),
           Container(
             padding:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
@@ -163,19 +154,20 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             child: Text(
               'Max duration: ' +
-                  addBidPageViewModel.duration(
-                      numAccount, speedNum, assetIndex, budgetPercentage),
+                  (account == null
+                      ? '<choose account>'
+                      : addBidPageViewModel.duration(
+                          account!, speedNum, balance!, budgetPercentage)),
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ElevatedButton(
+          account == null ? Container() : ElevatedButton(
             onPressed: addBidPageViewModel.submitting
                 ? null
                 : () async {
-                    log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
                     await addBidPageViewModel.addBid(
-                        numAccount: numAccount,
-                        assetIndex: assetIndex,
+                        account: account!,
+                        balance: balance!,
                         speedNum: speedNum,
                         budgetPercentage: budgetPercentage);
                     context.goNamed('user', params: {'uid': uid});

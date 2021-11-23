@@ -1,17 +1,24 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/services/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class MyAccountPageViewModel {
   MyAccountPageViewModel({
     required this.functions,
-    required this.algorand,
+    required this.algorandLib,
+    required this.accountService,
+    required this.storage,
     required this.numAccounts,
   });
   // {
   //   init();
   // }
   final FirebaseFunctions functions;
-  final AlgorandService algorand;
+  final AlgorandLib algorandLib;
+  final SecureStorage storage;
+  final AccountService accountService;
   final int numAccounts;
 
   // void init() async {
@@ -32,7 +39,9 @@ class MyAccountPageViewModel {
   // }
 
   Future addAccount() async {
-    final account = await algorand.createAccount();
-    await algorand.saveAccountLocally(account);
+    LocalAccount.create(
+        accountService: accountService,
+        algorandLib: algorandLib,
+        storage: storage);
   }
 }
