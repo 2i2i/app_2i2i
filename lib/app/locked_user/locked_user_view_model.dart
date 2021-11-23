@@ -1,6 +1,6 @@
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/foundation.dart';
 
 class LockedUserViewModel with ChangeNotifier {

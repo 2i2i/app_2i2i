@@ -1,8 +1,8 @@
-import 'package:app_2i2i/app/home/models/bid.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 enum MeetingValue {
   INIT,

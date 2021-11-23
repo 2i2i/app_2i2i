@@ -1,6 +1,6 @@
-import 'package:app_2i2i/app/home/models/bid.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/services/firestore_database.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class MyUserPageViewModel {

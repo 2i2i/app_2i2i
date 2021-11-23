@@ -1,10 +1,10 @@
 // import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/app/home/my_account/account_info.dart';
+import 'package:app_2i2i/pages/account/ui/account_info.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class MyAccountPage extends ConsumerWidget {

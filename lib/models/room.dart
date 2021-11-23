@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:meta/meta.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 @immutable
 class Room extends Equatable {

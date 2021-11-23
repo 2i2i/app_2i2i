@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchPage extends ConsumerWidget {

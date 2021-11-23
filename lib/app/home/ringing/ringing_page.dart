@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:app_2i2i/app/home/models/meeting.dart';
+import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/app/home/ringing/ringing_page_view_model.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

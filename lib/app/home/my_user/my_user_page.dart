@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'package:app_2i2i/app/home/models/user.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/app/home/my_user/my_user_page_view_model.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_2i2i/app/home/search/user_bids.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 
 class MyUserPage extends ConsumerWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:app_2i2i/app/home/wait_page.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

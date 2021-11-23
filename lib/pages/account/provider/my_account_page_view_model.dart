@@ -1,4 +1,4 @@
-import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class MyAccountPageViewModel {

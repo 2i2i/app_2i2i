@@ -1,6 +1,6 @@
 import 'package:algorand_dart/algorand_dart.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

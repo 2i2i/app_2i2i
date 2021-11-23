@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:algorand_dart/algorand_dart.dart';
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/services/secure_storage_service.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 enum AlgorandNet { mainnet, testnet, betanet }
 

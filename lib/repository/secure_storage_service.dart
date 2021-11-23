@@ -1,4 +1,4 @@
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {

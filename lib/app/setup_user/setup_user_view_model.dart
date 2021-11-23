@@ -1,9 +1,9 @@
-import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:flutter/material.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:app_2i2i/services/firestore_database.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/models/user.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(

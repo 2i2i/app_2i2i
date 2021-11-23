@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 
 class AuthWidget extends ConsumerWidget {
   AuthWidget({required this.homePageBuilder, required this.setupPageBuilder});

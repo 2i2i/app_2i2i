@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/services/firestore_service.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/app/home/models/bid.dart';
-import 'package:app_2i2i/app/home/models/room.dart';
-import 'package:app_2i2i/services/firestore_path.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/repository/firestore_service.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/room.dart';
+import 'package:app_2i2i/repository/firestore_path.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class FirestoreDatabase {

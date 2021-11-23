@@ -1,11 +1,11 @@
 // TODO break up file into multiple files
 
 import 'package:algorand_dart/algorand_dart.dart';
-import 'package:app_2i2i/app/home/models/bid.dart';
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/app/home/my_account/account_info.dart';
-import 'package:app_2i2i/app/home/my_account/my_account_page_view_model.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/account/ui/account_info.dart';
+import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/app/home/my_user/my_user_page_view_model.dart';
 import 'package:app_2i2i/app/home/ringing/ringing_page_view_model.dart';
 import 'package:app_2i2i/app/home/search/add_bid_page_view_model.dart';
@@ -13,13 +13,13 @@ import 'package:app_2i2i/app/home/search/user_page_view_model.dart';
 import 'package:app_2i2i/app/locked_user/lock_watch_widget.dart';
 import 'package:app_2i2i/app/locked_user/locked_user_view_model.dart';
 import 'package:app_2i2i/app/setup_user/setup_user_view_model.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
-import 'package:app_2i2i/services/secure_storage_service.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/services/firestore_database.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
