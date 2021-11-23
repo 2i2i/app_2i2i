@@ -20,7 +20,7 @@ class MyAccountPage extends ConsumerWidget {
         body: ListView.builder(
           itemCount: myAccountPageViewModel.numAccounts,
           itemBuilder: (_, i) {
-            return AccountInfo(numAccount: i + 1);
+            return AccountInfo(numAccount: i);
           },
         ),
         // floatingActionButton: FloatingActionButton(

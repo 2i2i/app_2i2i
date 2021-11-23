@@ -14,6 +14,7 @@ class SetupUserViewModel with ChangeNotifier {
       required this.database,
       required this.algorandLib,
       required this.accountService,
+      required this.algorand,
       required this.storage}) {
     log('SignUpViewModel');
     createAuthAndStartAlgorand();
@@ -23,6 +24,7 @@ class SetupUserViewModel with ChangeNotifier {
   final SecureStorage storage;
   final AccountService accountService;
   final AlgorandLib algorandLib;
+  final AlgorandService algorand;
 
   bool signUpInProcess = false;
   String message = '';
@@ -90,26 +92,29 @@ class SetupUserViewModel with ChangeNotifier {
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
     // TODO uncomment try
-    // try {
-    message = 'gifting your some (test) ALGOs and TESTCOINs';
-    notifyListeners();
-    // await algorand.giftALGO(account.publicAddress);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-    // DEBUG - off for faster debugging
-    // final optInToStateAppFuture =
-    //     algorand.optInToApp(account: account, appId: AlgorandService.SYSTEM_ID[algorand.net]!);
-    // final optInAndGiftASAFuture = algorand
-    //     .optInToASA(account: account, assetId: AlgorandService.NOVALUE_ASSET_ID[algorand.net]!)
-    //     .then((_) => algorand.giftASA(account.publicAddress,
-    //         waitForConfirmation: false));
-    // final algorandResults =
-    //     await Future.wait([optInToStateAppFuture, optInAndGiftASAFuture]);
-    // final optInStateTxId = algorandResults[0];
-    // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - algorandResults=$algorandResults - optInStateTxId=$optInStateTxId');
-    // await algorand.waitForConfirmation(txId: optInStateTxId);
-    // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
-    // } catch (e) {
-    //   // TODO - we can continue the app; this was a luxury
-    // }
+    try {
+      message = 'gifting your some (test) ALGOs and TESTCOINs';
+      notifyListeners();
+      await algorand.giftALGO(account);
+      log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+      // DEBUG - off for faster debugging
+      final optInToStateAppFuture = account.optInToDapp(
+          dappId: AlgorandService.SYSTEM_ID[AlgorandNet.testnet]!,
+          net: AlgorandNet.testnet);
+      final optInToASAFuture = account.optInToASA(
+          assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+          net: AlgorandNet.testnet);
+      final optInAndGiftASAFuture = optInToASAFuture.then(
+          (value) => algorand.giftASA(account, waitForConfirmation: false));
+      final algorandResults =
+          await Future.wait([optInToStateAppFuture, optInAndGiftASAFuture]);
+      final optInStateTxId = algorandResults[0];
+      log('SetupUserViewModel - setupAlgorandAccount - Future.wait - algorandResults=$algorandResults - optInStateTxId=$optInStateTxId');
+      await algorand.waitForConfirmation(
+          txId: optInStateTxId, net: AlgorandNet.testnet);
+      log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
+    } catch (e) {
+      // TODO - we can continue the app; this was a luxury
+    }
   }
 }
