@@ -66,7 +66,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
 
     return Scaffold(
       appBar: appBar(addBidPageViewModel.user.name),
-      body: Column(
+      body: ListView(
         children: [
           Container(
               padding: const EdgeInsets.only(
