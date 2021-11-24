@@ -1,15 +1,15 @@
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
-import 'package:flutter/material.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:app_2i2i/repository/firestore_database.dart';
-import 'package:app_2i2i/models/user.dart';
+import 'package:flutter/material.dart';
 
 class SetupUserViewModel with ChangeNotifier {
-  SetupUserViewModel(
-      {required this.auth, required this.database, required this.algorand}) {
+  SetupUserViewModel({required this.auth, required this.database, required this.algorand}) {
     log('SignUpViewModel');
   }
+
   final FirebaseAuth auth;
   final FirestoreDatabase database;
   final AlgorandService algorand;
@@ -56,16 +56,20 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future createDatabaseUser() async {
-    message = 'creating database user';
-    notifyListeners();
-    final user = UserModel(id: uid!, bio: bio!);
-    await database.setUser(user);
-    // await Future.delayed(Duration(seconds: FAKE_WAIT));
-    log('SetupUserViewModel - createDatabaseUser - setUser');
-    final userPrivate = UserModelPrivate();
-    await database.setUserPrivate(uid!, userPrivate);
-    // await Future.delayed(Duration(seconds: FAKE_WAIT));
-    log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
+    try {
+      message = 'creating database user';
+      notifyListeners();
+      final user = UserModel(id: uid!, bio: bio!);
+      await database.setUser(user);
+      // await Future.delayed(Duration(seconds: FAKE_WAIT));
+      log('SetupUserViewModel - createDatabaseUser - setUser');
+      final userPrivate = UserModelPrivate();
+      await database.setUserPrivate(uid!, userPrivate);
+      // await Future.delayed(Duration(seconds: FAKE_WAIT));
+      log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
+    } catch (e) {
+      print(e);
+    }
   }
 
   // KEEP account in local scope

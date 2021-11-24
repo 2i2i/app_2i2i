@@ -1,25 +1,25 @@
 // TODO break up file into multiple files
 
 import 'package:algorand_dart/algorand_dart.dart';
-import 'package:app_2i2i/models/bid.dart';
-import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/account/ui/account_info.dart';
-import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
-import 'package:app_2i2i/app/home/my_user/my_user_page_view_model.dart';
-import 'package:app_2i2i/app/home/ringing/ringing_page_view_model.dart';
 import 'package:app_2i2i/app/home/search/add_bid_page_view_model.dart';
 import 'package:app_2i2i/app/home/search/user_page_view_model.dart';
 import 'package:app_2i2i/app/locked_user/lock_watch_widget.dart';
 import 'package:app_2i2i/app/locked_user/locked_user_view_model.dart';
-import 'package:app_2i2i/app/setup_user/setup_user_view_model.dart';
-import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/account/ui/account_info.dart';
+import 'package:app_2i2i/pages/my_user/my_user_page_view_model.dart';
+import 'package:app_2i2i/pages/ringing/ringing_page_view_model.dart';
+import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/repository/firestore_database.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -77,14 +77,6 @@ final usersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((ref) {
   return database.usersStream();
 });
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
-final searchUsersStreamProvider =
-    StreamProvider.autoDispose<List<UserModel?>>((ref) {
-  // log('usersStreamProvider');
-  final database = ref.watch(databaseProvider);
-  // log('usersStreamProvider - database=$database');
-  final filter = ref.watch(searchFilterProvider).state;
-  return database.usersStream(tags: filter);
-});
 
 final bidStreamProvider =
     StreamProvider.autoDispose.family<Bid, String>((ref, id) {
@@ -302,21 +294,21 @@ final balancesTestnetProvider = FutureProvider<List<List<AssetHolding>>>((ref) {
   return algorandTestnet.getAllAssetHoldings();
 });
 
-final myAccountPageViewModelProvider = Provider((ref) {
-  // log('myAccountPageViewModelProvider');
-  final functions = ref.watch(firebaseFunctionsProvider);
-  // log('myAccountPageViewModelProvider - functions=$functions');
-  final algorandTestnet = ref.watch(algorandProvider(AlgorandNet.testnet));
+// final myAccountPageViewModelProvider = Provider((ref) {
+//   final functions = ref.watch(firebaseFunctionsProvider);
+//   final algorandTestnet = ref.watch(algorandProvider(AlgorandNet.testnet));
+//    final numAccounts = ref.watch(numAccountsProvider);
+//   if (numAccounts is AsyncLoading) return null;
+//
+//   return MyAccountPageViewModel(
+//       functions: functions,
+//       algorand: algorandTestnet,
+//       numAccounts: numAccounts.data!.value);
+// });
 
-  // log('myAccountPageViewModelProvider - algorandTestnet=$algorandTestnet');
-  final numAccounts = ref.watch(numAccountsProvider);
-  // log('myAccountPageViewModelProvider - numAccounts=$numAccounts');
-  if (numAccounts is AsyncLoading) return null;
-
-  return MyAccountPageViewModel(
-      functions: functions,
-      algorand: algorandTestnet,
-      numAccounts: numAccounts.data!.value);
+final myAccountPageViewModelProvider =
+    ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
+  return MyAccountPageViewModel(ref);
 });
 
 final userModelChangerProvider = Provider((ref) {

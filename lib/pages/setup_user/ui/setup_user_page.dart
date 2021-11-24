@@ -1,33 +1,33 @@
-// import 'package:app_2i2i/app/home/home_page.dart';
 import 'package:app_2i2i/app/test_banner.dart';
-// import 'package:enum_to_string/enum_to_string.dart';
+import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/app/setup_user/setup_user_view_model.dart';
-import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:go_router/go_router.dart';
 
-class SetupUserPage extends ConsumerWidget {
-  void pressGo(BuildContext context, SetupUserViewModel signUpViewModel) async {
-    log('SignUpPage - pressGo');
-    await signUpViewModel.createDatabaseUser();
-    context.goNamed('home');
-    // context.goNamed('home',
-    // params: {'tab': EnumToString.convertToString(HomePageTabs.search)});
-  }
+class SetupUserPage extends ConsumerStatefulWidget {
+  const SetupUserPage({Key? key}) : super(key: key);
 
-  bool goButtonReady(signUpViewModel) {
-    log('SignUpPage - goButtonReady');
-    return signUpViewModel.bioSet && signUpViewModel.workDone;
+  @override
+  _SetupUserPageState createState() => _SetupUserPageState();
+}
+
+class _SetupUserPageState extends ConsumerState<SetupUserPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    log('SetupUserPage - build');
-    final setupUserViewModel = ref.watch(setupUserViewModelProvider);
-    setupUserViewModel.createAuthAndStartAlgorand();
-    log('SetupUserPage - build - setupUserViewModel=$setupUserViewModel');
+  Widget build(BuildContext context) {
+    SetupUserViewModel setupUserViewModel =
+        ref.watch(setupUserViewModelProvider);
     return TestBanner(Scaffold(
         appBar: AppBar(
           toolbarHeight: 150,
@@ -42,10 +42,9 @@ class SetupUserPage extends ConsumerWidget {
             Container(
               child: TextField(
                 decoration: InputDecoration(
-                  hintText:
-                      'username\n\nI love to #talk and #cook\nI can #teach',
+                  hintText: Strings().yourBioHint,
                   border: OutlineInputBorder(),
-                  label: Text('Write your bio'),
+                  label: Text(Strings().writeYourBio),
                 ),
                 minLines: 8,
                 maxLines: null,
@@ -55,7 +54,7 @@ class SetupUserPage extends ConsumerWidget {
             ),
             Container(
               child: Text(
-                'example: Solli I love #cooking and #design',
+                Strings().bioExample,
               ),
               padding: const EdgeInsets.only(
                   top: 5, left: 20, right: 20, bottom: 10),
@@ -65,7 +64,7 @@ class SetupUserPage extends ConsumerWidget {
                 border: Border.all(color: Colors.grey),
               ),
               child: Text(
-                'username: ${setupUserViewModel.name}',
+                '${Strings().userName}: ${setupUserViewModel.name}',
                 style: TextStyle(fontSize: 18),
                 textAlign: TextAlign.left,
               ),
@@ -92,11 +91,23 @@ class SetupUserPage extends ConsumerWidget {
                   onPressed: goButtonReady(setupUserViewModel)
                       ? () => pressGo(context, setupUserViewModel)
                       : null,
-                  child: Text('Save', style: TextStyle(fontSize: 20))),
+                  child: Text(Strings().save, style: TextStyle(fontSize: 20))),
               padding: const EdgeInsets.only(
                   top: 20, left: 20, right: 20, bottom: 20),
             ),
           ],
         ))));
+  }
+
+  void pressGo(BuildContext context, SetupUserViewModel signUpViewModel) async {
+    ProgressDialog.loader(true, context);
+    await signUpViewModel.createDatabaseUser();
+    ProgressDialog.loader(false, context);
+    context.goNamed('home');
+  }
+
+  bool goButtonReady(signUpViewModel) {
+    log('SignUpPage - goButtonReady');
+    return signUpViewModel.bioSet && signUpViewModel.workDone;
   }
 }

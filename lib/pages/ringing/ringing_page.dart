@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/app/home/ringing/ringing_page_view_model.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
+import 'package:app_2i2i/pages/ringing/ringing_page_view_model.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';

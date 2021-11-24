@@ -1,8 +1,8 @@
 import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 
 class UserBids extends ConsumerWidget {
   UserBids({

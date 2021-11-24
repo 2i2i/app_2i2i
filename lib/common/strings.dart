@@ -1,8 +1,6 @@
 class Strings {
   static final Strings _singleton = Strings._internal();
 
-
-
   Strings._internal();
 
   factory Strings() {
@@ -40,4 +38,14 @@ class Strings {
    String bidsIn = 'Bids In';
    String bidsInPage = 'Bids In Page';
    String topAppBarTitle = '2i2i';
+
+   //SetUp User page
+
+  String yourBioHint = 'username\n\nI love to #talk and #cook\nI can #teach';
+  String writeYourBio = 'Write your bio';
+  String bioExample = 'example: Solli I love #cooking and #design';
+  String userName = 'username';
+  String save = 'Save';
+
+
 }

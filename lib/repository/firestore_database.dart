@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/repository/firestore_service.dart';
-import 'package:app_2i2i/models/user.dart';
+
 import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/room.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_path.dart';
+import 'package:app_2i2i/repository/firestore_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -32,8 +33,7 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.userPrivate(uid),
         data: userPrivate.toMap(),
-        merge: true,
-      );
+          merge: true);
 
   Stream<UserModel> userStream({required String uid}) =>
       _service.documentStream(
@@ -43,8 +43,7 @@ class FirestoreDatabase {
   Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.userPrivate(uid),
-        builder: (data, documentId) =>
-            UserModelPrivate.fromMap(data, documentId),
+        builder: (data, documentId) => UserModelPrivate.fromMap(data, documentId),
       );
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {

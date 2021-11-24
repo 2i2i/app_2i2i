@@ -1,24 +1,13 @@
 import 'dart:async';
 
-import 'package:app_2i2i/app/auth_widget.dart';
-import 'package:app_2i2i/app/home/cv/cv_page.dart';
-import 'package:app_2i2i/app/home/error_page.dart';
-import 'package:app_2i2i/app/home/home_page.dart';
-import 'package:app_2i2i/app/home/search/add_bid_page.dart';
-import 'package:app_2i2i/app/home/search/user_page.dart';
-import 'package:app_2i2i/app/locked_user/locked_user_page.dart';
-import 'package:app_2i2i/app/setup_user/setup_user_page.dart';
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/routes/named_routes.dart';
-import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'app/home/about/about_page.dart';
 import 'common/strings.dart';
 
 Future<void> main() async {
