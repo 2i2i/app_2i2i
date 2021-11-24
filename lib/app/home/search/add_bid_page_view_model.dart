@@ -52,39 +52,45 @@ class AddBidPageViewModel {
 
       // if (submitting) return;
       // submitting = true;
+      AssetHolding? asset;
+      List list = [];
+      if(balances.length > numAccount){
+        list = balances[numAccount];
+      }else if(balances.length > (numAccount-1)){
+        list = balances[numAccount-1];
+      }
+      if(list.length > assetIndex){
+        asset = list[assetIndex];
+      }else if(list.length > (assetIndex-1)){
+        asset = list[assetIndex-1];
+      }
 
-      final asset = balances[numAccount][assetIndex];
-      log('AddBidPageViewModel - addBid - !submitting - asset=$asset');
 
-      final speedAssetId = asset.assetId;
-      log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
+      if(asset is AssetHolding) {
+        final speedAssetId = asset.assetId;
+        final publicAddress = await currentAlgorandService.accountPublicAddress(numAccount);
 
-      final publicAddress =
-          await currentAlgorandService.accountPublicAddress(numAccount);
-      log('AddBidPageViewModel - addBid - publicAddress=$publicAddress');
-      if (publicAddress == null) throw NullThrownError();
+        if (publicAddress == null) throw NullThrownError();
 
-      final budget = await currentAlgorandService.calcBudget(
-          assetId: speedAssetId, numAccount: numAccount);
-      log('AddBidPageViewModel - addBid - budget=$budget');
-      if (budget == null) throw NullThrownError(); // TODO show user something
-      final actualBudget = budget * budgetPercentage / 100;
+        final budget = await currentAlgorandService.calcBudget(assetId: speedAssetId, numAccount: numAccount);
 
-      final speed = Speed(num: speedNum, assetId: speedAssetId);
-      log('AddBidPageViewModel - addBid - speed=$speed');
+        if (budget == null) throw NullThrownError(); // TODO show user something
+        final actualBudget = budget * budgetPercentage / 100;
 
-      final HttpsCallable addBid = functions.httpsCallable('addBid');
-      final args = {
-        'B': user.id,
-        'speed': speed.toMap(),
-        'net': AlgorandNet.testnet
-            .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
-        'addrA': publicAddress,
-        'budget': actualBudget,
-      };
-      log('AddBidPageViewModel - addBid=$addBid - args=$args');
-      await addBid(args);
-      log('addBid after');
+        final speed = Speed(num: speedNum, assetId: speedAssetId);
+
+
+        final HttpsCallable addBid = functions.httpsCallable('addBid');
+        final args = {
+          'B': user.id,
+          'speed': speed.toMap(),
+          'net': AlgorandNet.testnet
+              .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+          'addrA': publicAddress,
+          'budget': actualBudget,
+        };
+        await addBid(args);
+      }
     } catch (e) {
       print(e);
     }

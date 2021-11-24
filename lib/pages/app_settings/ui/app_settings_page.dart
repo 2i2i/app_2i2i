@@ -39,7 +39,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
       appBar: AppBar(
         title: Text('App Settings'),
         leading: IconButton(
-            onPressed: () => context.goNamed('home'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
             icon: Icon(
               Icons.navigate_before,
               size: 40,

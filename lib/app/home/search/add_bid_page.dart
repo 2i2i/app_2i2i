@@ -179,7 +179,9 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         numAccount: numAccount,
                         assetIndex: assetIndex,
                         speedNum: speedNum,
-                        budgetPercentage: budgetPercentage);
+                        budgetPercentage: budgetPercentage).then((value) {
+                          print('$value');
+                    });
                     ProgressDialog.loader(false, context);
                     context.goNamed('user', params: {'uid': uid});
                   },
