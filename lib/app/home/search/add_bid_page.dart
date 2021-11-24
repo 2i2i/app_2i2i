@@ -166,7 +166,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             onPressed: addBidPageViewModel.submitting
                 ? null
                 : () async {
-                    log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
+                    // log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
                     ProgressDialog.loader(true, context);
                     await addBidPageViewModel.addBid(
                         account: account!,

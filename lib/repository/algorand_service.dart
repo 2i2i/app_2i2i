@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:algorand_dart/algorand_dart.dart';
@@ -5,7 +7,7 @@ import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:app_2i2i/services/logging.dart';
-
+import 'package:algorand_dart/algorand_dart.dart' as al;
 enum AlgorandNet { mainnet, testnet, betanet }
 
 class AlgorandLib {
@@ -65,14 +67,6 @@ class AlgorandService {
   final SecureStorage storage;
   final AccountService accountService;
   final AlgorandLib algorandLib;
-
-  Future<void> setNetworkMode(String? mode) async {
-    await storage.write('network_mode', mode!);
-  }
-
-  Future<String?> getNetworkMode() async {
-    return await storage.read('network_mode');
-  }
 
   Future<String> giftALGO(AbstractAccount account,
       {waitForConfirmation = true}) async {
@@ -310,5 +304,13 @@ class AlgorandService {
       log('Exception ' + ex.toString());
       return 'error';
     }
+  }
+
+  Future<void> setNetworkMode(String? mode) async {
+    await storage.write('network_mode', mode!);
+  }
+
+  Future<String?> getNetworkMode() async {
+    return await storage.read('network_mode');
   }
 }

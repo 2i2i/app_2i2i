@@ -22,7 +22,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
 
   Future<void> getMode() async {
     String? mode =
-        await ref.read(algorandProvider(AlgorandNet.testnet)).getNetworkMode();
+        await ref.read(algorandProvider).getNetworkMode();
     int itemIndex = networkList.indexWhere((element) => element == mode);
     if (itemIndex < 0) {
       itemIndex = 0;
@@ -34,7 +34,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    var algorand = ref.watch(algorandProvider(AlgorandNet.testnet));
+    var algorand = ref.watch(algorandProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('App Settings'),
@@ -85,8 +85,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                       setState(() {
                         _value = value!;
                       });
-                      await algorand
-                          .setNetworkMode(networkList[_value].toString());
+                      await algorand.setNetworkMode(networkList[_value].toString());
                     },
                   ),
                 ),

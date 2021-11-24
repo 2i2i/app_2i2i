@@ -1,29 +1,24 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
-import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyAccountPageViewModel extends ChangeNotifier {
-  ProviderRefBase ref;
-
-  MyAccountPageViewModel(this.ref);
-
-  bool isLoading = true;
-  int? numAccounts;
-  FirebaseFunctions? functions;
-  AlgorandService? algorand;
-
-  /*MyAccountPageViewModel({
+class MyAccountPageViewModel {
+  MyAccountPageViewModel({
     required this.functions,
-    required this.algorand,
+    required this.algorandLib,
+    required this.accountService,
+    required this.storage,
     required this.numAccounts,
   });
   // {
   //   init();
   // }
   final FirebaseFunctions functions;
-  final AlgorandService algorand;
+  final AlgorandLib algorandLib;
+  final SecureStorage storage;
+  final AccountService accountService;
   final int numAccounts;
 
   // void init() async {
@@ -41,28 +36,12 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   //   return algorand.optInUserAccountToASA(
   //       assetId: assetId, numAccount: numAccount);
-  // }*/
-
-  initMethod() async {
-    try {
-      algorand = await ref.read(algorandProvider(AlgorandNet.testnet));
-      numAccounts = await algorand!.getNumAccounts();
-      await Future.delayed(Duration(seconds: 2));
-    } catch (e) {
-      print(e);
-    }
-    isLoading = false;
-    notifyListeners();
-  }
+  // }
 
   Future addAccount() async {
-    try {
-      final account = await algorand!.createAccount();
-      await algorand!.saveAccountLocally(account);
-      numAccounts = await algorand!.getNumAccounts();
-    } catch (e) {
-      print(e);
-    }
-    notifyListeners();
+    LocalAccount.create(
+        accountService: accountService,
+        algorandLib: algorandLib,
+        storage: storage);
   }
 }

@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
-import 'package:app_2i2i/services/secure_storage_service.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 
 class LocalAccount extends AbstractAccount {
   LocalAccount._create({

@@ -1,7 +1,7 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
-import 'package:app_2i2i/services/secure_storage_service.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class MyAccountPageViewModel {

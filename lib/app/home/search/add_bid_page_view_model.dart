@@ -2,7 +2,6 @@ import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/app/logging.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -40,21 +39,6 @@ class AddBidPageViewModel {
     try {
       log('AddBidPageViewModel - addBid');
 
-      // if (submitting) return;
-      // submitting = true;
-      AssetHolding? asset;
-      List list = [];
-      if(balances.length > numAccount){
-        list = balances[numAccount];
-      }else if(balances.length > (numAccount-1)){
-        list = balances[numAccount-1];
-      }
-      if(list.length > assetIndex){
-        asset = list[assetIndex];
-      }else if(list.length > (assetIndex-1)){
-        asset = list[assetIndex-1];
-      }
-
     final int speedAssetId = balance.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
@@ -78,7 +62,6 @@ class AddBidPageViewModel {
           'budget': actualBudget,
         };
         await addBid(args);
-      }
     } catch (e) {
       print(e);
     }
