@@ -27,7 +27,7 @@ class HomePage extends ConsumerWidget {
         child: TestBanner(Scaffold(
           appBar: AppBar(
             leading: IconButton(onPressed: () {
-              context.goNamed('app_setting');
+              context.pushNamed('app_setting');
             }, icon: Icon(IconData(58751, fontFamily: 'MaterialIcons'))),
             title: Container(
               child: Image.asset(

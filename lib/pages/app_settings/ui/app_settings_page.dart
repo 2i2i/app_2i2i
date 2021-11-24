@@ -40,7 +40,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
         title: Text('App Settings'),
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             icon: Icon(
               Icons.navigate_before,
