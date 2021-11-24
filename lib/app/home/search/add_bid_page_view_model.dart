@@ -1,10 +1,10 @@
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel(
@@ -47,42 +47,46 @@ class AddBidPageViewModel {
     required double budgetPercentage,
     required int numAccount,
   }) async {
-    log('AddBidPageViewModel - addBid');
+    try {
+      log('AddBidPageViewModel - addBid');
 
-    if (submitting) return;
-    submitting = true;
+      // if (submitting) return;
+      // submitting = true;
 
-    final asset = balances[numAccount][assetIndex];
-    log('AddBidPageViewModel - addBid - !submitting - asset=$asset');
+      final asset = balances[numAccount][assetIndex];
+      log('AddBidPageViewModel - addBid - !submitting - asset=$asset');
 
-    final speedAssetId = asset.assetId;
-    log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
+      final speedAssetId = asset.assetId;
+      log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final publicAddress =
-        await currentAlgorandService.accountPublicAddress(numAccount);
-    log('AddBidPageViewModel - addBid - publicAddress=$publicAddress');
-    if (publicAddress == null) throw NullThrownError();
+      final publicAddress =
+          await currentAlgorandService.accountPublicAddress(numAccount);
+      log('AddBidPageViewModel - addBid - publicAddress=$publicAddress');
+      if (publicAddress == null) throw NullThrownError();
 
-    final budget = await currentAlgorandService.calcBudget(
-        assetId: speedAssetId, numAccount: numAccount);
-    log('AddBidPageViewModel - addBid - budget=$budget');
-    if (budget == null) throw NullThrownError(); // TODO show user something
-    final actualBudget = budget * budgetPercentage / 100;
+      final budget = await currentAlgorandService.calcBudget(
+          assetId: speedAssetId, numAccount: numAccount);
+      log('AddBidPageViewModel - addBid - budget=$budget');
+      if (budget == null) throw NullThrownError(); // TODO show user something
+      final actualBudget = budget * budgetPercentage / 100;
 
-    final speed = Speed(num: speedNum, assetId: speedAssetId);
-    log('AddBidPageViewModel - addBid - speed=$speed');
+      final speed = Speed(num: speedNum, assetId: speedAssetId);
+      log('AddBidPageViewModel - addBid - speed=$speed');
 
-    final HttpsCallable addBid = functions.httpsCallable('addBid');
-    final args = {
-      'B': user.id,
-      'speed': speed.toMap(),
-      'net': AlgorandNet.testnet
-          .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
-      'addrA': publicAddress,
-      'budget': actualBudget,
-    };
-    log('AddBidPageViewModel - addBid=$addBid - args=$args');
-    await addBid(args);
-    log('addBid after');
+      final HttpsCallable addBid = functions.httpsCallable('addBid');
+      final args = {
+        'B': user.id,
+        'speed': speed.toMap(),
+        'net': AlgorandNet.testnet
+            .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+        'addrA': publicAddress,
+        'budget': actualBudget,
+      };
+      log('AddBidPageViewModel - addBid=$addBid - args=$args');
+      await addBid(args);
+      log('addBid after');
+    } catch (e) {
+      print(e);
+    }
   }
 }

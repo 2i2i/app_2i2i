@@ -1,6 +1,7 @@
 import 'package:app_2i2i/app/home/wait_page.dart';
-import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -173,11 +174,13 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                 ? null
                 : () async {
                     log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
+                    ProgressDialog.loader(true, context);
                     await addBidPageViewModel.addBid(
                         numAccount: numAccount,
                         assetIndex: assetIndex,
                         speedNum: speedNum,
                         budgetPercentage: budgetPercentage);
+                    ProgressDialog.loader(false, context);
                     context.goNamed('user', params: {'uid': uid});
                   },
             child: Text('Add', style: Theme.of(context).textTheme.headline6),

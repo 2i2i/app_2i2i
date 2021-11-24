@@ -55,7 +55,7 @@ class AlgorandService {
   final AlgorandNet net;
   late final Algorand algorandLib;
   final FirebaseFunctions functions;
-  final SecureStorage storage;
+  final SecureStorage   storage;
 
   Future<List<AssetHolding>> getAssetHoldings(String publicAddress) async {
     // log('AlgorandService - getAssetHoldings - publicAddress=$publicAddress');
@@ -113,6 +113,14 @@ class AlgorandService {
   Future<Account> createAccount() {
     log('AlgorandService - createAccount');
     return algorandLib.createAccount();
+  }
+
+  Future<void> setNetworkMode(String? mode) async {
+    await storage.write('network_mode', mode!);
+  }
+
+  Future<String?> getNetworkMode() async {
+    return await storage.read('network_mode');
   }
 
   Future<int> getNumAccounts() async {

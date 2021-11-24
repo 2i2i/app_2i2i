@@ -185,8 +185,7 @@ class UserModelPrivate {
   final List<String> blocked;
   final List<String> friends;
 
-  factory UserModelPrivate.fromMap(
-      Map<String, dynamic>? data, String documentId) {
+  factory UserModelPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('UserModelPrivate.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
