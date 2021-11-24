@@ -38,7 +38,14 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('App Settings'),
-
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(
+              Icons.navigate_before,
+              size: 40,
+            )),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
