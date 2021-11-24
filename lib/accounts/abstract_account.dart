@@ -20,8 +20,8 @@ class AccountService {
 
   Future<int> getNumLocalAccounts() async {
     final numAccountsString = await storage.read('num_accounts');
-    final numAccounts =
-        numAccountsString == null ? 0 : int.parse(numAccountsString);
+    final numAccounts = numAccountsString == null ? 0 : int.parse(numAccountsString);
+    print('Number of Accounts ========= $numAccounts');
     return numAccounts;
   }
 

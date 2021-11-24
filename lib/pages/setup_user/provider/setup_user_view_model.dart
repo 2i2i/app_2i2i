@@ -16,7 +16,7 @@ class SetupUserViewModel with ChangeNotifier {
       required this.algorand,
       required this.storage}) {
     log('SignUpViewModel');
-    createAuthAndStartAlgorand();
+    // createAuthAndStartAlgorand();
   }
 
   final FirebaseAuth auth;
