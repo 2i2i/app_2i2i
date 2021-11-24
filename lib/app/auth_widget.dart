@@ -1,10 +1,11 @@
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
 
 class AuthWidget extends ConsumerWidget {
   AuthWidget({required this.homePageBuilder, required this.setupPageBuilder});
+
   final WidgetBuilder homePageBuilder;
   final WidgetBuilder setupPageBuilder;
 
@@ -15,11 +16,15 @@ class AuthWidget extends ConsumerWidget {
     log('AuthWidget - build - authStateChanges=$authStateChanges');
     return authStateChanges.when(data: (user) {
       log('AuthWidget - build - authStateChanges.when - data - user=$user');
-      if (user == null) return setupPageBuilder(context);
+      if (user == null) {
+        return setupPageBuilder(context);
+      }
       log('AuthWidget - build - authStateChanges.when - data - 2');
       final signUpViewModel = ref.read(setupUserViewModelProvider);
       log('AuthWidget - build - authStateChanges.when - data - signUpViewModel=$signUpViewModel');
-      if (!signUpViewModel.signUpInProcess) return homePageBuilder(context);
+      if (!signUpViewModel.signUpInProcess) {
+        return homePageBuilder(context);
+      }
       log('AuthWidget - build - authStateChanges.when - data - 3');
       return setupPageBuilder(context);
     }, loading: () {

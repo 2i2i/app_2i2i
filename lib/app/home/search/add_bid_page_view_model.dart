@@ -1,9 +1,9 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/app/home/models/bid.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/app/utils.dart';
-import 'package:app_2i2i/services/algorand_service.dart';
+import 'package:app_2i2i/common/utils.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class AddBidPageViewModel {
@@ -36,10 +36,8 @@ class AddBidPageViewModel {
     required int speedNum,
     required double budgetPercentage,
   }) async {
-    log('AddBidPageViewModel - addBid');
-
-    if (submitting) return;
-    submitting = true;
+    try {
+      log('AddBidPageViewModel - addBid');
 
     final int speedAssetId = balance.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
@@ -51,20 +49,21 @@ class AddBidPageViewModel {
     if (budget == null) throw NullThrownError(); // TODO show user something
     final actualBudget = (budget * budgetPercentage / 100).floor();
 
-    final speed = Speed(num: speedNum, assetId: speedAssetId);
-    log('AddBidPageViewModel - addBid - speed=$speed');
+        final speed = Speed(num: speedNum, assetId: speedAssetId);
 
-    final HttpsCallable addBid = functions.httpsCallable('addBid');
-    final args = {
-      'B': user.id,
-      'speed': speed.toMap(),
-      'net': AlgorandNet.testnet
-          .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
-      'addrA': publicAddress,
-      'budget': actualBudget,
-    };
-    log('AddBidPageViewModel - addBid=$addBid - args=$args');
-    await addBid(args);
-    log('addBid after');
+
+        final HttpsCallable addBid = functions.httpsCallable('addBid');
+        final args = {
+          'B': user.id,
+          'speed': speed.toMap(),
+          'net': AlgorandNet.testnet
+              .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+          'addrA': publicAddress,
+          'budget': actualBudget,
+        };
+        await addBid(args);
+    } catch (e) {
+      print(e);
+    }
   }
 }

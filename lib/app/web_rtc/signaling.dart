@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
