@@ -1,13 +1,14 @@
-import 'package:app_2i2i/app/home/wait_page.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
-import 'package:flutter/material.dart';
 import 'package:app_2i2i/app/home/search/user_bids.dart';
+import 'package:app_2i2i/app/home/wait_page.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class UserPage extends ConsumerWidget {
   UserPage({required this.uid});
+
   final String uid;
 
   Row paramsRow(String key, String value) {
@@ -33,7 +34,7 @@ class UserPage extends ConsumerWidget {
     log('UserPage - build - userPageViewModel!=null');
 
     final TextEditingController bio =
-        TextEditingController(text: userPageViewModel.user.bio);
+    TextEditingController(text: userPageViewModel.user.bio);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,30 +62,30 @@ class UserPage extends ConsumerWidget {
               enabled: false,
             ),
             padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+            const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
           ),
           Divider(),
           Expanded(
               child: UserBids(
-            bidsIds: userPageViewModel.user.bidsIn,
-            title: 'Bids In',
-            noBidsText: 'no bid ins for user',
-            leading: Icon(
-              Icons.label_important,
-              color: Colors.green,
-            ),
-            // onTap: (_) => null,
-          )),
+                bidsIds: userPageViewModel.user.bidsIn,
+                title: 'Bids In',
+                noBidsText: 'no bid ins for user',
+                leading: Icon(
+                  Icons.label_important,
+                  color: Colors.green,
+                ),
+                // onTap: (_) => null,
+              )),
         ],
       ),
       floatingActionButton: authStateChanges.data!.value!.uid == uid
           ? Container()
           : FloatingActionButton(
-              onPressed: () => context.goNamed('addbidpage',
-                  params: {'uid': userPageViewModel.user.id}),
-              tooltip: 'add bid',
-              child: const Icon(Icons.add),
-            ),
+        onPressed: () => context.goNamed('addbidpage',
+            params: {'uid': userPageViewModel.user.id}),
+        tooltip: 'add bid',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

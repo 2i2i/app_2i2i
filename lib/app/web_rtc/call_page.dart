@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:app_2i2i/app/home/models/meeting.dart';
-import 'package:app_2i2i/app/home/models/user.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/app/utils.dart';
+import 'package:app_2i2i/models/meeting.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:app_2i2i/app/web_rtc/signaling.dart';
