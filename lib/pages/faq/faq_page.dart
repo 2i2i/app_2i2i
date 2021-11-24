@@ -1,5 +1,5 @@
 // import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/app/home/faq/faq.dart';
+import 'package:app_2i2i/pages/faq/faq.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

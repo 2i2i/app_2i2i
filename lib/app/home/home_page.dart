@@ -1,10 +1,10 @@
-import 'package:app_2i2i/app/home/faq/faq_page.dart';
-import 'package:app_2i2i/app/home/my_user/my_user_page.dart';
-import 'package:app_2i2i/app/home/qr_code/qr_code_page.dart';
-import 'package:app_2i2i/app/home/search/search_page.dart';
 import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/app/test_banner.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
+import 'package:app_2i2i/pages/faq/faq_page.dart';
+import 'package:app_2i2i/pages/my_user/my_user_page.dart';
+import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
+import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';

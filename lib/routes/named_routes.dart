@@ -1,11 +1,11 @@
 import 'package:app_2i2i/app/auth_widget.dart';
-import 'package:app_2i2i/app/home/about/about_page.dart';
 import 'package:app_2i2i/app/home/cv/cv_page.dart';
 import 'package:app_2i2i/app/home/error_page.dart';
 import 'package:app_2i2i/app/home/home_page.dart';
 import 'package:app_2i2i/app/home/search/add_bid_page.dart';
 import 'package:app_2i2i/app/home/search/user_page.dart';
 import 'package:app_2i2i/app/locked_user/locked_user_page.dart';
+import 'package:app_2i2i/pages/about/about_page.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
