@@ -2,24 +2,32 @@ import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyAccountPageViewModel {
-  MyAccountPageViewModel({
+class MyAccountPageViewModel extends ChangeNotifier {
+  ProviderRefBase? ref;
+
+  MyAccountPageViewModel(this.ref);
+
+  /*MyAccountPageViewModel({
     required this.functions,
     required this.algorandLib,
     required this.accountService,
     required this.storage,
     required this.numAccounts,
-  });
+  });*/
+
   // {
   //   init();
   // }
-  final FirebaseFunctions functions;
-  final AlgorandLib algorandLib;
-  final SecureStorage storage;
-  final AccountService accountService;
-  final int numAccounts;
+  /*final FirebaseFunctions functions;*/
+  AlgorandLib? algorandLib;
+  SecureStorage? storage;
+  AccountService? accountService;
+  int? numAccounts;
+  bool isLoading = true;
 
   // void init() async {
   //   numAccounts = await algorand.numAccountsStored();
@@ -38,10 +46,25 @@ class MyAccountPageViewModel {
   //       assetId: assetId, numAccount: numAccount);
   // }
 
+  initMethod() async {
+    try {
+      algorandLib = await ref!.watch(algorandLibProvider);
+      storage = await ref!.watch(storageProvider);
+      accountService = await ref!.watch(accountServiceProvider);
+      numAccounts = await accountService!.getNumAccounts();
+    } catch (e) {
+      print(e);
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
   Future addAccount() async {
-    LocalAccount.create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    await LocalAccount.create(
+        accountService: accountService!,
+        algorandLib: algorandLib!,
+        storage: storage!);
+    numAccounts = await accountService!.getNumAccounts();
+    notifyListeners();
   }
 }

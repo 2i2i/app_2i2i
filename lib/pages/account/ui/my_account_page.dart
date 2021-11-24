@@ -85,7 +85,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     child: Icon(Icons.new_label),
                     onTap: () async {
                       ProgressDialog.loader(true, context);
-                      await myAccountPageViewModel?.addAccount();
+                      await myAccountPageViewModel.addAccount();
                       ProgressDialog.loader(false, context);
                     },
                   ),
