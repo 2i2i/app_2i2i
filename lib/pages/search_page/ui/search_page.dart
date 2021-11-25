@@ -17,7 +17,6 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -29,7 +28,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             onSubmitted: (value) {
               value = value.trim();
               ref.watch(searchFilterProvider).state =
-              value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                  value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
             },
           ),
         ),
@@ -72,7 +71,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 var statusColor = Colors.green;
                 if (user.status == 'OFFLINE') statusColor = Colors.grey;
-                // if (user.locked) statusColor = Colors.red;
+                if (user.locked) statusColor = Colors.red;
 
                 return ListTile(
                   leading: iconRotated,
