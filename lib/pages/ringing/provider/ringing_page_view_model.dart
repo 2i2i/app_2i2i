@@ -23,13 +23,12 @@ class RingingPageViewModel {
 
   bool amA() {
     final x = meeting.A == user.id;
-    log(F + 'RingingPageViewModel - amA - x=$x');
+    log('RingingPageViewModel - amA - x=$x');
     return x;
   }
 
   Future cancelMeeting({String? reason}) async {
-    log(F +
-        'RingingPageViewModel - cancelMeeting - meeting.id=${meeting.id} - reason=$reason');
+    log('RingingPageViewModel - cancelMeeting - meeting.id=${meeting.id} - reason=$reason');
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
     final args = {'meetingId': meeting.id};
     if (reason != null) args['reason'] = reason + (amA() ? '_A' : '_B');
@@ -37,13 +36,12 @@ class RingingPageViewModel {
   }
 
   Future acceptMeeting() async {
-    log(F + 'RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
+    log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
     final String txId =
         await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
 
-    log(F +
-        'RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
+    log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
     if (txId == 'error') {
       final HttpsCallable meetingTxnFailed =
           functions.httpsCallable('meetingTxnFailed');
@@ -59,8 +57,7 @@ class RingingPageViewModel {
   }
 
   Future _updateMeetingAsLockCoinsStarted({required String txId}) async {
-    log(F +
-        'RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
+    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
 
     final HttpsCallable meetingLockCoinsStarted =
         functions.httpsCallable('meetingLockCoinsStarted');
@@ -73,8 +70,7 @@ class RingingPageViewModel {
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
       {required String txId, required AlgorandNet net}) async {
     // wait for transaction to confirm
-    log(F +
-        'RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
+    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
     await algorand.waitForConfirmation(txId: txId, net: net);
 
     // update meeting

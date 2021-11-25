@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:algorand_dart/algorand_dart.dart';

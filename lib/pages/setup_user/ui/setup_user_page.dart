@@ -1,6 +1,6 @@
-import 'package:app_2i2i/app/test_banner.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/pages/app/test_banner.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';

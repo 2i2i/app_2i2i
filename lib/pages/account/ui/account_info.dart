@@ -5,9 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountInfo extends ConsumerWidget {
-  const AccountInfo({Key? key, required this.numAccount}) : super(key: key);
-  final int numAccount;
+class AccountInfo extends ConsumerStatefulWidget {
+  AccountInfo({Key? key, required this.account}) : super(key: key);
+
+  final AbstractAccount account;
+
+  @override
+  _AccountInfoState createState() => _AccountInfoState(account: account);
+}
+
+class _AccountInfoState extends ConsumerState<AccountInfo> {
+  _AccountInfoState({Key? key, required this.account});
+  final AbstractAccount account;
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
@@ -31,10 +40,10 @@ class AccountInfo extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountInfoViewModel =
-        ref.watch(accountInfoViewModelProvider(numAccount));
-    if (accountInfoViewModel == null) return Container();
+  Widget build(BuildContext context) {
+    // final accountInfoViewModel =
+    //     ref.watch(accountInfoViewModelProvider(numAccount));
+    // if (accountInfoViewModel == null) return Container();
 
     return Container(
       child: Column(
@@ -60,10 +69,10 @@ class AccountInfo extends ConsumerWidget {
                   top: 10, left: 20, right: 20, bottom: 10),
               color: Color.fromRGBO(223, 239, 223, 1),
               child: ListTile(
-                  title: Text(accountInfoViewModel.account.address),
+                  title: Text(account.address),
                   trailing: IconButton(
                       onPressed: () => Clipboard.setData(ClipboardData(
-                          text: accountInfoViewModel.account.address)),
+                          text: account.address)),
                       icon: Icon(Icons.copy)))),
           SizedBox(
             height: 50,
@@ -76,13 +85,15 @@ class AccountInfo extends ConsumerWidget {
             leading: IconButton(
                 color: Color.fromRGBO(116, 117, 109, 1),
                 iconSize: 35,
-                onPressed: () => accountInfoViewModel.updateBalances(),
+                onPressed: () => setState(() {
+                      account.updateBalances();
+                    }),
                 icon: Icon(Icons.replay_circle_filled)),
           ),
           SizedBox(
             height: 20,
           ),
-          balancesList(accountInfoViewModel.account.balances),
+          balancesList(account.balances),
           SizedBox(
             height: 20,
           ),
@@ -92,11 +103,11 @@ class AccountInfo extends ConsumerWidget {
   }
 }
 
-class AccountInfoViewModel {
-  AccountInfoViewModel({required this.account, required this.algorand});
-  final AlgorandService algorand;
-  final AbstractAccount account;
-  Future updateBalances() {
-    return account.updateBalances();
-  }
-}
+// class AccountInfoViewModel {
+//   AccountInfoViewModel({required this.account, required this.algorand});
+//   final AlgorandService algorand;
+//   final AbstractAccount account;
+//   Future updateBalances() {
+//     return account.updateBalances();
+//   }
+// }

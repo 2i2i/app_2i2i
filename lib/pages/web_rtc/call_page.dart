@@ -5,11 +5,11 @@ import 'dart:math';
 
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:app_2i2i/app/web_rtc/signaling.dart';
 
 class CallPage extends StatefulWidget {
   CallPage({Key? key, required this.meeting, required this.user})
@@ -36,18 +36,15 @@ class _CallPageState extends State<CallPage> {
   late Timer budgetTimer;
   void _initBudgetTimer() {
     final maxDuration = (meeting.budget / meeting.speed.num).floor();
-    log(F +
-        '_CallPageState - _initTimer - meeting.id=${meeting.id} - maxDuration=$maxDuration');
+    log('_CallPageState - _initTimer - meeting.id=${meeting.id} - maxDuration=$maxDuration');
     int duration = maxDuration;
     final activeTime = meeting.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
-      log(F +
-          '_CallPageState - _initTimer - meeting.id=${meeting.id} - maxEndTime=$maxEndTime');
+      log('_CallPageState - _initTimer - meeting.id=${meeting.id} - maxEndTime=$maxEndTime');
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
-    log(F +
-        '_CallPageState - _initTimer - meeting.id=${meeting.id} - duration=$duration');
+    log('_CallPageState - _initTimer - meeting.id=${meeting.id} - duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration),
         () => signaling.hangUp(_localRenderer, reason: 'BUDGET'));
   }
@@ -58,7 +55,7 @@ class _CallPageState extends State<CallPage> {
 
   @override
   void initState() {
-    log(F + '_CallPageState - initState');
+    log('_CallPageState - initState');
     _initBudgetTimer();
 
     _localRenderer.initialize();
@@ -83,7 +80,7 @@ class _CallPageState extends State<CallPage> {
 
   @override
   void dispose() {
-    log(F + '_CallPageState - dispose');
+    log('_CallPageState - dispose');
     _localRenderer.dispose();
     log('_CallPageState - dispose - _localRenderer.dispose');
     _remoteRenderer.dispose();
@@ -94,7 +91,7 @@ class _CallPageState extends State<CallPage> {
 
   @override
   Widget build(BuildContext context) {
-    log(F + '_CallPageState - build');
+    log('_CallPageState - build');
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
