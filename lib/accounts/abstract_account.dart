@@ -91,27 +91,26 @@ class AccountService {
     log('getAllAccounts - as_l=$as_l');
     log('getAllAccounts - as_wc=$as_wc');
     // DEBUG
-    
+
     // return [...localAccounts];
     return [...localAccounts, ...walletConnectAccounts];
   }
 
-  Future<Balance?> extractBalance(
+  Future<Balance> extractBalance(
       List<Balance> balances, int assetId, AlgorandNet net) async {
     for (final balance in balances) {
       if (balance.assetHolding.assetId == assetId && balance.net == net)
         return balance;
     }
-    return null;
+    throw Exception('extractBalance - assetId=$assetId not found');
   }
 
-  Future<int?> calcBudget(
+  Future<int> calcBudget(
       {required int assetId,
       required AbstractAccount account,
       required AlgorandNet net}) async {
     final balances = account.balances;
     final balance = await extractBalance(balances, assetId, net);
-    if (balance == null) return null;
 
     final feesForApp = assetId == 0 ? AlgorandService.LOCK_ALGO_FEE : 0;
 

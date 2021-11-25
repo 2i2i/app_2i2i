@@ -69,14 +69,12 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               bidsIds: myUserPageViewModel.user.bidsIn,
               title: 'Bids In',
               noBidsText: 'no bids in for user',
-              // onTap: myUserPageViewModel.acceptBid,
               leading: Icon(
                 Icons.label_important,
                 color: Colors.green,
               ),
               trailingIcon: Icon(Icons.check_circle, color: Colors.green),
               onTrailingIconClick: myUserPageViewModel.acceptBid,
-              // trailing: IconButton(onPressed: onPressed, icon: ),
             )),
             VerticalDivider(),
             Expanded(

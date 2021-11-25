@@ -35,6 +35,10 @@ class _CallPageState extends State<CallPage> {
 
   late Timer budgetTimer;
   void _initBudgetTimer() {
+    
+    // no timer for free call
+    if (meeting.speed.num == 0) return;
+
     final maxDuration = (meeting.budget / meeting.speed.num).floor();
     log('_CallPageState - _initTimer - meeting.id=${meeting.id} - maxDuration=$maxDuration');
     int duration = maxDuration;
