@@ -1,7 +1,6 @@
 // import 'package:app_2i2i/app/logging.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
-import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';

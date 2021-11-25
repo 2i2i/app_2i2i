@@ -349,11 +349,10 @@ final userModelChangerProvider = Provider((ref) {
 //   final algorand = ref.watch(algorandProvider);
 //   final account = ref.watch(accountProvider(numAccount));
 //  if (account is AsyncLoading) return null;
-  print(account.data!.value);
+
 //   return AccountInfoViewModel(account: account.data!.value, algorand: algorand);
 // });
 
-final accountInfoViewModelProvider2 = ChangeNotifierProvider<AccountInfoViewModel2>((ref)=>AccountInfoViewModel2(ref));
 
 final accountProvider =
     FutureProvider.family<AbstractAccount, int>((ref, numAccount) async {
