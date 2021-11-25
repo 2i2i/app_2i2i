@@ -72,6 +72,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 var statusColor = Colors.green;
                 if (user.status == 'OFFLINE') statusColor = Colors.grey;
+                // if (user.locked) statusColor = Colors.red;
 
                 return ListTile(
                   leading: iconRotated,

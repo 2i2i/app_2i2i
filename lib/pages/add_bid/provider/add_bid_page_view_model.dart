@@ -31,37 +31,36 @@ class AddBidPageViewModel {
   }
 
   Future addBid({
-    required AbstractAccount account,
-    required Balance balance,
+    required AbstractAccount? account,
+    required Balance? balance,
     required int speedNum,
     required double budgetPercentage,
   }) async {
     try {
       log('AddBidPageViewModel - addBid');
 
-    final int speedAssetId = balance.assetHolding.assetId;
-    log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
+      final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
+      log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final publicAddress = account.address;
-    final budget = await accountService.calcBudget(
-        assetId: speedAssetId, account: account, net: balance.net);
-    log('AddBidPageViewModel - addBid - budget=$budget');
-    if (budget == null) throw NullThrownError(); // TODO show user something
-    final actualBudget = (budget * budgetPercentage / 100).floor();
+      final budget = speedNum == 0
+          ? 0
+          : await accountService.calcBudget(
+              assetId: speedAssetId, account: account!, net: balance!.net);
+      log('AddBidPageViewModel - addBid - budget=$budget');
+      final actualBudget = (budget * budgetPercentage / 100).floor();
 
-        final speed = Speed(num: speedNum, assetId: speedAssetId);
+      final speed = Speed(num: speedNum, assetId: speedAssetId);
 
-
-        final HttpsCallable addBid = functions.httpsCallable('addBid');
-        final args = {
-          'B': user.id,
-          'speed': speed.toMap(),
-          'net': AlgorandNet.testnet
-              .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
-          'addrA': publicAddress,
-          'budget': actualBudget,
-        };
-        await addBid(args);
+      final HttpsCallable addBid = functions.httpsCallable('addBid');
+      final args = {
+        'B': user.id,
+        'speed': speed.toMap(),
+        'net': AlgorandNet.testnet
+            .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+        'addrA': account?.address,
+        'budget': actualBudget,
+      };
+      await addBid(args);
     } catch (e) {
       print(e);
     }
