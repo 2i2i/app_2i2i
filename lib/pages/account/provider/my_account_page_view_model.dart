@@ -3,6 +3,7 @@ import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,8 +27,9 @@ class MyAccountPageViewModel extends ChangeNotifier {
   AlgorandLib? algorandLib;
   SecureStorage? storage;
   AccountService? accountService;
-  int? numAccounts;
+  // int? numAccounts;
   bool isLoading = true;
+  List<AbstractAccount>? accounts;
 
   // void init() async {
   //   numAccounts = await algorand.numAccountsStored();
@@ -51,7 +53,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
       algorandLib = await ref!.watch(algorandLibProvider);
       storage = await ref!.watch(storageProvider);
       accountService = await ref!.watch(accountServiceProvider);
-      numAccounts = await accountService!.getNumAccounts();
+      // numAccounts = await accountService!.getNumAccounts();
+      // log('initMethod - numAccounts=$numAccounts');
+      accounts = await accountService!.getAllAccounts();
+      final as = accounts!.map((a) => a.address).toList();
+      log('initMethod - as=$as');
     } catch (e) {
       print(e);
     }
@@ -59,12 +65,18 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future addAccount() async {
+  Future addLocalAccount() async {
     await LocalAccount.create(
         accountService: accountService!,
         algorandLib: algorandLib!,
         storage: storage!);
-    numAccounts = await accountService!.getNumAccounts();
+    return updateAccounts();
+  }
+
+  Future updateAccounts() async {
+    accounts = await accountService!.getAllAccounts();
+    final as = accounts!.map((a) => a.address).toList();
+    log('updateAccounts - as=$as');
     notifyListeners();
   }
 }

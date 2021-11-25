@@ -10,15 +10,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class LockedUserPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log(F + 'LockedUserPage - build');
+    log('LockedUserPage - build');
 
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
-    log(F +
-        'LockedUserPage - build - lockedUserViewModel=$lockedUserViewModel');
+    log('LockedUserPage - build - lockedUserViewModel=$lockedUserViewModel');
     if (lockedUserViewModel == null) return WaitPage();
 
     final meetingStatus = lockedUserViewModel.meeting.currentStatus();
-    log(F + 'LockedUserPage - build - meetingStatus=$meetingStatus');
+    log('LockedUserPage - build - meetingStatus=$meetingStatus');
     if (meetingStatus == MeetingValue.INIT ||
         meetingStatus == MeetingValue.LOCK_COINS_STARTED)
       return RingingPage(
