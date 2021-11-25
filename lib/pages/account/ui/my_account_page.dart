@@ -71,6 +71,11 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       await myAccountPageViewModel.updateAccounts();
       _displayUri = '';
       setState(() {});
+
+      // DEBUG
+      // test wc txn
+      
+      // DEBUG
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
     }

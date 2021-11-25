@@ -103,8 +103,9 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   @override
-  Future<Uint8List> sign(RawTransaction txn) {
-    // TODO: implement sign
-    throw UnimplementedError();
+  Future<Uint8List> sign(RawTransaction txn) async {
+    final txBytes = Encoder.encodeMessagePack(txn.toMessagePack());
+    final a = await connector.signTransaction(txBytes);
+    return a[0];
   }
 }
