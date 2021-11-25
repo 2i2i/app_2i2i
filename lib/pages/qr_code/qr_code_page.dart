@@ -1,4 +1,4 @@
-import 'package:app_2i2i/app/home/wait_page.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'dart:async';

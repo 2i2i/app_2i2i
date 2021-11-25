@@ -1,6 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';

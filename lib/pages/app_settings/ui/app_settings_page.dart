@@ -1,8 +1,6 @@
-import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override

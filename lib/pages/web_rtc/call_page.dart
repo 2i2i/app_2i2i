@@ -5,11 +5,11 @@ import 'dart:math';
 
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:app_2i2i/app/web_rtc/signaling.dart';
 
 class CallPage extends StatefulWidget {
   CallPage({Key? key, required this.meeting, required this.user})

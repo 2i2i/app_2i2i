@@ -1,4 +1,4 @@
-import 'package:app_2i2i/app/home/cv/success.dart';
+import 'package:app_2i2i/pages/cv/success.dart';
 import 'package:flutter/material.dart';
 
 enum CVPerson { imi, solli }

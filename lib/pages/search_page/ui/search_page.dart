@@ -1,8 +1,8 @@
 import 'dart:math';
 
+import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +17,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -28,7 +29,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             onSubmitted: (value) {
               value = value.trim();
               ref.watch(searchFilterProvider).state =
-                  value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+              value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
             },
           ),
         ),

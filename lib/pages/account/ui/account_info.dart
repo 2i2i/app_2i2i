@@ -1,13 +1,26 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountInfo extends ConsumerWidget {
+class AccountInfo extends ConsumerStatefulWidget {
   const AccountInfo({Key? key, required this.numAccount}) : super(key: key);
   final int numAccount;
+
+  @override
+  _AccountInfoState createState() => _AccountInfoState();
+}
+
+class _AccountInfoState extends ConsumerState<AccountInfo> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      ref.read(accountInfoViewModelProvider2).initMethod(widget.numAccount);
+    });
+  }
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
@@ -31,9 +44,9 @@ class AccountInfo extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountInfoViewModel =
-        ref.watch(accountInfoViewModelProvider(numAccount));
+  Widget build(BuildContext context) {
+    var accountInfoViewModel = ref.watch(
+        accountInfoViewModelProvider(widget.numAccount));
     if (accountInfoViewModel == null) return Container();
 
     return Container(
@@ -76,7 +89,10 @@ class AccountInfo extends ConsumerWidget {
             leading: IconButton(
                 color: Color.fromRGBO(116, 117, 109, 1),
                 iconSize: 35,
-                onPressed: () => accountInfoViewModel.updateBalances(),
+                onPressed: () {
+                  accountInfoViewModel.updateBalances();
+                  ref.watch(accountInfoViewModelProvider(widget.numAccount));
+                },
                 icon: Icon(Icons.replay_circle_filled)),
           ),
           SizedBox(
@@ -94,9 +110,42 @@ class AccountInfo extends ConsumerWidget {
 
 class AccountInfoViewModel {
   AccountInfoViewModel({required this.account, required this.algorand});
+
   final AlgorandService algorand;
   final AbstractAccount account;
+
   Future updateBalances() {
     return account.updateBalances();
+  }
+}
+
+class AccountInfoViewModel2 extends ChangeNotifier {
+  // AccountInfoViewModel({required this.account, required this.algorand});
+  ProviderRefBase ref;
+
+  AccountInfoViewModel2(this.ref);
+
+  AlgorandService? algorand;
+  AbstractAccount? account;
+
+  initMethod(int numAccount) async {
+    try {
+      algorand = ref.watch(algorandProvider);
+      AbstractAccount accountData = ref
+          .watch(accountProvider(numAccount))
+          .data!
+          .value;
+      if (accountData is AsyncLoading) return null;
+      print(accountData);
+    } catch (e) {
+      print(e);
+    }
+    notifyListeners();
+  }
+
+  updateBalances() {
+    account!.updateBalances();
+    print(account);
+    notifyListeners();
   }
 }

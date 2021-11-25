@@ -9,5 +9,6 @@ class Routes {
   static const SOLLI = '/solli';
   static const ABOUT = '/about';
   static const AppSetting = '/app_setting';
+  static const CallPage = '/call_page';
 
 }

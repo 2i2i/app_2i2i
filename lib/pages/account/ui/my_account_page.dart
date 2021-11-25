@@ -1,9 +1,7 @@
-// import 'package:app_2i2i/app/logging.dart';
-import 'package:app_2i2i/app/home/wait_page.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
