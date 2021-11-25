@@ -88,10 +88,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Widget build(BuildContext context) {
-    log(F + 'RingingPage - build');
+    log('RingingPage - build');
     final ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
     if (ringingPageViewModel == null) return WaitPage();
-    log(F + 'RingingPage - scaffold');
+    log('RingingPage - scaffold');
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(
