@@ -39,6 +39,7 @@ dependencies:
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0
   flutter_speed_dial: ^4.6.6
+  walletconnect_dart: ^0.0.4
 
 dev_dependencies:
   flutter_test:
