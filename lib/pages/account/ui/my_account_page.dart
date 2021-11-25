@@ -1,10 +1,12 @@
 // import 'package:app_2i2i/app/logging.dart';
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,7 +47,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   }
 
   Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+      AccountService accountService, AlgorandService algorand) async {
     final account =
         WalletConnectAccount.fromNewConnector(accountService: accountService);
     // Create a new session
@@ -74,7 +76,21 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
       // DEBUG
       // test wc txn
-      
+      final params = await algorand.algorandLib.client[AlgorandNet.testnet]!
+          .getSuggestedTransactionParams();
+      final lockTxn = await (PaymentTransactionBuilder()
+            ..sender = Address.fromAlgorandAddress(
+                address:
+                    '4REICFOAMXHLCS3XSDHTWL32ZZSLHP3UVJ5ASL6Z2INXCUWL35DYD5GDCE')
+            ..receiver = Address.fromAlgorandAddress(
+                address:
+                    '4K5NYM4CJMABLIGO5PSLPDZU2MJU2CVCU54LLDXM543EJJAXQGF4S2HHBY')
+            ..amount = 150000
+            ..suggestedParams = params)
+          .build();
+      final txBytes = Encoder.encodeMessagePack(lockTxn.toMessagePack());
+      final stxn = await account.connector.signTransaction(txBytes);
+      log('_MyAccountPageState - _createSession - stxn.length=${stxn.length} - stxn=$stxn');
       // DEBUG
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
@@ -93,6 +109,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+
+    final algorand = ref.watch(algorandProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -162,7 +180,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     child: Icon(Icons.folder_open_outlined),
                     onTap: () async {
                       await _createSession(myAccountPageViewModel,
-                          myAccountPageViewModel.accountService!);
+                          myAccountPageViewModel.accountService!, algorand);
                     },
                   ),
                 ],
