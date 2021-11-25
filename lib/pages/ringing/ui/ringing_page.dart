@@ -45,7 +45,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
       await player.setAsset('assets/video_call.mp3');
       await player.setLoopMode(LoopMode.one);
       player.play();
-      Future.delayed(Duration(seconds: 10)).then((value) async {
+      Future.delayed(Duration(seconds: 30)).then((value) async {
         await player.stop();
       });
     } catch (e) {
@@ -111,7 +111,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       radius: 230.0,
                       lineWidth: 4.0,
                       animation: true,
-                      animationDuration: 10000,
+                      animationDuration: 30000,
                       circularStrokeCap: CircularStrokeCap.round,
                       percent: 1,
                       progressColor: Colors.white,
