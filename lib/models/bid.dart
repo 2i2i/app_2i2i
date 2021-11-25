@@ -85,7 +85,7 @@ class BidPrivate {
 
   final String A;
   final String B;
-  final String addrA;
+  final String? addrA;
   final int budget;
 
   factory BidPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -96,7 +96,7 @@ class BidPrivate {
 
     final String A = data['A'];
     final String B = data['B'];
-    final String addrA = data['addrA'];
+    final String? addrA = data['addrA'];
     final int budget = data['budget'];
 
     return BidPrivate(

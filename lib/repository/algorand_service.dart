@@ -102,24 +102,22 @@ class AlgorandService {
   Future<String> lockCoins(
       {required Meeting meeting, waitForConfirmation = true}) async {
     log('lock - meeting.speed.assetId=${meeting.speed.assetId}');
-    final net = meeting.net;
-    final address = meeting.addrA;
-    final account = await accountService.findAccount(address);
+    final account = await accountService.findAccount(meeting.addrA!);
     if (meeting.speed.assetId == 0)
       return _lockALGO(
-          B: meeting.addrB,
+          B: meeting.addrB!,
           speed: meeting.speed.num,
           budget: meeting.budget,
           account: account!,
-          net: net,
+          net: meeting.net,
           waitForConfirmation: waitForConfirmation);
     return _lockASA(
-        B: meeting.addrB,
+        B: meeting.addrB!,
         speed: meeting.speed.num,
         budget: meeting.budget,
         assetId: meeting.speed.assetId,
         account: account!,
-        net: net,
+        net: meeting.net,
         waitForConfirmation: waitForConfirmation);
   }
 

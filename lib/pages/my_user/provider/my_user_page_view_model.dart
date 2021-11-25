@@ -18,8 +18,9 @@ class MyUserPageViewModel {
 
   Future acceptBid(Bid bid) async {
     final HttpsCallable acceptBid = functions.httpsCallable('acceptBid');
+    // TODO only get algorandAddress if bid.speed.num != 0
     await acceptBid({
-      'addrB': algorandAddress,
+      'addrB': bid.speed.num == 0 ? null : algorandAddress,
       'bid': bid.id,
     });
   }

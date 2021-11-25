@@ -48,10 +48,11 @@ class Meeting extends Equatable {
   final int budget;
   final AlgorandNet net;
 
+  // null in free call
   final String? lockTxId;
   final String? unlockTxId;
-  final String addrA;
-  final String addrB;
+  final String? addrA;
+  final String? addrB;
 
   final List<MeetingStatus> status;
   final String? currentRoom;
@@ -107,8 +108,8 @@ class Meeting extends Equatable {
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
     final String? lockTxId = data['lockTxId'];
     final String? unlockTxId = data['unlockTxId'];
-    final String addrA = data['addrA'];
-    final String addrB = data['addrB'];
+    final String? addrA = data['addrA'];
+    final String? addrB = data['addrB'];
     final List<MeetingStatus> status =
         List<MeetingStatus>.from(data['status'].map((item) {
       final value = MeetingValue.values

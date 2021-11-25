@@ -62,49 +62,57 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    speedNum = int.parse(value);
+                    speedNum = value.isEmpty ? 0 : int.parse(value);
                   });
                 },
               )),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Account',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          Container(
-              padding: const EdgeInsets.only(
-                  top: 0, left: 20, right: 20, bottom: 100),
-              child: DropdownButton<AbstractAccount>(
-                onChanged: (AbstractAccount? newAccount) {
-                  setState(() {
-                    if (newAccount != null && account != newAccount) {
-                      account = newAccount;
-                      balance = account!.balances[0];
-                    }
-                  });
-                },
-                value: account,
-                items: [
-                  for (var i = 0; i < addBidPageViewModel.accounts.length; i++)
-                    DropdownMenuItem<AbstractAccount>(
-                      child: Text(addBidPageViewModel.accounts[i].address
-                          .substring(0, 4)),
-                      value: addBidPageViewModel.accounts[i],
-                    )
-                ],
-              )),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Asset',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          balance == null
+          speedNum == 0
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 20, left: 20, right: 20, bottom: 10),
+                  child: Text(
+                    'Account',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+          speedNum == 0
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 0, left: 20, right: 20, bottom: 100),
+                  child: DropdownButton<AbstractAccount>(
+                    onChanged: (AbstractAccount? newAccount) {
+                      setState(() {
+                        if (newAccount != null && account != newAccount) {
+                          account = newAccount;
+                          balance = account!.balances[0];
+                        }
+                      });
+                    },
+                    value: account,
+                    items: [
+                      for (var i = 0;
+                          i < addBidPageViewModel.accounts.length;
+                          i++)
+                        DropdownMenuItem<AbstractAccount>(
+                          child: Text(addBidPageViewModel.accounts[i].address
+                              .substring(0, 4)),
+                          value: addBidPageViewModel.accounts[i],
+                        )
+                    ],
+                  )),
+          speedNum == 0
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 20, left: 20, right: 20, bottom: 10),
+                  child: Text(
+                    'Asset',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+          balance == null || speedNum == 0
               ? Container()
               : Container(
                   padding: const EdgeInsets.only(
@@ -130,56 +138,67 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         )
                     ],
                   )),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Budget',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          Container(
-            child: Slider(
-                min: 0,
-                max: 100,
-                divisions: 100,
-                value: budgetPercentage,
-                onChanged: (x) {
-                  setState(() {
-                    budgetPercentage = x;
-                  });
-                }),
-          ),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            child: Text(
-              'Max duration: ' +
-                  (account == null
-                      ? '<choose account>'
-                      : addBidPageViewModel.duration(
-                          account!, speedNum, balance!, budgetPercentage)),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          account == null ? Container() : ElevatedButton(
-            onPressed: addBidPageViewModel.submitting
-                ? null
-                : () async {
-                    // log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
-                    ProgressDialog.loader(true, context);
-                    await addBidPageViewModel.addBid(
-                        account: account!,
-                        balance: balance!,
-                        speedNum: speedNum,
-                        budgetPercentage: budgetPercentage).then((value) {
-                          print('$value');
-                    });
-                    ProgressDialog.loader(false, context);
-                    context.goNamed('user', params: {'uid': uid});
-                  },
-            child: Text('Add', style: Theme.of(context).textTheme.headline6),
-          ),
+          speedNum == 0
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 20, left: 20, right: 20, bottom: 10),
+                  child: Text(
+                    'Budget',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+          speedNum == 0
+              ? Container()
+              : Container(
+                  child: Slider(
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      value: budgetPercentage,
+                      onChanged: (x) {
+                        setState(() {
+                          budgetPercentage = x;
+                        });
+                      }),
+                ),
+          speedNum == 0
+              ? Container()
+              : Container(
+                  padding: const EdgeInsets.only(
+                      top: 20, left: 20, right: 20, bottom: 10),
+                  child: Text(
+                    'Max duration: ' +
+                        (account == null
+                            ? '<choose account>'
+                            : addBidPageViewModel.duration(account!, speedNum,
+                                balance!, budgetPercentage)),
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+          account == null && speedNum != 0
+              ? Container()
+              : ElevatedButton(
+                  onPressed: addBidPageViewModel.submitting
+                      ? null
+                      : () async {
+                          // log('await addBidPageViewModel.addBid() - assetIndex=$assetIndex - speedNum=$speedNum');
+                          ProgressDialog.loader(true, context);
+                          await addBidPageViewModel
+                              .addBid(
+                                  account: account,
+                                  balance: balance,
+                                  speedNum: speedNum,
+                                  budgetPercentage: budgetPercentage)
+                              .then((value) {
+                            print('$value');
+                          });
+                          ProgressDialog.loader(false, context);
+                          context.goNamed('user', params: {'uid': uid});
+                        },
+                  child: Text(speedNum == 0 ? 'Free Call' : 'Add Bid',
+                      style: Theme.of(context).textTheme.headline6),
+                ),
         ],
       ),
     );
