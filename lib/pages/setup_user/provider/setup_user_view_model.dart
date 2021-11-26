@@ -9,14 +9,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SetupUserViewModel with ChangeNotifier {
-  SetupUserViewModel({required this.auth,
+  SetupUserViewModel(
+      {required this.auth,
       required this.database,
       required this.algorandLib,
       required this.accountService,
       required this.algorand,
       required this.storage}) {
-    log('SignUpViewModel');
-    // createAuthAndStartAlgorand();
+    database.setTestA();
   }
 
   final FirebaseAuth auth;
@@ -67,18 +67,27 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future createDatabaseUser() async {
+  Future updateBio() async {
+    log('SetupUserViewModel - createDatabaseUser');
     try {
       message = 'creating database user';
       notifyListeners();
-      final user = UserModel(id: uid!, bio: bio!);
-      await database.setUser(user);
+      log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - bio=$bio');
+      final name = UserModel.nameFromBio(bio!);
+      log('SetupUserViewModel - createDatabaseUser - name=$name');
+      final tags = UserModel.tagsFromBio(bio!);
+      log('SetupUserViewModel - createDatabaseUser - tags=$tags');
+      await database.updateUserBio(uid!, bio!, [name, ...tags]);
+      // final user = UserModel(id: uid!, bio: bio!);
+      log('SetupUserViewModel - createDatabaseUser - UserModel');
+      // await database.setUser(user);
       // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      log('SetupUserViewModel - createDatabaseUser - setUser');
-      final userPrivate = UserModelPrivate();
-      await database.setUserPrivate(uid!, userPrivate);
+      // log('SetupUserViewModel - createDatabaseUser - setUser');
+      // final userPrivate = UserModelPrivate();
+      // log('SetupUserViewModel - createDatabaseUser - UserModelPrivate');
+      // await database.setUserPrivate(uid!, userPrivate);
       // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
+      // log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
     } catch (e) {
       print(e);
     }

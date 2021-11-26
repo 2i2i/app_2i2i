@@ -86,28 +86,25 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
             setupUserViewModel.workDone
                 ? Text('')
                 : Text(setupUserViewModel.message),
-            Container(
+            setupUserViewModel.bioSet && setupUserViewModel.workDone ? Container(
               child: ElevatedButton(
-                  onPressed: goButtonReady(setupUserViewModel)
-                      ? () => pressGo(context, setupUserViewModel)
-                      : null,
+                  onPressed: () => pressGo(context, setupUserViewModel),
                   child: Text(Strings().save, style: TextStyle(fontSize: 20))),
               padding: const EdgeInsets.only(
                   top: 20, left: 20, right: 20, bottom: 20),
-            ),
+            ) : Container(),
           ],
         ))));
   }
 
-  void pressGo(BuildContext context, SetupUserViewModel signUpViewModel) async {
+  void pressGo(BuildContext context, SetupUserViewModel setupUserViewModel) async {
+    log('SignUpPage - pressGo - 1');
     ProgressDialog.loader(true, context);
-    await signUpViewModel.createDatabaseUser();
+    log('SignUpPage - pressGo - 2');
+    await setupUserViewModel.updateBio();
+    log('SignUpPage - pressGo - 3');
     ProgressDialog.loader(false, context);
+    log('SignUpPage - pressGo - 4');
     context.goNamed('home');
-  }
-
-  bool goButtonReady(signUpViewModel) {
-    log('SignUpPage - goButtonReady');
-    return signUpViewModel.bioSet && signUpViewModel.workDone;
   }
 }
