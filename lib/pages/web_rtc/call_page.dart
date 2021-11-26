@@ -3,11 +3,11 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -52,6 +52,8 @@ class _CallPageState extends State<CallPage> {
     budgetTimer = Timer(Duration(seconds: duration),
         () => signaling.hangUp(_localRenderer, reason: 'BUDGET'));
   }
+
+  bool swapped = false;
 
   bool amA() {
     return meeting.A == user.id;
@@ -101,154 +103,84 @@ class _CallPageState extends State<CallPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           onPressed: () => signaling.hangUp(_localRenderer),
-          tooltip: 'Hangup',
-          child: Icon(Icons.call_end),
+          child: Icon(Icons.call_end,color: Colors.white,),
           backgroundColor: Colors.pink,
         ),
-        // floatingActionButton: SizedBox(
-        //     width: 200.0,
-        //     child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //         children: <Widget>[
-        //           // FloatingActionButton(
-        //           //   child: const Icon(Icons.switch_camera),
-        //           //   onPressed: _switchCamera,
-        //           // ),
-        //           // FloatingActionButton(
-        //           //   onPressed: () => signaling.openUserMedia(_localRenderer, _remoteRenderer),
-        //           //   tooltip: 'openUserMedia',
-        //           //   child: Icon(Icons.call_end),
-        //           //   backgroundColor: Colors.pink,
-        //           // ),
-        //           // FloatingActionButton(
-        //           //   onPressed: () => signaling.createRoom(),
-        //           //   tooltip: 'createRoom',
-        //           //   child: Icon(Icons.call_end),
-        //           //   backgroundColor: Colors.pink,
-        //           // ),
-        //           // FloatingActionButton(
-        //           //   onPressed: () => signaling.joinRoom(),
-        //           //   tooltip: 'joinRoom',
-        //           //   child: Icon(Icons.call_end),
-        //           //   backgroundColor: Colors.pink,
-        //           // ),
-        //           FloatingActionButton(
-        //             onPressed: () => signaling.hangUp(_localRenderer),
-        //             tooltip: 'Hangup',
-        //             child: Icon(Icons.call_end),
-        //             backgroundColor: Colors.pink,
-        //           ),
-        //           // FloatingActionButton(
-        //           //   child: const Icon(Icons.mic_off),
-        //           //   onPressed: _muteMic,
-        //           // )
-        //         ])),
         body: OrientationBuilder(builder: (context, orientation) {
           return Container(
             child: Stack(children: <Widget>[
+              swapped
+                  ? firstVideoView(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _localRenderer,
+                      orientation: orientation)
+                  : secondVideoView(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _remoteRenderer,
+                      orientation: orientation),
               Positioned(
-                  left: 0.0,
-                  right: 0.0,
-                  top: 0.0,
-                  bottom: 0.0,
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: RTCVideoView(_remoteRenderer),
-                    decoration: BoxDecoration(color: Colors.black54),
-                  )),
-              Positioned(
-                left: 20.0,
-                top: 20.0,
-                child: Container(
-                  width: orientation == Orientation.portrait ? 90.0 : 120.0,
-                  height: orientation == Orientation.portrait ? 120.0 : 90.0,
-                  child: RTCVideoView(_localRenderer, mirror: true),
-                  decoration: BoxDecoration(color: Colors.black54),
+                top: 40,
+                left: 40,
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: !swapped
+                            ? firstVideoView(
+                                height: MediaQuery.of(context).size.height*0.3,
+                                width:MediaQuery.of(context).size.height*0.3,
+                                orientation: orientation,
+                                renderer: _localRenderer)
+                            : secondVideoView(
+                                height: MediaQuery.of(context).size.height*0.3,
+                                width: MediaQuery.of(context).size.height*0.3,
+                                orientation: orientation,
+                                renderer: _remoteRenderer)),
+                    InkResponse(
+                        onTap: (){
+                          setState(() {
+                            swapped = !swapped;
+                          });
+                        },
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height*0.3,
+                              width: MediaQuery.of(context).size.height*0.3,
+                            )))
+                  ],
                 ),
               ),
             ]),
           );
-        })
+        }));
+  }
 
-        // Column(
-        //   children: [
-        //     SizedBox(height: 8),
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: [
-        //         ElevatedButton(
-        //           onPressed: () {
-        //             signaling.openUserMedia(_localRenderer, _remoteRenderer);
-        //           },
-        //           child: Text("Open camera & microphone"),
-        //         ),
-        //         SizedBox(
-        //           width: 8,
-        //         ),
-        //         ElevatedButton(
-        //           onPressed: () async {
-        //             roomId = await signaling.createRoom(_remoteRenderer);
-        //             textEditingController.text = roomId!;
-        //             setState(() {});
-        //           },
-        //           child: Text("Create room"),
-        //         ),
-        //         SizedBox(
-        //           width: 8,
-        //         ),
-        //         ElevatedButton(
-        //           onPressed: () {
-        //             // Add roomId
-        //             signaling.joinRoom(
-        //               textEditingController.text,
-        //               _remoteRenderer,
-        //             );
-        //           },
-        //           child: Text("Join room"),
-        //         ),
-        //         SizedBox(
-        //           width: 8,
-        //         ),
-        //         ElevatedButton(
-        //           onPressed: () {
-        //             signaling.hangUp(_localRenderer);
-        //           },
-        //           child: Text("Hangup"),
-        //         )
-        //       ],
-        //     ),
-        //     SizedBox(height: 8),
-        //     Expanded(
-        //       child: Padding(
-        //         padding: const EdgeInsets.all(8.0),
-        //         child: Row(
-        //           mainAxisAlignment: MainAxisAlignment.center,
-        //           children: [
-        //             Expanded(child: RTCVideoView(_localRenderer, mirror: true)),
-        //             Expanded(child: RTCVideoView(_remoteRenderer)),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //     Padding(
-        //       padding: const EdgeInsets.all(8.0),
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.center,
-        //         children: [
-        //           Text("Join the following Room: "),
-        //           Flexible(
-        //             child: TextFormField(
-        //               controller: textEditingController,
-        //             ),
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //     SizedBox(height: 8)
-        //   ],
-        // ),
-        );
+  Widget firstVideoView(
+      {double? height,
+      double? width,
+      RTCVideoRenderer? renderer,
+      Orientation? orientation}) {
+    return Container(
+      width: width,
+      height: height,
+      child: RTCVideoView(renderer!,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,),
+      decoration: BoxDecoration(color: Colors.black54),
+    );
+  }
+
+  Widget secondVideoView(
+      {double? height,
+      double? width,
+      RTCVideoRenderer? renderer,
+      Orientation? orientation}) {
+    return Container(
+      width: width,
+      height: height,
+      child: RTCVideoView(renderer!, mirror: true,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+      decoration: BoxDecoration(color: Colors.black54),
+    );
   }
 }
