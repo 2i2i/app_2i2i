@@ -38,14 +38,15 @@ class MainWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // User heartbeat timer
-    if (T == null) {
-      T = Timer.periodic(Duration(seconds: 10), (timer) async {
-        // log('UserModel Timer');
-        final userModelChanger = ref.watch(userModelChangerProvider);
-        if (userModelChanger == null) return;
-        await userModelChanger.updateHeartbeat();
-      });
-    }
+    // DEBUG
+    // if (T == null) {
+    //   T = Timer.periodic(Duration(seconds: 10), (timer) async {
+    //     // log('UserModel Timer');
+    //     final userModelChanger = ref.watch(userModelChangerProvider);
+    //     if (userModelChanger == null) return;
+    //     await userModelChanger.updateHeartbeat();
+    //   });
+    // }
 
     return MaterialApp.router(
       routeInformationParser: NamedRoutes.router.routeInformationParser,

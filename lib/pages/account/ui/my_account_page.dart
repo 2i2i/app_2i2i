@@ -88,9 +88,31 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ..amount = 150000
             ..suggestedParams = params)
           .build();
-      final txBytes = Encoder.encodeMessagePack(lockTxn.toMessagePack());
-      final stxn = await account.connector.signTransaction(txBytes);
-      log('_MyAccountPageState - _createSession - stxn.length=${stxn.length} - stxn=$stxn');
+      final arguments = 'str:LOCK,int:1'.toApplicationArguments();
+      final stateTxn = await (ApplicationCallTransactionBuilder()
+            ..sender = Address.fromAlgorandAddress(
+                address:
+                    '4REICFOAMXHLCS3XSDHTWL32ZZSLHP3UVJ5ASL6Z2INXCUWL35DYD5GDCE')
+            ..applicationId = 32969536
+            ..arguments = arguments
+            ..accounts = [
+              Address.fromAlgorandAddress(
+                  address:
+                      '4K5NYM4CJMABLIGO5PSLPDZU2MJU2CVCU54LLDXM543EJJAXQGF4S2HHBY')
+            ]
+            ..suggestedParams = params)
+          .build();
+      final groupTxn = AtomicTransfer.group([lockTxn, stateTxn]);
+      log('_MyAccountPageState - _createSession - groupTxn.length=${groupTxn.length} - groupTxn=$groupTxn');
+      // final lockTxBytes = Encoder.encodeMessagePack(lockTxn.toMessagePack());
+      // final stateTxBytes = Encoder.encodeMessagePack(stateTxn.toMessagePack());
+      final groupTxBytes = Encoder.encodeMessagePack(groupTxn.toMessagePack());
+      final stxnF1 = await account.connector.signTransaction(lockTxBytes);
+      final stxnF2 = await account.connector.signTransaction(stateTxBytes);
+      // final x = await Future.wait([stxnF1, stxnF2]);
+      // log('_MyAccountPageState - _createSession - x.length=${x.length} - x=$x');
+      log('_MyAccountPageState - _createSession - stxn.length=${stxnF1.length} - stxnF1=$stxnF1');
+      log('_MyAccountPageState - _createSession - stxn.length=${stxnF2.length} - stxnF2=$stxnF2');
       // DEBUG
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
