@@ -6,6 +6,7 @@ import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:algorand_dart/algorand_dart.dart' as al;
+
 enum AlgorandNet { mainnet, testnet, betanet }
 
 class AlgorandLib {
@@ -160,14 +161,11 @@ class AlgorandService {
     log('lockALGO - grouped');
 
     // TODO in parallel
-    final lockTxnBytes = await account.sign(lockTxn);
-    log('lockALGO - signed 2');
-    final stateTxnBytes = await account.sign(stateTxn);
-    log('lockALGO - signed 1');
+    final signedTxnsBytes = await account.sign([lockTxn, stateTxn]);
 
     try {
-      final txId = await algorandLib.client[net]!
-          .sendRawTransactions([lockTxnBytes, stateTxnBytes]);
+      final txId =
+          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       // await algorandLib[net]!.sendTransactions([lockTxnSigned, stateTxnSigned]);
       log('lockALGO - txId=$txId');
 
@@ -248,12 +246,9 @@ class AlgorandService {
     // TODO in parallel
     AtomicTransfer.group([lockALGOTxn, stateTxn, lockASATxn]);
     log('lockASA - grouped');
-    final lockALGOTxnBytes = await account.sign(lockALGOTxn);
-    log('lockASA - signed 1');
-    final stateTxnBytes = await account.sign(stateTxn);
-    log('lockASA - signed 2');
-    final lockASATxnBytes = await account.sign(lockASATxn);
-    log('lockASA - signed 3');
+
+    final signedTxnsBytes =
+        await account.sign([lockALGOTxn, stateTxn, lockASATxn]);
 
     // DEBUG
     // log('lockASA - exporting files');
@@ -273,8 +268,8 @@ class AlgorandService {
     // DEBUG
 
     try {
-      final txId = await algorandLib.client[net]!.sendRawTransactions(
-          [lockALGOTxnBytes, stateTxnBytes, lockASATxnBytes]);
+      final txId =
+          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       log('lockASA - txId=$txId');
       if (waitForConfirmation)
         await algorandLib.client[net]!.waitForConfirmation(txId);

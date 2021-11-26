@@ -1,6 +1,4 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +13,7 @@ class AccountInfo extends ConsumerStatefulWidget {
 }
 
 class _AccountInfoState extends ConsumerState<AccountInfo> {
-  _AccountInfoState({Key? key, required this.account});
+  _AccountInfoState({required this.account});
   final AbstractAccount account;
 
   Widget balancesList(List<Balance> balances) {
@@ -41,10 +39,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
 
   @override
   Widget build(BuildContext context) {
-    // final accountInfoViewModel =
-    //     ref.watch(accountInfoViewModelProvider(numAccount));
-    // if (accountInfoViewModel == null) return Container();
-
     return Container(
       child: Column(
         children: [
@@ -102,12 +96,3 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 }
-
-// class AccountInfoViewModel {
-//   AccountInfoViewModel({required this.account, required this.algorand});
-//   final AlgorandService algorand;
-//   final AbstractAccount account;
-//   Future updateBalances() {
-//     return account.updateBalances();
-//   }
-// }

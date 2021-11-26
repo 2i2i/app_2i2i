@@ -724,10 +724,12 @@ packages:
   walletconnect_dart:
     dependency: "direct main"
     description:
-      name: walletconnect_dart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
+      path: "."
+      ref: signTransactions
+      resolved-ref: "5f294b7c3e9189863b899210c7e8504d6a589b41"
+      url: "git@github.com:2i2i/walletconnect-dart-sdk.git"
+    source: git
+    version: "0.0.5"
   web_socket_channel:
     dependency: transitive
     description:

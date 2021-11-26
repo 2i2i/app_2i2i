@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';

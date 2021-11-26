@@ -1,5 +1,3 @@
-// import 'package:app_2i2i/app/logging.dart';
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
@@ -14,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
   const MyAccountPage({Key? key}) : super(key: key);
@@ -25,19 +22,6 @@ class MyAccountPage extends ConsumerStatefulWidget {
 
 class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   // wallet connect part
-  // should ideally not be in ui, but i cannot get it work right now
-  // Create a connector
-  // final _connector = WalletConnect(
-  //   bridge: 'https://bridge.walletconnect.org',
-  //   clientMeta: const PeerMeta(
-  //     name: 'WalletConnect',
-  //     description: 'WalletConnect Developer App',
-  //     url: 'https://walletconnect.org',
-  //     icons: [
-  //       'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
-  //     ],
-  //   ),
-  // );
   String _displayUri = '';
   void _changeDisplayUri(String uri) {
     log('_changeDisplayUri - uri=$uri');
@@ -52,18 +36,6 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         WalletConnectAccount.fromNewConnector(accountService: accountService);
     // Create a new session
     if (!account.connector.connected) {
-      // connector.on(
-      //     'connect',
-      //     (session) => log(
-      //         '_MyAccountPageState - _createSession - connect - session=$session'));
-      // connector.on(
-      //     'session_update',
-      //     (session) => log(
-      //         '_MyAccountPageState - _createSession - session_update - session=$session'));
-      // connector.on(
-      //     'disconnect',
-      //     (session) => log(
-      //         '_MyAccountPageState - _createSession - disconnect - session=$session'));
       final session = await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
@@ -73,47 +45,6 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       await myAccountPageViewModel.updateAccounts();
       _displayUri = '';
       setState(() {});
-
-      // DEBUG
-      // test wc txn
-      final params = await algorand.algorandLib.client[AlgorandNet.testnet]!
-          .getSuggestedTransactionParams();
-      final lockTxn = await (PaymentTransactionBuilder()
-            ..sender = Address.fromAlgorandAddress(
-                address:
-                    '4REICFOAMXHLCS3XSDHTWL32ZZSLHP3UVJ5ASL6Z2INXCUWL35DYD5GDCE')
-            ..receiver = Address.fromAlgorandAddress(
-                address:
-                    '4K5NYM4CJMABLIGO5PSLPDZU2MJU2CVCU54LLDXM543EJJAXQGF4S2HHBY')
-            ..amount = 150000
-            ..suggestedParams = params)
-          .build();
-      final arguments = 'str:LOCK,int:1'.toApplicationArguments();
-      final stateTxn = await (ApplicationCallTransactionBuilder()
-            ..sender = Address.fromAlgorandAddress(
-                address:
-                    '4REICFOAMXHLCS3XSDHTWL32ZZSLHP3UVJ5ASL6Z2INXCUWL35DYD5GDCE')
-            ..applicationId = 32969536
-            ..arguments = arguments
-            ..accounts = [
-              Address.fromAlgorandAddress(
-                  address:
-                      '4K5NYM4CJMABLIGO5PSLPDZU2MJU2CVCU54LLDXM543EJJAXQGF4S2HHBY')
-            ]
-            ..suggestedParams = params)
-          .build();
-      final groupTxn = AtomicTransfer.group([lockTxn, stateTxn]);
-      log('_MyAccountPageState - _createSession - groupTxn.length=${groupTxn.length} - groupTxn=$groupTxn');
-      // final lockTxBytes = Encoder.encodeMessagePack(lockTxn.toMessagePack());
-      // final stateTxBytes = Encoder.encodeMessagePack(stateTxn.toMessagePack());
-      final groupTxBytes = Encoder.encodeMessagePack(groupTxn.toMessagePack());
-      final stxnF1 = await account.connector.signTransaction(lockTxBytes);
-      final stxnF2 = await account.connector.signTransaction(stateTxBytes);
-      // final x = await Future.wait([stxnF1, stxnF2]);
-      // log('_MyAccountPageState - _createSession - x.length=${x.length} - x=$x');
-      log('_MyAccountPageState - _createSession - stxn.length=${stxnF1.length} - stxnF1=$stxnF1');
-      log('_MyAccountPageState - _createSession - stxn.length=${stxnF2.length} - stxnF2=$stxnF2');
-      // DEBUG
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
     }

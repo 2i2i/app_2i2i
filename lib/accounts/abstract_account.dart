@@ -84,15 +84,6 @@ class AccountService {
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
-
-    // DEBUG
-    final as_l = localAccounts.map((a) => a.address).toList();
-    final as_wc = walletConnectAccounts.map((a) => a.address).toList();
-    log('getAllAccounts - as_l=$as_l');
-    log('getAllAccounts - as_wc=$as_wc');
-    // DEBUG
-
-    // return [...localAccounts];
     return [...localAccounts, ...walletConnectAccounts];
   }
 
@@ -157,14 +148,11 @@ abstract class AbstractAccount {
       {required int assetId,
       required AlgorandNet net,
       waitForConfirmation = true});
-  Future<bool> isOptedInToASA(
-          {required int assetId, required AlgorandNet net}) =>
-      throw UnimplementedError();
-  Future<Uint8List> sign(RawTransaction txn);
+  Future<List<Uint8List>> sign(List<RawTransaction> txns);
 
   List<Balance> _balances = [];
   List<Balance> get balances => _balances;
-  Future updateBalances() async {
+  Future<void> updateBalances() async {
     log('updateBalances');
     final mainnetAssetHoldings = await accountService.getAssetHoldings(
         address: address, net: AlgorandNet.mainnet);
@@ -179,5 +167,14 @@ abstract class AbstractAccount {
             Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
         .toList();
     _balances = [...mainnetBalances, ...testnetBalances];
+  }
+
+  Future<bool> isOptedInToASA(
+      {required int assetId, required AlgorandNet net}) async {
+    if (assetId == 0) return true; // all accounts can use ALGO
+    return balances
+        .where((balance) => balance.net == net)
+        .map((balance) => balance.assetHolding.assetId)
+        .contains(assetId);
   }
 }

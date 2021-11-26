@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 class WalletConnectAccount extends AbstractAccount {
@@ -58,31 +57,26 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   // TODO cache management
-  Future save() async {
+  Future<void> save() async {
     if (_accountIndex != null) return;
+    final List<WalletConnectAccount> accounts = [];
+    final List<Future<void>> futures = [];
     for (int i = 0; i < connector.session.accounts.length; i++) {
       final account = WalletConnectAccount.fieldsGiven(
           accountService: accountService,
           connector: connector,
           accountIndex: i);
-      await account.updateBalances();
-      log('save - i=$i - account=$account - cache=$cache');
-      cache.add(account);
-      log('save - i=$i - account=$account - cache=$cache - after');
+      accounts.add(account);
+      futures.add(account.updateBalances());
     }
+    await Future.wait(futures);
+    cache.addAll(accounts);
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;
 
   @override
   String get address => connector.session.accounts[_accountIndex!];
-
-  @override
-  Future<bool> isOptedInToASA(
-      {required int assetId, required AlgorandNet net}) {
-    // TODO: implement isOptedInToASA
-    throw UnimplementedError();
-  }
 
   @override
   Future<String> optInToASA(
@@ -103,9 +97,10 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   @override
-  Future<Uint8List> sign(RawTransaction txn) async {
-    final txBytes = Encoder.encodeMessagePack(txn.toMessagePack());
-    final a = await connector.signTransaction(txBytes);
-    return a[0];
+  Future<List<Uint8List>> sign(List<RawTransaction> txns) {
+    final txnsBytes = txns
+        .map((txn) => Encoder.encodeMessagePack(txn.toMessagePack()))
+        .toList();
+    return connector.signTransactions(txnsBytes);
   }
 }
