@@ -102,7 +102,6 @@ class _CallPageState extends State<CallPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           onPressed: () => signaling.hangUp(_localRenderer),
-          tooltip: 'Hangup',
           child: Icon(Icons.call_end,color: Colors.white,),
           backgroundColor: Colors.pink,
         ),
@@ -111,10 +110,10 @@ class _CallPageState extends State<CallPage> {
             child: Stack(children: <Widget>[
               swapped
                   ? firstVideoView(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  renderer: _localRenderer,
-                  orientation: orientation)
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _localRenderer,
+                      orientation: orientation)
                   : secondVideoView(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
@@ -123,29 +122,36 @@ class _CallPageState extends State<CallPage> {
               Positioned(
                 top: 40,
                 left: 40,
-                child: InkResponse(
-                    onTap: () {
-                      setState(() {
-                        swapped = !swapped;
-                      });
-                    },
-                    child: ClipRRect(
+                child: Stack(
+                  children: [
+                    ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: !swapped
                             ? firstVideoView(
-                            height: 220,
-                            width: 220,
-                            orientation: orientation,
-                            renderer: _localRenderer)
+                                height: MediaQuery.of(context).size.height*0.3,
+                                width:MediaQuery.of(context).size.height*0.3,
+                                orientation: orientation,
+                                renderer: _localRenderer)
                             : secondVideoView(
-                            height: 220,
-                            width: 220,
-                            orientation: orientation,
-                            renderer: _remoteRenderer))),
+                                height: MediaQuery.of(context).size.height*0.3,
+                                width: MediaQuery.of(context).size.height*0.3,
+                                orientation: orientation,
+                                renderer: _remoteRenderer)),
+                    InkResponse(
+                        onTap: (){
+                          setState(() {
+                            swapped = !swapped;
+                          });
+                        },
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height*0.3,
+                              width: MediaQuery.of(context).size.height*0.3,
+                            )))
+                  ],
+                ),
               ),
-              ElevatedButton(onPressed: (){setState(() {
-                swapped = !swapped;
-              });}, child: Text('Swap'))
             ]),
           );
         }));
@@ -153,11 +159,10 @@ class _CallPageState extends State<CallPage> {
 
   Widget firstVideoView(
       {double? height,
-        double? width,
-        RTCVideoRenderer? renderer,
-        Orientation? orientation}) {
+      double? width,
+      RTCVideoRenderer? renderer,
+      Orientation? orientation}) {
     return Container(
-      margin: EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 6.0),
       width: width,
       height: height,
       child: RTCVideoView(renderer!,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,),
@@ -167,12 +172,11 @@ class _CallPageState extends State<CallPage> {
 
   Widget secondVideoView(
       {double? height,
-        double? width,
-        RTCVideoRenderer? renderer,
-        Orientation? orientation}) {
+      double? width,
+      RTCVideoRenderer? renderer,
+      Orientation? orientation}) {
     return Container(
       width: width,
-      margin: EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 6.0),
       height: height,
       child: RTCVideoView(renderer!, mirror: true,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
