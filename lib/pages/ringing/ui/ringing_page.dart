@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -63,6 +62,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
+    await player.stop();
     T?.cancel();
     T = null;
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
@@ -164,7 +164,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Colors.pink,
-                          onPressed: () => ringingPageViewModel.cancelMeeting(),
+                          onPressed: () async {
+                            await player.stop();
+                            ringingPageViewModel.cancelMeeting();
+                          },
                         ),
                         SizedBox(height: 8),
                         Text('Reject',
@@ -182,11 +185,13 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             children: [
                               Bounce(
                                   child: FloatingActionButton(
-                                child: Icon(Icons.call, color: Colors.white),
-                                backgroundColor: Colors.green,
-                                onPressed: () =>
-                                    ringingPageViewModel.acceptMeeting(),
-                              )),
+                                      child:
+                                          Icon(Icons.call, color: Colors.white),
+                                      backgroundColor: Colors.green,
+                                      onPressed: () async {
+                                        await player.stop();
+                                        ringingPageViewModel.acceptMeeting();
+                                      })),
                               SizedBox(height: 8),
                               Text('Accept',
                                   style: Theme.of(context).textTheme.caption)
