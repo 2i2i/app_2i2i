@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:app_2i2i/services/logging.dart';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 import 'local_account.dart';
 
@@ -86,10 +87,10 @@ class AccountService {
     final walletConnectAccounts = getAllWalletConnectAccounts();
 
     // DEBUG
-    final as_l = localAccounts.map((a) => a.address).toList();
-    final as_wc = walletConnectAccounts.map((a) => a.address).toList();
-    log('getAllAccounts - as_l=$as_l');
-    log('getAllAccounts - as_wc=$as_wc');
+    final asL = localAccounts.map((a) => a.address).toList();
+    final asWC = walletConnectAccounts.map((a) => a.address).toList();
+    log('getAllAccounts - as_l=$asL');
+    log('getAllAccounts - as_wc=$asWC');
     // DEBUG
 
     // return [...localAccounts];

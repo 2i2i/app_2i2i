@@ -6,7 +6,6 @@ import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -18,91 +17,95 @@ class CallPage extends StatefulWidget {
   final UserModel user;
 
   @override
-  _CallPageState createState() => _CallPageState(meeting: meeting, user: user);
+  _CallPageState createState() => _CallPageState();
 }
 
-class _CallPageState extends State<CallPage> {
-  _CallPageState({required this.meeting, required this.user});
-  final Meeting meeting;
-  final UserModel user;
+class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
+  Meeting? meeting;
+  UserModel? user;
+  AnimationController? controller;
 
-  late Signaling signaling;
+  Timer? timer;
+  bool swapped = false;
+  Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
 
-  late Timer budgetTimer;
+  Timer? budgetTimer;
+
   void _initBudgetTimer() {
-
     // no timer for free call
-    if (meeting.speed.num == 0) return;
+    if (meeting!.speed.num == 0) return;
 
-    final maxDuration = (meeting.budget / meeting.speed.num).floor();
-    log('_CallPageState - _initTimer - meeting.id=${meeting.id} - maxDuration=$maxDuration');
+    final maxDuration = (meeting!.budget / meeting!.speed.num).floor();
     int duration = maxDuration;
-    final activeTime = meeting.activeTime();
+    final activeTime = meeting!.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
-      log('_CallPageState - _initTimer - meeting.id=${meeting.id} - maxEndTime=$maxEndTime');
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
-    log('_CallPageState - _initTimer - meeting.id=${meeting.id} - duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration),
-            () => signaling.hangUp(_localRenderer, reason: 'BUDGET'));
+        () => signaling!.hangUp(_localRenderer, reason: 'BUDGET'));
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: duration),
+    )..addListener(() {});
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    controller!.forward();
   }
 
-  bool swapped = false;
-
   bool amA() {
-    return meeting.A == user.id;
+    return meeting!.A == user!.id;
   }
 
   @override
   void initState() {
-    log('_CallPageState - initState');
-    _initBudgetTimer();
-
+    meeting = widget.meeting;
+    user = widget.user;
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
-    log('_CallPageState - initState - renderers initialized - amA()=${amA()}');
+    _initBudgetTimer();
+
     signaling = Signaling(
-        meeting: meeting,
+        meeting: meeting!,
         amA: amA(),
         localVideo: _localRenderer,
         remoteVideo: _remoteRenderer);
-    log('_CallPageState - initState - signaling constructed');
-    // signaling.openUserMedia(_localRenderer, _remoteRenderer);
-    signaling.onAddRemoteStream = ((stream) {
+    signaling!.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
       setState(() {});
     });
-    log('_CallPageState - initState - signaling onAddRemoteStream');
 
     super.initState();
   }
 
   @override
   void dispose() {
-    log('_CallPageState - dispose');
     _localRenderer.dispose();
-    log('_CallPageState - dispose - _localRenderer.dispose');
     _remoteRenderer.dispose();
-    log('_CallPageState - dispose - _remoteRenderer.dispose');
-    budgetTimer.cancel();
+    budgetTimer!.cancel();
+    controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log('_CallPageState - build');
 
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          onPressed: () => signaling.hangUp(_localRenderer),
-          child: Icon(Icons.call_end,color: Colors.white,),
+          onPressed: () => signaling!.hangUp(_localRenderer),
+          child: Icon(
+            Icons.call_end,
+            color: Colors.white,
+          ),
           backgroundColor: Colors.pink,
         ),
         body: OrientationBuilder(builder: (context, orientation) {
@@ -112,13 +115,11 @@ class _CallPageState extends State<CallPage> {
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      renderer: _localRenderer,
-                      orientation: orientation)
+                      renderer: _localRenderer)
                   : secondVideoView(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  renderer: _remoteRenderer,
-                  orientation: orientation),
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _remoteRenderer),
               Positioned(
                 top: 40,
                 left: 40,
@@ -128,14 +129,13 @@ class _CallPageState extends State<CallPage> {
                         borderRadius: BorderRadius.circular(16.0),
                         child: !swapped
                             ? firstVideoView(
-                                height: MediaQuery.of(context).size.height*0.3,
-                                width:MediaQuery.of(context).size.height*0.3,
-                                orientation: orientation,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.3,
+                                width: MediaQuery.of(context).size.height * 0.3,
                                 renderer: _localRenderer)
                             : secondVideoView(
                                 height: MediaQuery.of(context).size.height*0.3,
                                 width: MediaQuery.of(context).size.height*0.3,
-                                orientation: orientation,
                                 renderer: _remoteRenderer)),
                     InkResponse(
                         onTap: (){
@@ -146,10 +146,40 @@ class _CallPageState extends State<CallPage> {
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(16.0),
                             child: Container(
-                              height: MediaQuery.of(context).size.height*0.3,
-                              width: MediaQuery.of(context).size.height*0.3,
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              width: MediaQuery.of(context).size.height * 0.3,
                             )))
                   ],
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 40,
+                child: AnimatedContainer(
+                  height: timer?.tick.isEven ?? false ? 90 : 80,
+                  width: timer?.tick.isEven ?? false ? 90 : 80,
+                  duration: Duration(seconds: 1),
+                  child: Stack(
+                    children: [
+                      Image.asset('assets/stopwatch.png',
+                          height: 100, width: 100),
+                      Positioned(
+                          bottom: 10,
+                          right: 10,
+                          left: 10,
+                          child: Center(
+                              child: AnimatedContainer(
+                                  duration: Duration(seconds: 1),
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 4,
+                                      value: controller!.value,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white)),
+                                  height: timer?.tick.isEven ?? false ? 61 : 52,
+                                  width:
+                                      timer?.tick.isEven ?? false ? 61 : 52)))
+                    ],
+                  ),
                 ),
               ),
             ]),
@@ -158,27 +188,26 @@ class _CallPageState extends State<CallPage> {
   }
 
   Widget firstVideoView(
-      {double? height,
-      double? width,
-      RTCVideoRenderer? renderer,
-      Orientation? orientation}) {
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer!,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,),
+      child: RTCVideoView(
+        renderer!,
+        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+      ),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
 
   Widget secondVideoView(
-      {double? height,
-      double? width,
-      RTCVideoRenderer? renderer,
-      Orientation? orientation}) {
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer!, mirror: true,objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+      child: RTCVideoView(renderer!,
+          mirror: true,
+          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }

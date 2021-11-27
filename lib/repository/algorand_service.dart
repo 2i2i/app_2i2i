@@ -1,11 +1,11 @@
-import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:algorand_dart/algorand_dart.dart' as al;
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:algorand_dart/algorand_dart.dart' as al;
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dio/dio.dart' as dio;
 enum AlgorandNet { mainnet, testnet, betanet }
 
 class AlgorandLib {

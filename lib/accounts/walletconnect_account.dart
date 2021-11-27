@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';

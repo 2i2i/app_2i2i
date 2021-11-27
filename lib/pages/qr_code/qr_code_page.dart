@@ -1,11 +1,12 @@
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 import 'dart:async';
+import 'dart:ui' as ui;
+
+import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 
 class QRCodePage extends ConsumerWidget {
   const QRCodePage({Key? key}) : super(key: key);

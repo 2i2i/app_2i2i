@@ -1,6 +1,5 @@
 import 'dart:math' as math show sin, pi, sqrt;
 
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 class Ripples extends StatefulWidget {

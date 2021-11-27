@@ -1,8 +1,9 @@
 import 'dart:math';
+
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
-import 'package:equatable/equatable.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class UserModelChanger {
