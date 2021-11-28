@@ -42,6 +42,19 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
             Container(
               child: TextField(
                 decoration: InputDecoration(
+                  hintText: Strings().yourNameHint,
+                  border: OutlineInputBorder(),
+                  label: Text(Strings().writeYourName),
+                ),
+                minLines: 1,
+                maxLines: 1,
+                onChanged: setupUserViewModel.setName,
+              ),
+              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            ),
+            Container(
+              child: TextField(
+                decoration: InputDecoration(
                   hintText: Strings().yourBioHint,
                   border: OutlineInputBorder(),
                   label: Text(Strings().writeYourBio),
@@ -59,19 +72,6 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
               padding: const EdgeInsets.only(
                   top: 5, left: 20, right: 20, bottom: 10),
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Text(
-                '${Strings().userName}: ${setupUserViewModel.name}',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.left,
-              ),
-              padding: const EdgeInsets.only(
-                  top: 20, left: 40, right: 40, bottom: 20),
-              margin: const EdgeInsets.only(top: 15, bottom: 20),
-            ),
             setupUserViewModel.workDone
                 ? Icon(
                     Icons.check,
@@ -86,28 +86,25 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
             setupUserViewModel.workDone
                 ? Text('')
                 : Text(setupUserViewModel.message),
-            Container(
+            setupUserViewModel.nameSet && setupUserViewModel.bioSet && setupUserViewModel.workDone ? Container(
               child: ElevatedButton(
-                  onPressed: goButtonReady(setupUserViewModel)
-                      ? () => pressGo(context, setupUserViewModel)
-                      : null,
+                  onPressed: () => pressGo(context, setupUserViewModel),
                   child: Text(Strings().save, style: TextStyle(fontSize: 20))),
               padding: const EdgeInsets.only(
                   top: 20, left: 20, right: 20, bottom: 20),
-            ),
+            ) : Container(),
           ],
         ))));
   }
 
-  void pressGo(BuildContext context, SetupUserViewModel signUpViewModel) async {
+  void pressGo(BuildContext context, SetupUserViewModel setupUserViewModel) async {
+    log('SignUpPage - pressGo - 1');
     ProgressDialog.loader(true, context);
-    await signUpViewModel.createDatabaseUser();
+    log('SignUpPage - pressGo - 2');
+    await setupUserViewModel.updateBio();
+    log('SignUpPage - pressGo - 3');
     ProgressDialog.loader(false, context);
+    log('SignUpPage - pressGo - 4');
     context.goNamed('home');
-  }
-
-  bool goButtonReady(signUpViewModel) {
-    log('SignUpPage - goButtonReady');
-    return signUpViewModel.bioSet && signUpViewModel.workDone;
   }
 }

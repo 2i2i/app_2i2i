@@ -32,7 +32,7 @@ class MyUserPageViewModel {
     });
   }
 
-  Future changeBio(String newBio) async {
-    await userModelChanger.updateBio(newBio);
+  Future changeNameAndBio(String name, String bio) async {
+    await userModelChanger.updateNameAndBio(name, bio);
   }
 }

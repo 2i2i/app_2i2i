@@ -14,25 +14,36 @@ class FirestoreDatabase {
 
   final _service = FirestoreService.instance;
 
-  Future<void> updateUserHearbeat(uid, heartbeat, status) => _service.setData(
+  Future<void> setTestA() => _service.setData(
+        path: FirestorePath.testA(),
+        data: {},
+        merge: true,
+      );
+
+  Future<void> updateUserHearbeat(String uid, int heartbeat, String status) => _service.setData(
         path: FirestorePath.user(uid),
         data: {'heartbeat': heartbeat, 'status': status},
         merge: true,
       );
-  Future<void> updateUserBio(uid, bio, tags) => _service.setData(
+  Future<void> updateUserNameAndBio(String uid, String name, String bio, List<String> tags) => _service.setData(
         path: FirestorePath.user(uid),
-        data: {'bio': bio, 'tags': tags},
+        data: {'name': name, 'bio': bio, 'tags': tags},
         merge: true,
       );
-  Future<void> setUser(UserModel user) => _service.setData(
-        path: FirestorePath.user(user.id),
-        data: user.toMap(),
-        merge: true,
-      );
+  Future<void> setUser(UserModel user) async {
+    print('setUser - user=$user - map=${user.toMap()}');
+    _service.setData(
+      path: FirestorePath.user(user.id),
+      data: user.toMap(),
+      merge: true,
+    );
+    print('setUser - done');
+  }
+
   Future<void> setUserPrivate(String uid, UserModelPrivate userPrivate) =>
       _service.setData(
-        path: FirestorePath.userPrivate(uid),
-        data: userPrivate.toMap(),
+          path: FirestorePath.userPrivate(uid),
+          data: userPrivate.toMap(),
           merge: true);
 
   Stream<UserModel> userStream({required String uid}) =>
@@ -43,7 +54,8 @@ class FirestoreDatabase {
   Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.userPrivate(uid),
-        builder: (data, documentId) => UserModelPrivate.fromMap(data, documentId),
+        builder: (data, documentId) =>
+            UserModelPrivate.fromMap(data, documentId),
       );
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {
