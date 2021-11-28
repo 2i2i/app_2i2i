@@ -41,10 +41,11 @@ class Strings {
 
    //SetUp User page
 
-  String yourBioHint = 'username\n\nI love to #talk and #cook\nI can #teach';
+  String yourBioHint = 'I love to #talk and #cook\nI can #teach';
+  String yourNameHint = 'my cool username';
   String writeYourBio = 'Write your bio';
-  String bioExample = 'example: Solli I love #cooking and #design';
-  String userName = 'username';
+  String writeYourName = 'Write your name';
+  String bioExample = 'example: I love #cooking and #design';
   String save = 'Save';
 
 

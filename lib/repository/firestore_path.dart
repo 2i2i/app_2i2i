@@ -1,4 +1,5 @@
 class FirestorePath {
+  static String testA() => 'test/a';
   static String user(String uid) => 'users/$uid';
   static String userPrivate(String uid) => 'users/$uid/private/main';
   static String users() => 'users';

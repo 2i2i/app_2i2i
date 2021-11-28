@@ -9,14 +9,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SetupUserViewModel with ChangeNotifier {
-  SetupUserViewModel({required this.auth,
+  SetupUserViewModel(
+      {required this.auth,
       required this.database,
       required this.algorandLib,
       required this.accountService,
       required this.algorand,
       required this.storage}) {
-    log('SignUpViewModel');
-    // createAuthAndStartAlgorand();
+    database.setTestA();
   }
 
   final FirebaseAuth auth;
@@ -29,16 +29,23 @@ class SetupUserViewModel with ChangeNotifier {
   bool signUpInProcess = false;
   String message = '';
   bool bioSet = false;
+  bool nameSet = false;
   bool workDone = false;
   String? bio;
   String? uid;
-  String name = '';
+  String? name;
 
   void setBio(String _bio) {
     log('SetupUserViewModel - setBio');
     bioSet = _bio.isNotEmpty;
     bio = _bio;
-    name = UserModel.nameFromBio(_bio);
+    notifyListeners();
+  }
+
+  void setName(String _name) {
+    log('SetupUserViewModel - setName');
+    nameSet = _name.isNotEmpty;
+    name = _name;
     notifyListeners();
   }
 
@@ -67,18 +74,25 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future createDatabaseUser() async {
+  Future updateBio() async {
+    log('SetupUserViewModel - createDatabaseUser');
     try {
       message = 'creating database user';
       notifyListeners();
-      final user = UserModel(id: uid!, bio: bio!);
-      await database.setUser(user);
+      log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
+      final tags = UserModel.tagsFromBio(bio!);
+      log('SetupUserViewModel - createDatabaseUser - tags=$tags');
+      await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
+      // final user = UserModel(id: uid!, bio: bio!);
+      log('SetupUserViewModel - createDatabaseUser - UserModel');
+      // await database.setUser(user);
       // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      log('SetupUserViewModel - createDatabaseUser - setUser');
-      final userPrivate = UserModelPrivate();
-      await database.setUserPrivate(uid!, userPrivate);
+      // log('SetupUserViewModel - createDatabaseUser - setUser');
+      // final userPrivate = UserModelPrivate();
+      // log('SetupUserViewModel - createDatabaseUser - UserModelPrivate');
+      // await database.setUserPrivate(uid!, userPrivate);
       // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
+      // log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
     } catch (e) {
       print(e);
     }
