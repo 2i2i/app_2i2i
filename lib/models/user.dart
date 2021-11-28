@@ -16,10 +16,9 @@ class UserModelChanger {
     await database.updateUserHearbeat(uid, heartbeat, status);
   }
 
-  Future updateBio(String newBio) async {
-    final name = UserModel.nameFromBio(newBio);
-    final tags = UserModel.tagsFromBio(newBio);
-    await database.updateUserBio(uid, newBio, [name, ...tags]);
+  Future updateNameAndBio(String name, String bio) async {
+    final tags = UserModel.tagsFromBio(bio);
+    await database.updateUserNameAndBio(uid, name, bio, [name, ...tags]);
   }
 }
 
@@ -33,12 +32,12 @@ class UserModel extends Equatable {
     this.locked = false,
     this.currentMeeting,
     this.bidsIn = const [],
+    this.name = '',
     this.bio = '',
     this.upVotes = 0,
     this.downVotes = 0,
     this.heartbeat = 0,
   }) {
-    _name = nameFromBio(bio);
     _tags = tagsFromBio(bio);
   }
 
@@ -48,28 +47,22 @@ class UserModel extends Equatable {
   final String? currentMeeting;
   final List<String> bidsIn;
   final String bio;
-  late final String _name;
+  final String name;
   late final List<String> _tags;
   final int upVotes;
   final int downVotes;
   final int heartbeat;
 
-  String get name => _name;
-
-  static String nameFromBio(String bio) {
-    if (bio.isEmpty) return '';
-    int ix = bio.indexOf(RegExp(r'\s'));
-    if (ix == -1) ix = bio.length;
-    if (MAX_SHOWN_NAME_LENGTH < ix)
-      return bio.substring(0, MAX_SHOWN_NAME_LENGTH) + '...';
-    return bio.substring(0, ix);
+  static List<String> tagsFromBio(String bio) {
+    RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
+    final matches = r.allMatches(bio).toList();
+    final List<String> tags = [];
+    for (final m in matches) {
+      final t = bio.substring(m.start, m.end);
+      tags.add(t);
+    }
+    return tags;
   }
-
-  static List<String> tagsFromBio(String bio) => bio
-      .split(RegExp(r'\s'))
-      .where((element) => element.startsWith('#'))
-      .map((e) => e.substring(1))
-      .toList();
 
   @override
   List<Object> get props => [id];
@@ -91,6 +84,7 @@ class UserModel extends Equatable {
     final locked = data['locked'] as bool;
     final currentMeeting = data['currentMeeting'] as String?;
     final List<String> bidsIn = List.castFrom(data['bidsIn'] as List);
+    final name = data['name'] as String;
     final bio = data['bio'] as String;
     final upVotes = data['upVotes'] as int;
     final downVotes = data['downVotes'] as int;
@@ -102,6 +96,7 @@ class UserModel extends Equatable {
       locked: locked,
       currentMeeting: currentMeeting,
       bidsIn: bidsIn,
+      name: name,
       bio: bio,
       upVotes: upVotes,
       downVotes: downVotes,
@@ -159,7 +154,7 @@ class UserModel extends Equatable {
       'currentMeeting': currentMeeting,
       'bidsIn': bidsIn,
       'bio': bio,
-      'name': _name,
+      'name': name,
       'tags': _tags,
       'upVotes': upVotes,
       'downVotes': downVotes,
@@ -185,7 +180,8 @@ class UserModelPrivate {
   final List<String> blocked;
   final List<String> friends;
 
-  factory UserModelPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory UserModelPrivate.fromMap(
+      Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('UserModelPrivate.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');

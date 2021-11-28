@@ -29,16 +29,23 @@ class SetupUserViewModel with ChangeNotifier {
   bool signUpInProcess = false;
   String message = '';
   bool bioSet = false;
+  bool nameSet = false;
   bool workDone = false;
   String? bio;
   String? uid;
-  String name = '';
+  String? name;
 
   void setBio(String _bio) {
     log('SetupUserViewModel - setBio');
     bioSet = _bio.isNotEmpty;
     bio = _bio;
-    name = UserModel.nameFromBio(_bio);
+    notifyListeners();
+  }
+
+  void setName(String _name) {
+    log('SetupUserViewModel - setName');
+    nameSet = _name.isNotEmpty;
+    name = _name;
     notifyListeners();
   }
 
@@ -72,12 +79,10 @@ class SetupUserViewModel with ChangeNotifier {
     try {
       message = 'creating database user';
       notifyListeners();
-      log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - bio=$bio');
-      final name = UserModel.nameFromBio(bio!);
-      log('SetupUserViewModel - createDatabaseUser - name=$name');
+      log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
       final tags = UserModel.tagsFromBio(bio!);
       log('SetupUserViewModel - createDatabaseUser - tags=$tags');
-      await database.updateUserBio(uid!, bio!, [name, ...tags]);
+      await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
       // final user = UserModel(id: uid!, bio: bio!);
       log('SetupUserViewModel - createDatabaseUser - UserModel');
       // await database.setUser(user);

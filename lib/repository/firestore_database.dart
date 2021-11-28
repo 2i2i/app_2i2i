@@ -25,9 +25,9 @@ class FirestoreDatabase {
         data: {'heartbeat': heartbeat, 'status': status},
         merge: true,
       );
-  Future<void> updateUserBio(String uid, String bio, List<String> tags) => _service.setData(
+  Future<void> updateUserNameAndBio(String uid, String name, String bio, List<String> tags) => _service.setData(
         path: FirestorePath.user(uid),
-        data: {'bio': bio, 'tags': tags},
+        data: {'name': name, 'bio': bio, 'tags': tags},
         merge: true,
       );
   Future<void> setUser(UserModel user) async {
