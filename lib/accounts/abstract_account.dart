@@ -132,6 +132,19 @@ class AccountService {
     final assetHoldings = accountInfo.assets;
     return assetHoldings.map((a) => a.assetId).contains(assetId);
   }
+
+  Future<bool> isOptedInToDApp(
+      {required String address,
+      required int dAppId,
+      required AlgorandNet net}) async {
+    final accountInfo =
+        await algorandLib.client[net]!.getAccountByAddress(address);
+    for (final ApplicationLocalState localState in accountInfo.appsLocalState) {
+      if (localState.id == dAppId) return true;
+      // TODO do we need to maybe care about 'deleted' or 'closed-out-at-round'
+    }
+    return false;
+  }
 }
 
 abstract class AbstractAccount {
@@ -170,11 +183,11 @@ abstract class AbstractAccount {
   }
 
   Future<bool> isOptedInToASA(
-      {required int assetId, required AlgorandNet net}) async {
-    if (assetId == 0) return true; // all accounts can use ALGO
-    return balances
-        .where((balance) => balance.net == net)
-        .map((balance) => balance.assetHolding.assetId)
-        .contains(assetId);
-  }
+          {required int assetId, required AlgorandNet net}) =>
+      accountService.isOptedInToASA(
+          address: address, assetId: assetId, net: net);
+  Future<bool> isOptedInToDApp(
+          {required int dAppId, required AlgorandNet net}) =>
+      accountService.isOptedInToDApp(
+          address: address, dAppId: dAppId, net: net);
 }
