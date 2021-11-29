@@ -14,16 +14,10 @@ class LocalAccount extends AbstractAccount {
     required accountService,
   }) : super(accountService: accountService);
 
-  static Future<LocalAccount> create({
-    required AlgorandLib algorandLib,
-    required SecureStorage storage,
-    required AccountService accountService,
+  static Future<LocalAccount> create({required AlgorandLib algorandLib, required SecureStorage storage, required AccountService accountService,
   }) async {
     log('LocalAccount.create');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
     await account._createAndStoreAccount();
     await account.updateBalances();
     return account;
@@ -107,11 +101,9 @@ class LocalAccount extends AbstractAccount {
 
   Future _createAndStoreAccount() async {
     // log('LocalAccount - _createAndStoreAccount');
-    final Account account = await algorandLib.client[AlgorandNet.mainnet]!
-        .createAccount(); // use mainnet bc it does not matter
+    final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
     // log('LocalAccount - _createAndStoreAccount - createAccount');
-    final List<int> privateKeyBytes =
-        await account.keyPair.extractPrivateKeyBytes();
+    final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
     // log('LocalAccount - _createAndStoreAccount - privateKeyBytes');
     final String privateKey = base64Encode(privateKeyBytes);
     // log('LocalAccount - _createAndStoreAccount - privateKey');

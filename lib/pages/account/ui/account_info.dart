@@ -9,12 +9,10 @@ class AccountInfo extends ConsumerStatefulWidget {
   final AbstractAccount account;
 
   @override
-  _AccountInfoState createState() => _AccountInfoState(account: account);
+  _AccountInfoState createState() => _AccountInfoState();
 }
 
 class _AccountInfoState extends ConsumerState<AccountInfo> {
-  _AccountInfoState({required this.account});
-  final AbstractAccount account;
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
@@ -22,9 +20,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         itemCount: balances.length,
         itemBuilder: (_, ix) {
           final assetId = balances[ix].assetHolding.assetId;
-          final assetName = assetId == 0
-              ? 'ALGO'
-              : balances[ix].assetHolding.assetId.toString();
+          final assetName = assetId == 0 ? 'ALGO' : balances[ix].assetHolding.assetId.toString();
           final assetAmount = balances[ix].assetHolding.amount;
           final net = balances[ix].net;
           return Container(
@@ -43,60 +39,59 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     //     ref.watch(accountInfoViewModelProvider(numAccount));
     // if (accountInfoViewModel == null) return Container();
 
-    return Container(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 20,
+    print("Your Address ===> ${widget.account.address}");
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        ListTile(
+          title: Text(
+            'Algorand address',
+            style: Theme.of(context).textTheme.headline6,
           ),
-          ListTile(
-            title: Text(
-              'Algorand address',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            leading: Icon(
-              Icons.paid,
-              size: 35,
-            ),
+          leading: Icon(
+            Icons.paid,
+            size: 35,
           ),
-          SizedBox(
-            height: 10,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Container(
+            margin:
+                const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+            color: Color.fromRGBO(223, 239, 223, 1),
+            child: ListTile(
+                title: Text(widget.account.address),
+                trailing: IconButton(
+                    onPressed: () => Clipboard.setData(
+                        ClipboardData(text: widget.account.address)),
+                    icon: Icon(Icons.copy)))),
+        SizedBox(
+          height: 50,
+        ),
+        ListTile(
+          title: Text(
+            'Balances',
+            style: Theme.of(context).textTheme.headline6,
           ),
-          Container(
-              margin: const EdgeInsets.only(
-                  top: 10, left: 20, right: 20, bottom: 10),
-              color: Color.fromRGBO(223, 239, 223, 1),
-              child: ListTile(
-                  title: Text(account.address),
-                  trailing: IconButton(
-                      onPressed: () => Clipboard.setData(ClipboardData(
-                          text: account.address)),
-                      icon: Icon(Icons.copy)))),
-          SizedBox(
-            height: 50,
-          ),
-          ListTile(
-            title: Text(
-              'Balances',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            leading: IconButton(
-                color: Color.fromRGBO(116, 117, 109, 1),
-                iconSize: 35,
-                onPressed: () => setState(() {
-                      account.updateBalances();
-                    }),
-                icon: Icon(Icons.replay_circle_filled)),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          balancesList(account.balances),
-          SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+          leading: IconButton(
+              color: Color.fromRGBO(116, 117, 109, 1),
+              iconSize: 35,
+              onPressed: () => setState(() {
+                    widget.account.updateBalances();
+                  }),
+              icon: Icon(Icons.replay_circle_filled)),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        balancesList(widget.account.balances),
+        SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 }

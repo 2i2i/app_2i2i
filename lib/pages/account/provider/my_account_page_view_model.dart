@@ -12,18 +12,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   MyAccountPageViewModel(this.ref);
 
-  /*MyAccountPageViewModel({
-    required this.functions,
-    required this.algorandLib,
-    required this.accountService,
-    required this.storage,
-    required this.numAccounts,
-  });*/
-
-  // {
-  //   init();
-  // }
-  /*final FirebaseFunctions functions;*/
   AlgorandLib? algorandLib;
   SecureStorage? storage;
   AccountService? accountService;
@@ -31,30 +19,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
   bool isLoading = true;
   List<AbstractAccount>? accounts;
 
-  // void init() async {
-  //   numAccounts = await algorand.numAccountsStored();
-  // }
-
-  // Future optIn(int assetId, int numAccount) async {
-  //   // is user account opted in?
-  //   final accountPublicAddress =
-  //       await algorand.accountPublicAddress(numAccount);
-  //   final userOptedIn =
-  //       await algorand.isAccountOptedInToASA(accountPublicAddress!, assetId);
-
-  //   log('MyAccountPageViewModel - optIn - userOptedIn=$userOptedIn');
-
-  //   return algorand.optInUserAccountToASA(
-  //       assetId: assetId, numAccount: numAccount);
-  // }
-
   initMethod() async {
     try {
       algorandLib = await ref!.watch(algorandLibProvider);
       storage = await ref!.watch(storageProvider);
       accountService = await ref!.watch(accountServiceProvider);
-      // numAccounts = await accountService!.getNumAccounts();
-      // log('initMethod - numAccounts=$numAccounts');
       accounts = await accountService!.getAllAccounts();
       final as = accounts!.map((a) => a.address).toList();
       log('initMethod - as=$as');
@@ -66,11 +35,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future addLocalAccount() async {
-    await LocalAccount.create(
-        accountService: accountService!,
-        algorandLib: algorandLib!,
-        storage: storage!);
-    return updateAccounts();
+    await LocalAccount.create(accountService: accountService!, algorandLib: algorandLib!, storage: storage!);
+    await updateAccounts();
   }
 
   Future updateAccounts() async {

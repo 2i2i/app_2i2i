@@ -42,10 +42,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     });
   }
 
-  Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
-    final account =
-        WalletConnectAccount.fromNewConnector(accountService: accountService);
+  Future _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    final account = WalletConnectAccount.fromNewConnector(accountService: accountService);
     // Create a new session
     if (!account.connector.connected) {
       // connector.on(
@@ -98,47 +96,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 : ListView.builder(
                     itemCount: myAccountPageViewModel.accounts!.length,
                     itemBuilder: (_, i) {
-                      return AccountInfo(
-                          account: myAccountPageViewModel.accounts![i]);
+                      return AccountInfo(account: myAccountPageViewModel.accounts![i]);
                     },
                   )),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () async {
-        //     final assetIdString = await _optIn(context);
-        //     if (assetIdString == null) return;
-        //     final assetId = int.tryParse(assetIdString);
-        //     if (assetId == null) return;
-
-        //     await myAccountPageViewModel.optIn(assetId);
-        //   },
-        //   tooltip: 'ASA opt-in',
-        //   child: const Text('Opt-In'),
-        //   shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        // ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              // FloatingActionButton.extended(
-              //   onPressed: () async {
-              //     final assetIdString = await _optIn(context);
-              //     if (assetIdString == null) return;
-              //     final assetId = int.tryParse(assetIdString);
-              //     if (assetId == null) return;
-
-              //     await myAccountPageViewModel.optIn(assetId);
-              //   },
-              //   label: Row(
-              //     children: [
-              //       const Icon(Icons.system_security_update),
-              //       const Text('Opt-In')
-              //     ],
-              //   ),
-              //   tooltip: 'ASA opt-in',
-              // ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               SpeedDial(
                 icon: Icons.add,
                 tooltip: 'Add account',
@@ -154,8 +120,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                   SpeedDialChild(
                     child: Icon(Icons.folder_open_outlined),
                     onTap: () async {
-                      await _createSession(myAccountPageViewModel,
-                          myAccountPageViewModel.accountService!);
+                      await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
                     },
                   ),
                 ],
@@ -165,44 +130,3 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         ));
   }
 }
-
-// Future<String?> _optIn(BuildContext context) async {
-//   final TextEditingController assetId = TextEditingController();
-//   return showDialog<String>(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return SimpleDialog(
-//           title: const Text('ASA Opt-In'),
-//           children: <Widget>[
-//             Container(
-//                 padding: const EdgeInsets.only(
-//                     top: 5, left: 20, right: 20, bottom: 10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                     hintText: 'numeric asset id',
-//                     border: OutlineInputBorder(),
-//                     label: Text('Asset Id'),
-//                   ),
-//                   // minLines: 1,
-//                   maxLines: 1,
-//                   controller: assetId,
-//                 )),
-//             Container(
-//                 padding: const EdgeInsets.only(
-//                     top: 10, left: 50, right: 50, bottom: 10),
-//                 child: ElevatedButton(
-//                     style: ElevatedButton.styleFrom(
-//                         primary: Color.fromRGBO(173, 154, 178, 1)),
-//                     child: Text('Cancel'),
-//                     onPressed: () => Navigator.pop(context, null))),
-//             Container(
-//                 padding: const EdgeInsets.only(
-//                     top: 10, left: 50, right: 50, bottom: 10),
-//                 child: ElevatedButton(
-//                     // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-//                     child: Text('Opt In'),
-//                     onPressed: () => Navigator.pop(context, assetId.text))),
-//           ],
-//         );
-//       });
-// }

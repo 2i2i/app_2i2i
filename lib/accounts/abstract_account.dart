@@ -38,8 +38,7 @@ class AccountService {
 
   Future<int> getNumLocalAccounts() async {
     final numAccountsString = await storage.read('num_accounts');
-    final numAccounts =
-        numAccountsString == null ? 0 : int.parse(numAccountsString);
+    final numAccounts = numAccountsString == null ? 0 : int.parse(numAccountsString);
     log('Number of Local Accounts ========= $numAccounts');
     return numAccounts;
   }
@@ -165,20 +164,17 @@ abstract class AbstractAccount {
 
   List<Balance> _balances = [];
   List<Balance> get balances => _balances;
+
   Future updateBalances() async {
     log('updateBalances');
-    final mainnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.mainnet);
-    final mainnetBalances = mainnetAssetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
-        .toList();
-    final testnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.testnet);
-    final testnetBalances = testnetAssetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
-        .toList();
+    final mainnetAssetHoldings = await accountService.getAssetHoldings(address: address, net: AlgorandNet.mainnet);
+
+    final mainnetBalances = mainnetAssetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet)).toList();
+
+    final testnetAssetHoldings = await accountService.getAssetHoldings(address: address, net: AlgorandNet.testnet);
+
+    final testnetBalances = testnetAssetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AlgorandNet.testnet)).toList();
+
     _balances = [...mainnetBalances, ...testnetBalances];
   }
 }

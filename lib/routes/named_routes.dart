@@ -10,7 +10,6 @@ import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/test_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

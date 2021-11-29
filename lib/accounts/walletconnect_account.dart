@@ -60,7 +60,10 @@ class WalletConnectAccount extends AbstractAccount {
 
   // TODO cache management
   Future save() async {
-    if (_accountIndex != null) return;
+    if (_accountIndex != null) {
+      return;
+    }
+    print(connector.session.accounts);
     for (int i = 0; i < connector.session.accounts.length; i++) {
       final account = WalletConnectAccount.fieldsGiven(
           accountService: accountService,

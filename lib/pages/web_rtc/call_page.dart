@@ -6,7 +6,6 @@ import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -72,9 +71,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     int min = secTime ~/ 60;
     int sec = secTime % 60;
 
-    String parsedTime =
-        getParsedTime(min.toString()) + " : " + getParsedTime(sec.toString());
-
+    String parsedTime = getParsedTime(min.toString()) + " : " + getParsedTime(sec.toString());
     return parsedTime;
   }
 
