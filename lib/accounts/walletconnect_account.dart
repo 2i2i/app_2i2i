@@ -23,29 +23,25 @@ class WalletConnectAccount extends AbstractAccount {
     );
   }
 
+  String address1 = '';
   int? _accountIndex; // will be null until session created
   set accountIndex(int a) => _accountIndex = a;
 
   late WalletConnect connector;
 
-  factory WalletConnectAccount.fromNewConnector(
-      {required AccountService accountService}) {
+  factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
     final connector = newConnector();
-    return WalletConnectAccount(
-        accountService: accountService, connector: connector);
+    return WalletConnectAccount(accountService: accountService, connector: connector);
   }
-  WalletConnectAccount(
-      {required AccountService accountService, required this.connector})
-      : super(accountService: accountService);
-  factory WalletConnectAccount.fieldsGiven(
-      {required AccountService accountService,
-      required WalletConnect connector,
-      required int accountIndex}) {
-    final account = WalletConnectAccount(
-        accountService: accountService, connector: connector);
+
+  WalletConnectAccount({required AccountService accountService, required this.connector}) : super(accountService: accountService);
+
+  factory WalletConnectAccount.fieldsGiven({required AccountService accountService, required WalletConnect connector, required int accountIndex}) {
+    final account = WalletConnectAccount(accountService: accountService, connector: connector);
     account._accountIndex = accountIndex;
     return account;
   }
+
   factory WalletConnectAccount.fromAccountIndex(int accountIndex) {
     // TODO error if not 0 <= accountIndex < cache.length
     List<String> addresses = [];
@@ -69,9 +65,15 @@ class WalletConnectAccount extends AbstractAccount {
           accountService: accountService,
           connector: connector,
           accountIndex: i);
+      account.address1 = connector.session.accounts[i];
       await account.updateBalances();
       log('save - i=$i - account=$account - cache=$cache');
-      cache.add(account);
+      int alreadyExistIndex = cache.indexWhere((element) => element.address1 == account.address1);
+      if(alreadyExistIndex < 0) {
+        cache.add(account);
+      }else{
+        cache[alreadyExistIndex] = account;
+      }
       log('save - i=$i - account=$account - cache=$cache - after');
     }
   }
@@ -79,7 +81,11 @@ class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> getAllAccounts() => cache;
 
   @override
-  String get address => connector.session.accounts[_accountIndex!];
+  String get address {
+    log(F+'============ ============ ============  ============ $address1 ============ ============ ============ ============ ============ ');
+    return address1;
+    return connector.session.accounts[_accountIndex!];
+  }
 
   @override
   Future<bool> isOptedInToASA(

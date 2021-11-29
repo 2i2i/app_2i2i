@@ -39,7 +39,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     //     ref.watch(accountInfoViewModelProvider(numAccount));
     // if (accountInfoViewModel == null) return Container();
 
-    print("Your Address ===> ${widget.account.address}");
     return Column(
       children: [
         SizedBox(

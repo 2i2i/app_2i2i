@@ -93,6 +93,7 @@ class AccountService {
     // DEBUG
 
     // return [...localAccounts];
+    log(F+' doubt ${[...asL, ...asWC].toString()}');
     return [...localAccounts, ...walletConnectAccounts];
   }
 

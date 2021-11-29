@@ -89,16 +89,36 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         appBar: AppBar(
           title: const Text('My Account'),
         ),
-        body: myAccountPageViewModel.isLoading
-            ? WaitPage()
-            : (_displayUri.isNotEmpty
-                ? Center(child: QrImage(data: _displayUri))
-                : ListView.builder(
-                    itemCount: myAccountPageViewModel.accounts!.length,
-                    itemBuilder: (_, i) {
-                      return AccountInfo(account: myAccountPageViewModel.accounts![i]);
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Visibility(
+              visible: myAccountPageViewModel.isLoading,
+              child: WaitPage(),
+            ),
+            Visibility(
+              visible: _displayUri.isNotEmpty,
+              child: Center(
+                child: QrImage(data: _displayUri),
+              ),
+            ),
+            Visibility(
+              visible: _displayUri.isEmpty,
+              child: ListView(
+                children: List.generate(
+                    myAccountPageViewModel.accounts?.length??0,
+                    (index) {
+                      log(F+' accounts ${myAccountPageViewModel.accounts![index].address}');
+                      return AccountInfo(
+                        key: ObjectKey(myAccountPageViewModel.accounts![index].address),
+                          account: myAccountPageViewModel.accounts![index],
+                      );
                     },
-                  )),
+                ),
+              ),
+            )
+          ],
+        ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0),
