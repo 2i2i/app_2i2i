@@ -163,7 +163,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       children: [
                         FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
-                          backgroundColor: Colors.pink,
+                          backgroundColor: Color.fromARGB(255, 239, 102, 84),
                           onPressed: () async {
                             await player.stop();
                             ringingPageViewModel.cancelMeeting();

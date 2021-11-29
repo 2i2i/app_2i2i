@@ -38,9 +38,9 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
   void _initBudgetTimer() {
     // no timer for free call
-    // if (meeting!.speed.num == 0) return;
+    if (meeting?.speed.num == 0) return;
 
-    var maxDuration = 1500;//(meeting!.budget / meeting!.speed.num).floor();
+    var maxDuration = ((meeting?.budget??0) / (meeting?.speed.num??1)).floor();
     int duration = maxDuration;
     final activeTime = meeting!.activeTime();
     if (activeTime != null) {
@@ -48,7 +48,6 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
     budgetTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      maxDuration = 120;
       double percentage = (timer.tick * 100)/maxDuration;
       progress.value = 100 - percentage;
       if(timer.tick >= maxDuration){
@@ -134,26 +133,29 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(16.0),
                         child: !swapped
                             ? firstVideoView(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.3,
+                                height: MediaQuery.of(context).size.height * 0.3,
                                 width: MediaQuery.of(context).size.height * 0.3,
-                                renderer: _localRenderer)
+                                renderer: _localRenderer,
+                        )
                             : secondVideoView(
                                 height: MediaQuery.of(context).size.height*0.3,
                                 width: MediaQuery.of(context).size.height*0.3,
-                                renderer: _remoteRenderer)),
+                                renderer: _remoteRenderer,
+                        ),
+                    ),
                     InkResponse(
                         onTap: (){
-                          setState(() {
                             swapped = !swapped;
-                          });
+                          setState(() {});
                         },
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(16.0),
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
-                            )))
+                            ),
+                        ),
+                    )
                   ],
                 ),
               ),
@@ -161,40 +163,81 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
               Align(
                 alignment: Alignment.bottomCenter,
-                child: RotatedBox(
-                  quarterTurns: 90,
-                  child: CustomPaint(
-                    isComplex: false,
-                    willChange: false,
-                    foregroundPainter: CurvePainter(),
-                    child: Container(
-                      height: 150,
-                      width: MediaQuery.of(context).size.width,
-                      alignment: Alignment.bottomCenter,
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  margin: EdgeInsets.symmetric(horizontal: 100,vertical: 10),
+                  color: Colors.black38,
+                  child: Container(
+                    height: 100,
+                    alignment: Alignment.center,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      // crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () {
+                            if(budgetTimer?.isActive??false) {
+                              budgetTimer?.cancel();
+                            }
+                            signaling!.hangUp(_localRenderer);
+                          },
+                          child: Icon(
+                            Icons.call_end,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: Color.fromARGB(255, 239, 102, 84),
+                        ),
+                        RotatedBox(
+                          quarterTurns: 90,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/1.5),
+                            child: ValueListenableBuilder(
+                              valueListenable: progress,
+                              builder: (BuildContext context, double value, Widget? child) {
+                                var percentage = value.toDouble();
+                                if(value > 1){
+                                  percentage = (value/100);
+                                }
+                                bool isAnimate = value <= 20 && (budgetTimer?.tick.isEven ?? false);
+                                print('==== $value $isAnimate ${budgetTimer?.tick}');
+                                return SizedBox(
+                                  width: MediaQuery.of(context).size.width/8,
+                                  child: LinearProgressIndicator(
+                                    value: value,
+                                    minHeight: 4,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      isAnimate?Colors.red:Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/3),
+                          child: ValueListenableBuilder(
+                            valueListenable: time,
+                            builder: (BuildContext context, String value, Widget? child) {
+                              return Text(
+                                time.value,
+                                style: TextStyle(
+                                    color: Colors.white
+                                )
+                                ,textAlign: TextAlign.center,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    // painter: CurvePainter(),
                   ),
+
+                  // painter: CurvePainter(),
                 ),
               ),
-              Positioned(
-                bottom: 10,
-                right: 0,
-                left: 0,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    if(budgetTimer?.isActive??false) {
-                      budgetTimer?.cancel();
-                    }
-                    signaling!.hangUp(_localRenderer);
-                  },
-                  child: Icon(
-                    Icons.call_end,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.pink,
-                ),
-              ),
-              Positioned(
+              /*Positioned(
                 bottom: 5,
                 right: 450,
                 left: 0,
@@ -239,24 +282,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                     );
                   },
                 ),
-              ),
-              Positioned(
-                bottom: 30,
-                right: 0,
-                left: 450,
-                child: ValueListenableBuilder(
-                  valueListenable: time,
-                  builder: (BuildContext context, String value, Widget? child) {
-                    return Text(
-                      value,
-                      style: TextStyle(
-                          color: Colors.white
-                      )
-                      ,textAlign: TextAlign.center,
-                    );
-                  },
-                ),
-              ),
+              ),*/
             ]),
           );
         }),
@@ -280,65 +306,11 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer!,
+      child: RTCVideoView(
+          renderer!,
           mirror: true,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
     );
-  }
-}
-
-class CurvePainter extends CustomPainter {
-  Color colorOne = Colors.blueAccent.shade200;
-  Color colorTwo = Colors.blueAccent.shade100;
-  Color colorThree = Colors.blueAccent.withAlpha(50);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-
-    Path path = Path();
-    Paint paint = Paint();
-
-    path.lineTo(0, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.70, size.width * 0.17, size.height * 0.90);
-    path.quadraticBezierTo(size.width * 0.20, size.height, size.width * 0.25, size.height * 0.90);
-    path.quadraticBezierTo(size.width * 0.40, size.height * 0.40, size.width * 0.50, size.height * 0.70);
-    path.quadraticBezierTo(size.width * 0.60, size.height * 0.85, size.width * 0.65, size.height * 0.65);
-    path.quadraticBezierTo(size.width * 0.70, size.height * 0.90, size.width, 0);
-    path.close();
-
-    paint.color = colorThree.withOpacity(0.5);
-    canvas.drawPath(path, paint);
-
-    path = Path();
-    path.lineTo(0, size.height * 0.50);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.80, size.width * 0.15, size.height * 0.60);
-    path.quadraticBezierTo(size.width * 0.20, size.height * 0.45, size.width * 0.27, size.height * 0.60);
-    path.quadraticBezierTo(size.width * 0.20, size.height * 0.45, size.width * 0.27, size.height * 0.60);
-    path.quadraticBezierTo(size.width * 0.45, size.height, size.width * 0.50, size.height * 0.80);
-    path.quadraticBezierTo(size.width * 0.55, size.height * 0.45, size.width * 0.75, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.85, size.height * 0.93, size.width, size.height * 0.60);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    paint.color = colorTwo.withOpacity(0.5);
-    canvas.drawPath(path, paint);
-
-    path = Path();
-    path.lineTo(0, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.55, size.width * 0.22, size.height * 0.70);
-    path.quadraticBezierTo(size.width * 0.30, size.height * 0.90, size.width * 0.40, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.52, size.height * 0.50, size.width * 0.65, size.height * 0.70);
-    path.quadraticBezierTo(size.width * 0.75, size.height * 0.85, size.width, size.height * 0.60);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    paint.color = colorOne.withOpacity(0.5);
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return oldDelegate != this;
   }
 }
