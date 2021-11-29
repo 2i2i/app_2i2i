@@ -53,13 +53,13 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0),
             child: ElevatedButton.icon(
                 onPressed: () async {
-                  final newBio = await _editBio(context, user.bio);
-                  if (newBio != null) {
-                    myUserPageViewModel.changeBio(newBio);
+                  final newValues = await _editNameAndBio(context, user.name, user.bio);
+                  if (newValues != null) {
+                    myUserPageViewModel.changeNameAndBio(newValues['name']!, newValues['bio']!);
                   }
                 },
                 icon: Icon(Icons.edit),
-                label: Text('Edit Bio'))),
+                label: Text('Edit Name and Bio'))),
         Divider(),
         Expanded(
             child: Row(
@@ -115,14 +115,29 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     );
   }
 
-  Future<String?> _editBio(BuildContext context, String currentBio) async {
+  Future<Map<String, String>?> _editNameAndBio(BuildContext context, String currentName, String currentBio) async {
+    final TextEditingController name = TextEditingController(text: currentName);
     final TextEditingController bio = TextEditingController(text: currentBio);
-    return showDialog<String>(
+    return showDialog<Map<String, String>>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Edit Bio'),
+            title: const Text('Edit Name and Bio'),
             children: <Widget>[
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 5, left: 20, right: 20, bottom: 10),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText:
+                          'my cool username',
+                      border: OutlineInputBorder(),
+                      label: Text('Name'),
+                    ),
+                    minLines: 1,
+                    maxLines: 1,
+                    controller: name,
+                  )),
               Container(
                   padding: const EdgeInsets.only(
                       top: 5, left: 20, right: 20, bottom: 10),
@@ -151,7 +166,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   child: ElevatedButton(
                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
                       child: Text('Save'),
-                      onPressed: () => Navigator.pop(context, bio.text))),
+                      onPressed: () => Navigator.pop(context, {'name': name.text, 'bio': bio.text}))),
             ],
           );
         });
