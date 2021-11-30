@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:app_2i2i/services/logging.dart';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 import 'local_account.dart';
 
@@ -16,23 +17,33 @@ class Balance {
 
 class AccountService {
   AccountService({required this.algorandLib, required this.storage});
+
   final AlgorandLib algorandLib;
   final SecureStorage storage;
 
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
-    final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
-    final accountInfoFuture =
-        algorandLib.client[net]!.getAccountByAddress(address);
-    final futureResults =
-        await Future.wait([balanceALGOFuture, accountInfoFuture]);
-    final balanceALGO = futureResults[0] as int;
-    final assetHoldings = (futureResults[1] as AccountInformation).assets;
+    try {
+      final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-    final algoAssetHolding = AssetHolding(
-        amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
+      final accountInfoFuture =
+          algorandLib.client[net]!.getAccountByAddress(address);
 
-    return [algoAssetHolding, ...assetHoldings];
+      final futureResults =
+          await Future.wait([balanceALGOFuture, accountInfoFuture]);
+
+      final balanceALGO = futureResults[0] as int;
+
+      final assetHoldings = (futureResults[1] as AccountInformation).assets;
+
+      final algoAssetHolding = AssetHolding(
+          amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
+
+      return [algoAssetHolding, ...assetHoldings];
+    } catch (e) {
+      print(e);
+    }
+    return [];
   }
 
   Future<int> getNumLocalAccounts() async {
@@ -84,15 +95,6 @@ class AccountService {
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
-
-    // DEBUG
-    final as_l = localAccounts.map((a) => a.address).toList();
-    final as_wc = walletConnectAccounts.map((a) => a.address).toList();
-    log('getAllAccounts - as_l=$as_l');
-    log('getAllAccounts - as_wc=$as_wc');
-    // DEBUG
-
-    // return [...localAccounts];
     return [...localAccounts, ...walletConnectAccounts];
   }
 
@@ -147,7 +149,8 @@ abstract class AbstractAccount {
   AbstractAccount({required this.accountService});
   final AccountService accountService;
 
-  String get address;
+  late String address;
+  List<Balance> balances = [];
 
   Future<String> optInToDapp(
       {required int dappId,
@@ -157,27 +160,32 @@ abstract class AbstractAccount {
       {required int assetId,
       required AlgorandNet net,
       waitForConfirmation = true});
-  Future<bool> isOptedInToASA(
-          {required int assetId, required AlgorandNet net}) =>
-      throw UnimplementedError();
+  Future<bool> isOptedInToASA({required int assetId, required AlgorandNet net});
   Future<Uint8List> sign(RawTransaction txn);
 
-  List<Balance> _balances = [];
-  List<Balance> get balances => _balances;
   Future updateBalances() async {
-    log('updateBalances');
-    final mainnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.mainnet);
-    final mainnetBalances = mainnetAssetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
-        .toList();
-    final testnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.testnet);
-    final testnetBalances = testnetAssetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
-        .toList();
-    _balances = [...mainnetBalances, ...testnetBalances];
+    try {
+      log('updateBalances');
+      // final mainnetAssetHoldings = await accountService.getAssetHoldings(
+      //     address: address, net: AlgorandNet.mainnet);
+
+      // final mainnetBalances = mainnetAssetHoldings
+      //     .map((assetHolding) =>
+      //         Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
+      //     .toList();
+
+      final testnetAssetHoldings = await accountService.getAssetHoldings(
+          address: address, net: AlgorandNet.testnet);
+
+      final testnetBalances = testnetAssetHoldings
+          .map((assetHolding) =>
+              Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
+          .toList();
+
+      // balances = [...mainnetBalances, ...testnetBalances];
+      balances = testnetBalances;
+    } catch (e) {
+      print(e);
+    }
   }
 }

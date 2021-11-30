@@ -46,6 +46,7 @@ class AppTheme{
           onError: Colors.black,
           brightness: Brightness.light,
       ),
+
       floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: buttonBackground),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

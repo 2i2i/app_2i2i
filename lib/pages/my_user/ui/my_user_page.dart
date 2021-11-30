@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_bids.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_bids.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';

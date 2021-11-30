@@ -14,16 +14,10 @@ class LocalAccount extends AbstractAccount {
     required accountService,
   }) : super(accountService: accountService);
 
-  static Future<LocalAccount> create({
-    required AlgorandLib algorandLib,
-    required SecureStorage storage,
-    required AccountService accountService,
+  static Future<LocalAccount> create({required AlgorandLib algorandLib, required SecureStorage storage, required AccountService accountService,
   }) async {
     log('LocalAccount.create');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
     await account._createAndStoreAccount();
     await account.updateBalances();
     return account;
@@ -102,41 +96,39 @@ class LocalAccount extends AbstractAccount {
   Future _loadAccountFromStorage(int numAccount) async {
     _numAccount = numAccount;
     final account = await _libAccount();
-    _address = account.publicAddress;
+    address = account.publicAddress;
   }
 
   Future _createAndStoreAccount() async {
-    // log('LocalAccount - _createAndStoreAccount');
-    final Account account = await algorandLib.client[AlgorandNet.mainnet]!
-        .createAccount(); // use mainnet bc it does not matter
-    // log('LocalAccount - _createAndStoreAccount - createAccount');
-    final List<int> privateKeyBytes =
-        await account.keyPair.extractPrivateKeyBytes();
-    // log('LocalAccount - _createAndStoreAccount - privateKeyBytes');
-    final String privateKey = base64Encode(privateKeyBytes);
-    // log('LocalAccount - _createAndStoreAccount - privateKey');
+    try {
+      // log('LocalAccount - _createAndStoreAccount');
+      final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
+      // log('LocalAccount - _createAndStoreAccount - createAccount');
+      final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
+      // log('LocalAccount - _createAndStoreAccount - privateKeyBytes');
+      final String privateKey = base64Encode(privateKeyBytes);
+      // log('LocalAccount - _createAndStoreAccount - privateKey');
 
-    // set
-    _numAccount = await accountService.getNumLocalAccounts();
-    // log('LocalAccount - _createAndStoreAccount - _numAccount=$_numAccount');
-    _address = account.publicAddress;
-    // log('LocalAccount - _createAndStoreAccount - _address=$_address');
+      // set
+      _numAccount = await accountService.getNumLocalAccounts();
+      // log('LocalAccount - _createAndStoreAccount - _numAccount=$_numAccount');
+      address = account.publicAddress;
+      // log('LocalAccount - _createAndStoreAccount - _address=$_address');
 
-    final storageAccountKey = 'account_$_numAccount';
-    // log('LocalAccount - _createAndStoreAccount - storageAccountKey=$storageAccountKey');
-    final newNumAccounts = _numAccount + 1;
-    // log('LocalAccount - _createAndStoreAccount - newNumAccounts=$newNumAccounts');
-    await storage.write('num_accounts', newNumAccounts.toString());
-    // log('LocalAccount - _createAndStoreAccount - storage.write');
-    await storage.write(storageAccountKey, privateKey);
-    // log('LocalAccount - _createAndStoreAccount - done');
+      final storageAccountKey = 'account_$_numAccount';
+      // log('LocalAccount - _createAndStoreAccount - storageAccountKey=$storageAccountKey');
+      final newNumAccounts = _numAccount + 1;
+      // log('LocalAccount - _createAndStoreAccount - newNumAccounts=$newNumAccounts');
+      await storage.write('num_accounts', newNumAccounts.toString());
+      // log('LocalAccount - _createAndStoreAccount - storage.write');
+      await storage.write(storageAccountKey, privateKey);
+      // log('LocalAccount - _createAndStoreAccount - done');
+    } catch (e) {
+      print(e);
+    }
   }
 
   late int _numAccount;
   final AlgorandLib algorandLib;
   final SecureStorage storage;
-
-  late String _address;
-  @override
-  String get address => _address;
 }
