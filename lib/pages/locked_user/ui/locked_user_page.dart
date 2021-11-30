@@ -43,7 +43,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
     final meetingStatus = lockedUserViewModel.meeting.currentStatus();
 
     if (meetingStatus == MeetingValue.INIT ||
-        meetingStatus == MeetingValue.LOCK_COINS_STARTED) {
+        meetingStatus == MeetingValue.LOCK_COINS_STARTED || (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
+        !lockedUserViewModel.amA())) {
       return RingingPage(
           meeting: lockedUserViewModel.meeting,
           initMethod: () {
@@ -53,25 +54,6 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
             });
           },
           callReject: () async {
-            await player.stop();
-          });
-    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
-        !lockedUserViewModel.amA()) {
-      // return RingingPage(
-      //     meeting: lockedUserViewModel.meeting,
-      //     initMethod: () {
-      //       player.play();
-      //       Future.delayed(Duration(seconds: 30)).then((value) async {
-      //         await player.stop();
-      //       });
-      //     },
-      //     callReject: () async {
-      //       await player.stop();
-      //     });
-      return CallPage(
-          meeting: lockedUserViewModel.meeting,
-          user: lockedUserViewModel.user,
-          initMethod: () async {
             await player.stop();
           });
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||

@@ -2,7 +2,6 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
@@ -215,22 +214,8 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-// final currentMeetingIdProvider = Provider((ref) {
-//   final uid = ref.watch(myUIDProvider);
-//   if (uid == null) return null;
-
-//   final user = ref.watch(userProvider(uid));
-//   if (user is AsyncLoading) return null;
-
-//   return user.data?.value.currentMeeting;
-// });
-
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
   // log('lockedUserViewModelProvider');
-  // final database = ref.watch(databaseProvider);
-  // log('lockedUserViewModelProvider - database=$database');
-  // final algorand = ref.watch(algorandProvider(AlgorandNet.testnet));
-  // log('lockedUserViewModelProvider - algorand=$algorand');
   final uid = ref.watch(myUIDProvider)!;
   // log('lockedUserViewModelProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
@@ -255,8 +240,6 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
 
 final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   // log('ringingPageViewModelProvider');
-  // final database = ref.watch(databaseProvider);
-  // log('ringingPageViewModelProvider - database=$database');
   final algorand = ref.watch(algorandProvider);
   // log('lockedUserViewModelProvider - algorand=$algorand');
   final uid = ref.watch(myUIDProvider)!;
@@ -289,17 +272,13 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
 final addBidPageViewModelProvider =
     StateProvider.family<AddBidPageViewModel?, String>((ref, uid) {
-  log('addBidPageViewModelProvider');
+  // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
-  log('addBidPageViewModelProvider - functions=$functions');
-  // final algorandMainnet = ref.watch(algorandProvider(AlgorandNet.mainnet));
-  // log('addBidPageViewModelProvider - algorandMainnet=$algorandMainnet');
-  // if (algorandMainnet is AsyncLoading) return null;
+  // log('addBidPageViewModelProvider - functions=$functions');
   final algorand = ref.watch(algorandProvider);
-  log('addBidPageViewModelProvider - algorandTestnet=$algorand');
-  // if (algorandTestnet is AsyncLoading) return null;
+  // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
   final user = ref.watch(userProvider(uid));
-  log('addBidPageViewModelProvider - user=$user');
+  // log('addBidPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
 
   final accounts = ref.watch(accountsProvider);
@@ -320,17 +299,6 @@ final accountsProvider = FutureProvider((ref) {
   return accountService.getAllAccounts();
 });
 
-// final balancesMainnetProvider = FutureProvider((ref) {
-//   final algorandMainnet = ref.watch(algorandProvider(AlgorandNet.mainnet));
-//   return algorandMainnet.getAssetHoldings();
-// });
-// final balancesTestnetProvider = FutureProvider<List<List<AssetHolding>>>((ref) {
-//   // log('balancesTestnetProvider');
-//   final algorandTestnet = ref.watch(algorandProvider);
-//   // log('balancesTestnetProvider - algorandTestnet=$algorandTestnet');
-//   return algorandTestnet.getAllAssetHoldings();
-// });
-
 final myAccountPageViewModelProvider =
     ChangeNotifierProvider<MyAccountPageViewModel>(
         (ref) => MyAccountPageViewModel(ref));
@@ -342,43 +310,8 @@ final userModelChangerProvider = Provider((ref) {
   return UserModelChanger(database, uid);
 });
 
-//final accountInfoViewModelProvider =//     Provider.family<AccountInfoViewModel?, int>((ref, numAccount) {
-//   log('accountInfoViewModelProvider - numAccount=$numAccount');
-//   final algorand = ref.watch(algorandProvider);
-//   final account = ref.watch(accountProvider(numAccount));
-//  if (account is AsyncLoading) return null;
-
-//   return AccountInfoViewModel(account: account.data!.value, algorand: algorand);
-// });
-
-
-final accountProvider =
-    FutureProvider.family<AbstractAccount, int>((ref, numAccount) async {
-  log('accountProvider - numAccount=$numAccount');
-  final accountService = ref.watch(accountServiceProvider);
-  final algorandLib = ref.watch(algorandLibProvider);
-  final storage = ref.watch(storageProvider);
-
-  final numLocalAccounts = await accountService.getNumLocalAccounts();
-  log('accountProvider - numLocalAccounts=$numLocalAccounts');
-  if (numAccount < numLocalAccounts) {
-    return LocalAccount.fromNumAccount(
-        numAccount: numAccount,
-        algorandLib: algorandLib,
-        storage: storage,
-        accountService: accountService);
-  }
-
-  return WalletConnectAccount.fromAccountIndex(numAccount - numLocalAccounts);
-});
-
 final numAccountsProvider = FutureProvider((ref) {
   log('numAccountsProvider');
   final accountService = ref.watch(accountServiceProvider);
   return accountService.getNumAccounts();
 });
-
-// final walletConnectorProvider = Provider((ref) {
-//   log(F + 'walletConnectorProvider');
-//   return
-// });

@@ -96,7 +96,7 @@ class LocalAccount extends AbstractAccount {
   Future _loadAccountFromStorage(int numAccount) async {
     _numAccount = numAccount;
     final account = await _libAccount();
-    _address = account.publicAddress;
+    address = account.publicAddress;
   }
 
   Future _createAndStoreAccount() async {
@@ -112,7 +112,7 @@ class LocalAccount extends AbstractAccount {
       // set
       _numAccount = await accountService.getNumLocalAccounts();
       // log('LocalAccount - _createAndStoreAccount - _numAccount=$_numAccount');
-      _address = account.publicAddress;
+      address = account.publicAddress;
       // log('LocalAccount - _createAndStoreAccount - _address=$_address');
 
       final storageAccountKey = 'account_$_numAccount';
@@ -131,8 +131,4 @@ class LocalAccount extends AbstractAccount {
   late int _numAccount;
   final AlgorandLib algorandLib;
   final SecureStorage storage;
-
-  late String _address;
-  @override
-  String get address => _address;
 }
