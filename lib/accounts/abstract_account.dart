@@ -48,7 +48,8 @@ class AccountService {
 
   Future<int> getNumLocalAccounts() async {
     final numAccountsString = await storage.read('num_accounts');
-    final numAccounts = numAccountsString == null ? 0 : int.parse(numAccountsString);
+    final numAccounts =
+        numAccountsString == null ? 0 : int.parse(numAccountsString);
     log('Number of Local Accounts ========= $numAccounts');
     return numAccounts;
   }
@@ -94,16 +95,6 @@ class AccountService {
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
-
-    // DEBUG
-    final asL = localAccounts.map((a) => a.address).toList();
-    final asWC = walletConnectAccounts.map((a) => a.address).toList();
-    log('getAllAccounts - as_l=$asL');
-    log('getAllAccounts - as_wc=$asWC');
-    // DEBUG
-
-    // return [...localAccounts];
-    log(F+' doubt ${[...asL, ...asWC].toString()}');
     return [...localAccounts, ...walletConnectAccounts];
   }
 
@@ -158,7 +149,8 @@ abstract class AbstractAccount {
   AbstractAccount({required this.accountService});
   final AccountService accountService;
 
-  String get address;
+  late String address;
+  List<Balance> balances = [];
 
   Future<String> optInToDapp(
       {required int dappId,
@@ -168,24 +160,19 @@ abstract class AbstractAccount {
       {required int assetId,
       required AlgorandNet net,
       waitForConfirmation = true});
-  Future<bool> isOptedInToASA(
-          {required int assetId, required AlgorandNet net}) =>
-      throw UnimplementedError();
+  Future<bool> isOptedInToASA({required int assetId, required AlgorandNet net});
   Future<Uint8List> sign(RawTransaction txn);
-
-  List<Balance> _balances = [];
-  List<Balance> get balances => _balances;
 
   Future updateBalances() async {
     try {
       log('updateBalances');
-      final mainnetAssetHoldings = await accountService.getAssetHoldings(
-          address: address, net: AlgorandNet.mainnet);
+      // final mainnetAssetHoldings = await accountService.getAssetHoldings(
+      //     address: address, net: AlgorandNet.mainnet);
 
-      final mainnetBalances = mainnetAssetHoldings
-          .map((assetHolding) =>
-              Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
-          .toList();
+      // final mainnetBalances = mainnetAssetHoldings
+      //     .map((assetHolding) =>
+      //         Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
+      //     .toList();
 
       final testnetAssetHoldings = await accountService.getAssetHoldings(
           address: address, net: AlgorandNet.testnet);
@@ -195,7 +182,8 @@ abstract class AbstractAccount {
               Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
           .toList();
 
-      _balances = [...mainnetBalances, ...testnetBalances];
+      // balances = [...mainnetBalances, ...testnetBalances];
+      balances = testnetBalances;
     } catch (e) {
       print(e);
     }

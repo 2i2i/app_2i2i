@@ -23,52 +23,25 @@ class WalletConnectAccount extends AbstractAccount {
     );
   }
 
-  String address1 = '';
-  int? _accountIndex; // will be null until session created
-  set accountIndex(int a) => _accountIndex = a;
-
   late WalletConnect connector;
 
+  WalletConnectAccount({required AccountService accountService, required this.connector}) : super(accountService: accountService);
   factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
     final connector = newConnector();
     return WalletConnectAccount(accountService: accountService, connector: connector);
   }
 
-  WalletConnectAccount({required AccountService accountService, required this.connector}) : super(accountService: accountService);
-
-  factory WalletConnectAccount.fieldsGiven({required AccountService accountService, required WalletConnect connector, required int accountIndex}) {
-    final account = WalletConnectAccount(accountService: accountService, connector: connector);
-    account._accountIndex = accountIndex;
-    return account;
-  }
-
-  factory WalletConnectAccount.fromAccountIndex(int accountIndex) {
-    // TODO error if not 0 <= accountIndex < cache.length
-    List<String> addresses = [];
-    int counter = 0;
-    for (final account in cache) {
-      if (counter == accountIndex) return account;
-      if (addresses.contains(account.address)) continue;
-      counter++;
-    }
-    throw Exception('WalletConnectAccount.fromAccountIndex - accountIndex bad');
-  }
-
   // TODO cache management
   Future save() async {
-    if (_accountIndex != null) {
-      return;
-    }
     print(connector.session.accounts);
     for (int i = 0; i < connector.session.accounts.length; i++) {
-      final account = WalletConnectAccount.fieldsGiven(
+      final account = WalletConnectAccount(
           accountService: accountService,
-          connector: connector,
-          accountIndex: i);
-      account.address1 = connector.session.accounts[i];
+          connector: connector);
+      account.address = connector.session.accounts[i];
       await account.updateBalances();
       log('save - i=$i - account=$account - cache=$cache');
-      int alreadyExistIndex = cache.indexWhere((element) => element.address1 == account.address1);
+      int alreadyExistIndex = cache.indexWhere((element) => element.address == account.address);
       if(alreadyExistIndex < 0) {
         cache.add(account);
       }else{
@@ -79,13 +52,6 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;
-
-  @override
-  String get address {
-    log(F+'============ ============ ============  ============ $address1 ============ ============ ============ ============ ============ ');
-    return address1;
-    return connector.session.accounts[_accountIndex!];
-  }
 
   @override
   Future<bool> isOptedInToASA(

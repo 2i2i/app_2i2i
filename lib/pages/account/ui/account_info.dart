@@ -35,10 +35,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
 
   @override
   Widget build(BuildContext context) {
-    // final accountInfoViewModel =
-    //     ref.watch(accountInfoViewModelProvider(numAccount));
-    // if (accountInfoViewModel == null) return Container();
-
     return Column(
       children: [
         SizedBox(
@@ -94,12 +90,3 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 }
-
-// class AccountInfoViewModel {
-//   AccountInfoViewModel({required this.account, required this.algorand});
-//   final AlgorandService algorand;
-//   final AbstractAccount account;
-//   Future updateBalances() {
-//     return account.updateBalances();
-//   }
-// }
