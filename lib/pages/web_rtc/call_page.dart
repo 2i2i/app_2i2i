@@ -10,11 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallPage extends StatefulWidget {
-  CallPage({Key? key, required this.meeting, required this.user})
+  CallPage({Key? key, required this.meeting, required this.user, this.initMethod})
       : super(key: key);
 
   final Meeting meeting;
   final UserModel user;
+  final Function? initMethod;
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -81,6 +82,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   @override
   void initState() {
     meeting = widget.meeting;
+    widget.initMethod!();
     user = widget.user;
     _localRenderer.initialize();
     _remoteRenderer.initialize();
