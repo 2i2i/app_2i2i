@@ -26,7 +26,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     log('HomePage - build');
-
     final authStateChanges = ref.watch(authStateChangesProvider);
     if (authStateChanges is AsyncLoading) return WaitPage();
 

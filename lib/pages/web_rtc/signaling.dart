@@ -251,46 +251,50 @@ class Signaling {
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
-    log('Signaling - hangUp - ${meeting.id}');
+    try {
+      log('Signaling - hangUp - ${meeting.id}');
 
-    final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
-    final args = {
-      'meetingId': meeting.id,
-    };
-    if (reason != null) args['reason'] = reason;
-    await endMeeting(args);
+      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
+      final args = {
+        'meetingId': meeting.id,
+      };
+      if (reason != null) args['reason'] = reason;
+      await endMeeting(args);
 
-    log('Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
-    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-    tracks.forEach((track) {
-      track.stop();
-    });
+      log('Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+      tracks.forEach((track) {
+        track.stop();
+      });
 
-    log('Signaling - hangUp - ${meeting.id} - local track.stop');
+      log('Signaling - hangUp - ${meeting.id} - local track.stop');
 
-    if (remoteStream != null) {
-      remoteStream!.getTracks().forEach((track) => track.stop());
+      if (remoteStream != null) {
+        remoteStream!.getTracks().forEach((track) => track.stop());
+      }
+      log('Signaling - hangUp - ${meeting.id} - remote track.stop');
+
+      if (peerConnection != null) peerConnection!.close();
+      log('Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
+
+      // if (roomId != null) {
+      final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
+      iceCandidatesB.docs.forEach((document) => document.reference.delete());
+
+      final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
+      iceCandidatesA.docs.forEach((document) => document.reference.delete());
+
+      await roomRef.delete();
+      log('Signaling - hangUp - ${meeting.id} - room deleted');
+      // }
+
+      localStream.dispose();
+      log('Signaling - hangUp - ${meeting.id} - localStream.dispose');
+      remoteStream?.dispose();
+      log('Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
+    } catch (e) {
+      print(e);
     }
-    log('Signaling - hangUp - ${meeting.id} - remote track.stop');
-
-    if (peerConnection != null) peerConnection!.close();
-    log('Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
-
-    // if (roomId != null) {
-    final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-    iceCandidatesB.docs.forEach((document) => document.reference.delete());
-
-    final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-    iceCandidatesA.docs.forEach((document) => document.reference.delete());
-
-    await roomRef.delete();
-    log('Signaling - hangUp - ${meeting.id} - room deleted');
-    // }
-
-    localStream.dispose();
-    log('Signaling - hangUp - ${meeting.id} - localStream.dispose');
-    remoteStream?.dispose();
-    log('Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
   }
 
   void registerPeerConnectionListeners() {
