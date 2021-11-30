@@ -179,11 +179,16 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                       children: [
                         FloatingActionButton(
                           onPressed: () {
-                            if(budgetTimer?.isActive??false) {
+                          try {
+                            if (budgetTimer?.isActive ?? false) {
                               budgetTimer?.cancel();
                             }
+                            widget.initMethod!();
                             signaling!.hangUp(_localRenderer);
-                          },
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
                           child: Icon(
                             Icons.call_end,
                             color: Colors.white,

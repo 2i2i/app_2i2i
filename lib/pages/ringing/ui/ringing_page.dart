@@ -17,14 +17,12 @@ class RingingPage extends ConsumerStatefulWidget {
   const RingingPage(
       {Key? key,
       required this.meeting,
-      this.initMethod,
       this.callReject})
       : super(key: key);
 
   final Meeting meeting;
 
-  final Function? initMethod;
-  final Function? callReject;
+  final ValueChanged<bool>? callReject;
 
   @override
   RingingPageState createState() => RingingPageState(meeting: meeting);
@@ -39,7 +37,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   void initState() {
-    widget.initMethod!();
+    widget.callReject?.call(false);
     T?.cancel();
     T = null;
     T = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
@@ -56,7 +54,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
-    widget.callReject!();
+    widget.callReject!(true);
     T?.cancel();
     T = null;
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
@@ -159,7 +157,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
                           onPressed: (){
-                            widget.callReject!();
+                            widget.callReject!(true);
                             ringingPageViewModel.cancelMeeting();
                           },
                         ),
@@ -183,7 +181,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                           Icon(Icons.call, color: Colors.white),
                                       backgroundColor: Colors.green,
                                       onPressed: () {
-                                        widget.callReject!();
+                                        widget.callReject!(true);
                                         ringingPageViewModel.acceptMeeting();
                                       })),
                               SizedBox(height: 8),

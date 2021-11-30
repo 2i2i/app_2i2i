@@ -1,3 +1,4 @@
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bids.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -5,6 +6,8 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../common/text_utils.dart';
 
 class UserPage extends ConsumerWidget {
   UserPage({required this.uid});
@@ -47,6 +50,36 @@ class UserPage extends ConsumerWidget {
               size: 40,
             )),
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: authStateChanges.data!.value!.uid == uid
+            ? Container()
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CaptionText(
+                      title:
+                          "Do you want to bid for ${userPageViewModel.user.name}",
+                      textColor: Theme.of(context).hintColor),
+                  SizedBox(height: 12),
+                  Container(
+                    height: 35,
+                    child: ElevatedButton(
+                        child: ButtonText(title: "BID"),
+                        onPressed: () => context.goNamed('addbidpage',
+                            params: {'uid': userPageViewModel.user.id}),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                AppTheme().lightGreen),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))))),
+                    width: MediaQuery.of(context).size.width / 3.5,
+                  )
+                ],
+              ),
+      ),
       body: Column(
         children: [
           // params(userPageViewModel.user),
@@ -77,14 +110,6 @@ class UserPage extends ConsumerWidget {
                 // onTap: (_) => null,
               )),
         ],
-      ),
-      floatingActionButton: authStateChanges.data!.value!.uid == uid
-          ? Container()
-          : FloatingActionButton(
-        onPressed: () => context.goNamed('addbidpage',
-            params: {'uid': userPageViewModel.user.id}),
-        tooltip: 'add bid',
-        child: const Icon(Icons.add),
       ),
     );
   }

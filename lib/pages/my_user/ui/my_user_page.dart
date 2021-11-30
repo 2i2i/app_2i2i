@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -31,6 +32,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             appBar: AppBar(
               title: Text(myUserPageViewModel.user.name),
             ),
+
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
           );
@@ -61,7 +63,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                 icon: Icon(Icons.edit),
                 label: Text('Edit Name and Bio'))),
         Divider(),
-        Expanded(
+        Expanded  (
             child: Row(
           children: [
             Expanded(
