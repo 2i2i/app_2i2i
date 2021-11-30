@@ -3,39 +3,81 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
 import 'package:app_2i2i/pages/web_rtc/call_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
+class LockedUserPage extends ConsumerStatefulWidget {
+  const LockedUserPage({Key? key}) : super(key: key);
 
-class LockedUserPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    log('LockedUserPage - build');
+  _LockedUserPageState createState() => _LockedUserPageState();
+}
 
+class _LockedUserPageState extends ConsumerState<LockedUserPage> {
+  final player = AudioPlayer();
+
+  @override
+  void initState() {
+    playAudio();
+    super.initState();
+  }
+
+  Future<void> playAudio() async {
+    try {
+      await player.setAsset('assets/video_call.mp3');
+      await player.setLoopMode(LoopMode.one);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
-    log('LockedUserPage - build - lockedUserViewModel=$lockedUserViewModel');
-    if (lockedUserViewModel == null) return WaitPage();
+
+    if (lockedUserViewModel == null) {
+      return WaitPage();
+    }
 
     final meetingStatus = lockedUserViewModel.meeting.currentStatus();
-    log('LockedUserPage - build - meetingStatus=$meetingStatus');
+
     if (meetingStatus == MeetingValue.INIT ||
-        meetingStatus == MeetingValue.LOCK_COINS_STARTED)
+        meetingStatus == MeetingValue.LOCK_COINS_STARTED) {
       return RingingPage(
-        meeting: lockedUserViewModel.meeting,
-      );
-
-    if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
-        !lockedUserViewModel.amA())
+          meeting: lockedUserViewModel.meeting,
+          initMethod: () {
+            player.play();
+            Future.delayed(Duration(seconds: 30)).then((value) async {
+              await player.stop();
+            });
+          },
+          callReject: () async {
+            await player.stop();
+          });
+    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
+        !lockedUserViewModel.amA()) {
       return RingingPage(
-        meeting: lockedUserViewModel.meeting,
-      );
-
-    if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
-        meetingStatus == MeetingValue.ACTIVE)
+          meeting: lockedUserViewModel.meeting,
+          initMethod: () {
+            player.play();
+            Future.delayed(Duration(seconds: 30)).then((value) async {
+              await player.stop();
+            });
+          },
+          callReject: () async {
+            await player.stop();
+          });
+    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
+        meetingStatus == MeetingValue.ACTIVE) {
       return CallPage(
-          meeting: lockedUserViewModel.meeting, user: lockedUserViewModel.user);
-
-    throw new Exception('unknown meetingStatus=$meetingStatus');
+          meeting: lockedUserViewModel.meeting,
+          user: lockedUserViewModel.user,
+          initMethod: () async {
+            await player.stop();
+          });
+    } else {
+      throw new Exception('unknown meetingStatus=$meetingStatus');
+    }
   }
 }
