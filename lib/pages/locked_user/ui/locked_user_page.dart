@@ -57,15 +57,21 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
           });
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
         !lockedUserViewModel.amA()) {
-      return RingingPage(
+      // return RingingPage(
+      //     meeting: lockedUserViewModel.meeting,
+      //     initMethod: () {
+      //       player.play();
+      //       Future.delayed(Duration(seconds: 30)).then((value) async {
+      //         await player.stop();
+      //       });
+      //     },
+      //     callReject: () async {
+      //       await player.stop();
+      //     });
+      return CallPage(
           meeting: lockedUserViewModel.meeting,
-          initMethod: () {
-            player.play();
-            Future.delayed(Duration(seconds: 30)).then((value) async {
-              await player.stop();
-            });
-          },
-          callReject: () async {
+          user: lockedUserViewModel.user,
+          initMethod: () async {
             await player.stop();
           });
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
