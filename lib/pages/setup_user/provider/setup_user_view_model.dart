@@ -2,8 +2,8 @@ import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
-import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,27 +51,31 @@ class SetupUserViewModel with ChangeNotifier {
 
   ////////
   Future createAuthAndStartAlgorand() async {
-    if (signUpInProcess) return;
-    signUpInProcess = true;
+    try {
+      if (signUpInProcess) return;
+      signUpInProcess = true;
 
-    log('SetupUserViewModel - createAuthAndStartAlgorand');
+      log('SetupUserViewModel - createAuthAndStartAlgorand');
 
-    message = 'creating auth user';
-    notifyListeners();
-    final userCredentialFuture = auth.signInAnonymously();
-    final setupAlgorandAccountFuture = setupAlgorandAccount();
+      message = 'creating auth user';
+      notifyListeners();
+      final userCredentialFuture = auth.signInAnonymously();
+      final setupAlgorandAccountFuture = setupAlgorandAccount();
 
-    final futureResults =
-        await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
+      final futureResults =
+          await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
 
-    final userCredential = futureResults[0];
-    uid = userCredential.user!.uid;
-    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
-    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.user?.uid}');
+      final userCredential = futureResults[0];
+      uid = userCredential.user!.uid;
+      log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
+      log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.user?.uid}');
 
-    message = 'done';
-    workDone = true;
-    notifyListeners();
+      message = 'done';
+      workDone = true;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future updateBio() async {
@@ -100,31 +104,31 @@ class SetupUserViewModel with ChangeNotifier {
 
   // KEEP account in local scope
   Future setupAlgorandAccount() async {
-    message = 'creating algorand account';
-    notifyListeners();
-    if (0 < await accountService.getNumAccounts()) return;
-    final account = await LocalAccount.create(
-        algorandLib: algorandLib,
-        storage: storage,
-        accountService: accountService);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
+    try {
+      message = 'creating algorand account';
+      notifyListeners();
+      if (0 < await accountService.getNumAccounts()) return;
+      final account = await LocalAccount.create(
+          algorandLib: algorandLib,
+          storage: storage,
+          accountService: accountService);
+      log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
     // TODO uncomment try
       // DEBUG - off for faster debugging
-    try {
-      message = 'gifting your some (test) ALGOs and TESTCOINs';
-      notifyListeners();
-      await algorand.giftALGO(account);
-      log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-      final optInToASAFuture = account.optInToASA(
-          assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
-          net: AlgorandNet.testnet);
-      final optInStateTxId = await optInToASAFuture.then(
-          (value) => algorand.giftASA(account, waitForConfirmation: false));
-      log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
-      await algorand.waitForConfirmation(
-          txId: optInStateTxId, net: AlgorandNet.testnet);
-      log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
+      // message = 'gifting your some (test) ALGOs and TESTCOINs';
+      // notifyListeners();
+      // await algorand.giftALGO(account);
+      // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+      // final optInToASAFuture = account.optInToASA(
+      //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+      //     net: AlgorandNet.testnet);
+      // final optInStateTxId = await optInToASAFuture.then(
+      //     (value) => algorand.giftASA(account, waitForConfirmation: false));
+      // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
+      // await algorand.waitForConfirmation(
+      //     txId: optInStateTxId, net: AlgorandNet.testnet);
+      // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
     } catch (e) {
       // TODO - we can continue the app; this was a luxury
     }

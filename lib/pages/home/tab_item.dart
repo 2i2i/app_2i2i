@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app_2i2i/constants/keys.dart';
 import 'package:app_2i2i/constants/strings.dart';
+import 'package:flutter/material.dart';
 
 enum TabItem { search, myAccount, bidsIn }
 

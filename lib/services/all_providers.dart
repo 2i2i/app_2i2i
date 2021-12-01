@@ -2,17 +2,17 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
-import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
 import 'package:app_2i2i/pages/locked_user/ui/lock_watch_widget.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
+import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
@@ -272,13 +272,13 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
 final addBidPageViewModelProvider =
     StateProvider.family<AddBidPageViewModel?, String>((ref, uid) {
-  log('addBidPageViewModelProvider');
+  // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
-  log('addBidPageViewModelProvider - functions=$functions');
+  // log('addBidPageViewModelProvider - functions=$functions');
   final algorand = ref.watch(algorandProvider);
-  log('addBidPageViewModelProvider - algorandTestnet=$algorand');
+  // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
   final user = ref.watch(userProvider(uid));
-  log('addBidPageViewModelProvider - user=$user');
+  // log('addBidPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
 
   final accounts = ref.watch(accountsProvider);

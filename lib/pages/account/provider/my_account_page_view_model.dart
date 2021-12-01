@@ -17,20 +17,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
   bool isLoading = true;
   List<AbstractAccount>? accounts;
 
-
-  // Future optIn(int assetId, int numAccount) async {
-  //   // is user account opted in?
-  //   final accountPublicAddress =
-  //       await algorand.accountPublicAddress(numAccount);
-  //   final userOptedIn =
-  //       await algorand.isAccountOptedInToASA(accountPublicAddress!, assetId);
-
-  //   log('MyAccountPageViewModel - optIn - userOptedIn=$userOptedIn');
-
-  //   return algorand.optInUserAccountToASA(
-  //       assetId: assetId, numAccount: numAccount);
-  // }
-
   initMethod() async {
     try {
       algorandLib = await ref!.watch(algorandLibProvider);
@@ -45,11 +31,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future addLocalAccount() async {
-    await LocalAccount.create(
-        accountService: accountService!,
-        algorandLib: algorandLib!,
-        storage: storage!);
-    return updateAccounts();
+    await LocalAccount.create(accountService: accountService!, algorandLib: algorandLib!, storage: storage!);
+    await updateAccounts();
   }
 
   Future updateAccounts() async {

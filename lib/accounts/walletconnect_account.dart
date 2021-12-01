@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
@@ -21,62 +22,36 @@ class WalletConnectAccount extends AbstractAccount {
     );
   }
 
-  int? _accountIndex; // will be null until session created
-  set accountIndex(int a) => _accountIndex = a;
-
   late WalletConnect connector;
 
-  factory WalletConnectAccount.fromNewConnector(
-      {required AccountService accountService}) {
+  WalletConnectAccount({required AccountService accountService, required this.connector}) : super(accountService: accountService);
+  factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
     final connector = newConnector();
-    return WalletConnectAccount(
-        accountService: accountService, connector: connector);
-  }
-  WalletConnectAccount(
-      {required AccountService accountService, required this.connector})
-      : super(accountService: accountService);
-  factory WalletConnectAccount.fieldsGiven(
-      {required AccountService accountService,
-      required WalletConnect connector,
-      required int accountIndex}) {
-    final account = WalletConnectAccount(
-        accountService: accountService, connector: connector);
-    account._accountIndex = accountIndex;
-    return account;
-  }
-  factory WalletConnectAccount.fromAccountIndex(int accountIndex) {
-    // TODO error if not 0 <= accountIndex < cache.length
-    List<String> addresses = [];
-    int counter = 0;
-    for (final account in cache) {
-      if (counter == accountIndex) return account;
-      if (addresses.contains(account.address)) continue;
-      counter++;
-    }
-    throw Exception('WalletConnectAccount.fromAccountIndex - accountIndex bad');
+    return WalletConnectAccount(accountService: accountService, connector: connector);
   }
 
   // TODO cache management
   Future<void> save() async {
-    if (_accountIndex != null) return;
-    final List<WalletConnectAccount> accounts = [];
     final List<Future<void>> futures = [];
     for (int i = 0; i < connector.session.accounts.length; i++) {
-      final account = WalletConnectAccount.fieldsGiven(
+      final account = WalletConnectAccount(
           accountService: accountService,
-          connector: connector,
-          accountIndex: i);
-      accounts.add(account);
+          connector: connector);
+
+      account.address = connector.session.accounts[i];
       futures.add(account.updateBalances());
+
+      int alreadyExistIndex = cache.indexWhere((element) => element.address == account.address);
+      if(alreadyExistIndex < 0) {
+        cache.add(account);
+      }else{
+        cache[alreadyExistIndex] = account;
+      }
     }
     await Future.wait(futures);
-    cache.addAll(accounts);
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;
-
-  @override
-  String get address => connector.session.accounts[_accountIndex!];
 
   @override
   Future<String> optInToASA(

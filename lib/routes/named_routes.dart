@@ -1,13 +1,13 @@
+import 'package:app_2i2i/pages/about/about_page.dart';
 import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/app/auth_widget.dart';
-import 'package:app_2i2i/pages/home/error_page.dart';
-import 'package:app_2i2i/pages/home/home_page.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
-import 'package:app_2i2i/pages/about/about_page.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/cv/cv_page.dart';
+import 'package:app_2i2i/pages/home/error_page.dart';
+import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +43,7 @@ class NamedRoutes{
             homePageBuilder: (_) => HomePage(),
             setupPageBuilder: (_) => SetupUserPage(),
           ),
+
         ),
       ),
       GoRoute(
@@ -50,7 +51,7 @@ class NamedRoutes{
         path: Routes.HOME,
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
-          child: HomePage(),
+          child:  HomePage(),
         ),
       ),
       GoRoute(
