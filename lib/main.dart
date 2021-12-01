@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/routes/named_routes.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,14 +39,14 @@ class MainWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // User heartbeat timer
     // DEBUG
-    // if (T == null) {
-    //   T = Timer.periodic(Duration(seconds: 10), (timer) async {
-    //     // log('UserModel Timer');
-    //     final userModelChanger = ref.watch(userModelChangerProvider);
-    //     if (userModelChanger == null) return;
-    //     await userModelChanger.updateHeartbeat();
-    //   });
-    // }
+    if (T == null) {
+      T = Timer.periodic(Duration(seconds: 10), (timer) async {
+        // log('UserModel Timer');
+        final userModelChanger = ref.watch(userModelChangerProvider);
+        if (userModelChanger == null) return;
+        await userModelChanger.updateHeartbeat();
+      });
+    }
 
     return MaterialApp.router(
       routeInformationParser: NamedRoutes.router.routeInformationParser,
