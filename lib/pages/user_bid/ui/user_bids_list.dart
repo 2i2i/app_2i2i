@@ -4,8 +4,8 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserBids extends ConsumerWidget {
-  UserBids({
+class UserBidsList extends ConsumerWidget {
+  UserBidsList({
     required this.bidsIds,
     required this.titleWidget,
     required this.noBidsText,

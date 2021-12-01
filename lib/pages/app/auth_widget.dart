@@ -1,3 +1,4 @@
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,9 @@ class AuthWidget extends ConsumerWidget {
       return setupPageBuilder(context);
     }, loading: () {
       log('AuthWidget - build - authStateChanges.when - loading');
-      return const Scaffold(
+      return  Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: WaitPage(),
         ),
       );
     }, error: (_, __) {

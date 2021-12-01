@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_bids.dart';
+import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,13 +47,13 @@ class _UserPageState extends ConsumerState<UserPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(userModel!.name),
+        backgroundColor: AppTheme().lightGray,
         leading: IconButton(
+            iconSize: 35,
             onPressed: () => context.goNamed('home'),
-            icon: Icon(
-              Icons.navigate_before,
-              size: 40,
-            )),
+            icon: Icon(Icons.navigate_before,color: AppTheme().black)),
+        centerTitle: true,
+        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -86,6 +86,26 @@ class _UserPageState extends ConsumerState<UserPage> {
       ),
       body: Column(
         children: [
+         /* SizedBox(height: 4),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+                color: AppTheme().lightBeige,
+                borderRadius: BorderRadius.circular(5)),
+            height: kToolbarHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                    iconSize: 35,
+                    onPressed: () => context.goNamed('home'),
+                    icon: Icon(Icons.navigate_before)),
+                SizedBox(width: 10),
+                TitleText(title: userModel!.name),
+              ],
+            ),
+          ),*/
           Container(
             margin:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
@@ -119,24 +139,8 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           Divider(),
           Expanded(
-              child: UserBids(
-            bidsIds: userPageViewModel.user.bidsIn,
-            titleWidget: Row(
-              children: [
-                HeadLineSixText(
-                    title: 'OTHER BIDS FOR ', textColor: AppTheme().deepPurple),
-                HeadLineSixText(
-                    title: '${userPageViewModel.user.name}',
-                    textColor: AppTheme().black),
-              ],
-            ),
-            noBidsText: 'no bid ins for user',
-            leading: Icon(
-              Icons.label_important,
-              color: Colors.green,
-            ),
-            // onTap: (_) => null,
-          )),
+            child: OtherBidList(user: userModel),
+          ),
         ],
       ),
     );

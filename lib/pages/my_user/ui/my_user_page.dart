@@ -7,7 +7,7 @@ import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_bids.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             child: Row(
           children: [
             Expanded(
-                child: UserBids(
+                child: UserBidsList(
               bidsIds: myUserPageViewModel.user.bidsIn,
               titleWidget: HeadLineSixText(title: 'Bids In',textColor: AppTheme().deepPurple),
               noBidsText: 'no bids in for user',
@@ -84,7 +84,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                 child: userPrivateAsyncValue.when(
                     data: (UserModelPrivate userPrivate) {
               log('MyUserPage - _buildContents - data - userPrivate=$userPrivate userPrivate.bidsOut=${userPrivate.bidsOut}');
-              return UserBids(
+              return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
                 titleWidget: HeadLineSixText(title: 'Bids Out',textColor: AppTheme().deepPurple),
                 noBidsText: 'no bids out for user',
