@@ -119,9 +119,9 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future _loadAccountFromStorage(int numAccount) async {
+    _numAccount = numAccount;
     final account = await _libAccount();
     address = account.publicAddress;
-    _numAccount = numAccount;
   }
 
   Future _createAndStoreAccount() async {
