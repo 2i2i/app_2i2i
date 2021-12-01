@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:math';
 
@@ -10,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallPage extends StatefulWidget {
-  CallPage({Key? key, required this.meeting, required this.user, this.initMethod})
+  CallPage(
+      {Key? key, required this.meeting, required this.user, this.initMethod})
       : super(key: key);
 
   final Meeting meeting;
@@ -22,76 +22,50 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
-  Meeting? meeting;
-  UserModel? user;
-
-  Timer? timer;
   bool swapped = false;
   Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-  String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
 
   Timer? budgetTimer;
+  Timer? progressTimer;
   ValueNotifier<double> progress = ValueNotifier(100);
-  ValueNotifier<String> time = ValueNotifier('');
 
   void _initBudgetTimer() {
     // no timer for free call
-    if (meeting?.speed.num == 0) return;
+    if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration = ((meeting?.budget??0) / (meeting?.speed.num??1)).floor();
+    var maxDuration =
+        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = maxDuration;
-    final activeTime = meeting!.activeTime();
+    final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
-    budgetTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      double percentage = (timer.tick * 100)/maxDuration;
-      progress.value = 100 - percentage;
-      if(timer.tick >= maxDuration){
-        timer.cancel();
-        signaling!.hangUp(_localRenderer, reason: 'BUDGET');
-      }
-
-      int minutes = (timer.tick / 60).truncate();
-      time.value =formatedTime(timer.tick);
-
+    budgetTimer = Timer(Duration(seconds: duration), () {
+      progressTimer!.cancel();
+      signaling!.hangUp(_localRenderer, reason: 'BUDGET');
     });
-    // budgetTimer = Timer(Duration(seconds: duration), () => signaling!.hangUp(_localRenderer, reason: 'BUDGET'));
-  }
-  String formatedTime(int secTime) {
-    String getParsedTime(String time) {
-      if (time.length <= 1) return "0$time";
-      return time;
-    }
-
-    int min = secTime ~/ 60;
-    int sec = secTime % 60;
-
-    String parsedTime = getParsedTime(min.toString()) + " : " + getParsedTime(sec.toString());
-    return parsedTime;
-  }
-
-  bool amA() {
-    return meeting!.A == user!.id;
+    progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      double percentage = (timer.tick * 100) / maxDuration;
+      progress.value = 100 - percentage;
+      if (timer.tick >= maxDuration) timer.cancel();
+    });
   }
 
   @override
   void initState() {
-    meeting = widget.meeting;
     widget.initMethod!();
-    user = widget.user;
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
     _initBudgetTimer();
 
     signaling = Signaling(
-        meeting: meeting!,
-        amA: amA(),
+        meeting: widget.meeting,
+        amA: widget.meeting.A == widget.user.id,
         localVideo: _localRenderer,
         remoteVideo: _remoteRenderer);
     signaling!.onAddRemoteStream = ((stream) {
@@ -107,12 +81,12 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
     budgetTimer!.cancel();
+    progressTimer!.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: OrientationBuilder(builder: (context, orientation) {
           return Container(
@@ -219,32 +193,18 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                                   ),
                                 );
                               },
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/3),
-                          child: ValueListenableBuilder(
-                            valueListenable: time,
-                            builder: (BuildContext context, String value, Widget? child) {
-                              return Text(
-                                time.value,
-                                style: TextStyle(
-                                    color: Colors.white
-                                )
-                                ,textAlign: TextAlign.center,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  // painter: CurvePainter(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+
+                // painter: CurvePainter(),
               ),
-              /*Positioned(
+            ),
+            /*Positioned(
                 bottom: 5,
                 right: 450,
                 left: 0,
@@ -290,14 +250,14 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   },
                 ),
               ),*/
-            ]),
-          );
-        }),
-
+          ]),
+        );
+      }),
     );
   }
 
-  Widget firstVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget firstVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
@@ -309,12 +269,12 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget secondVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget secondVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(
-          renderer!,
+      child: RTCVideoView(renderer!,
           mirror: true,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),

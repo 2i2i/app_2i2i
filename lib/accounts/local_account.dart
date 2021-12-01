@@ -40,23 +40,6 @@ class LocalAccount extends AbstractAccount {
   }
 
   @override
-  Future<bool> isOptedInToASA(
-      {required int assetId, required AlgorandNet net}) async {
-    if (assetId == 0) return true; // all accounts can use ALGO
-    return balances
-        .where((balance) => balance.net == net)
-        .map((balance) => balance.assetHolding.assetId)
-        .contains(assetId);
-  }
-
-  @override
-  Future<Uint8List> sign(RawTransaction txn) async {
-    final account = await _libAccount();
-    final txnSigned = await txn.sign(account);
-    return txnSigned.toBytes();
-  }
-
-  @override
   Future<String> optInToASA(
       {required int assetId,
       required AlgorandNet net,
@@ -86,6 +69,14 @@ class LocalAccount extends AbstractAccount {
     return txId;
   }
 
+  @override
+  Future<List<Uint8List>> sign(List<RawTransaction> txns) async {
+    final account = await _libAccount();
+    final signFutures = txns.map((txn) => txn.sign(account)).toList();
+    final txnsSigned = await Future.wait(signFutures);
+    return txnsSigned.map((txn) => txn.toBytes()).toList();
+  }
+
   Future<Account> _libAccount() async {
     final privateKey = await storage.read('account_$_numAccount');
     final Uint8List seed = base64Decode(privateKey!);
@@ -96,11 +87,10 @@ class LocalAccount extends AbstractAccount {
   Future _loadAccountFromStorage(int numAccount) async {
     _numAccount = numAccount;
     final account = await _libAccount();
-    _address = account.publicAddress;
+    address = account.publicAddress;
   }
 
   Future _createAndStoreAccount() async {
-    try {
       // log('LocalAccount - _createAndStoreAccount');
       final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
       // log('LocalAccount - _createAndStoreAccount - createAccount');
@@ -112,7 +102,7 @@ class LocalAccount extends AbstractAccount {
       // set
       _numAccount = await accountService.getNumLocalAccounts();
       // log('LocalAccount - _createAndStoreAccount - _numAccount=$_numAccount');
-      _address = account.publicAddress;
+      address = account.publicAddress;
       // log('LocalAccount - _createAndStoreAccount - _address=$_address');
 
       final storageAccountKey = 'account_$_numAccount';
@@ -123,16 +113,9 @@ class LocalAccount extends AbstractAccount {
       // log('LocalAccount - _createAndStoreAccount - storage.write');
       await storage.write(storageAccountKey, privateKey);
       // log('LocalAccount - _createAndStoreAccount - done');
-    } catch (e) {
-      print(e);
-    }
   }
 
   late int _numAccount;
-  final AlgorandLib algorandLib;
   final SecureStorage storage;
-
-  late String _address;
-  @override
-  String get address => _address;
+  final AlgorandLib algorandLib;
 }

@@ -43,7 +43,10 @@ dependencies:
   dotted_border: ^2.0.0+1
   flutter_animator: ^3.2.0
   just_audio: ^0.9.18
-  walletconnect_dart: ^0.0.4
+  walletconnect_dart:
+    git:
+      url: git@github.com:2i2i/walletconnect-dart-sdk.git
+      ref: signTransactions
 
 dev_dependencies:
   flutter_test:

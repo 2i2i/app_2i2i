@@ -20,12 +20,15 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> updateUserHearbeat(String uid, int heartbeat, String status) => _service.setData(
+  Future<void> updateUserHearbeat(String uid, int heartbeat, String status) =>
+      _service.setData(
         path: FirestorePath.user(uid),
         data: {'heartbeat': heartbeat, 'status': status},
         merge: true,
       );
-  Future<void> updateUserNameAndBio(String uid, String name, String bio, List<String> tags) => _service.setData(
+  Future<void> updateUserNameAndBio(
+          String uid, String name, String bio, List<String> tags) =>
+      _service.setData(
         path: FirestorePath.user(uid),
         data: {'name': name, 'bio': bio, 'tags': tags},
         merge: true,
@@ -63,12 +66,8 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
-        // log('FirestoreDatabase - usersStream - builder - documentId=$documentId');
-        try {
-          return UserModel.fromMap(data, documentId);
-        } catch (e) {
-          return null;
-        }
+        if (data == null) return null;
+        return UserModel.fromMap(data, documentId);
       },
       queryBuilder: (query) {
         if (tags.isEmpty) return query.orderBy('status', descending: true);

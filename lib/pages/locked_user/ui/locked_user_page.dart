@@ -24,12 +24,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
   }
 
   Future<void> playAudio() async {
-    try {
-      await player.setAsset('assets/video_call.mp3');
-      await player.setLoopMode(LoopMode.one);
-    } catch (e) {
-      print(e);
-    }
+    await player.setAsset('assets/video_call.mp3');
+    await player.setLoopMode(LoopMode.one);
   }
 
   @override
@@ -43,7 +39,9 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
     final meetingStatus = lockedUserViewModel.meeting.currentStatus();
 
     if (meetingStatus == MeetingValue.INIT ||
-        meetingStatus == MeetingValue.LOCK_COINS_STARTED) {
+        meetingStatus == MeetingValue.LOCK_COINS_STARTED ||
+        (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
+            !lockedUserViewModel.amA())) {
       return RingingPage(
           meeting: lockedUserViewModel.meeting,
           callReject: (bool value) async {
@@ -55,25 +53,16 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
           });
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
         !lockedUserViewModel.amA()) {
-      // return RingingPage(
-      //     meeting: lockedUserViewModel.meeting,
-      //     initMethod: () {
-      //       player.play();
-      //       Future.delayed(Duration(seconds: 30)).then((value) async {
-      //         await player.stop();
-      //       });
-      //     },
-      //     callReject: () async {
-      //       await player.stop();
-      //     });
-      return CallPage(
+      return RingingPage(
           meeting: lockedUserViewModel.meeting,
-          callReject: (bool value) async {
-            if (value) {
+          initMethod: () {
+            player.play();
+            Future.delayed(Duration(seconds: 30)).then((value) async {
               await player.stop();
-            } else {
-              player.play();
-            }
+            });
+          },
+          callReject: () async {
+            await player.stop();
           });
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
         meetingStatus == MeetingValue.ACTIVE) {
