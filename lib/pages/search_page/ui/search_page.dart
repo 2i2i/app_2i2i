@@ -29,6 +29,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               cursorHeight: 20,
               decoration: InputDecoration(
                   hintText: 'Search user',
+                  contentPadding: EdgeInsets.symmetric(vertical: 4),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey.withOpacity(0.6)),
                     borderRadius: BorderRadius.circular(10.0),
