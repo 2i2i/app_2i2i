@@ -3,6 +3,7 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
 import 'package:app_2i2i/pages/web_rtc/call_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -16,30 +17,23 @@ class LockedUserPage extends ConsumerStatefulWidget {
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
 
-
-
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
-
     if (lockedUserViewModel == null) {
       return WaitPage();
     }
 
     final meetingStatus = lockedUserViewModel.meeting.currentStatus();
+    bool isInit = meetingStatus == MeetingValue.INIT;
+    bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
+    bool isConfirmed = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA();
+    bool isActive =  meetingStatus == MeetingValue.ACTIVE;
+    log(F+' isInit : $isInit -- isStarted : $isStarted -- isConfirmed : $isConfirmed -- isActive : $isActive --');
 
-    if (meetingStatus == MeetingValue.INIT ||
-        meetingStatus == MeetingValue.LOCK_COINS_STARTED ||
-        (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
-            !lockedUserViewModel.amA())) {
-      return RingingPage(meeting: lockedUserViewModel.meeting);
-    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA()) {
-      return RingingPage(meeting: lockedUserViewModel.meeting);
-    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
-        meetingStatus == MeetingValue.ACTIVE) {
+    if (isConfirmed || isActive) {
       return CallPage(meeting: lockedUserViewModel.meeting, user: lockedUserViewModel.user,);
-    } else {
-      throw new Exception('unknown meetingStatus=$meetingStatus');
     }
+    return RingingPage(meeting: lockedUserViewModel.meeting);
   }
 }

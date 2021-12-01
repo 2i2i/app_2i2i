@@ -43,13 +43,11 @@ class RingingPageViewModel {
       String? txId;
 
       if (meeting.speed.num != 0) {
-        txId = await algorand.lockCoins(
-            meeting: meeting, waitForConfirmation: false);
+        txId = await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
 
         log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
         if (txId == 'error') {
-          final HttpsCallable meetingTxnFailed =
-              functions.httpsCallable('meetingTxnFailed');
+          final HttpsCallable meetingTxnFailed = functions.httpsCallable('meetingTxnFailed');
           await meetingTxnFailed({'meetingId': meeting.id});
           return;
         }
@@ -68,13 +66,13 @@ class RingingPageViewModel {
   Future _updateMeetingAsLockCoinsStarted({required String? txId}) async {
     log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
 
-    final HttpsCallable meetingLockCoinsStarted =
-        functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId});
+    final HttpsCallable meetingLockCoinsStarted = functions.httpsCallable('meetingLockCoinsStarted');
+    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId}).then((value) {
+      print('$value');
+    });
   }
 
-  Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-      {required String? txId, required AlgorandNet net}) async {
+  Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed({required String? txId, required AlgorandNet net}) async {
     // wait for transaction to confirm
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
     if (txId != null) {
@@ -84,8 +82,9 @@ class RingingPageViewModel {
     // update meeting
     // message = 'updating meeting';
     // notifyListeners();
-    final HttpsCallable meetingLockCoinsConfirmed =
-        functions.httpsCallable('meetingLockCoinsConfirmed');
-    await meetingLockCoinsConfirmed({'meetingId': meeting.id});
+    final HttpsCallable meetingLockCoinsConfirmed = functions.httpsCallable('meetingLockCoinsConfirmed');
+    await meetingLockCoinsConfirmed({'meetingId': meeting.id}).then((value) {
+      print('$value');
+    });
   }
 }

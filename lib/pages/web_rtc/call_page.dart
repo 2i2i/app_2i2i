@@ -9,13 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallPage extends StatefulWidget {
-  CallPage(
-      {Key? key, required this.meeting, required this.user, this.initMethod})
-      : super(key: key);
 
   final Meeting meeting;
   final UserModel user;
   final Function? initMethod;
+
+  CallPage({Key? key, required this.meeting, required this.user, this.initMethod}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -33,11 +32,11 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   ValueNotifier<double> progress = ValueNotifier(100);
 
   void _initBudgetTimer() {
+
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration =
-        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
+    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = maxDuration;
     final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
@@ -57,7 +56,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    widget.initMethod!();
+    widget.initMethod?.call();
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 

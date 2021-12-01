@@ -215,28 +215,18 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
-  // log('lockedUserViewModelProvider');
-  final uid = ref.watch(myUIDProvider)!;
-  // log('lockedUserViewModelProvider - uid=$uid');
-  final user = ref.watch(userProvider(uid));
-  // log('lockedUserViewModelProvider - user=$user');
+    final uid = ref.watch(myUIDProvider)!;
+    final user = ref.watch(userProvider(uid));
+    log(F+' $user');
+    if (user is AsyncLoading || user is AsyncError) return null;
 
-  if (user is AsyncLoading || user is AsyncError) return null;
-
-  // log('lockedUserViewModelProvider - user.data=${user.data}');
-  // log('lockedUserViewModelProvider - user.data!.value=${user.data!.value}');
-  // log('lockedUserViewModelProvider - user.data!.value.currentMeeting=${user.data!.value.currentMeeting}');
-  if (user.data!.value.currentMeeting == null) return null;
-  final String currentMeeting = user.data!.value.currentMeeting!;
-  // log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
-  final meeting = ref.watch(meetingProvider(currentMeeting));
-  // log('lockedUserViewMrodelProvider - meeting=$meeting');
-
-  if (meeting is AsyncLoading || meeting is AsyncError) return null;
-
-  return LockedUserViewModel(
-      user: user.data!.value, meeting: meeting.data!.value);
-});
+    if (user.data!.value.currentMeeting == null) return null;
+    final String currentMeeting = user.data!.value.currentMeeting!;
+    final meeting = ref.watch(meetingProvider(currentMeeting));
+    if (meeting is AsyncLoading || meeting is AsyncError) return null;
+    return LockedUserViewModel(user: user.data!.value, meeting: meeting.data!.value);
+  },
+);
 
 final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   // log('ringingPageViewModelProvider');
