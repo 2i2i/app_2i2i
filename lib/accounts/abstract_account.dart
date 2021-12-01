@@ -23,27 +23,22 @@ class AccountService {
 
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
-    try {
-      final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
+    final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-      final accountInfoFuture =
-          algorandLib.client[net]!.getAccountByAddress(address);
+    final accountInfoFuture =
+        algorandLib.client[net]!.getAccountByAddress(address);
 
-      final futureResults =
-          await Future.wait([balanceALGOFuture, accountInfoFuture]);
+    final futureResults =
+        await Future.wait([balanceALGOFuture, accountInfoFuture]);
 
-      final balanceALGO = futureResults[0] as int;
+    final balanceALGO = futureResults[0] as int;
 
-      final assetHoldings = (futureResults[1] as AccountInformation).assets;
+    final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
-      final algoAssetHolding = AssetHolding(
-          amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
+    final algoAssetHolding = AssetHolding(
+        amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
 
-      return [algoAssetHolding, ...assetHoldings];
-    } catch (e) {
-      print(e);
-    }
-    return [];
+    return [algoAssetHolding, ...assetHoldings];
   }
 
   Future<int> getNumLocalAccounts() async {
@@ -188,7 +183,7 @@ abstract class AbstractAccount {
         .map((assetHolding) =>
             Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
         .toList();
-      balances = testnetBalances;
+    balances = testnetBalances;
   }
 
   Future<bool> isOptedInToASA(

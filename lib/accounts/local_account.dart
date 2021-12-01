@@ -91,7 +91,6 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future _createAndStoreAccount() async {
-    try {
       // log('LocalAccount - _createAndStoreAccount');
       final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
       // log('LocalAccount - _createAndStoreAccount - createAccount');
@@ -114,9 +113,6 @@ class LocalAccount extends AbstractAccount {
       // log('LocalAccount - _createAndStoreAccount - storage.write');
       await storage.write(storageAccountKey, privateKey);
       // log('LocalAccount - _createAndStoreAccount - done');
-    } catch (e) {
-      print(e);
-    }
   }
 
   late int _numAccount;
