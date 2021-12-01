@@ -23,29 +23,39 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="app_2i2i">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="shortcut icon" type="image/jpg" href="Logo_blue.png"/>
 
   <title>app_2i2i</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+
 </head>
 
 <body>
 
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-  <script src="./firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+<script src="./firebase-config.js"></script>
 
-  <!-- Firebase Configuration -->
-  <script type="module">
+<img src="web/icons/Logo_blue.jpg" class="center" style="object-fit:contain;
+border:none
+border:0; text-decoration:none; outline:none
+            width:850px;
+            height:850px;"/>
+<!-- Firebase Configuration -->
+<script type="module">
     import { firebaseConfig } from './firebase-config.js';
     firebase.initializeApp(firebaseConfig);
-  </script>
 
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
-  <script>
+</script>
+
+<!-- This script installs service_worker.js to provide PWA functionality to
+     application. For more information, see:
+     https://developers.google.com/web/fundamentals/primers/service-workers -->
+<script>
     var serviceWorkerVersion = null;
     var scriptLoaded = false;
     function loadMainDartJs() {
@@ -109,6 +119,7 @@
       loadMainDartJs();
     }
   </script>
+<script src="main.dart.js" type="application/javascript"></script>
 </body>
 
 </html>

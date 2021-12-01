@@ -87,13 +87,6 @@ final searchUsersStreamProvider =
   return database.usersStream(tags: filter);
 });
 
-final bidStreamProvider =
-    StreamProvider.autoDispose.family<Bid, String>((ref, id) {
-  // log('bidStreamProvider');
-  final database = ref.watch(databaseProvider);
-  // log('bidStreamProvider - database=$database');
-  return database.bidStream(id: id);
-});
 
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {

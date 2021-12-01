@@ -47,7 +47,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 icon: Icon(IconData(58751, fontFamily: 'MaterialIcons'),
                     color: AppTheme().black)),
             centerTitle: true,
-            title: Image.asset('assets/logo.png',height: 25,width: 50),
+            title: Image.asset('assets/logo.png', height: 30,fit: BoxFit.contain),
           ),
           body: Column(
             children: [
