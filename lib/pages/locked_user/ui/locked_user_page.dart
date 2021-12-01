@@ -28,32 +28,50 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       return WaitPage();
     }*/
 
-    if(user is AsyncLoading){
-      return WaitPage();
-    }
-    UserModel userModel = user.data!.value;
-    return StreamBuilder(
-      stream: FirestoreDatabase().meetingStream(id: userModel.currentMeeting!),
-      builder: (BuildContext context, AsyncSnapshot<Meeting> snapshot) {
-        if(snapshot.data?.status.isNotEmpty??false) {
-          log(F + '\n\n${snapshot.data?.status.last.value.toString()}\n\n');
-        }
-        if(snapshot.hasData && snapshot.data is Meeting) {
-          Meeting meeting = snapshot.data!;
-          final meetingStatus = meeting.currentStatus();
-          bool isInit = meetingStatus == MeetingValue.INIT;
-          bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
-          bool isConfirmed = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED;
-          bool isActive = meetingStatus == MeetingValue.ACTIVE;
-          log(F + ' isInit : $isInit -- isStarted : $isStarted -- isConfirmed : $isConfirmed -- isActive : $isActive --');
-
-          if (isConfirmed || isActive) {
-            return CallPage(meeting: meeting, user: userModel);
+    if(user.data?.value is UserModel) {
+      UserModel userModel = user.data!.value;
+      return StreamBuilder(
+        stream: FirestoreDatabase().meetingStream(
+            id: userModel.currentMeeting!),
+        builder: (BuildContext context, AsyncSnapshot<Meeting> snapshot) {
+          if (snapshot.data?.status.isNotEmpty ?? false) {
+            log(F + '\n\n${snapshot.data?.status.last.value.toString()}\n\n');
           }
-          return RingingPage(meeting: meeting);
-        }
-        return WaitPage();
-      },
-    );
+          if (snapshot.hasData && snapshot.data is Meeting) {
+            Meeting meeting = snapshot.data!;
+            final meetingStatus = meeting.currentStatus();
+            bool isInit = meetingStatus == MeetingValue.INIT;
+            bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
+            bool isConfirmed = meetingStatus ==
+                MeetingValue.LOCK_COINS_CONFIRMED;
+            bool isActive = meetingStatus == MeetingValue.ACTIVE;
+            log(F +
+                ' isInit : $isInit -- isStarted : $isStarted -- isConfirmed : $isConfirmed -- isActive : $isActive --');
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                Visibility(
+                  visible: (isConfirmed || isActive),
+                  child: CallPage(meeting: meeting, user: userModel),
+                ),
+                Visibility(
+                    visible: (isInit || isStarted) &&
+                        !(isConfirmed || isActive),
+                    child: RingingPage(meeting: meeting)
+                ),
+                Visibility(
+                  visible: !(isInit || isStarted || isConfirmed || isActive),
+                  child: WaitPage(),
+                ),
+              ],
+            );
+          }
+          return WaitPage();
+        },
+      );
+    }
+
+    return WaitPage();
   }
 }

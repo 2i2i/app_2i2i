@@ -188,7 +188,7 @@ class Signaling {
 
       // Code for collecting ICE candidates below
       final iceCandidatesCollection = roomRef.collection('iceCandidatesB');
-      peerConnection!.onIceCandidate = (RTCIceCandidate candidate) {
+      peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
         log('onIceCandidate: ${candidate.toMap()}');
         iceCandidatesCollection.add(candidate.toMap());
       };
@@ -209,24 +209,30 @@ class Signaling {
       await peerConnection?.setRemoteDescription(
         RTCSessionDescription(offer['sdp'], offer['type']),
       );
-      final answer = await peerConnection!.createAnswer();
+      final answer = await peerConnection?.createAnswer();
       log('Created Answer $answer');
 
-      await peerConnection!.setLocalDescription(answer);
+      if(answer!= null) {
+        await peerConnection?.setLocalDescription(answer);
 
-      Map<String, dynamic> roomWithAnswer = {
-        'answer': {'type': answer.type, 'sdp': answer.sdp}
-      };
+        Map<String, dynamic> roomWithAnswer = {
+          'answer': {'type': answer.type, 'sdp': answer.sdp}
+        };
 
-      await roomRef.update(roomWithAnswer);
-      // Finished creating SDP answer
+        await roomRef.update(roomWithAnswer);
+        // Finished creating SDP answer
+      }
+
+
+
+
 
       // Listening for remote ICE candidates below
       roomRef.collection('iceCandidatesA').snapshots().listen((snapshot) {
         snapshot.docChanges.forEach((document) {
           final data = document.doc.data() as Map<String, dynamic>;
           log('Got new remote ICE candidate: $data');
-          peerConnection!.addCandidate(
+          peerConnection?.addCandidate(
             RTCIceCandidate(
               data['candidate'],
               data['sdpMid'],
