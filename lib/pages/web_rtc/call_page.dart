@@ -156,8 +156,8 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                             if (budgetTimer?.isActive ?? false) {
                               budgetTimer?.cancel();
                             }
-                            widget.initMethod!();
-                            signaling!.hangUp(_localRenderer);
+                            widget.initMethod?.call();
+                            signaling?.hangUp(_localRenderer);
                           } catch (e) {
                             print(e);
                           }

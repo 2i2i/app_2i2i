@@ -68,7 +68,7 @@ class RingingPageViewModel {
 
     final HttpsCallable meetingLockCoinsStarted = functions.httpsCallable('meetingLockCoinsStarted');
     await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId}).then((value) {
-      print('$value');
+      log(F+ ' == 1');
     });
   }
 
@@ -76,7 +76,9 @@ class RingingPageViewModel {
     // wait for transaction to confirm
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
     if (txId != null) {
-      await algorand.waitForConfirmation(txId: txId, net: net);
+      await algorand.waitForConfirmation(txId: txId, net: net).then((value) {
+        log(F+ ' == 2');
+      });
     }
 
     // update meeting
@@ -84,7 +86,7 @@ class RingingPageViewModel {
     // notifyListeners();
     final HttpsCallable meetingLockCoinsConfirmed = functions.httpsCallable('meetingLockCoinsConfirmed');
     await meetingLockCoinsConfirmed({'meetingId': meeting.id}).then((value) {
-      print('$value');
+      log(F+ ' == 3');
     });
   }
 }

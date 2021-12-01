@@ -24,6 +24,14 @@ class FirestoreService {
     await reference.set(data, SetOptions(merge: merge));
   }
 
+  Future<DocumentSnapshot> getData({
+    required String path
+  }) async {
+    final reference = FirebaseFirestore.instance.doc(path);
+    // print('$path: $data');
+    return await reference.get(GetOptions(source: Source.serverAndCache));
+  }
+
   Future<void> deleteData({required String path}) async {
     final reference = FirebaseFirestore.instance.doc(path);
     // print('delete: $path');
