@@ -11,16 +11,24 @@ class AddBidPageViewModel {
     required this.functions,
     required this.algorand,
     required this.user,
-    required this.accounts,
+    required accounts,
     required this.accountService,
-  });
+  }) {
+    _accounts = accounts;
+  }
   final FirebaseFunctions functions;
   final UserModel user;
   final AlgorandService algorand;
   final AccountService accountService;
-  final List<AbstractAccount> accounts;
+  late List<AbstractAccount> _accounts;
+
+  List<AbstractAccount> get accounts =>
+      _accounts.where((a) => nonZeroBalances(a).isNotEmpty).toList();
 
   bool submitting = false;
+
+  List<Balance> nonZeroBalances(AbstractAccount account) =>
+      account.balances.where((b) => 0 < b.assetHolding.amount).toList();
 
   String duration(AbstractAccount account, int speedNum, Balance balance,
       double budgetPercentage) {

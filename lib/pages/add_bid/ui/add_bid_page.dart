@@ -125,16 +125,16 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     },
                     value: balance,
                     items: [
-                      for (var i = 0; i < account!.balances.length; i++)
+                      for (var i = 0; i < addBidPageViewModel.nonZeroBalances(account!).length; i++)
                         DropdownMenuItem<Balance>(
-                          child: Text(account!.balances[i].assetHolding.assetId
+                          child: Text(addBidPageViewModel.nonZeroBalances(account!)[i].assetHolding.assetId
                                   .toString() +
                               ' - ' +
-                              account!.balances[i].assetHolding.amount
+                              addBidPageViewModel.nonZeroBalances(account!)[i].assetHolding.amount
                                   .toString() +
                               ' - ' +
-                              account!.balances[i].net.toString()),
-                          value: account!.balances[i],
+                              addBidPageViewModel.nonZeroBalances(account!)[i].net.toString()),
+                          value: addBidPageViewModel.nonZeroBalances(account!)[i],
                         )
                     ],
                   )),
