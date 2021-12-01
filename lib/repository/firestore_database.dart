@@ -142,7 +142,6 @@ class FirestoreDatabase {
       _service.documentStream(
         path: FirestorePath.meeting(id),
         builder: (data, documentId) {
-          log(F+ ' === meeting $data');
           return Meeting.fromMap(data, documentId);
         }
       );

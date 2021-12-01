@@ -40,10 +40,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Future<void> dispose() async {
+    super.dispose();
     T?.cancel();
     T = null;
-    await stopAudio();
-    super.dispose();
+    stopAudio();
   }
 
   Future<void> playAudio() async {
