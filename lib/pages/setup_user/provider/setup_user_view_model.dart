@@ -114,33 +114,23 @@ class SetupUserViewModel with ChangeNotifier {
           accountService: accountService);
       log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
-      // TODO uncomment try
-      //   // DEBUG - off for faster debugging
-      // try {
-      //   message = 'gifting your some (test) ALGOs and TESTCOINs';
-      //   notifyListeners();
-      //   await algorand.giftALGO(account);
-      //   log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-      //   final optInToStateAppFuture = account.optInToDapp(
-      //       dappId: AlgorandService.SYSTEM_ID[AlgorandNet.testnet]!,
-      //       net: AlgorandNet.testnet);
-      //   final optInToASAFuture = account.optInToASA(
-      //       assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
-      //       net: AlgorandNet.testnet);
-      //   final optInAndGiftASAFuture = optInToASAFuture.then(
-      //       (value) => algorand.giftASA(account, waitForConfirmation: false));
-      //   final algorandResults =
-      //       await Future.wait([optInToStateAppFuture, optInAndGiftASAFuture]);
-      //   final optInStateTxId = algorandResults[0];
-      //   log('SetupUserViewModel - setupAlgorandAccount - Future.wait - algorandResults=$algorandResults - optInStateTxId=$optInStateTxId');
-      //   await algorand.waitForConfirmation(
-      //       txId: optInStateTxId, net: AlgorandNet.testnet);
-      //   log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
-      // } catch (e) {
-      //   // TODO - we can continue the app; this was a luxury
-      // }
+    // TODO uncomment try
+      // DEBUG - off for faster debugging
+      // message = 'gifting your some (test) ALGOs and TESTCOINs';
+      // notifyListeners();
+      // await algorand.giftALGO(account);
+      // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+      // final optInToASAFuture = account.optInToASA(
+      //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+      //     net: AlgorandNet.testnet);
+      // final optInStateTxId = await optInToASAFuture.then(
+      //     (value) => algorand.giftASA(account, waitForConfirmation: false));
+      // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
+      // await algorand.waitForConfirmation(
+      //     txId: optInStateTxId, net: AlgorandNet.testnet);
+      // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
     } catch (e) {
-      print(e);
+      // TODO - we can continue the app; this was a luxury
     }
   }
 }

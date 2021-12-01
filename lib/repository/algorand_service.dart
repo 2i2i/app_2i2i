@@ -136,6 +136,19 @@ class AlgorandService {
         await algorandLib.client[net]!.getSuggestedTransactionParams();
     log('lockALGO - params=$params');
 
+    final List<RawTransaction> txns = [];
+
+    final optedIntoSystem =
+        await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
+    if (!optedIntoSystem) {
+      final optInTxn = await (ApplicationOptInTransactionBuilder()
+          ..sender = Address.fromAlgorandAddress(address: account.address)
+          ..applicationId = SYSTEM_ID[net]!
+          ..suggestedParams = params)
+        .build();
+      txns.add(optInTxn);
+    }
+
     final lockTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
           ..receiver =
@@ -144,6 +157,7 @@ class AlgorandService {
           ..suggestedParams = params)
         .build();
     log('lockALGO - lockTxn=$lockTxn');
+    txns.add(lockTxn);
 
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
     log('lockALGO - arguments=$arguments');
@@ -155,19 +169,17 @@ class AlgorandService {
           ..suggestedParams = params)
         .build();
     log('lockALGO - stateTxn=$stateTxn');
+    txns.add(stateTxn);
 
-    AtomicTransfer.group([lockTxn, stateTxn]);
+    AtomicTransfer.group(txns);
     log('lockALGO - grouped');
 
     // TODO in parallel
-    final lockTxnBytes = await account.sign(lockTxn);
-    log('lockALGO - signed 2');
-    final stateTxnBytes = await account.sign(stateTxn);
-    log('lockALGO - signed 1');
+    final signedTxnsBytes = await account.sign(txns);
 
     try {
-      final txId = await algorandLib.client[net]!
-          .sendRawTransactions([lockTxnBytes, stateTxnBytes]);
+      final txId =
+          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       // await algorandLib[net]!.sendTransactions([lockTxnSigned, stateTxnSigned]);
       log('lockALGO - txId=$txId');
 
@@ -211,6 +223,19 @@ class AlgorandService {
         await algorandLib.client[net]!.getSuggestedTransactionParams();
     log('lockASA - params=$params');
 
+    final List<RawTransaction> txns = [];
+
+        final optedIntoSystem =
+        await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
+    if (!optedIntoSystem) {
+      final optInTxn = await (ApplicationOptInTransactionBuilder()
+          ..sender = Address.fromAlgorandAddress(address: account.address)
+          ..applicationId = SYSTEM_ID[net]!
+          ..suggestedParams = params)
+        .build();
+      txns.add(optInTxn);
+    }
+
     final lockALGOTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
           ..receiver =
@@ -219,6 +244,8 @@ class AlgorandService {
           ..suggestedParams = params)
         .build();
     // log('lockASA - lockALGOTxn=$lockALGOTxn');
+    txns.add(lockALGOTxn);
+
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
     log('lockASA - arguments=$arguments');
     final stateTxn = await (ApplicationCallTransactionBuilder()
@@ -235,6 +262,7 @@ class AlgorandService {
           ..suggestedParams = params)
         .build();
     // log('lockASA - stateTxn=$stateTxn');
+    txns.add(stateTxn);
 
     final lockASATxn = await (AssetTransferTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
@@ -245,36 +273,18 @@ class AlgorandService {
           ..suggestedParams = params)
         .build();
     // log('lockASA - lockASATxn=$lockASATxn');
-    // TODO in parallel
-    AtomicTransfer.group([lockALGOTxn, stateTxn, lockASATxn]);
-    log('lockASA - grouped');
-    final lockALGOTxnBytes = await account.sign(lockALGOTxn);
-    log('lockASA - signed 1');
-    final stateTxnBytes = await account.sign(stateTxn);
-    log('lockASA - signed 2');
-    final lockASATxnBytes = await account.sign(lockASATxn);
-    log('lockASA - signed 3');
+    txns.add(lockASATxn);
 
-    // DEBUG
-    // log('lockASA - exporting files');
-    // final lockALGOTxnSignedJSON = lockALGOTxnSigned.toJson();
-    // log(lockALGOTxnSignedJSON);
-    // // await lockALGOTxnSigned
-    // //     .export('/Users/imi/Downloads/lockALGOTxnSigned.stxn');
-    // log('lockASA - exporting files - 2');
-    // final stateTxnSignedJSON = stateTxnSigned.toJson();
-    // log(stateTxnSignedJSON);
-    // // await stateTxnSigned.export('/Users/imi/Downloads/stateTxnSigned.stxn');
-    // log('lockASA - exporting files - 3');
-    // final lockASATxnSignedJSON = lockASATxnSigned.toJson();
-    // log(lockASATxnSignedJSON);
-    // // await lockASATxnSigned.export('/Users/imi/Downloads/lockASATxnSigned.stxn');
-    // log('lockASA - exporting files done');
-    // DEBUG
+    // TODO in parallel
+    AtomicTransfer.group(txns);
+    log('lockASA - grouped');
+
+    final signedTxnsBytes =
+        await account.sign(txns);
 
     try {
-      final txId = await algorandLib.client[net]!.sendRawTransactions(
-          [lockALGOTxnBytes, stateTxnBytes, lockASATxnBytes]);
+      final txId =
+          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       log('lockASA - txId=$txId');
       if (waitForConfirmation)
         await algorandLib.client[net]!.waitForConfirmation(txId);

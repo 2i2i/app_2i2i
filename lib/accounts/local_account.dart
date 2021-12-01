@@ -40,23 +40,6 @@ class LocalAccount extends AbstractAccount {
   }
 
   @override
-  Future<bool> isOptedInToASA(
-      {required int assetId, required AlgorandNet net}) async {
-    if (assetId == 0) return true; // all accounts can use ALGO
-    return balances
-        .where((balance) => balance.net == net)
-        .map((balance) => balance.assetHolding.assetId)
-        .contains(assetId);
-  }
-
-  @override
-  Future<Uint8List> sign(RawTransaction txn) async {
-    final account = await _libAccount();
-    final txnSigned = await txn.sign(account);
-    return txnSigned.toBytes();
-  }
-
-  @override
   Future<String> optInToASA(
       {required int assetId,
       required AlgorandNet net,
@@ -84,6 +67,14 @@ class LocalAccount extends AbstractAccount {
     if (waitForConfirmation)
       await algorandLib.client[net]!.waitForConfirmation(txId);
     return txId;
+  }
+
+  @override
+  Future<List<Uint8List>> sign(List<RawTransaction> txns) async {
+    final account = await _libAccount();
+    final signFutures = txns.map((txn) => txn.sign(account)).toList();
+    final txnsSigned = await Future.wait(signFutures);
+    return txnsSigned.map((txn) => txn.toBytes()).toList();
   }
 
   Future<Account> _libAccount() async {
@@ -129,6 +120,6 @@ class LocalAccount extends AbstractAccount {
   }
 
   late int _numAccount;
-  final AlgorandLib algorandLib;
   final SecureStorage storage;
+  final AlgorandLib algorandLib;
 }
