@@ -202,13 +202,15 @@ class Signaling {
         });
       };
 
-      // Code for creating SDP answer below
-      final data = roomSnapshot.data() as Map<String, dynamic>;
-      log('Got offer $data');
-      final offer = data['offer'];
-      await peerConnection?.setRemoteDescription(
-        RTCSessionDescription(offer['sdp'], offer['type']),
-      );
+
+        // Code for creating SDP answer below
+        final data = (roomSnapshot.data()??{}) as Map<String, dynamic>;
+        log(F+' Got offer $data');
+        final offer = data['offer']??{};
+        await peerConnection?.setRemoteDescription(
+            RTCSessionDescription(offer['sdp'], offer['type']),
+        );
+
       final answer = await peerConnection?.createAnswer();
       log('Created Answer $answer');
 

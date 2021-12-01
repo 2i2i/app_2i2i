@@ -19,12 +19,7 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
-  runApp(
-    ProviderScope(
-      child: MainWidget(),
-    ),
-  );
-  /*await SentryFlutter.init((options) {
+  await SentryFlutter.init((options) {
       options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     },
     appRunner: () => runApp(
@@ -32,7 +27,7 @@ Future<void> main() async {
         child: MainWidget(),
       ),
     ),
-  );*/
+  );
 }
 
 // TODO MainWidget is not immutable anymore
