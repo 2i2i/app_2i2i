@@ -23,54 +23,41 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
     final user = ref.watch(userProvider(uid));
-    /*final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
+    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
     if (lockedUserViewModel == null) {
       return WaitPage();
-    }*/
-
-    if(user.data?.value.currentMeeting is String) {
-      UserModel userModel = user.data!.value;
-      return StreamBuilder(
-        stream: FirestoreDatabase().meetingStream(id: userModel.currentMeeting!),
-        builder: (BuildContext context, AsyncSnapshot<Meeting> snapshot) {
-          if (snapshot.data?.status.isNotEmpty ?? false) {
-            log(F + '\n\n${snapshot.data?.status.last.value.toString()}\n\n');
-          }
-          if (snapshot.hasData && snapshot.data is Meeting) {
-            Meeting meeting = snapshot.data!;
-            final meetingStatus = meeting.currentStatus();
-            bool isInit = meetingStatus == MeetingValue.INIT;
-            bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
-            bool isConfirmed = meetingStatus ==
-                MeetingValue.LOCK_COINS_CONFIRMED;
-            bool isActive = meetingStatus == MeetingValue.ACTIVE;
-            log(F +
-                ' isInit : $isInit -- isStarted : $isStarted -- isConfirmed : $isConfirmed -- isActive : $isActive --');
-
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                Visibility(
-                  visible: (isConfirmed || isActive),
-                  child: CallPage(meeting: meeting, user: userModel),
-                ),
-                Visibility(
-                    visible: (isInit || isStarted) &&
-                        !(isConfirmed || isActive),
-                    child: RingingPage(meeting: meeting)
-                ),
-                Visibility(
-                  visible: !(isInit || isStarted || isConfirmed || isActive),
-                  child: WaitPage(),
-                ),
-              ],
-            );
-          }
-          return WaitPage();
-        },
-      );
     }
 
-    return WaitPage();
+    final meetingStatus = lockedUserViewModel.meeting.currentStatus();
+    bool isInit = meetingStatus == MeetingValue.INIT;
+    bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
+
+    // bool isConfirmed = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA();
+    //A-Caller
+    bool isConfirmedAndA = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amA();
+    //B-Receiver
+    bool isConfirmedAndB = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amB();
+
+    bool isActive =  meetingStatus == MeetingValue.ACTIVE;
+    log(F+' isInit : $isInit -- isStarted : $isStarted -- isConfirmedAndA : $isConfirmedAndA -- isActive : $isActive --');
+    log(F+' meeting: ${lockedUserViewModel.meeting}, user: ${lockedUserViewModel.user},');
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Visibility(
+          visible: (isConfirmedAndA || isActive),
+          child: CallPage(meeting: lockedUserViewModel.meeting, user: lockedUserViewModel.user),
+        ),
+        Visibility(
+            visible: (isInit || isStarted || isConfirmedAndB),
+            child: RingingPage(meeting: lockedUserViewModel.meeting)
+        ),
+        Visibility(
+          visible: !(isInit || isStarted || isConfirmedAndA || isConfirmedAndB || isActive),
+          child: WaitPage(),
+        ),
+      ],
+    );
   }
 }

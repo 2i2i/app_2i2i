@@ -13,4 +13,10 @@ class LockedUserViewModel with ChangeNotifier {
     log('LockedUserViewModel - amA - x=$x');
     return x;
   }
+
+  bool amB() {
+    final x = meeting.B == user.id;
+    log('LockedUserViewModel - amA - x=$x');
+    return x;
+  }
 }

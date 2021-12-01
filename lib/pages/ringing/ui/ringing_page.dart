@@ -22,6 +22,8 @@ class RingingPage extends ConsumerStatefulWidget {
 }
 
 class RingingPageState extends ConsumerState<RingingPage> {
+  bool isClicked = false;
+
   RingingPageState({Key? key, required this.meeting});
 
   final Meeting meeting;
@@ -178,7 +180,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       ],
                     ),
                     Visibility(
-                      visible: (ringingPageViewModel.meeting.isInit() && ringingPageViewModel.amA()),
+                      visible: (!isClicked) || (ringingPageViewModel.meeting.isInit() && ringingPageViewModel.amA()),
                       child: Padding(
                         padding: EdgeInsets.only(left: 150),
                         child: Column(
@@ -188,6 +190,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 child: Icon(Icons.call, color: Colors.white),
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
+                                  isClicked = true;
+                                  if(mounted) {
+                                    setState(() {});
+                                  }
                                   await stopAudio();
                                   ringingPageViewModel.acceptMeeting();
                                 },

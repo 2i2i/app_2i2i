@@ -78,8 +78,8 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   void dispose() {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
-    budgetTimer!.cancel();
-    progressTimer!.cancel();
+    budgetTimer?.cancel();
+    progressTimer?.cancel();
     super.dispose();
   }
 
