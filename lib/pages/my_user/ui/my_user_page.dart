@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/text_utils.dart';
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -69,7 +70,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             Expanded(
                 child: UserBids(
               bidsIds: myUserPageViewModel.user.bidsIn,
-              title: 'Bids In',
+              titleWidget: HeadLineSixText(title: 'Bids In',textColor: AppTheme().deepPurple),
               noBidsText: 'no bids in for user',
               leading: Icon(
                 Icons.label_important,
@@ -85,7 +86,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               log('MyUserPage - _buildContents - data - userPrivate=$userPrivate userPrivate.bidsOut=${userPrivate.bidsOut}');
               return UserBids(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
-                title: 'Bids Out',
+                titleWidget: HeadLineSixText(title: 'Bids Out',textColor: AppTheme().deepPurple),
                 noBidsText: 'no bids out for user',
                 // onTap: myUserPageViewModel.cancelBid
                 leading: Transform.rotate(

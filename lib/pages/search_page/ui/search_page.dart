@@ -42,17 +42,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          Container(
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
             child: Row(
               children: [
                 Container(
                   width: 110,
+                  height: double.infinity,
                   decoration: BoxDecoration(
                       border: Border.all(
                           width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
                       borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   child: Center(
                       child: SubtitleText(
                           title: "RATING", fontWeight: FontWeight.w400)),
@@ -61,11 +62,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 Expanded(
                   flex: 3,
                   child: Container(
+                    height: double.infinity,
                     decoration: BoxDecoration(
                         border: Border.all(
                             width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
                         borderRadius: BorderRadius.circular(20)),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                     child: Center(
                         child: SubtitleText(
                             title: "USER", fontWeight: FontWeight.w400)),
@@ -73,11 +74,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 SizedBox(width: 4),
                 Container(
+                  height: double.infinity,
                   decoration: BoxDecoration(
                       border: Border.all(
                           width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
                       borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -118,6 +120,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         if (snapshot.hasData) {
           return ListView.builder(
               itemCount: snapshot.data.length,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (_, ix) {
                 if (snapshot.data[ix] == null) return Container();
                 final user = snapshot.data[ix]!;

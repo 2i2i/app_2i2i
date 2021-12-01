@@ -1,7 +1,5 @@
-import 'dart:math';
-
 import 'package:app_2i2i/models/bid.dart';
-import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UserBids extends ConsumerWidget {
   UserBids({
     required this.bidsIds,
-    required this.title,
+    required this.titleWidget,
     required this.noBidsText,
     // required this.onTap,
     required this.leading,
@@ -17,7 +15,7 @@ class UserBids extends ConsumerWidget {
     this.onTrailingIconClick,
   });
 
-  final String title;
+  final Widget titleWidget;
   final String noBidsText;
   final List<String> bidsIds;
 
@@ -41,7 +39,7 @@ class UserBids extends ConsumerWidget {
       children: [
         Container(
             padding: const EdgeInsets.only(top: 20, left: 25),
-            child: Text(title, style: Theme.of(context).textTheme.headline6)),
+            child: titleWidget),
         Expanded(
             child: Container(
                 padding: const EdgeInsets.only(
@@ -54,82 +52,38 @@ class UserBids extends ConsumerWidget {
   ListView _bidsListView(WidgetRef ref, BuildContext context) {
     return ListView.builder(
       itemCount: bidsIds.length,
-      // itemCount: 2,
       itemBuilder: (_, ix) {
-        log('UserBidUserBidssIn - ListView.builder - itemBuilder');
-        final bidAsyncValue = ref.watch(bidStreamProvider(bidsIds[ix]));
-        log('UserBids - ListView.builder - itemBuilder - ix=$ix');
-        log('UserBids - ListView.builder - itemBuilder - bidsInIds[ix]=${bidsIds[ix]}');
-        log('UserBids - ListView.builder - itemBuilder - bidAsyncValue=$bidAsyncValue');
-
-        return bidAsyncValue.when(
-            data: (Bid bid) {
+        return StreamBuilder(
+          stream: FirestoreDatabase().bidStream(id: bidsIds[ix]),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasData) {
+              Bid bid = snapshot.data;
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
-              final String assetIDString =
-                  assetId == 0 ? 'ALGO' : assetId.toString();
+              final String assetIDString = assetId == 0 ? 'ALGO' : assetId.toString();
               final color = ix % 2 == 0
                   ? Color.fromRGBO(223, 239, 223, 1)
                   : Color.fromRGBO(197, 234, 197, 1);
 
-              return Container(
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(100),
-                  // ),
-                  child: Card(
-                      color: color,
-                      child: ListTile(
-                        leading: leading,
-                        trailing: trailingIcon == null
-                            ? null
-                            : IconButton(
+              return Card(
+                  color: color,
+                  child: ListTile(
+                    leading: leading,
+                    trailing: trailingIcon == null
+                        ? null
+                        : IconButton(
                             onPressed: () => onTrailingIconClick!(bid),
                             icon: trailingIcon!),
-                        title: Text('$num'),
-                        subtitle: Text('[$assetIDString/sec]'),
-                        // tileColor: color,
-                        // onTap: () => onTap(bid),
-                      )));
-            },
-            loading: () => const Text('loading'),
-            error: (_, __) => const Text('error'));
+                    title: Text('$num'),
+                    subtitle: Text('[$assetIDString/sec]'),
+                    // tileColor: color,
+                    // onTap: () => onTap(bid),
+                  ));
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        );
       },
-    );
-  }
-
-  Widget ratingWidget(score, name, BuildContext context) {
-    final scoreString = (0 <= score ? '+' : '-') + score.toString();
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            0 <= score
-                ? Icon(Icons.change_history, color: Colors.green)
-                : Transform.rotate(
-                    angle: pi,
-                    child: Icon(Icons.change_history,
-                        color: Color.fromRGBO(211, 91, 122, 1))),
-            SizedBox(height: 4),
-            Text(scoreString, style: Theme.of(context).textTheme.caption)
-          ],
-        ),
-        SizedBox(width: 10),
-        Container(
-          height: 40,
-          width: 40,
-          child: Center(
-              child: Text("${name.toString().isNotEmpty ? name : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase())),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.fromRGBO(214, 219, 134, 1),
-          ),
-        )
-      ],
     );
   }
 }
