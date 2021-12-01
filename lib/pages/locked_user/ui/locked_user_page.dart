@@ -15,18 +15,8 @@ class LockedUserPage extends ConsumerStatefulWidget {
 }
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
-  final player = AudioPlayer();
 
-  @override
-  void initState() {
-    playAudio();
-    super.initState();
-  }
 
-  Future<void> playAudio() async {
-    await player.setAsset('assets/video_call.mp3');
-    await player.setLoopMode(LoopMode.one);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,34 +32,12 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
         meetingStatus == MeetingValue.LOCK_COINS_STARTED ||
         (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
             !lockedUserViewModel.amA())) {
-      return RingingPage(
-          meeting: lockedUserViewModel.meeting,
-          callReject: (bool value) async {
-            if (value) {
-              await player.stop();
-            } else {
-              player.play();
-            }
-          });
-    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED &&
-        !lockedUserViewModel.amA()) {
-      return RingingPage(
-          meeting: lockedUserViewModel.meeting,
-          callReject: (bool value) async {
-            if (value) {
-              await player.stop();
-            } else {
-              player.play();
-            }
-          });
+      return RingingPage(meeting: lockedUserViewModel.meeting);
+    } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA()) {
+      return RingingPage(meeting: lockedUserViewModel.meeting);
     } else if (meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED ||
         meetingStatus == MeetingValue.ACTIVE) {
-      return CallPage(
-          meeting: lockedUserViewModel.meeting,
-          user: lockedUserViewModel.user,
-          initMethod: () async {
-            await player.stop();
-          });
+      return CallPage(meeting: lockedUserViewModel.meeting, user: lockedUserViewModel.user,);
     } else {
       throw new Exception('unknown meetingStatus=$meetingStatus');
     }
