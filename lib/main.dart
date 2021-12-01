@@ -38,7 +38,6 @@ class MainWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // User heartbeat timer
-    // DEBUG
     if (T == null) {
       T = Timer.periodic(Duration(seconds: 10), (timer) async {
         // log('UserModel Timer');
