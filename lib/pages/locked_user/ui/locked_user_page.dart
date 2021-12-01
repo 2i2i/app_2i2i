@@ -28,11 +28,10 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       return WaitPage();
     }*/
 
-    if(user.data?.value is UserModel) {
+    if(user.data?.value.currentMeeting is String) {
       UserModel userModel = user.data!.value;
       return StreamBuilder(
-        stream: FirestoreDatabase().meetingStream(
-            id: userModel.currentMeeting!),
+        stream: FirestoreDatabase().meetingStream(id: userModel.currentMeeting!),
         builder: (BuildContext context, AsyncSnapshot<Meeting> snapshot) {
           if (snapshot.data?.status.isNotEmpty ?? false) {
             log(F + '\n\n${snapshot.data?.status.last.value.toString()}\n\n');
