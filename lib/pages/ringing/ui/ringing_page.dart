@@ -14,15 +14,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
-  const RingingPage(
-      {Key? key,
-      required this.meeting,
-      this.callReject})
-      : super(key: key);
-
+  const RingingPage({Key? key, required this.meeting}) : super(key: key);
   final Meeting meeting;
-
-  final ValueChanged<bool>? callReject;
 
   @override
   RingingPageState createState() => RingingPageState(meeting: meeting);
@@ -33,11 +26,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   final Meeting meeting;
   Timer? T;
+  final player = AudioPlayer();
 
 
   @override
   void initState() {
-    widget.callReject?.call(false);
+    playAudio();
     T?.cancel();
     T = null;
     T = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
@@ -45,16 +39,32 @@ class RingingPageState extends ConsumerState<RingingPage> {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     T?.cancel();
     T = null;
+    await stopAudio();
     super.dispose();
+  }
+
+  Future<void> playAudio() async {
+    await player.setAsset('assets/video_call.mp3');
+    await player.setLoopMode(LoopMode.one);
+    if(!player.playing) {
+      await player.play();
+    }
+  }
+
+  Future<void> stopAudio() async {
+    if(player.playing) {
+      await player.stop();
+    }
+    await player.dispose();
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
-    widget.callReject!(true);
+    await stopAudio();
     T?.cancel();
     T = null;
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
@@ -156,8 +166,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                          onPressed: (){
-                            widget.callReject!(true);
+                          onPressed: ()async{
+                            await stopAudio();
                             ringingPageViewModel.cancelMeeting();
                           },
                         ),
@@ -180,8 +190,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                       child:
                                           Icon(Icons.call, color: Colors.white),
                                       backgroundColor: Colors.green,
-                                      onPressed: () {
-                                        widget.callReject!(true);
+                                      onPressed: () async{
+                                        await stopAudio();
                                         ringingPageViewModel.acceptMeeting();
                                       })),
                               SizedBox(height: 8),
