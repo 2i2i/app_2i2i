@@ -53,7 +53,7 @@ class UserPage extends ConsumerWidget {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: authStateChanges.data!.value!.uid == uid
-            ? Container()
+            ? null
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -101,7 +101,7 @@ class UserPage extends ConsumerWidget {
           Expanded(
               child: UserBids(
                 bidsIds: userPageViewModel.user.bidsIn,
-                title: 'Bids In',
+                title: 'Other bids for ${userPageViewModel.user.name}',
                 noBidsText: 'no bid ins for user',
                 leading: Icon(
                   Icons.label_important,

@@ -18,8 +18,11 @@ class AppTheme{
   Color green = Color.fromRGBO(80, 121, 66, 1);
   Color red = Color.fromARGB(255, 239, 102, 84);
   Color gray = Color.fromRGBO(112, 112, 108, 1);
+  Color lightGray = Color.fromRGBO(221, 221, 217, 1);
   Color lightGreen = Color.fromRGBO(214, 219, 134, 1);
   Color brightBlue = Color.fromRGBO(69, 104, 177, 1);
+  Color lightBeige = Color.fromRGBO(224, 224, 213, 1);
+  Color black = Colors.black;
 
   TextStyle? body1Text(BuildContext context){
     return Theme.of(context).textTheme.bodyText1;

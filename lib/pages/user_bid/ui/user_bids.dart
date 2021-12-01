@@ -1,10 +1,6 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/text_utils.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
-import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -41,16 +37,15 @@ class UserBids extends ConsumerWidget {
     log('UserBids - bidsIds.length=${bidsIds.length}');
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            padding: const EdgeInsets.only(top: 10),
-            child: Center(
-                child:
-                    Text(title, style: Theme.of(context).textTheme.headline6))),
+            padding: const EdgeInsets.only(top: 20, left: 25),
+            child: Text(title, style: Theme.of(context).textTheme.headline6)),
         Expanded(
             child: Container(
                 padding: const EdgeInsets.only(
-                    top: 20, left: 20, right: 20, bottom: 10),
+                    top: 10, left: 20, right: 20, bottom: 10),
                 child: _bidsListView(ref, context))),
       ],
     );
@@ -77,61 +72,24 @@ class UserBids extends ConsumerWidget {
                   ? Color.fromRGBO(223, 239, 223, 1)
                   : Color.fromRGBO(197, 234, 197, 1);
 
-              return StreamBuilder<UserModel>(
-                stream: FirestoreDatabase().userStream(uid: bid.B),
-                builder: (BuildContext context, var snapshot) {
-                  if (snapshot.hasData) {
-                    UserModel? user = snapshot.data;
-                    final score = ((user?.upVotes ?? 0) - (user?.downVotes ?? 0));
-                    final shortBioStart = (user?.bio.indexOf(RegExp(r'\s')) ?? 0) + 1;
-                    int aPoint = shortBioStart + 10;
-                    int? bPoint = user?.bio.length;
-                    final shortBioEnd = min(aPoint, bPoint!);
-                    final shortBio =
-                        user?.bio.substring(shortBioStart, shortBioEnd);
-                    return Container(
-                      child: ListTile(
-                        onTap: () => onTrailingIconClick!(bid),
-                        leading: ratingWidget(score, user?.name, context),
-                        title: TitleText(title: user?.name),
-                        subtitle: Text(shortBio!),
-                        trailing: CaptionText(
-                          title: "$assetIDString/sec".toUpperCase(),
-                          textColor: AppTheme().brightBlue,
-                        ),
-                      ),
-                      margin: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.grey.withOpacity(0.6)),
-                          borderRadius: BorderRadius.circular(10)),
-                    );
-                  }
-                  return CircularProgressIndicator();
-                },
-              );
-
               return Container(
                   // decoration: BoxDecoration(
                   //   borderRadius: BorderRadius.circular(100),
                   // ),
                   child: Card(
                       color: color,
-                      child: Column(children: [
-                        ListTile(
-                          leading: leading,
-                          trailing: trailingIcon == null
-                              ? null
-                              : IconButton(
-                              onPressed: () => onTrailingIconClick!(bid),
-                              icon: trailingIcon!),
-                          title: Text('$num'),
-                          // subtitle: Text('[$assetIDString/sec]'),
-                          // tileColor: color,
-                          // onTap: () => onTap(bid),
-                        ),
-                        Text('[$assetIDString/sec]'),
-                      ])));
+                      child: ListTile(
+                        leading: leading,
+                        trailing: trailingIcon == null
+                            ? null
+                            : IconButton(
+                            onPressed: () => onTrailingIconClick!(bid),
+                            icon: trailingIcon!),
+                        title: Text('$num'),
+                        subtitle: Text('[$assetIDString/sec]'),
+                        // tileColor: color,
+                        // onTap: () => onTap(bid),
+                      )));
             },
             loading: () => const Text('loading'),
             error: (_, __) => const Text('error'));
