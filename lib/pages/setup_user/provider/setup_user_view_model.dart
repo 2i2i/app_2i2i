@@ -51,60 +51,43 @@ class SetupUserViewModel with ChangeNotifier {
 
   ////////
   Future createAuthAndStartAlgorand() async {
-    try {
-      if (signUpInProcess) return;
-      signUpInProcess = true;
+    if (signUpInProcess) return;
+    signUpInProcess = true;
 
-      log('SetupUserViewModel - createAuthAndStartAlgorand');
+    log('SetupUserViewModel - createAuthAndStartAlgorand');
 
-      message = 'creating auth user';
-      notifyListeners();
-      final userCredentialFuture = auth.signInAnonymously();
-      final setupAlgorandAccountFuture = setupAlgorandAccount();
+    message = 'creating auth user';
+    notifyListeners();
+    final userCredentialFuture = auth.signInAnonymously();
+    final setupAlgorandAccountFuture = setupAlgorandAccount();
 
-      final futureResults =
-          await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
+    final futureResults =
+        await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
 
-      final userCredential = futureResults[0];
-      uid = userCredential.user!.uid;
-      log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
-      log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.user?.uid}');
+    final userCredential = futureResults[0];
+    uid = userCredential.user!.uid;
+    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
+    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.user?.uid}');
 
-      message = 'done';
-      workDone = true;
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+    message = 'done';
+    workDone = true;
+    notifyListeners();
   }
 
   Future updateBio() async {
     log('SetupUserViewModel - createDatabaseUser');
-    try {
-      message = 'creating database user';
-      notifyListeners();
-      log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
-      final tags = UserModel.tagsFromBio(bio!);
-      log('SetupUserViewModel - createDatabaseUser - tags=$tags');
-      await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
-      // final user = UserModel(id: uid!, bio: bio!);
-      log('SetupUserViewModel - createDatabaseUser - UserModel');
-      // await database.setUser(user);
-      // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      // log('SetupUserViewModel - createDatabaseUser - setUser');
-      // final userPrivate = UserModelPrivate();
-      // log('SetupUserViewModel - createDatabaseUser - UserModelPrivate');
-      // await database.setUserPrivate(uid!, userPrivate);
-      // await Future.delayed(Duration(seconds: FAKE_WAIT));
-      // log('SetupUserViewModel - createDatabaseUser - setUserPrivate');
-    } catch (e) {
-      print(e);
-    }
+    message = 'creating database user';
+    notifyListeners();
+    // log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
+    final tags = UserModel.tagsFromBio(bio!);
+    // log('SetupUserViewModel - createDatabaseUser - tags=$tags');
+    await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
+    // log('SetupUserViewModel - createDatabaseUser - UserModel');
   }
 
   // KEEP account in local scope
   Future setupAlgorandAccount() async {
-    try {
+
       message = 'creating algorand account';
       notifyListeners();
       if (0 < await accountService.getNumAccounts()) return;
@@ -114,7 +97,7 @@ class SetupUserViewModel with ChangeNotifier {
           accountService: accountService);
       log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
-    // TODO uncomment try
+      // TODO uncomment try
       // DEBUG - off for faster debugging
       // message = 'gifting your some (test) ALGOs and TESTCOINs';
       // notifyListeners();
@@ -129,8 +112,5 @@ class SetupUserViewModel with ChangeNotifier {
       // await algorand.waitForConfirmation(
       //     txId: optInStateTxId, net: AlgorandNet.testnet);
       // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
-    } catch (e) {
-      // TODO - we can continue the app; this was a luxury
-    }
   }
 }
