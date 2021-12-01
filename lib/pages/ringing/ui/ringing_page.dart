@@ -143,11 +143,13 @@ class RingingPageState extends ConsumerState<RingingPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Incoming Call",
-                        style: Theme.of(context).textTheme.caption),
+                    Text(
+                      ringingPageViewModel.amA()?"Incoming Call":"Calling",
+                        style: Theme.of(context).textTheme.caption,
+                    ),
                     SizedBox(height: 10),
                     Text(
-                      "Ravi Vithani",
+                      ringingPageViewModel.user.name,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -166,40 +168,38 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                          onPressed: ()async{
+                          onPressed: () async {
                             await stopAudio();
                             ringingPageViewModel.cancelMeeting();
                           },
                         ),
                         SizedBox(height: 8),
-                        Text('Reject',
-                            style: Theme.of(context).textTheme.caption)
+                        Text('Reject', style: Theme.of(context).textTheme.caption)
                       ],
                     ),
-                    SizedBox(
-                        width: (ringingPageViewModel.meeting.isInit() &&
-                                ringingPageViewModel.amA())
-                            ? 150
-                            : 0),
-                    (ringingPageViewModel.meeting.isInit() &&
-                            ringingPageViewModel.amA())
-                        ? Column(
-                            children: [
-                              Bounce(
-                                  child: FloatingActionButton(
-                                      child:
-                                          Icon(Icons.call, color: Colors.white),
-                                      backgroundColor: Colors.green,
-                                      onPressed: () async{
-                                        await stopAudio();
-                                        ringingPageViewModel.acceptMeeting();
-                                      })),
-                              SizedBox(height: 8),
-                              Text('Accept',
-                                  style: Theme.of(context).textTheme.caption)
-                            ],
-                          )
-                        : Container(),
+                    Visibility(
+                      visible: (ringingPageViewModel.meeting.isInit() && ringingPageViewModel.amA()),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 150),
+                        child: Column(
+                          children: [
+                            Bounce(
+                              child: FloatingActionButton(
+                                child: Icon(Icons.call, color: Colors.white),
+                                backgroundColor: Colors.green,
+                                onPressed: () async {
+                                  await stopAudio();
+                                  ringingPageViewModel.acceptMeeting();
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Accept',
+                                style: Theme.of(context).textTheme.caption)
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
               )
