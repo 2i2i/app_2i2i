@@ -27,28 +27,24 @@ class RingingPageState extends ConsumerState<RingingPage> {
   RingingPageState({Key? key, required this.meeting});
 
   final Meeting meeting;
-  Timer? T;
+  Timer? timer;
   final player = AudioPlayer();
 
 
   @override
   void initState() {
-    playAudio();
-    T?.cancel();
-    T = null;
-    T = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
+    start();
     super.initState();
   }
 
   @override
   Future<void> dispose() async {
     super.dispose();
-    T?.cancel();
-    T = null;
-    stopAudio();
+    finish();
   }
 
-  Future<void> playAudio() async {
+  Future<void> start() async {
+    timer = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
     if(!player.playing) {
@@ -56,19 +52,21 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
   }
 
-  Future<void> stopAudio() async {
+  Future<void> finish() async {
+    if(timer?.isActive??false) {
+      timer!.cancel();
+    }
     if(player.playing) {
       await player.stop();
     }
     await player.dispose();
+    timer = null;
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
-    await stopAudio();
-    T?.cancel();
-    T = null;
+    await finish();
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
     final args = {'meetingId': meeting.id};
     if (reason != null) args['reason'] = reason;
@@ -171,7 +169,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
                           onPressed: () async {
-                            await stopAudio();
+                            await finish();
                             ringingPageViewModel.cancelMeeting();
                           },
                         ),
@@ -194,7 +192,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   if(mounted) {
                                     setState(() {});
                                   }
-                                  await stopAudio();
+                                  await finish();
                                   ringingPageViewModel.acceptMeeting();
                                 },
                               ),
