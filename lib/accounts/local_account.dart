@@ -14,10 +14,16 @@ class LocalAccount extends AbstractAccount {
     required accountService,
   }) : super(accountService: accountService);
 
-  static Future<LocalAccount> create({required AlgorandLib algorandLib, required SecureStorage storage, required AccountService accountService,
+  static Future<LocalAccount> create({
+    required AlgorandLib algorandLib,
+    required SecureStorage storage,
+    required AccountService accountService,
   }) async {
     log('LocalAccount.create');
-    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
+    final account = LocalAccount._create(
+        accountService: accountService,
+        algorandLib: algorandLib,
+        storage: storage);
     await account._createAndStoreAccount();
     await account.updateBalances();
     return account;
@@ -35,6 +41,22 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromStorage(numAccount);
+    await account.updateBalances();
+    return account;
+  }
+
+  static Future<LocalAccount> fromMnemonic({
+    required AlgorandLib algorandLib,
+    required SecureStorage storage,
+    required AccountService accountService,
+    required List<String> mnemonic,
+  }) async {
+    log('LocalAccount.fromMnemonic');
+    final account = LocalAccount._create(
+        accountService: accountService,
+        algorandLib: algorandLib,
+        storage: storage);
+    await account._loadAccountFromMnemonic(mnemonic);
     await account.updateBalances();
     return account;
   }
@@ -77,11 +99,23 @@ class LocalAccount extends AbstractAccount {
     return txnsSigned.map((txn) => txn.toBytes()).toList();
   }
 
+  Future<List<String>> mnemonic() async {
+    final account = await _libAccount();
+    return account.seedPhrase;
+  }
+
   Future<Account> _libAccount() async {
     final privateKey = await storage.read('account_$_numAccount');
     final Uint8List seed = base64Decode(privateKey!);
     return algorandLib.client[AlgorandNet.mainnet]!
         .loadAccountFromSeed(seed); // mainnet as it does not matter
+  }
+
+  Future _loadAccountFromMnemonic(List<String> mnemonic) async {
+    final account =
+        await algorandLib.client[AlgorandNet.mainnet]!.restoreAccount(mnemonic);
+    address = account.publicAddress;
+    await _storeAccount(account);
   }
 
   Future _loadAccountFromStorage(int numAccount) async {
@@ -91,28 +125,23 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future _createAndStoreAccount() async {
-      // log('LocalAccount - _createAndStoreAccount');
-      final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
-      // log('LocalAccount - _createAndStoreAccount - createAccount');
-      final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
-      // log('LocalAccount - _createAndStoreAccount - privateKeyBytes');
-      final String privateKey = base64Encode(privateKeyBytes);
-      // log('LocalAccount - _createAndStoreAccount - privateKey');
+    final Account account = await algorandLib.client[AlgorandNet.mainnet]!
+        .createAccount(); // use mainnet bc it does not matter
+    address = account.publicAddress;
+    await _storeAccount(account);
+  }
 
-      // set
-      _numAccount = await accountService.getNumLocalAccounts();
-      // log('LocalAccount - _createAndStoreAccount - _numAccount=$_numAccount');
-      address = account.publicAddress;
-      // log('LocalAccount - _createAndStoreAccount - _address=$_address');
+  Future _storeAccount(Account account) async {
+    final List<int> privateKeyBytes =
+        await account.keyPair.extractPrivateKeyBytes();
+    final String privateKey = base64Encode(privateKeyBytes);
 
-      final storageAccountKey = 'account_$_numAccount';
-      // log('LocalAccount - _createAndStoreAccount - storageAccountKey=$storageAccountKey');
-      final newNumAccounts = _numAccount + 1;
-      // log('LocalAccount - _createAndStoreAccount - newNumAccounts=$newNumAccounts');
-      await storage.write('num_accounts', newNumAccounts.toString());
-      // log('LocalAccount - _createAndStoreAccount - storage.write');
-      await storage.write(storageAccountKey, privateKey);
-      // log('LocalAccount - _createAndStoreAccount - done');
+    // set
+    _numAccount = await accountService.getNumLocalAccounts();
+    final storageAccountKey = 'account_$_numAccount';
+    final newNumAccounts = _numAccount + 1;
+    await storage.write('num_accounts', newNumAccounts.toString());
+    await storage.write(storageAccountKey, privateKey);
   }
 
   late int _numAccount;

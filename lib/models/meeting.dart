@@ -22,6 +22,11 @@ class MeetingStatus {
   const MeetingStatus({required this.value, required this.ts});
   final MeetingValue value;
   final int ts;
+
+  @override
+  String toString() {
+    return 'MeetingStatus{value: $value, ts: $ts}';
+  }
 }
 
 @immutable

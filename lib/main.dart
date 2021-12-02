@@ -4,6 +4,7 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/routes/named_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -19,12 +20,7 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
-  runApp(
-    ProviderScope(
-      child: MainWidget(),
-    ),
-  );
-  /*await SentryFlutter.init((options) {
+  await SentryFlutter.init((options) {
       options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     },
     appRunner: () => runApp(
@@ -32,7 +28,7 @@ Future<void> main() async {
         child: MainWidget(),
       ),
     ),
-  );*/
+  );
 }
 
 // TODO MainWidget is not immutable anymore

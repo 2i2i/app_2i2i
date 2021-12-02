@@ -12,9 +12,8 @@ class CallPage extends StatefulWidget {
 
   final Meeting meeting;
   final UserModel user;
-  final Function? initMethod;
 
-  CallPage({Key? key, required this.meeting, required this.user, this.initMethod}) : super(key: key);
+  CallPage({Key? key, required this.meeting, required this.user}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -56,7 +55,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    widget.initMethod?.call();
+
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
@@ -79,8 +78,8 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   void dispose() {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
-    budgetTimer!.cancel();
-    progressTimer!.cancel();
+    budgetTimer?.cancel();
+    progressTimer?.cancel();
     super.dispose();
   }
 
@@ -156,7 +155,6 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                             if (budgetTimer?.isActive ?? false) {
                               budgetTimer?.cancel();
                             }
-                            widget.initMethod?.call();
                             signaling?.hangUp(_localRenderer);
                           } catch (e) {
                             print(e);
