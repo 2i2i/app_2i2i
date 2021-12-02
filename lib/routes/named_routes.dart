@@ -40,7 +40,7 @@ class NamedRoutes{
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: AuthWidget(
-            homePageBuilder: (_) => HomePage(),
+            homePageBuilder: (_) => SetupUserPage(),
             setupPageBuilder: (_) => SetupUserPage(),
           ),
 

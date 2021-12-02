@@ -14,6 +14,7 @@ class AddBidPageViewModel {
     required this.accounts,
     required this.accountService,
   });
+
   final FirebaseFunctions functions;
   final UserModel user;
   final AlgorandService algorand;
@@ -22,9 +23,10 @@ class AddBidPageViewModel {
 
   bool submitting = false;
 
-  String duration(AbstractAccount account, int speedNum, Balance balance,
-      double budgetPercentage) {
-    if (speedNum == 0) return 'forever';
+  String duration(AbstractAccount account, int speedNum, Balance balance, double budgetPercentage) {
+    if (speedNum == 0) {
+      return 'forever';
+    }
     final budget = balance.assetHolding.amount * budgetPercentage / 100;
     final seconds = budget / speedNum;
     return secondsToSensibleTimePeriod(seconds.round());

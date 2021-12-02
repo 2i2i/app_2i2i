@@ -1,5 +1,7 @@
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/common/text_utils.dart';
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -28,73 +30,97 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
   Widget build(BuildContext context) {
     SetupUserViewModel setupUserViewModel =
         ref.watch(setupUserViewModelProvider);
-    return TestBanner(Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 150,
-          title: Image.asset(
-            'assets/logo.png',
-            scale: 2,
-          ),
-        ),
-        body: SingleChildScrollView(
-            child: Column(
-          children: [
-            Container(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: Strings().yourNameHint,
-                  border: OutlineInputBorder(),
-                  label: Text(Strings().writeYourName),
-                ),
-                minLines: 1,
-                maxLines: 1,
-                onChanged: setupUserViewModel.setName,
+    return TestBanner(
+        widget: Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 100,
+              title: Image.asset(
+                'assets/logo.png',
+                scale: 5,
               ),
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             ),
-            Container(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: Strings().yourBioHint,
-                  border: OutlineInputBorder(),
-                  label: Text(Strings().writeYourBio),
-                ),
-                minLines: 8,
-                maxLines: null,
-                onChanged: setupUserViewModel.setBio,
-              ),
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            ),
-            Container(
-              child: Text(
-                Strings().bioExample,
-              ),
-              padding: const EdgeInsets.only(
-                  top: 5, left: 20, right: 20, bottom: 10),
-            ),
-            setupUserViewModel.workDone
-                ? Icon(
-                    Icons.check,
-                    size: 50,
-                    color: Color.fromRGBO(60, 84, 68, 1),
-                  )
-                : Container(
-                    child: CircularProgressIndicator(),
-                    padding: const EdgeInsets.only(
-                        top: 10, left: 20, right: 20, bottom: 20),
-                  ),
-            setupUserViewModel.workDone
-                ? Text('')
-                : Text(setupUserViewModel.message),
-            setupUserViewModel.nameSet && setupUserViewModel.bioSet && setupUserViewModel.workDone ? Container(
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                  onPressed: () => pressGo(context, setupUserViewModel),
-                  child: Text(Strings().save, style: TextStyle(fontSize: 20))),
-              padding: const EdgeInsets.only(
-                  top: 20, left: 20, right: 20, bottom: 20),
-            ) : Container(),
-          ],
-        ))));
+                onPressed: setupUserViewModel.nameSet &&
+                        setupUserViewModel.bioSet &&
+                        setupUserViewModel.workDone
+                    ? () {
+                        pressGo(context, setupUserViewModel);
+                      }
+                    : null,
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        setupUserViewModel.nameSet &&
+                                setupUserViewModel.bioSet &&
+                                setupUserViewModel.workDone
+                            ? AppTheme().buttonBackground
+                            : Theme.of(context).disabledColor.withOpacity(0.2)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ))),
+                child: ListTile(
+                    leading: setupUserViewModel.workDone
+                        ? Icon(
+                            Icons.check,
+                            color: Color.fromRGBO(60, 84, 68, 1),
+                          )
+                        : Column(
+                          children: [
+                            Container(child: CircularProgressIndicator(),height: 40,width: 40,),
+                          ],
+                        ),
+                    contentPadding: EdgeInsets.zero,
+                    trailing: Icon(Icons.arrow_forward_ios_rounded),
+                    title: ButtonText(
+                        textAlign: TextAlign.center,
+                        title: "Save and Enter",
+                        textColor: AppTheme().black)),
+              ),
+            ),
+            body: SingleChildScrollView(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: Strings().yourNameHint,
+                      border: OutlineInputBorder(),
+                      label: Text(Strings().writeYourName),
+                    ),
+                    minLines: 1,
+                    maxLines: 1,
+                    onChanged: setupUserViewModel.setName,
+                  ),
+                  padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                ),
+                Container(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: Strings().yourBioHint,
+                      border: OutlineInputBorder(),
+                      label: Text(Strings().writeYourBio),
+                    ),
+                    minLines: 8,
+                    maxLines: null,
+                    onChanged: setupUserViewModel.setBio,
+                  ),
+                  padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                ),
+                Container(
+                  child: Text(
+                    Strings().bioExample,
+                  ),
+                  padding: const EdgeInsets.only(
+                      top: 5, left: 20, right: 20, bottom: 10),
+                ),
+                setupUserViewModel.workDone
+                    ? Text('')
+                    : Text(setupUserViewModel.message),
+              ],
+            ))));
   }
 
   void pressGo(BuildContext context, SetupUserViewModel setupUserViewModel) async {

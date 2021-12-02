@@ -55,35 +55,36 @@ class _UserPageState extends ConsumerState<UserPage> {
         centerTitle: true,
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: authStateChanges.data!.value!.uid == userModel?.id
-            ? null
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CaptionText(
-                      title: "Do you want to bid for ${userModel?.name}",
-                      textColor: Theme.of(context).hintColor),
-                  SizedBox(height: 12),
-                  Container(
-                    height: 35,
-                    child: ElevatedButton(
-                  child: ButtonText(title: "BID"),
-                        onPressed: () => context.goNamed('addbidpage',
-                            params: {'uid': userModel!.id}),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppTheme().lightGreen),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))))),
-              width: MediaQuery.of(context).size.width / 3.5,
-            )
-          ],
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: authStateChanges.data!.value!.uid == userModel?.id
+              ? null
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CaptionText(
+                      maxLine: 1,
+                        title: "Do you want to bid for ${userModel?.name}",
+                        textColor: Theme.of(context).hintColor),
+                    SizedBox(height: 12),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>( AppTheme().buttonBackground),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ))),
+                      onPressed: () => context.goNamed('addbidpage', params: {'uid': userModel!.id}),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: ButtonText(
+                          textAlign: TextAlign.center,
+                            title: "ADD BID", textColor: AppTheme().black)
+                      ),
+                    )
+            ],
+          ),
         ),
-      ),
       body: Column(
         children: [
          /* SizedBox(height: 4),

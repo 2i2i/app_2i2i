@@ -1,4 +1,3 @@
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
@@ -22,10 +21,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-
-
-
-
   @override
   Widget build(BuildContext context) {
     log('HomePage - build');
@@ -36,8 +31,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     log('HomePage - build - myUserLocked=$myUserLocked');
 
     return DefaultTabController(
-        length: 5,
-        child: TestBanner(Scaffold(
+      length: 5,
+      child: TestBanner(
+        widget: Scaffold(
           appBar: AppBar(
             backgroundColor: AppTheme().lightGray,
             leading: IconButton(
@@ -47,7 +43,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 icon: Icon(IconData(58751, fontFamily: 'MaterialIcons'),
                     color: AppTheme().black)),
             centerTitle: true,
-            title: Image.asset('assets/logo.png', height: 30,fit: BoxFit.contain),
+            title:
+                Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
           ),
           body: Column(
             children: [
@@ -93,6 +90,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

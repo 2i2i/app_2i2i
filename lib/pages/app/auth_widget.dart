@@ -30,11 +30,7 @@ class AuthWidget extends ConsumerWidget {
       return setupPageBuilder(context);
     }, loading: () {
       log('AuthWidget - build - authStateChanges.when - loading');
-      return  Scaffold(
-        body: Center(
-          child: WaitPage(),
-        ),
-      );
+      return  WaitPage();
     }, error: (_, __) {
       log('AuthWidget - build - authStateChanges.when - error');
       return const Scaffold(
