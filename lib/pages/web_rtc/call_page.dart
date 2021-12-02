@@ -9,13 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallPage extends StatefulWidget {
-  CallPage(
-      {Key? key, required this.meeting, required this.user, this.initMethod})
-      : super(key: key);
 
   final Meeting meeting;
   final UserModel user;
-  final Function? initMethod;
+
+  CallPage({Key? key, required this.meeting, required this.user}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -33,11 +31,11 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   ValueNotifier<double> progress = ValueNotifier(100);
 
   void _initBudgetTimer() {
+
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration =
-        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
+    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = maxDuration;
     final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
@@ -57,7 +55,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    widget.initMethod!();
+
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
@@ -80,117 +78,119 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   void dispose() {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
-    budgetTimer!.cancel();
-    progressTimer!.cancel();
+    budgetTimer?.cancel();
+    progressTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OrientationBuilder(builder: (context, orientation) {
-        return Container(
-          child: Stack(children: <Widget>[
-            swapped
-                ? firstVideoView(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    renderer: _localRenderer)
-                : secondVideoView(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    renderer: _remoteRenderer),
-            Positioned(
-              top: 40,
-              left: 40,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: !swapped
-                        ? firstVideoView(
-                            height: MediaQuery.of(context).size.height * 0.3,
-                            width: MediaQuery.of(context).size.height * 0.3,
-                            renderer: _localRenderer,
-                          )
-                        : secondVideoView(
-                            height: MediaQuery.of(context).size.height * 0.3,
-                            width: MediaQuery.of(context).size.height * 0.3,
-                            renderer: _remoteRenderer,
-                          ),
-                  ),
-                  InkResponse(
-                    onTap: () {
-                      swapped = !swapped;
-                      setState(() {});
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16.0),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        width: MediaQuery.of(context).size.height * 0.3,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                margin: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
-                color: Colors.black38,
-                child: Container(
-                  height: 100,
-                  alignment: Alignment.center,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      FloatingActionButton(
-                        onPressed: () {
-                          if (budgetTimer?.isActive ?? false) {
-                            budgetTimer?.cancel();
-                          }
-                          signaling!.hangUp(_localRenderer);
-                        },
-                        child: Icon(
-                          Icons.call_end,
-                          color: Colors.white,
+        body: OrientationBuilder(builder: (context, orientation) {
+          return Container(
+            child: Stack(children: <Widget>[
+              swapped
+                  ? firstVideoView(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _localRenderer)
+                  : secondVideoView(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _remoteRenderer),
+              Positioned(
+                top: 40,
+                left: 40,
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: !swapped
+                            ? firstVideoView(
+                                height: MediaQuery.of(context).size.height * 0.3,
+                                width: MediaQuery.of(context).size.height * 0.3,
+                                renderer: _localRenderer,
+                        )
+                            : secondVideoView(
+                                height: MediaQuery.of(context).size.height*0.3,
+                                width: MediaQuery.of(context).size.height*0.3,
+                                renderer: _remoteRenderer,
                         ),
-                        backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                      ),
-                      RotatedBox(
-                        quarterTurns: 90,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).size.width / 1.5),
-                          child: ValueListenableBuilder(
-                            valueListenable: progress,
-                            builder: (BuildContext context, double value,
-                                Widget? child) {
-                              var percentage = value.toDouble();
-                              if (value > 1) {
-                                percentage = (value / 100);
-                              }
-                              bool isAnimate = value <= 20 &&
-                                  (budgetTimer?.tick.isEven ?? false);
-                              print(
-                                  '==== $value $isAnimate ${budgetTimer?.tick}');
-                              return SizedBox(
-                                width: MediaQuery.of(context).size.width / 8,
-                                child: LinearProgressIndicator(
-                                  value: value,
-                                  minHeight: 4,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    isAnimate ? Colors.red : Colors.white,
+                    ),
+                    InkResponse(
+                        onTap: (){
+                            swapped = !swapped;
+                          setState(() {});
+                        },
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              width: MediaQuery.of(context).size.height * 0.3,
+                            ),
+                        ),
+                    )
+                  ],
+                ),
+              ),
+
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  margin: EdgeInsets.symmetric(horizontal: 100,vertical: 10),
+                  color: Colors.black38,
+                  child: Container(
+                    height: 100,
+                    alignment: Alignment.center,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      // crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () {
+                          try {
+                            if (budgetTimer?.isActive ?? false) {
+                              budgetTimer?.cancel();
+                            }
+                            signaling?.hangUp(_localRenderer);
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                          child: Icon(
+                            Icons.call_end,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: Color.fromARGB(255, 239, 102, 84),
+                        ),
+                        RotatedBox(
+                          quarterTurns: 90,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/1.5),
+                            child: ValueListenableBuilder(
+                              valueListenable: progress,
+                              builder: (BuildContext context, double value, Widget? child) {
+                                var percentage = value.toDouble();
+                                if(value > 1){
+                                  percentage = (value/100);
+                                }
+                                bool isAnimate = value <= 20 && (budgetTimer?.tick.isEven ?? false);
+                                print('==== $value $isAnimate ${budgetTimer?.tick}');
+                                return SizedBox(
+                                  width: MediaQuery.of(context).size.width/8,
+                                  child: LinearProgressIndicator(
+                                    value: value,
+                                    minHeight: 4,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      isAnimate?Colors.red:Colors.white,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+
                           ),
                         ),
                       ),

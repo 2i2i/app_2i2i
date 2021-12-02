@@ -45,7 +45,7 @@ dependencies:
   just_audio: ^0.9.18
   walletconnect_dart:
     git:
-      url: git@github.com:2i2i/walletconnect-dart-sdk.git
+      url: https://github.com/2i2i/walletconnect-dart-sdk.git
       ref: signTransactions
 
 dev_dependencies:
@@ -84,10 +84,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: ShipporiAntique
+      fonts:
+        - asset: assets/fonts/ShipporiAntique-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

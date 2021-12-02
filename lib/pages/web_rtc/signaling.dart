@@ -188,7 +188,7 @@ class Signaling {
 
       // Code for collecting ICE candidates below
       final iceCandidatesCollection = roomRef.collection('iceCandidatesB');
-      peerConnection!.onIceCandidate = (RTCIceCandidate candidate) {
+      peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
         log('onIceCandidate: ${candidate.toMap()}');
         iceCandidatesCollection.add(candidate.toMap());
       };
@@ -202,31 +202,39 @@ class Signaling {
         });
       };
 
-      // Code for creating SDP answer below
-      final data = roomSnapshot.data() as Map<String, dynamic>;
-      log('Got offer $data');
-      final offer = data['offer'];
-      await peerConnection?.setRemoteDescription(
-        RTCSessionDescription(offer['sdp'], offer['type']),
-      );
-      final answer = await peerConnection!.createAnswer();
+
+        // Code for creating SDP answer below
+        final data = (roomSnapshot.data()??{}) as Map<String, dynamic>;
+        log(F+' Got offer $data');
+        final offer = data['offer']??{};
+        await peerConnection?.setRemoteDescription(
+            RTCSessionDescription(offer['sdp'], offer['type']),
+        );
+
+      final answer = await peerConnection?.createAnswer();
       log('Created Answer $answer');
 
-      await peerConnection!.setLocalDescription(answer);
+      if(answer!= null) {
+        await peerConnection?.setLocalDescription(answer);
 
-      Map<String, dynamic> roomWithAnswer = {
-        'answer': {'type': answer.type, 'sdp': answer.sdp}
-      };
+        Map<String, dynamic> roomWithAnswer = {
+          'answer': {'type': answer.type, 'sdp': answer.sdp}
+        };
 
-      await roomRef.update(roomWithAnswer);
-      // Finished creating SDP answer
+        await roomRef.update(roomWithAnswer);
+        // Finished creating SDP answer
+      }
+
+
+
+
 
       // Listening for remote ICE candidates below
       roomRef.collection('iceCandidatesA').snapshots().listen((snapshot) {
         snapshot.docChanges.forEach((document) {
           final data = document.doc.data() as Map<String, dynamic>;
           log('Got new remote ICE candidate: $data');
-          peerConnection!.addCandidate(
+          peerConnection?.addCandidate(
             RTCIceCandidate(
               data['candidate'],
               data['sdpMid'],
@@ -251,46 +259,50 @@ class Signaling {
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
-    log('Signaling - hangUp - ${meeting.id}');
+    try {
+      log('Signaling - hangUp - ${meeting.id}');
 
-    final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
-    final args = {
-      'meetingId': meeting.id,
-    };
-    if (reason != null) args['reason'] = reason;
-    await endMeeting(args);
+      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
+      final args = {
+        'meetingId': meeting.id,
+      };
+      if (reason != null) args['reason'] = reason;
+      await endMeeting(args);
 
-    log('Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
-    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-    tracks.forEach((track) {
-      track.stop();
-    });
+      log('Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+      tracks.forEach((track) {
+        track.stop();
+      });
 
-    log('Signaling - hangUp - ${meeting.id} - local track.stop');
+      log('Signaling - hangUp - ${meeting.id} - local track.stop');
 
-    if (remoteStream != null) {
-      remoteStream!.getTracks().forEach((track) => track.stop());
+      if (remoteStream != null) {
+        remoteStream!.getTracks().forEach((track) => track.stop());
+      }
+      log('Signaling - hangUp - ${meeting.id} - remote track.stop');
+
+      if (peerConnection != null) peerConnection!.close();
+      log('Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
+
+      // if (roomId != null) {
+      final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
+      iceCandidatesB.docs.forEach((document) => document.reference.delete());
+
+      final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
+      iceCandidatesA.docs.forEach((document) => document.reference.delete());
+
+      await roomRef.delete();
+      log('Signaling - hangUp - ${meeting.id} - room deleted');
+      // }
+
+      localStream.dispose();
+      log('Signaling - hangUp - ${meeting.id} - localStream.dispose');
+      remoteStream?.dispose();
+      log('Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
+    } catch (e) {
+      print(e);
     }
-    log('Signaling - hangUp - ${meeting.id} - remote track.stop');
-
-    if (peerConnection != null) peerConnection!.close();
-    log('Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
-
-    // if (roomId != null) {
-    final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-    iceCandidatesB.docs.forEach((document) => document.reference.delete());
-
-    final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-    iceCandidatesA.docs.forEach((document) => document.reference.delete());
-
-    await roomRef.delete();
-    log('Signaling - hangUp - ${meeting.id} - room deleted');
-    // }
-
-    localStream.dispose();
-    log('Signaling - hangUp - ${meeting.id} - localStream.dispose');
-    remoteStream?.dispose();
-    log('Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
   }
 
   void registerPeerConnectionListeners() {

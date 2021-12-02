@@ -14,51 +14,59 @@ import 'package:just_audio/just_audio.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
-  const RingingPage(
-      {Key? key,
-      required this.meeting,
-      this.initMethod,
-      this.callReject})
-      : super(key: key);
-
+  const RingingPage({Key? key, required this.meeting}) : super(key: key);
   final Meeting meeting;
-
-  final Function? initMethod;
-  final Function? callReject;
 
   @override
   RingingPageState createState() => RingingPageState(meeting: meeting);
 }
 
 class RingingPageState extends ConsumerState<RingingPage> {
+  bool isClicked = false;
+
   RingingPageState({Key? key, required this.meeting});
 
   final Meeting meeting;
-  Timer? T;
+  Timer? timer;
+  final player = AudioPlayer();
 
 
   @override
   void initState() {
-    widget.initMethod!();
-    T?.cancel();
-    T = null;
-    T = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
+    start();
     super.initState();
   }
 
   @override
-  void dispose() {
-    T?.cancel();
-    T = null;
+  Future<void> dispose() async {
     super.dispose();
+    finish();
+  }
+
+  Future<void> start() async {
+    timer = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
+    await player.setAsset('assets/video_call.mp3');
+    await player.setLoopMode(LoopMode.one);
+    if(!player.playing) {
+      await player.play();
+    }
+  }
+
+  Future<void> finish() async {
+    if(timer?.isActive??false) {
+      timer!.cancel();
+    }
+    if(player.playing) {
+      await player.stop();
+    }
+    await player.dispose();
+    timer = null;
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
-    widget.callReject!();
-    T?.cancel();
-    T = null;
+    await finish();
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
     final args = {'meetingId': meeting.id};
     if (reason != null) args['reason'] = reason;
@@ -135,11 +143,13 @@ class RingingPageState extends ConsumerState<RingingPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Incoming Call",
-                        style: Theme.of(context).textTheme.caption),
+                    Text(
+                      ringingPageViewModel.amA()?"Incoming Call":"Calling",
+                        style: Theme.of(context).textTheme.caption,
+                    ),
                     SizedBox(height: 10),
                     Text(
-                      "Ravi Vithani",
+                      ringingPageViewModel.user.name,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -158,40 +168,42 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                          onPressed: (){
-                            widget.callReject!();
+                          onPressed: () async {
+                            await finish();
                             ringingPageViewModel.cancelMeeting();
                           },
                         ),
                         SizedBox(height: 8),
-                        Text('Reject',
-                            style: Theme.of(context).textTheme.caption)
+                        Text('Reject', style: Theme.of(context).textTheme.caption)
                       ],
                     ),
-                    SizedBox(
-                        width: (ringingPageViewModel.meeting.isInit() &&
-                                ringingPageViewModel.amA())
-                            ? 150
-                            : 0),
-                    (ringingPageViewModel.meeting.isInit() &&
-                            ringingPageViewModel.amA())
-                        ? Column(
-                            children: [
-                              Bounce(
-                                  child: FloatingActionButton(
-                                      child:
-                                          Icon(Icons.call, color: Colors.white),
-                                      backgroundColor: Colors.green,
-                                      onPressed: () {
-                                        widget.callReject!();
-                                        ringingPageViewModel.acceptMeeting();
-                                      })),
-                              SizedBox(height: 8),
-                              Text('Accept',
-                                  style: Theme.of(context).textTheme.caption)
-                            ],
-                          )
-                        : Container(),
+                    Visibility(
+                      visible: (!isClicked) || (ringingPageViewModel.meeting.isInit() && ringingPageViewModel.amA()),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 150),
+                        child: Column(
+                          children: [
+                            Bounce(
+                              child: FloatingActionButton(
+                                child: Icon(Icons.call, color: Colors.white),
+                                backgroundColor: Colors.green,
+                                onPressed: () async {
+                                  isClicked = true;
+                                  if(mounted) {
+                                    setState(() {});
+                                  }
+                                  await finish();
+                                  ringingPageViewModel.acceptMeeting();
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Accept',
+                                style: Theme.of(context).textTheme.caption)
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
               )

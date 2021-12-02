@@ -7,6 +7,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_path.dart';
 import 'package:app_2i2i/repository/firestore_service.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class FirestoreDatabase {
@@ -54,6 +55,19 @@ class FirestoreDatabase {
         path: FirestorePath.user(uid),
         builder: (data, documentId) => UserModel.fromMap(data, documentId),
       );
+
+  Future<UserModel?> getUser(String uid)async{
+    DocumentSnapshot documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
+    if(documentSnapshot.exists) {
+      String id = documentSnapshot.id;
+      final data = documentSnapshot.data();
+      if(data is Map) {
+        return UserModel.fromMap(data.cast<String,dynamic>(), id);
+      }
+    }
+    return null;
+  }
+
   Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.userPrivate(uid),
@@ -127,7 +141,9 @@ class FirestoreDatabase {
   Stream<Meeting> meetingStream({required String id}) =>
       _service.documentStream(
         path: FirestorePath.meeting(id),
-        builder: (data, documentId) => Meeting.fromMap(data, documentId),
+        builder: (data, documentId) {
+          return Meeting.fromMap(data, documentId);
+        }
       );
   Future<void> setMeeting(Meeting meeting) => _service.setData(
         path: FirestorePath.meeting(meeting.id),

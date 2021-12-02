@@ -1,4 +1,9 @@
+
+
+import 'package:app_2i2i/test2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
 class TestScreen extends StatefulWidget {
   const TestScreen({Key? key}) : super(key: key);
@@ -7,116 +12,82 @@ class TestScreen extends StatefulWidget {
   _TestScreenState createState() => _TestScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
+class _TestScreenState extends State<TestScreen> with SingleTickerProviderStateMixin{
+  late AnimationController controller;
+  late Animation<Offset> offset;
+  Offset start = Offset.zero;
+  Offset end = Offset(1.0,0.0);
+  bool visible = false;
+  @override
+  void initState() {
+    controller = AnimationController(vsync: this, duration: Duration(seconds: 8),animationBehavior: AnimationBehavior.normal);
+    offset = Tween<Offset>(begin: start, end: end).animate(controller);
+    controller.addListener(() {
+      if(controller.status == AnimationStatus.completed){
+        controller.repeat(reverse: true);
+      }
+    });
+    controller.forward();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Stack(
-        children: [
-          RotatedBox(
-            quarterTurns: 90,
-            child: CustomPaint(
-              child: Container(
-                height: 150,
-                width: MediaQuery.of(context).size.width,
-                alignment: Alignment.bottomCenter,
-              ),
-              painter: CurvePainter(),
+      body: Center(
+        child: Material(
+          elevation: 8,
+          shadowColor: Colors.blue,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(50),
             ),
+            width: MediaQuery.of(context).size.width/4,
+            height: 15,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: SlideTransition(
+                  position: offset,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          color: Colors.red,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.green,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.blue,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ),
-          Positioned(
-            bottom: 10,
-              right: 0,
-              left: 0,
-              child: FloatingActionButton(onPressed: (){}),
-          ),
-          Positioned(
-            bottom: 5,
-              right: 450,
-              left: 0,
-              child: Image.asset('assets/stopwatch.png', height: 70, width: 70,color: Colors.white),
-          ),
-          Positioned(
-            bottom: 30,
-              right: 0,
-              left: 450,
-              child: Text('00:00:00',
-                style: TextStyle(
-                  color: Colors.white
-                )
-                ,textAlign: TextAlign.center,),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class CurvePainter extends CustomPainter {
-  Color colorOne = Colors.blueAccent.shade200;
-  Color colorTwo = Colors.blueAccent.shade100;
-  Color colorThree = Colors.blueAccent.withAlpha(50);
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    Path path = Path();
-    Paint paint = Paint();
-
-    path.lineTo(0, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.70,
-        size.width * 0.17, size.height * 0.90);
-    path.quadraticBezierTo(
-        size.width * 0.20, size.height, size.width * 0.25, size.height * 0.90);
-    path.quadraticBezierTo(size.width * 0.40, size.height * 0.40,
-        size.width * 0.50, size.height * 0.70);
-    path.quadraticBezierTo(size.width * 0.60, size.height * 0.85,
-        size.width * 0.65, size.height * 0.65);
-    path.quadraticBezierTo(
-        size.width * 0.70, size.height * 0.90, size.width, 0);
-    path.close();
-
-    paint.color = colorThree;
-    canvas.drawPath(path, paint);
-
-    path = Path();
-    path.lineTo(0, size.height * 0.50);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.80,
-        size.width * 0.15, size.height * 0.60);
-    path.quadraticBezierTo(size.width * 0.20, size.height * 0.45,
-        size.width * 0.27, size.height * 0.60);
-    path.quadraticBezierTo(size.width * 0.20, size.height * 0.45,
-        size.width * 0.27, size.height * 0.60);
-    path.quadraticBezierTo(
-        size.width * 0.45, size.height, size.width * 0.50, size.height * 0.80);
-    path.quadraticBezierTo(size.width * 0.55, size.height * 0.45,
-        size.width * 0.75, size.height * 0.75);
-    path.quadraticBezierTo(
-        size.width * 0.85, size.height * 0.93, size.width, size.height * 0.60);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    paint.color = colorTwo;
-    canvas.drawPath(path, paint);
-
-    path = Path();
-    path.lineTo(0, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.10, size.height * 0.55,
-        size.width * 0.22, size.height * 0.70);
-    path.quadraticBezierTo(size.width * 0.30, size.height * 0.90,
-        size.width * 0.40, size.height * 0.75);
-    path.quadraticBezierTo(size.width * 0.52, size.height * 0.50,
-        size.width * 0.65, size.height * 0.70);
-    path.quadraticBezierTo(
-        size.width * 0.75, size.height * 0.85, size.width, size.height * 0.60);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    paint.color = colorOne;
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return oldDelegate != this;
-  }
-}

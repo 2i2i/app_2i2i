@@ -162,6 +162,11 @@ class UserModel extends Equatable {
       'heartbeat': heartbeat,
     };
   }
+
+  @override
+  String toString() {
+    return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bidsIn: $bidsIn, bio: $bio, name: $name, _tags: $_tags, upVotes: $upVotes, downVotes: $downVotes, heartbeat: $heartbeat}';
+  }
 }
 
 class BidOut {
