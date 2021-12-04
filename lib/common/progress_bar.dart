@@ -1,40 +1,6 @@
-
-
 import 'dart:async';
 
-import 'package:app_2i2i/test2.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-
-class ProgressBar extends StatelessWidget {
-  final double? height;
-  final double? lineWidth;
-  const ProgressBar({Key? key, this.height, this.lineWidth}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RotatedBox(
-      quarterTurns: 45,
-      child: MyAnimatedLoading(
-        offsetSpeed: Offset(1, 0),
-        width: height??MediaQuery.of(context).size.width/4,
-        height: lineWidth??20,
-        colors: [
-          Color(0xFFEF6654),
-          /*Color(0xFFd6db86),
-          Color(0xFF507942),
-          Color(0xFF2c5689),
-          Color(0xFF8ba5bc),
-          Color(0xFF70706c),
-          Color(0xFF642254),
-          Color(0xFF3a3838),*/
-        ],
-      ),
-    );
-  }
-}
-
+import 'package:flutter/cupertino.dart';
 
 class MyAnimatedLoading extends StatefulWidget {
   final Offset offsetSpeed;
@@ -66,9 +32,9 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
     nodes = List.generate(widget.colors.length, (index) {
       return Node(
         rect: Rect.fromCenter(
-            center: Offset(index * width + width / 2, widget.height / 2),
-            width: width,
-            height: widget.height,
+          center: Offset(index * width + width / 2, widget.height / 2),
+          width: width,
+          height: widget.height,
         ),
         color: widget.colors.elementAt(index),
       );
@@ -179,7 +145,7 @@ class MyCustomPaint extends CustomPainter {
 
     for (int i = 0; i < nodes.length; i++) {
       final Paint paint =  Paint();
-      paint..shader = gradient.createShader(nodes[i].rect);
+      // paint..shader = gradient.createShader(nodes[i].rect);
       paint..color = nodes[i].color;
       canvas.drawRect(nodes[i].rect, paint);
     }
@@ -190,5 +156,3 @@ class MyCustomPaint extends CustomPainter {
     return true;
   }
 }
-
-
