@@ -6,8 +6,11 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
+import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
+import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +24,21 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+
+  @override
+  void initState() {
+    Future.delayed(Duration(seconds: 15)).then((value) {
+      final signUpViewModel = ref.read(setupUserViewModelProvider);
+      bool isLoaded = !(signUpViewModel is AsyncLoading);
+      if(isLoaded){
+        if(signUpViewModel.uid?.runtimeType != String){
+          showCupertinoDialog(context: context, builder: (context)=>SetupUserPage());
+        }
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     log('HomePage - build');

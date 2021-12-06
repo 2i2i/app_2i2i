@@ -10,29 +10,34 @@ class AuthWidget extends ConsumerWidget {
   final WidgetBuilder homePageBuilder;
   final WidgetBuilder setupPageBuilder;
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log('AuthWidget - build');
+
     final authStateChanges = ref.watch(authStateChangesProvider);
-    log('AuthWidget - build - authStateChanges=$authStateChanges');
+
     return authStateChanges.when(data: (user) {
-      log('AuthWidget - build - authStateChanges.when - data - user=$user');
       if (user == null) {
-        return setupPageBuilder(context);
+        final signUpViewModel = ref.read(setupUserViewModelProvider);
+        print('====${signUpViewModel.uid}=====');
+        if (!signUpViewModel.signUpInProcess) {
+          print('====\n\n\n\nCreate account\n\n\n\n=====');
+          Future.delayed(Duration.zero).then((value) {
+            ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
+          });
+        }
+        return WaitPage();
+        // return setupPageBuilder(context);
       }
-      log('AuthWidget - build - authStateChanges.when - data - 2');
+
       final signUpViewModel = ref.read(setupUserViewModelProvider);
-      log('AuthWidget - build - authStateChanges.when - data - signUpViewModel=$signUpViewModel');
       if (!signUpViewModel.signUpInProcess) {
         return homePageBuilder(context);
       }
-      log('AuthWidget - build - authStateChanges.when - data - 3');
       return setupPageBuilder(context);
     }, loading: () {
-      log('AuthWidget - build - authStateChanges.when - loading');
       return  WaitPage();
     }, error: (_, __) {
-      log('AuthWidget - build - authStateChanges.when - error');
       return const Scaffold(
         body: Center(
           child: Text('error'),

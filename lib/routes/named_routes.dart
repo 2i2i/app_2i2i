@@ -5,16 +5,19 @@ import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/cv/cv_page.dart';
 import 'package:app_2i2i/pages/home/error_page.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as provider;
 
 import 'app_routes.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 class NamedRoutes{
   static const INITIAL = Routes.ROOT;
 
@@ -40,10 +43,11 @@ class NamedRoutes{
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: AuthWidget(
-            homePageBuilder: (_) => SetupUserPage(),
-            setupPageBuilder: (_) => SetupUserPage(),
+            // homePageBuilder: (_) => SetupUserPage(),
+            // setupPageBuilder: (_) => SetupUserPage(),
+            homePageBuilder: (_) => HomePage(),
+            setupPageBuilder: (_) => HomePage(),
           ),
-
         ),
       ),
       GoRoute(
@@ -148,3 +152,4 @@ class NamedRoutes{
     ),
   );
 }
+

@@ -21,9 +21,9 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    /*WidgetsBinding.instance!.addPostFrameCallback((_) {
       ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
-    });
+    });*/
   }
 
   @override
