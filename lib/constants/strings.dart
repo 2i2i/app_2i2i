@@ -1,32 +1,58 @@
 class Strings {
+  static final Strings _singleton = Strings._internal();
+
+  Strings._internal();
+
+  factory Strings() {
+    return _singleton;
+  }
+
+  String appName ='2i2i';
+
   // Generic strings
-  static const String ok = 'OK';
-  static const String cancel = 'Cancel';
+   String ok = 'OK';
+   String cancel = 'Cancel';
 
   // Logout
-  static const String logout = 'Logout';
-  static const String logoutAreYouSure = 'Are you sure that you want to logout?';
-  static const String logoutFailed = 'Logout failed';
+  String logout = 'Logout';
+   String logoutAreYouSure = 'Are you sure that you want to logout?';
+   String logoutFailed = 'Logout failed';
 
   // Sign In Page
-  static const String signIn = 'Sign in';
-  static const String signInWithEmailPassword = 'Sign in with email and password';
-  static const String goAnonymous = 'Go anonymous';
-  static const String or = 'or';
-  static const String signInFailed = 'Sign in failed';
+   String signIn = 'Sign in';
+   String signInWithEmailPassword = 'Sign in with email and password';
+   String goAnonymous = 'Go anonymous';
+   String or = 'or';
+   String signInFailed = 'Sign in failed';
 
   // Home page
-  static const String homePage = 'Home Page';
+   String homePage = 'Home Page';
 
   // Jobs page
-  static const String search = 'Search';
+   String search = 'Search';
 
   // Entries page
-  static const String myAccount = 'My Account';
+   String myAccount = 'My Account';
 
   // Account page
-  static const String bidsIn = 'Bids In';
-  static const String bidsInPage = 'Bids In Page';
+   String bidsIn = 'Bids In';
+   String bidsInPage = 'Bids In Page';
+   String topAppBarTitle = '2i2i';
 
-  static const String topAppBarTitle = '2i2i';
+   //SetUp User page
+
+  String yourBioHint = 'I love to #talk and #cook\nI can #teach';
+  String yourNameHint = 'My cool username';
+  String writeYourBio = 'Write your bio';
+  String writeYourName = 'Write your name';
+  String bioExample = 'e.g: I love #cooking and #design';
+  String save = 'Save';
+
+  //App Rating
+  String appRatingTitle = 'Did you like this meeting?';
+  String appRatingMessage = 'Write your feedback to this meeting.';
+  String appRatingSubmitButton= 'Submit';
+
+
+
 }

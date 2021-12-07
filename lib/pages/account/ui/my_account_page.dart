@@ -1,6 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
-import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -106,9 +106,9 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                   SpeedDialChild(
                     child: Icon(Icons.new_label),
                     onTap: () async {
-                      ProgressDialog.loader(true, context);
+                      CustomDialogs.loader(true, context);
                       await myAccountPageViewModel.addLocalAccount();
-                      ProgressDialog.loader(false, context);
+                      CustomDialogs.loader(false, context);
                     },
                   ),
                   SpeedDialChild(

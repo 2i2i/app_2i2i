@@ -3,13 +3,20 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OtherBidList extends ConsumerWidget {
-  OtherBidList({this.user});
+  OtherBidList(
+      {this.user,
+      this.onTrailingIconClick,
+      this.alreadyExists});
 
   final UserModel? user;
+  final void Function(Bid bid)? onTrailingIconClick;
+  final void Function(bool isPresent)? alreadyExists;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +48,13 @@ class OtherBidList extends ConsumerWidget {
     );
   }
 
-  ListView _bidsListView(WidgetRef ref, BuildContext context) {
+  Widget _bidsListView(WidgetRef ref, BuildContext context) {
+    String? myId = ref.read(myUIDProvider)??'';
+    final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
+    print('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
+    if(userPrivateAsyncValue is AsyncLoading){
+      return Container();
+    }
     return ListView.builder(
       itemCount: user!.bidsIn.length,
       itemBuilder: (_, ix) {
@@ -50,6 +63,10 @@ class OtherBidList extends ConsumerWidget {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData) {
               Bid bid = snapshot.data;
+              bool isItCurrentUserBid = userPrivateAsyncValue.data?.value.bidsOut.any((element) => element.bid == bid.id)??false;
+              if (isItCurrentUserBid) {
+                alreadyExists!.call(true);
+              }
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
               final String assetIDString =
@@ -62,8 +79,22 @@ class OtherBidList extends ConsumerWidget {
                   color: color,
                   child: ListTile(
                     leading: Icon(Icons.circle, color: AppTheme().gray),
-                    title: BodyTwoText(title:'$num'),
-                    trailing: BodyTwoText(title:'[$assetIDString/sec]',textColor: AppTheme().brightBlue,),
+                    title: BodyTwoText(title: '$num'),
+                    subtitle: BodyTwoText(
+                      title: '[$assetIDString/sec]',
+                      textColor: AppTheme().brightBlue,
+                    ),
+                    trailing: Visibility(
+                      visible:isItCurrentUserBid,
+                      child: Tooltip(
+                        message: "Cancel Bid",
+                        child: IconButton(
+                          icon: Icon(Icons.cancel_rounded,
+                              color: Color.fromRGBO(104, 160, 242, 1)),
+                          onPressed: () => onTrailingIconClick!(bid),
+                        ),
+                      ),
+                    ),
                   ));
             }
             return Center(child: CircularProgressIndicator());

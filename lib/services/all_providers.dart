@@ -2,7 +2,6 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -32,6 +31,8 @@ final authStateChangesProvider = StreamProvider<User?>(
 
 final databaseProvider =
     Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
+
+/*final fireBaseMessagingProvider = Provider<FireBaseMessagingService>((ref) => FireBaseMessagingService());*/
 
 final myAuthUserProvider = authStateChangesProvider;
 
@@ -99,6 +100,7 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
+  // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
       auth: auth,
@@ -155,6 +157,8 @@ final myUserPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - user=$user');
   final algorandAddress = ref.watch(algorandAddressProvider(0));
   // log('myUserPageViewModelProvider - algorandAddress=$algorandAddress');
+
+
   final userModelChanger = ref.watch(userModelChangerProvider);
   if (userModelChanger == null) return null;
 

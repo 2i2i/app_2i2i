@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
@@ -39,14 +39,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
           );
   }
 
-  Widget _buildContents(
-      BuildContext context,
-      WidgetRef ref,
-      MyUserPageViewModel? myUserPageViewModel,
-      AsyncValue<UserModelPrivate> userPrivateAsyncValue,
-      UserModel user) {
-    log('MyUserPage - _buildContents');
-
+  Widget _buildContents(BuildContext context, WidgetRef ref, MyUserPageViewModel? myUserPageViewModel, AsyncValue<UserModelPrivate> userPrivateAsyncValue, UserModel user) {
     if (myUserPageViewModel == null) return Container();
     if (userPrivateAsyncValue is AsyncLoading) return Container();
 
@@ -81,9 +74,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             )),
             VerticalDivider(),
             Expanded(
-                child: userPrivateAsyncValue.when(
-                    data: (UserModelPrivate userPrivate) {
-              log('MyUserPage - _buildContents - data - userPrivate=$userPrivate userPrivate.bidsOut=${userPrivate.bidsOut}');
+                child: userPrivateAsyncValue.when(data: (UserModelPrivate userPrivate) {
               return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
                 titleWidget: HeadLineSixText(title: 'Bids Out',textColor: AppTheme().deepPurple),
@@ -100,9 +91,9 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   color: Color.fromRGBO(104, 160, 242, 1),
                 ),
                 onTrailingIconClick: (Bid bid) async {
-                  ProgressDialog.loader(true, context);
+                  CustomDialogs.loader(true, context);
                   await myUserPageViewModel.cancelBid(bid);
-                  ProgressDialog.loader(false, context);
+                  CustomDialogs.loader(false, context);
                 },
               );
             }, loading: () {

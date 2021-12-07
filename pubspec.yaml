@@ -38,6 +38,8 @@ dependencies:
   go_router: ^2.3.0
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0
+  flutter_styled_toast: ^2.0.0
+  flutter_rating_bar: ^4.0.0
   flutter_speed_dial: ^4.6.6
   percent_indicator: ^3.4.0
   dotted_border: ^2.0.0+1

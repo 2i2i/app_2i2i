@@ -6,6 +6,7 @@ import 'package:app_2i2i/pages/cv/cv_page.dart';
 import 'package:app_2i2i/pages/home/error_page.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
+import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -77,11 +78,19 @@ class NamedRoutes{
       //   },
       // ),
       GoRoute(
-        name: 'user',
+          name: 'user',
         path: Routes.USER,
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: UserPage(uid: state.params['uid']!),
+        ),
+      ),
+      GoRoute(
+        name: 'my_user',
+        path: Routes.MY_USER,
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: MyUserPage(),
         ),
       ),
       GoRoute(

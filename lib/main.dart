@@ -4,12 +4,11 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/routes/named_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'common/strings.dart';
+import 'constants/strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +45,6 @@ class MainWidget extends ConsumerWidget {
         await userModelChanger.updateHeartbeat();
       });
     }
-
     return MaterialApp.router(
       routeInformationParser: NamedRoutes.router.routeInformationParser,
       routerDelegate: NamedRoutes.router.routerDelegate,

@@ -1,5 +1,5 @@
-import 'package:app_2i2i/common/progress_dialog.dart';
-import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
@@ -125,11 +125,11 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
 
   void pressGo(BuildContext context, SetupUserViewModel setupUserViewModel) async {
     log('SignUpPage - pressGo - 1');
-    ProgressDialog.loader(true, context);
+    CustomDialogs.loader(true, context);
     log('SignUpPage - pressGo - 2');
     await setupUserViewModel.updateBio();
     log('SignUpPage - pressGo - 3');
-    ProgressDialog.loader(false, context);
+    CustomDialogs.loader(false, context);
     log('SignUpPage - pressGo - 4');
     context.goNamed('home');
   }

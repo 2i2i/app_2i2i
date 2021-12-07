@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
@@ -140,9 +141,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   onPressed: null,
                   tooltip: scoreString,
                 );
-                final iconRotated = 0 <= score
-                    ? iconBase
-                    : Transform.rotate(angle: pi, child: iconBase);
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
