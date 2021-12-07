@@ -44,6 +44,35 @@ class FirestoreDatabase {
     print('setUser - done');
   }
 
+  Future<void> addBlocked(String uid, String targetUid) => _service.setData(
+        path: FirestorePath.userPrivate(uid),
+        data: {
+          'blocked': FieldValue.arrayUnion([targetUid])
+        },
+        merge: true,
+      );
+  Future<void> addFriend(String uid, String targetUid) => _service.setData(
+        path: FirestorePath.userPrivate(uid),
+        data: {
+          'friends': FieldValue.arrayUnion([targetUid])
+        },
+        merge: true,
+      );
+  Future<void> removeBlocked(String uid, String targetUid) => _service.setData(
+        path: FirestorePath.userPrivate(uid),
+        data: {
+          'blocked': FieldValue.arrayRemove([targetUid])
+        },
+        merge: true,
+      );
+  Future<void> removeFriend(String uid, String targetUid) => _service.setData(
+        path: FirestorePath.userPrivate(uid),
+        data: {
+          'friends': FieldValue.arrayRemove([targetUid])
+        },
+        merge: true,
+      );
+
   Future<void> setUserPrivate(String uid, UserModelPrivate userPrivate) =>
       _service.setData(
           path: FirestorePath.userPrivate(uid),
@@ -56,13 +85,14 @@ class FirestoreDatabase {
         builder: (data, documentId) => UserModel.fromMap(data, documentId),
       );
 
-  Future<UserModel?> getUser(String uid)async{
-    DocumentSnapshot documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
-    if(documentSnapshot.exists) {
+  Future<UserModel?> getUser(String uid) async {
+    DocumentSnapshot documentSnapshot =
+        await _service.getData(path: FirestorePath.user(uid));
+    if (documentSnapshot.exists) {
       String id = documentSnapshot.id;
       final data = documentSnapshot.data();
-      if(data is Map) {
-        return UserModel.fromMap(data.cast<String,dynamic>(), id);
+      if (data is Map) {
+        return UserModel.fromMap(data.cast<String, dynamic>(), id);
       }
     }
     return null;
@@ -140,11 +170,10 @@ class FirestoreDatabase {
 
   Stream<Meeting> meetingStream({required String id}) =>
       _service.documentStream(
-        path: FirestorePath.meeting(id),
-        builder: (data, documentId) {
-          return Meeting.fromMap(data, documentId);
-        }
-      );
+          path: FirestorePath.meeting(id),
+          builder: (data, documentId) {
+            return Meeting.fromMap(data, documentId);
+          });
   Future<void> setMeeting(Meeting meeting) => _service.setData(
         path: FirestorePath.meeting(meeting.id),
         data: meeting.toMap(),
