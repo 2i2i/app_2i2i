@@ -41,12 +41,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     if (widget.meeting.speed.num == 0) return;
 
     var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = maxDuration;
-    final activeTime = widget.meeting.activeTime();
-    if (activeTime != null) {
-      final maxEndTime = activeTime + maxDuration;
-      duration = max(maxEndTime - epochSecsNow(), 0);
-    }
+    int duration = getDuration(maxDuration);
 
     budgetTimer = Timer(Duration(seconds: duration), () {
       progressTimer?.cancel();
@@ -61,17 +56,22 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     });
   }
 
-  void showCountDown(int duration) {
-    if(countDownTimerDate != null){
-      return;
-    }
-    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = maxDuration;
+  int getDuration(int maxDuration) {
+    int duration= maxDuration;
     final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
+    return duration;
+  }
+
+  void showCountDown(int duration) {
+    if(countDownTimerDate != null){
+      return;
+    }
+    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
+    int duration = getDuration(maxDuration);
     log(F+ ' ====== $duration');
     if(duration <= 60) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
