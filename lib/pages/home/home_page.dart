@@ -1,8 +1,10 @@
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
@@ -27,12 +29,17 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 15)).then((value) {
-      final signUpViewModel = ref.read(setupUserViewModelProvider);
-      bool isLoaded = !(signUpViewModel is AsyncLoading);
+    Future.delayed(Duration(seconds: 7)).then((value) {
+      final uid = ref.watch(myUIDProvider)!;
+      final user = ref.watch(userProvider(uid));
+      bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if(isLoaded){
-        if(signUpViewModel.uid?.runtimeType != String){
-          showCupertinoDialog(context: context, builder: (context)=>SetupUserPage());
+        final UserModel? myUser = user.data?.value;
+        if(myUser?.name.trim().isEmpty??true){
+          showDialog(
+            context: context, builder: (context)=>SetupBio(),
+            barrierDismissible: false,
+          );
         }
       }
     });
