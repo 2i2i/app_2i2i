@@ -6,6 +6,7 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +133,7 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
     log('SignUpPage - pressGo - 3');
     CustomDialogs.loader(false, context);
     log('SignUpPage - pressGo - 4');
-    CustomNavigation.push(context, HomePage());
+    Navigator.of(context).pushNamed(Routes.HOME);
+    // CustomNavigation.push(context, HomePage());
   }
 }

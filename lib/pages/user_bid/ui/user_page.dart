@@ -9,6 +9,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,11 +99,12 @@ class _UserPageState extends ConsumerState<UserPage> {
                           ))),
                       onPressed: () {
                         if (!isPresent) {
-                          CustomNavigation.push(
+                          Navigator.of(context).pushNamed(Routes.BIDPAGE, arguments: {'uid':userModel!.id});
+                          /*CustomNavigation.push(
                               context,
                               AddBidPage(
                                 uid: userModel!.id,
-                              ));
+                              ));*/
                         }
                       },
                       child: ListTile(
