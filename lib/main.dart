@@ -51,8 +51,10 @@ class MainWidget extends ConsumerWidget {
     }
     return MaterialApp(
       home: AuthWidget(
+        // homePageBuilder: (_) => HomePage(),
+        // setupPageBuilder: (_) => SetupUserPage(),
         homePageBuilder: (_) => HomePage(),
-        setupPageBuilder: (_) => SetupUserPage(),
+        setupPageBuilder: (_) => HomePage(),
       ),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,

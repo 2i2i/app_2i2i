@@ -47,6 +47,11 @@ class Strings {
   String writeYourName = 'Write your name';
   String bioExample = 'e.g: I love #cooking and #design';
   String save = 'Save';
+  String required = 'Required';
+  String aboutYou = 'About you';
+
+  String aboutYouDesc = 'Fill below form to communicate with cool people';
+
 
   //App Rating
   String appRatingTitle = 'Did you like this meeting?';
