@@ -21,12 +21,13 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> updateUserHearbeat(String uid, int heartbeat, String status) =>
+  Future<void> updateUserHeartbeat(String uid, int heartbeat, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: {'heartbeat': heartbeat, 'status': status},
         merge: true,
       );
+
   Future<void> updateUserNameAndBio(
           String uid, String name, String bio, List<String> tags) =>
       _service.setData(
@@ -34,6 +35,7 @@ class FirestoreDatabase {
         data: {'name': name, 'bio': bio, 'tags': tags},
         merge: true,
       );
+
   Future<void> setUser(UserModel user) async {
     print('setUser - user=$user - map=${user.toMap()}');
     _service.setData(
@@ -73,17 +75,15 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUserPrivate(String uid, UserModelPrivate userPrivate) =>
+  Future<void> setUserPrivate(
+          {required String uid, required UserModelPrivate userPrivate}) =>
       _service.setData(
           path: FirestorePath.userPrivate(uid),
           data: userPrivate.toMap(),
           merge: true);
 
   Stream<UserModel> userStream({required String uid}) =>
-      _service.documentStream(
-        path: FirestorePath.user(uid),
-        builder: (data, documentId) => UserModel.fromMap(data, documentId),
-      );
+      _service.documentStream(path: FirestorePath.user(uid), builder: (data, documentId) => UserModel.fromMap(data, documentId));
 
   Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
@@ -130,7 +130,10 @@ class FirestoreDatabase {
 
       //   return 1;
       // },
-    );
+    )
+        .handleError((value) {
+      print(value);
+    });
   }
 
   Stream<Room> roomStream({required String meetingId}) =>

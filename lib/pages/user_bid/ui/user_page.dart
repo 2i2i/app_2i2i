@@ -1,13 +1,17 @@
 import 'dart:math';
 
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../common/text_utils.dart';
 
@@ -24,11 +28,16 @@ class _UserPageState extends ConsumerState<UserPage> {
   final TextEditingController bioTextController = TextEditingController();
 
   UserModel? userModel;
+  bool isPresent = false;
 
   @override
   Widget build(BuildContext context) {
     final authStateChanges = ref.watch(authStateChangesProvider);
     if (authStateChanges is AsyncLoading) return WaitPage();
+
+    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+    if (myUserPageViewModel == null) return WaitPage();
+
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
     if (userPageViewModel == null) return WaitPage();
 
@@ -46,67 +55,70 @@ class _UserPageState extends ConsumerState<UserPage> {
     if (userModel!.locked) statusColor = AppTheme().red;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme().lightGray,
-        leading: IconButton(
-            iconSize: 35,
-            onPressed: () => context.goNamed('home'),
-            icon: Icon(Icons.navigate_before,color: AppTheme().black)),
-        centerTitle: true,
-        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
+      appBar: CustomAppbar(
+        actions: (authStateChanges.data!.value!.uid != userModel?.id)
+            ? [
+                IconButton(
+                    onPressed: () async {
+                      await myUserPageViewModel.setUserPrivate(
+                          context: context,
+                          uid: widget.uid,
+                          userPrivate: UserModelPrivate(friends: [widget.uid]));
+                    },
+                    icon: Icon(Icons.favorite_border_rounded,
+                        color: AppTheme().black)),
+                SizedBox(width: 6)
+              ]
+            : null,
       ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: authStateChanges.data!.value!.uid == userModel?.id
-              ? null
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CaptionText(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: authStateChanges.data!.value!.uid == userModel?.id
+            ? null
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CaptionText(
                       maxLine: 1,
-                        title: "Do you want to bid for ${userModel?.name}",
-                        textColor: Theme.of(context).hintColor),
-                    SizedBox(height: 12),
-                    ElevatedButton(
+                      title: isPresent
+                          ? "Your already bid this user, First cancel bid"
+                          : "Do you want to bid for ${userModel?.name}",
+                      textColor: Theme.of(context).hintColor),
+                  SizedBox(height: 12),
+                  Visibility(
+                    visible: !isPresent,
+                    child: ElevatedButton(
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>( AppTheme().buttonBackground),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ))),
-                      onPressed: () => context.goNamed('addbidpage', params: {'uid': userModel!.id}),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              AppTheme().buttonBackground),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ))),
+                      onPressed: () {
+                        if (!isPresent) {
+                          CustomNavigation.push(
+                              context,
+                              AddBidPage(
+                                uid: userModel!.id,
+                              ));
+                        }
+                      },
                       child: ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: ButtonText(
-                          textAlign: TextAlign.center,
-                            title: "ADD BID", textColor: AppTheme().black)
+                            textAlign: TextAlign.center,
+                            title: "ADD BID",
+                            textColor: AppTheme().black),
                       ),
-                    )
-            ],
-          ),
-        ),
+                    ),
+                  )
+                ],
+              ),
+      ),
       body: Column(
         children: [
-         /* SizedBox(height: 4),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-                color: AppTheme().lightBeige,
-                borderRadius: BorderRadius.circular(5)),
-            height: kToolbarHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                IconButton(
-                    iconSize: 35,
-                    onPressed: () => context.goNamed('home'),
-                    icon: Icon(Icons.navigate_before)),
-                SizedBox(width: 10),
-                TitleText(title: userModel!.name),
-              ],
-            ),
-          ),*/
           Container(
             margin:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
@@ -115,14 +127,15 @@ class _UserPageState extends ConsumerState<UserPage> {
                     Border.all(color: Colors.grey.withOpacity(0.6), width: 1.5),
                 borderRadius: BorderRadius.circular(5)),
             child: ListTile(
-              trailing: Icon(Icons.circle, color: statusColor),
-              leading: ratingWidget(score, userModel!.name, context),
-              title: TitleText(title: userModel!.name,maxLine: 1),
-              subtitle: CaptionText(title: shortBio.toString().trim(),textColor: AppTheme().hintColor,maxLine: 1),
-              onTap: () => context.goNamed('user', params: {
-                'uid': userModel!.id,
-              }), // UserPage.show(context, users[ix].id),
-            ),
+                trailing: Icon(Icons.circle, color: statusColor),
+                leading: ratingWidget(score, userModel!.name, context),
+                title: TitleText(title: userModel!.name, maxLine: 1),
+                subtitle: CaptionText(
+                    title: shortBio.toString().trim(),
+                    textColor: AppTheme().hintColor,
+                    maxLine: 1),
+                // UserPage.show(context, users[ix].id),
+                ),
           ),
           Container(
             child: TextField(
@@ -140,7 +153,16 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           Divider(),
           Expanded(
-            child: OtherBidList(user: userModel),
+            child: OtherBidList(
+              user: userModel,
+              alreadyExists: (bool value) => isPresent = value,
+              onTrailingIconClick: (Bid bid) async {
+                CustomDialogs.loader(true, context);
+                await myUserPageViewModel.cancelBid(bid);
+                isPresent = false;
+                CustomDialogs.loader(false, context);
+              },
+            ),
           ),
         ],
       ),

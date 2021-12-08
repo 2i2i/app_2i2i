@@ -1,15 +1,17 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 class AddBidPage extends ConsumerStatefulWidget {
   const AddBidPage({Key? key, required this.uid}) : super(key: key);
@@ -32,18 +34,13 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   Widget build(BuildContext context) {
     final addBidPageViewModel =
         ref.watch(addBidPageViewModelProvider(uid)).state;
+    // final fireBaseMessaging = ref.watch(fireBaseMessagingProvider);
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme().lightGray,
-        leading: IconButton(
-            iconSize: 35,
-            onPressed: () => context.goNamed('home'),
-            icon: Icon(Icons.navigate_before, color: AppTheme().black)),
-        centerTitle: true,
-        title: TitleText(title: 'Add bid for ${addBidPageViewModel.user.name}'),
+      appBar: CustomAppbar(
+        title: 'Add bid for ${addBidPageViewModel.user.name}',
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -63,7 +60,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     ))),
                 onPressed: speedNum == 0 && !addBidPageViewModel.submitting
                     ? () async {
-                        await connectCall(addBidPageViewModel);
+                        await connectCall(
+                            addBidPageViewModel: addBidPageViewModel);
                       }
                     : null,
                 child: ListTile(
@@ -89,7 +87,26 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     ))),
                 onPressed: speedNum != 0 && !addBidPageViewModel.submitting
                     ? () async {
-                        await connectCall(addBidPageViewModel);
+                        final budget = (balance!.assetHolding.amount *
+                            budgetPercentage /
+                            100);
+                        final seconds = budget / speedNum;
+                        if (seconds > 9) {
+                          await connectCall(
+                              addBidPageViewModel: addBidPageViewModel);
+                        } else {
+                          showToast('Set minimum 10 second duration',
+                              context: context,
+                              animation: StyledToastAnimation.slideFromTop,
+                              reverseAnimation: StyledToastAnimation.slideToTop,
+                              position: StyledToastPosition.top,
+                              startOffset: Offset(0.0, -3.0),
+                              reverseEndOffset: Offset(0.0, -3.0),
+                              duration: Duration(seconds: 4),
+                              animDuration: Duration(seconds: 1),
+                              curve: Curves.elasticOut,
+                              reverseCurve: Curves.fastOutSlowIn);
+                        }
                       }
                     : null,
                 child: ListTile(
@@ -297,9 +314,9 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     );
   }
 
-  Future connectCall(AddBidPageViewModel addBidPageViewModel) async {
-    ProgressDialog.loader(true, context);
-    await addBidPageViewModel
+  Future connectCall({AddBidPageViewModel? addBidPageViewModel}) async {
+    CustomDialogs.loader(true, context);
+    await addBidPageViewModel!
         .addBid(
             account: account,
             balance: balance,
@@ -308,7 +325,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
         .then((value) {
       print('$value');
     });
-    ProgressDialog.loader(false, context);
-    context.goNamed('user', params: {'uid': uid});
+    CustomDialogs.loader(false, context);
+    CustomNavigation.pop(context);
   }
 }

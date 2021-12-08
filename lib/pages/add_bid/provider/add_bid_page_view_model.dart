@@ -5,6 +5,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
@@ -33,6 +34,7 @@ class AddBidPageViewModel {
   }
 
   Future addBid({
+    // required FireBaseMessagingService fireBaseMessaging,
     required AbstractAccount? account,
     required Balance? balance,
     required int speedNum,
@@ -43,21 +45,19 @@ class AddBidPageViewModel {
     final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final budget = speedNum == 0
-        ? 0
-        : await accountService.calcBudget(
-            assetId: speedAssetId, account: account!, net: balance!.net);
+    final budget = speedNum == 0 ? 0 : await accountService.calcBudget(assetId: speedAssetId, account: account!, net: balance!.net);
     log('AddBidPageViewModel - addBid - budget=$budget');
     final actualBudget = (budget * budgetPercentage / 100).floor();
 
     final speed = Speed(num: speedNum, assetId: speedAssetId);
 
     final HttpsCallable addBid = functions.httpsCallable('addBid');
+    // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
     final args = {
+      'A':FirebaseAuth.instance.currentUser?.uid,
       'B': user.id,
       'speed': speed.toMap(),
-      'net': AlgorandNet.testnet
-          .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+      'net': AlgorandNet.testnet.toString(),
       'addrA': account?.address,
       'budget': actualBudget,
     };
