@@ -19,9 +19,7 @@ class AuthWidget extends ConsumerWidget {
     return authStateChanges.when(data: (user) {
       if (user == null) {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
-        print('====${signUpViewModel.uid}=====');
         if (!signUpViewModel.signUpInProcess) {
-          print('====\n\n\n\nCreate account\n\n\n\n=====');
           Future.delayed(Duration.zero).then((value) {
             ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
           });

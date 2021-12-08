@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/routes/named_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/common/animated_progress_bar.dart';

@@ -6,6 +6,7 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -56,10 +57,14 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0),
             child: ElevatedButton.icon(
                 onPressed: () async {
-                  final newValues = await _editNameAndBio(context, user.name, user.bio);
+                  showDialog(
+                    context: context, builder: (context)=>SetupBio(model: myUserPageViewModel.user,),
+                    barrierDismissible: false,
+                  );
+                  /*final newValues = await _editNameAndBio(context, user.name, user.bio);
                   if (newValues != null) {
                     myUserPageViewModel.changeNameAndBio(newValues['name']!, newValues['bio']!);
-                  }
+                  }*/
                 },
                 icon: Icon(Icons.edit),
                 label: Text('Edit Name and Bio'))),
