@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:animate_countdown_text/animate_countdown_text.dart';
+import 'package:app_2i2i/common/animated_progress_bar.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
-import 'package:app_2i2i/test_screen.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -30,10 +32,11 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
 
   Timer? budgetTimer;
   Timer? progressTimer;
+
   ValueNotifier<double> progress = ValueNotifier(100);
+  DateTime? countDownTimerDate;
 
   void _initBudgetTimer() {
-
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
@@ -44,15 +47,42 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
       final maxEndTime = activeTime + maxDuration;
       duration = max(maxEndTime - epochSecsNow(), 0);
     }
+
     budgetTimer = Timer(Duration(seconds: duration), () {
-      progressTimer!.cancel();
-      signaling!.hangUp(_localRenderer, reason: 'BUDGET');
+      progressTimer?.cancel();
+      signaling?.hangUp(_localRenderer, reason: 'BUDGET');
     });
+
     progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       double percentage = (timer.tick * 100) / maxDuration;
       progress.value = 100 - percentage;
-      if (timer.tick >= maxDuration) timer.cancel();
+      if (timer.tick >= maxDuration) progressTimer?.cancel();
+      showCountDown(duration);
     });
+  }
+
+  void showCountDown(int duration) {
+    if(countDownTimerDate != null){
+      return;
+    }
+    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
+    int duration = maxDuration;
+    final activeTime = widget.meeting.activeTime();
+    if (activeTime != null) {
+      final maxEndTime = activeTime + maxDuration;
+      duration = max(maxEndTime - epochSecsNow(), 0);
+    }
+    log(F+ ' ====== $duration');
+    if(duration <= 60) {
+      countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
+      if (mounted) {
+        Future.delayed(Duration.zero).then((value) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -91,6 +121,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
         body: OrientationBuilder(builder: (context, orientation) {
           return Container(
           child: Stack(
+            fit: StackFit.expand,
             children: <Widget>[
               swapped
                   ? firstVideoView(
@@ -176,6 +207,27 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
               ),
               Align(
                 alignment: Alignment.bottomCenter,
+                child: Visibility(
+                  visible: countDownTimerDate is DateTime,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 100.0),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: Center(
+                        child: AnimateCountdownText(
+                          dateTime: countDownTimerDate??DateTime.now(),
+                          format: _formatHMS,
+                          animationType: AnimationType.scaleIn,
+                          characterTextStyle: Theme.of(context).textTheme.headline3!.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: () {
                     try {
@@ -217,6 +269,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
+
             ],
           ),
         );
@@ -244,6 +297,15 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
           mirror: true,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
+    );
+  }
+
+  DurationFormat _formatHMS(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes - hours * 60;
+    final seconds = duration.inSeconds - hours * 60 * 60 - minutes * 60;
+    return DurationFormat(
+      second: "$seconds",
     );
   }
 }
