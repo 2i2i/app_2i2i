@@ -153,17 +153,15 @@ final myUserPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
   // log('myUserPageViewModelProvider - user=$user');
-  final algorandAddress = ref.watch(algorandAddressProvider(0));
-  // log('myUserPageViewModelProvider - algorandAddress=$algorandAddress');
   final userModelChanger = ref.watch(userModelChangerProvider);
   if (userModelChanger == null) return null;
 
-  if (algorandAddress is AsyncError ||
-      user is AsyncError ||
-      algorandAddress is AsyncLoading ||
+  if (user is AsyncError ||
       user is AsyncLoading) {
     return null;
   }
+
+  final accountService = ref.watch(accountServiceProvider);
 
   // log('myUserPageViewModelProvider - 2');
 
@@ -171,7 +169,7 @@ final myUserPageViewModelProvider = Provider((ref) {
       database: database,
       functions: functions,
       user: user.data!.value,
-      algorandAddress: algorandAddress.data!.value,
+      accountService: accountService,
       userModelChanger: userModelChanger);
 });
 

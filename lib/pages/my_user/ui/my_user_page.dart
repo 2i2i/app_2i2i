@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
@@ -8,6 +9,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             appBar: AppBar(
               title: Text(myUserPageViewModel.user.name),
             ),
-
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
           );
@@ -56,28 +57,37 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0),
             child: ElevatedButton.icon(
                 onPressed: () async {
-                  final newValues = await _editNameAndBio(context, user.name, user.bio);
+                  final newValues =
+                      await _editNameAndBio(context, user.name, user.bio);
                   if (newValues != null) {
-                    myUserPageViewModel.changeNameAndBio(newValues['name']!, newValues['bio']!);
+                    myUserPageViewModel.changeNameAndBio(
+                        newValues['name']!, newValues['bio']!);
                   }
                 },
                 icon: Icon(Icons.edit),
                 label: Text('Edit Name and Bio'))),
         Divider(),
-        Expanded  (
+        Expanded(
             child: Row(
           children: [
             Expanded(
                 child: UserBidsList(
               bidsIds: myUserPageViewModel.user.bidsIn,
-              titleWidget: HeadLineSixText(title: 'Bids In',textColor: AppTheme().deepPurple),
+              titleWidget: HeadLineSixText(
+                  title: 'Bids In', textColor: AppTheme().deepPurple),
               noBidsText: 'no bids in for user',
               leading: Icon(
                 Icons.label_important,
                 color: Colors.green,
               ),
               trailingIcon: Icon(Icons.check_circle, color: Colors.green),
-              onTrailingIconClick: myUserPageViewModel.acceptBid,
+              onTrailingIconClick: (Bid bid) async {
+                AbstractAccount? account;
+                if (0 < bid.speed.num) {
+                  account = await _acceptBid(context, myUserPageViewModel, bid);
+                }
+                await myUserPageViewModel.acceptBid(bid, account);
+              },
             )),
             VerticalDivider(),
             Expanded(
@@ -86,7 +96,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               log('MyUserPage - _buildContents - data - userPrivate=$userPrivate userPrivate.bidsOut=${userPrivate.bidsOut}');
               return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
-                titleWidget: HeadLineSixText(title: 'Bids Out',textColor: AppTheme().deepPurple),
+                titleWidget: HeadLineSixText(
+                    title: 'Bids Out', textColor: AppTheme().deepPurple),
                 noBidsText: 'no bids out for user',
                 // onTap: myUserPageViewModel.cancelBid
                 leading: Transform.rotate(
@@ -118,7 +129,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     );
   }
 
-  Future<Map<String, String>?> _editNameAndBio(BuildContext context, String currentName, String currentBio) async {
+  Future<Map<String, String>?> _editNameAndBio(
+      BuildContext context, String currentName, String currentBio) async {
     final TextEditingController name = TextEditingController(text: currentName);
     final TextEditingController bio = TextEditingController(text: currentBio);
     return showDialog<Map<String, String>>(
@@ -132,8 +144,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                       top: 5, left: 20, right: 20, bottom: 10),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText:
-                          'my cool username',
+                      hintText: 'my cool username',
                       border: OutlineInputBorder(),
                       label: Text('Name'),
                     ),
@@ -169,7 +180,66 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   child: ElevatedButton(
                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
                       child: Text('Save'),
-                      onPressed: () => Navigator.pop(context, {'name': name.text, 'bio': bio.text}))),
+                      onPressed: () => Navigator.pop(
+                          context, {'name': name.text, 'bio': bio.text}))),
+            ],
+          );
+        });
+  }
+
+  Future<AbstractAccount?> _acceptBid(BuildContext context,
+      MyUserPageViewModel myUserPageViewModel, Bid bid) async {
+    final accounts = await myUserPageViewModel.accountService.getAllAccounts();
+    final accountsBoolFutures = accounts
+        .map((a) => a.isOptedInToASA(
+            assetId: bid.speed.assetId, net: AlgorandNet.testnet))
+        .toList();
+    final accountsBool = await Future.wait(accountsBoolFutures);
+    final firstGoodAccountIndex = accountsBool.indexWhere((e) => e);
+
+    AbstractAccount? chosenAccount;
+
+    return showDialog<AbstractAccount>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Where to receive coins?'),
+            children: <Widget>[
+              DropdownButton<AbstractAccount>(
+                onChanged: (AbstractAccount? newAccount) {
+                  chosenAccount = newAccount;
+                },
+                value: accounts[firstGoodAccountIndex],
+                items: [
+                  for (var i = 0; i < accounts.length; i++)
+                    DropdownMenuItem<AbstractAccount>(
+                      child: accountsBool[i]
+                          ? ListTile(
+                              title: Text(accounts[i].address.substring(0, 4)))
+                          : ListTile(
+                              title: Text(accounts[i].address.substring(0, 4)),
+                              trailing: IconButton(
+                                  onPressed: () {}, icon: Icon(Icons.copy)),
+                            ),
+                      value: accounts[i],
+                    )
+                ],
+              ),
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 10, left: 50, right: 50, bottom: 10),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color.fromRGBO(173, 154, 178, 1)),
+                      child: Text('Cancel'),
+                      onPressed: () => Navigator.pop(context, null))),
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 10, left: 50, right: 50, bottom: 10),
+                  child: ElevatedButton(
+                      // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
+                      child: Text('Accept'),
+                      onPressed: () => Navigator.pop(context, chosenAccount))),
             ],
           );
         });

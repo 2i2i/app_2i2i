@@ -6,6 +6,7 @@ import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
+import 'package:dio/dio.dart' as dio;
 
 class LocalAccount extends AbstractAccount {
   LocalAccount._create({
@@ -67,13 +68,26 @@ class LocalAccount extends AbstractAccount {
       required AlgorandNet net,
       waitForConfirmation = true}) async {
     final account = await _libAccount();
-    final String txId = await algorandLib.client[net]!.assetManager.optIn(
-      account: account,
-      assetId: assetId,
-    );
-    if (waitForConfirmation)
-      await algorandLib.client[net]!.waitForConfirmation(txId);
-    return txId;
+    try {
+      final String txId = await algorandLib.client[net]!.assetManager.optIn(
+        account: account,
+        assetId: assetId,
+      );
+
+      if (waitForConfirmation)
+        await algorandLib.client[net]!.waitForConfirmation(txId);
+
+      return txId;
+    } on AlgorandException catch (ex) {
+      final cause = ex.cause;
+      if (cause is dio.DioError) {
+        log('AlgorandException ' + cause.response?.data['message']);
+      }
+      return 'error';
+    } on Exception catch (ex) {
+      log('Exception ' + ex.toString());
+      return 'error';
+    }
   }
 
   @override
