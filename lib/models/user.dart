@@ -21,6 +21,15 @@ class UserModelChanger {
     final tags = UserModel.tagsFromBio(bio);
     await database.updateUserNameAndBio(uid, name, bio, [name, ...tags]);
   }
+
+  // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
+  // do this by getting UserModelPrivate
+  // blocked users: we cannot see their bids for us
+  // friend users: we see their bids on top
+  Future addBlocked(String targetUid) => database.addBlocked(uid, targetUid);
+  Future addFriend(String targetUid) => database.addFriend(uid, targetUid);
+  Future removeBlocked(String targetUid) => database.removeBlocked(uid, targetUid);
+  Future removeFriend(String targetUid) => database.removeFriend(uid, targetUid);
 }
 
 @immutable

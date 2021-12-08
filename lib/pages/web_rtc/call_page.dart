@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
+import 'package:app_2i2i/test_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -88,27 +90,30 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     return Scaffold(
         body: OrientationBuilder(builder: (context, orientation) {
           return Container(
-            child: Stack(children: <Widget>[
+          child: Stack(
+            children: <Widget>[
               swapped
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      renderer: _localRenderer)
+                      renderer: _localRenderer,
+                    )
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      renderer: _remoteRenderer),
+                      renderer: _remoteRenderer,
+                    ),
               Positioned(
                 top: 40,
                 left: 40,
                 child: Stack(
                   children: [
                     ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: !swapped
-                            ? firstVideoView(
-                                height: MediaQuery.of(context).size.height * 0.3,
-                                width: MediaQuery.of(context).size.height * 0.3,
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: !swapped
+                          ? firstVideoView(
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              width: MediaQuery.of(context).size.height * 0.3,
                                 renderer: _localRenderer,
                         )
                             : secondVideoView(
@@ -133,128 +138,93 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-
-
               Align(
-                alignment: Alignment.bottomCenter,
-                child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  margin: EdgeInsets.symmetric(horizontal: 100,vertical: 10),
-                  color: Colors.black38,
-                  child: Container(
-                    height: 100,
-                    alignment: Alignment.center,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      // crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        FloatingActionButton(
-                          onPressed: () {
-                          try {
-                            if (budgetTimer?.isActive ?? false) {
-                              budgetTimer?.cancel();
-                            }
-                            signaling?.hangUp(_localRenderer);
-                          } catch (e) {
-                            print(e);
-                          }
-                        },
-                          child: Icon(
-                            Icons.call_end,
-                            color: Colors.white,
-                          ),
-                          backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                        ),
-                        RotatedBox(
-                          quarterTurns: 90,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/1.5),
-                            child: ValueListenableBuilder(
-                              valueListenable: progress,
-                              builder: (BuildContext context, double value, Widget? child) {
-                                var percentage = value.toDouble();
-                                if(value > 1){
-                                  percentage = (value/100);
-                                }
-                                bool isAnimate = value <= 20 && (budgetTimer?.tick.isEven ?? false);
-                                print('==== $value $isAnimate ${budgetTimer?.tick}');
-                                return SizedBox(
-                                  width: MediaQuery.of(context).size.width/8,
-                                  child: LinearProgressIndicator(
-                                    value: value,
-                                    minHeight: 4,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      isAnimate?Colors.red:Colors.white,
-                                    ),
-                                  ),
-                                );
-                              },
-
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // painter: CurvePainter(),
-              ),
-            ),
-            /*Positioned(
-                bottom: 5,
-                right: 450,
-                left: 0,
+                alignment: Alignment.centerRight,
                 child: ValueListenableBuilder(
                   valueListenable: progress,
                   builder: (BuildContext context, double value, Widget? child) {
-                    var percentage = value.toDouble();
-                    if(value > 1){
-                      percentage = (value/100);
-                    }
-                    bool isAnimate = value <= 20 && (budgetTimer?.tick.isEven ?? false);
-                    print('==== $value $isAnimate ${budgetTimer?.tick}');
-                    return AnimatedContainer(
-                      height: isAnimate ? 90 : 80,
-                      width: isAnimate ? 90 : 80,
-                      duration: Duration(seconds: 1),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset('assets/stopwatch.png', height: 100, width: 100),
-                          Positioned(
-                            bottom: 10,
-                            right: 10,
-                            left: 10,
-                            child: Center(
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 4,
-                                  value: percentage,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    isAnimate?Colors.red:Colors.white,
-                                  ),
-                                ),
-                                height: isAnimate ? 61 : 52,
-                                width: isAnimate ? 61 : 52,
+                    double width = MediaQuery.of(context).size.height / 3;
+                    double height = value * width / 100;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 30),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(20)
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Material(
+                              shadowColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)
+                              ),
+                              type: MaterialType.card,
+                              child: ProgressBar(
+                                height: height,
                               ),
                             ),
-                          )
-                        ],
+                          ),
+                        ),
                       ),
                     );
                   },
                 ),
-              ),*/
-          ]),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    try {
+                      if (budgetTimer?.isActive ?? false) {
+                        budgetTimer?.cancel();
+                      }
+                      signaling?.hangUp(_localRenderer);
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom:8.0),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white38,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Material(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Icon(
+                                Icons.call_end,
+                                color: Colors.white,
+                              ),
+                            ),
+                            color: Color.fromARGB(255, 239, 102, 84),
+                            shadowColor: Colors.white,
+                            type: MaterialType.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       }),
     );
   }
 
-  Widget firstVideoView(
-      {double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget firstVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
@@ -266,8 +236,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget secondVideoView(
-      {double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget secondVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
