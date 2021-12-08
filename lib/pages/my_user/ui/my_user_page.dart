@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
@@ -30,10 +31,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     return myUserPageViewModel == null
         ? WaitPage()
         : Scaffold(
-            appBar: AppBar(
-              title: Text(myUserPageViewModel.user.name),
+            appBar: CustomAppbar(
+              title: myUserPageViewModel.user.name,
+              hideLeading: true,
             ),
-
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
           );

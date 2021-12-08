@@ -1,12 +1,13 @@
+
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/constants/strings.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context) {
+  static loader(bool isLoading, BuildContext context,
+      {bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -35,7 +36,7 @@ class CustomDialogs {
     );
 
     if (!isLoading) {
-      Navigator.pop(context);
+      Navigator.of(context, rootNavigator: rootNavigator).pop();
     } else {
       showDialog(
         barrierDismissible: false,
@@ -77,7 +78,7 @@ class CustomDialogs {
           },
           child: ButtonText(
               title: Strings().cancel,
-              textAlign: TextAlign.center, 
+              textAlign: TextAlign.center,
               fontWeight: FontWeight.w600),
         ),
         TextButton(

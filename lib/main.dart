@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/routes/named_routes.dart';
+import 'package:app_2i2i/pages/app/auth_widget.dart';
+import 'package:app_2i2i/pages/home/home_page.dart';
+import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -45,9 +47,11 @@ class MainWidget extends ConsumerWidget {
         await userModelChanger.updateHeartbeat();
       });
     }
-    return MaterialApp.router(
-      routeInformationParser: NamedRoutes.router.routeInformationParser,
-      routerDelegate: NamedRoutes.router.routerDelegate,
+    return MaterialApp(
+      home: AuthWidget(
+        homePageBuilder: (_) => HomePage(),
+        setupPageBuilder: (_) => SetupUserPage(),
+      ),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme().mainTheme,

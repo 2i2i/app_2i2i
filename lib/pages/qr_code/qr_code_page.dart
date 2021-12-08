@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +60,9 @@ class QRCodePage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('qr code'),
+      appBar: CustomAppbar(
+        title: "QR Code",
+        hideLeading: true,
       ),
       body: Center(child: qrFutureBuilder),
     );

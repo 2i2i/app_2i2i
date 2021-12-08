@@ -53,7 +53,7 @@ class AppTheme{
           surface: Colors.red,
           background: Colors.red,
           error: Colors.red,
-          onPrimary: Color.fromRGBO(189, 239, 204, 1),
+          onPrimary: Colors.black,
           onSecondary: Colors.black,
           onSurface: Colors.black,
           onBackground: Colors.black,

@@ -1,4 +1,3 @@
-import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 
 class TestBanner extends StatelessWidget {

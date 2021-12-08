@@ -1,15 +1,17 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:go_router/go_router.dart';
 
 class AddBidPage extends ConsumerStatefulWidget {
   const AddBidPage({Key? key, required this.uid}) : super(key: key);
@@ -37,14 +39,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     if (addBidPageViewModel.submitting) return WaitPage();
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme().lightGray,
-        leading: IconButton(
-            iconSize: 35,
-            onPressed: () => context.goNamed('home'),
-            icon: Icon(Icons.navigate_before, color: AppTheme().black)),
-        centerTitle: true,
-        title: TitleText(title: 'Add bid for ${addBidPageViewModel.user.name}'),
+      appBar: CustomAppbar(
+        title: 'Add bid for ${addBidPageViewModel.user.name}',
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -330,6 +326,6 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
       print('$value');
     });
     CustomDialogs.loader(false, context);
-    context.goNamed('user', params: {'uid': uid});
+    CustomNavigation.pop(context);
   }
 }

@@ -1,14 +1,15 @@
 import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/test_banner.dart';
+import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class SetupUserPage extends ConsumerStatefulWidget {
   const SetupUserPage({Key? key}) : super(key: key);
@@ -131,6 +132,6 @@ class _SetupUserPageState extends ConsumerState<SetupUserPage> {
     log('SignUpPage - pressGo - 3');
     CustomDialogs.loader(false, context);
     log('SignUpPage - pressGo - 4');
-    context.goNamed('home');
+    CustomNavigation.push(context, HomePage());
   }
 }

@@ -1,5 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';
@@ -60,8 +61,9 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('My Account'),
+        appBar: CustomAppbar(
+          title: "My Account",
+          hideLeading: true,
         ),
         body: Stack(
           fit: StackFit.expand,
@@ -108,7 +110,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     onTap: () async {
                       CustomDialogs.loader(true, context);
                       await myAccountPageViewModel.addLocalAccount();
-                      CustomDialogs.loader(false, context);
+                       CustomDialogs.loader(false, context,rootNavigator: true);
                     },
                   ),
                   SpeedDialChild(

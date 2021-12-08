@@ -1,8 +1,9 @@
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:go_router/go_router.dart';
 
 class NotificationWidget {
   static showBidNotification(BuildContext context) {
@@ -15,7 +16,7 @@ class NotificationWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: ListTile(
-          onTap: () => context.goNamed('my_user'),
+          onTap: () => CustomNavigation.push(context, MyUserPage()),
           leading: Image.asset('assets/logo.png', height: 80, width: 80),
           title: HeadLineSixText(
               title: "You got new bid now!", textColor: AppTheme().brightBlue),
@@ -24,7 +25,7 @@ class NotificationWidget {
             child: Row(
               children: [
                 ElevatedButton(
-                  onPressed: () => context.goNamed('my_user'),
+                  onPressed: () => CustomNavigation.push(context, MyUserPage()),
                   child: ButtonText(
                     title: "View Bid",
                     textColor: AppTheme().black,
