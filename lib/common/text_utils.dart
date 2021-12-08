@@ -158,7 +158,7 @@ class ButtonText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title!,
+    return Text(title!.toUpperCase(),
         textAlign: textAlign,
         style: Theme.of(context)
             .textTheme

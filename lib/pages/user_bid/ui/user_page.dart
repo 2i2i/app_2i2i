@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -27,8 +28,12 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userModelChanger = ref.watch(userModelChangerProvider);
+    if (userModelChanger is AsyncLoading) return WaitPage();
+
     final authStateChanges = ref.watch(authStateChangesProvider);
     if (authStateChanges is AsyncLoading) return WaitPage();
+
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
     if (userPageViewModel == null) return WaitPage();
 
@@ -51,8 +56,37 @@ class _UserPageState extends ConsumerState<UserPage> {
         leading: IconButton(
             iconSize: 35,
             onPressed: () => context.goNamed('home'),
-            icon: Icon(Icons.navigate_before,color: AppTheme().black)),
+            icon: Icon(Icons.navigate_before, color: AppTheme().black)),
         centerTitle: true,
+        actions: [
+          Tooltip(
+            message: "Favorite",
+            child: IconButton(
+                onPressed: () async {
+                  ProgressDialog.loader(true, context);
+                  await userModelChanger!.addFriend(userPageViewModel.user.id);
+                  ProgressDialog.loader(false, context);
+                },
+                icon: Icon(Icons.favorite_border_rounded,
+                    color: AppTheme().black)),
+          ),
+          Tooltip(
+            message: "Block User",
+            child: IconButton(
+                onPressed: () async {
+                  ProgressDialog.showConfirmAlertDialog(context, () async {
+                    Navigator.of(context).pop();
+                    ProgressDialog.loader(true, context);
+                    await userModelChanger!.addBlocked(userPageViewModel.user.id);
+                    ProgressDialog.loader(false, context);
+                  });
+                },
+                icon: Icon(Icons.block_rounded, color: AppTheme().red)),
+          ),
+          SizedBox(
+            width: 8,
+          )
+        ],
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
       ),
       bottomNavigationBar: Padding(
@@ -60,16 +94,16 @@ class _UserPageState extends ConsumerState<UserPage> {
         child: authStateChanges.data!.value!.uid == userModel?.id
             ? null
             : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CaptionText(
-                      title: "Do you want to bid for ${userModel?.name}",
-                      textColor: Theme.of(context).hintColor),
-                  SizedBox(height: 12),
-                  Container(
-                    height: 35,
-                    child: ElevatedButton(
-                  child: ButtonText(title: "BID"),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CaptionText(
+                title: "Do you want to bid for ${userModel?.name}",
+                textColor: Theme.of(context).hintColor),
+            SizedBox(height: 12),
+            Container(
+              height: 35,
+              child: ElevatedButton(
+                        child: ButtonText(title: "BID"),
                         onPressed: () => context.goNamed('addbidpage',
                             params: {'uid': userModel!.id}),
                         style: ButtonStyle(
@@ -79,14 +113,14 @@ class _UserPageState extends ConsumerState<UserPage> {
                                     RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10))))),
-              width: MediaQuery.of(context).size.width / 3.5,
-            )
-          ],
-        ),
+                    width: MediaQuery.of(context).size.width / 3.5,
+                  )
+                ],
+              ),
       ),
       body: Column(
         children: [
-         /* SizedBox(height: 4),
+          /* SizedBox(height: 4),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
@@ -108,16 +142,19 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),*/
           Container(
             margin:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+            const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             decoration: BoxDecoration(
                 border:
-                    Border.all(color: Colors.grey.withOpacity(0.6), width: 1.5),
+                Border.all(color: Colors.grey.withOpacity(0.6), width: 1.5),
                 borderRadius: BorderRadius.circular(5)),
             child: ListTile(
               trailing: Icon(Icons.circle, color: statusColor),
               leading: ratingWidget(score, userModel!.name, context),
-              title: TitleText(title: userModel!.name,maxLine: 1),
-              subtitle: CaptionText(title: shortBio.toString().trim(),textColor: AppTheme().hintColor,maxLine: 1),
+              title: TitleText(title: userModel!.name, maxLine: 1),
+              subtitle: CaptionText(
+                  title: shortBio.toString().trim(),
+                  textColor: AppTheme().hintColor,
+                  maxLine: 1),
               onTap: () => context.goNamed('user', params: {
                 'uid': userModel!.id,
               }), // UserPage.show(context, users[ix].id),
@@ -135,7 +172,7 @@ class _UserPageState extends ConsumerState<UserPage> {
               enabled: false,
             ),
             padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+            const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
           ),
           Divider(),
           Expanded(
