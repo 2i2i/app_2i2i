@@ -7,6 +7,7 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       backgroundColor: Colors.grey[50],
       appBar: CustomAppbar(
           leading: IconButton(
-            onPressed: () => CustomNavigation.push(context, AppSettingPage()),
+            onPressed: () => CustomNavigation.push(context, AppSettingPage(),Routes.AppSetting),
             icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
           )),
       body: Column(
@@ -158,11 +159,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       title: TitleText(title: name),
                       subtitle: Text(shortBio),
                       trailing: Icon(Icons.circle, color: statusColor),
-                      onTap: () => CustomNavigation.push(
-                          context,
-                          UserPage(
-                              uid: user
-                                  .id))), // UserPage.show(context, users[ix].id),
+                      onTap: () => CustomNavigation.push(context, UserPage(uid: user.id),Routes.USER)), // UserPage.show(context, users[ix].id),
                 );
               });
         }

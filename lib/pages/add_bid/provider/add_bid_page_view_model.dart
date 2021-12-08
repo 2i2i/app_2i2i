@@ -54,7 +54,6 @@ class AddBidPageViewModel {
     final HttpsCallable addBid = functions.httpsCallable('addBid');
     // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
     final args = {
-      'A':FirebaseAuth.instance.currentUser?.uid,
       'B': user.id,
       'speed': speed.toMap(),
       'net': AlgorandNet.testnet.toString(),
