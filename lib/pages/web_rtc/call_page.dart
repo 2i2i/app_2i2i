@@ -62,6 +62,9 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   }
 
   void showCountDown(int duration) {
+    if(countDownTimerDate != null){
+      return;
+    }
     var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = maxDuration;
     final activeTime = widget.meeting.activeTime();
