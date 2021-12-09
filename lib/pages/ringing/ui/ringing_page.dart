@@ -30,7 +30,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
   Timer? timer;
   final player = AudioPlayer();
 
-
   @override
   void initState() {
     start();
@@ -44,19 +43,20 @@ class RingingPageState extends ConsumerState<RingingPage> {
   }
 
   Future<void> start() async {
-    timer = Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
+    timer =
+        Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
-    if(!player.playing) {
+    if (!player.playing) {
       await player.play();
     }
   }
 
   Future<void> finish() async {
-    if(timer?.isActive??false) {
+    if (timer?.isActive ?? false) {
       timer!.cancel();
     }
-    if(player.playing) {
+    if (player.playing) {
       await player.stop();
     }
     await player.dispose();
@@ -144,8 +144,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      ringingPageViewModel.amA()?"Incoming Call":"Calling",
-                        style: Theme.of(context).textTheme.caption,
+                      ringingPageViewModel.amA() ? "Incoming Call" : "Calling",
+                      style: Theme.of(context).textTheme.caption,
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -174,11 +174,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           },
                         ),
                         SizedBox(height: 8),
-                        Text('Reject', style: Theme.of(context).textTheme.caption)
+                        Text('Reject',
+                            style: Theme.of(context).textTheme.caption)
                       ],
                     ),
                     Visibility(
-                      visible: (!isClicked) || (ringingPageViewModel.meeting.isInit() && ringingPageViewModel.amA()),
+                      visible: !isClicked &&
+                          ringingPageViewModel.amA() &&
+                          ringingPageViewModel.meeting.isInit(),
                       child: Padding(
                         padding: EdgeInsets.only(left: 150),
                         child: Column(
@@ -189,7 +192,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 backgroundColor: Colors.green,
                                 onPressed: () async {
                                   isClicked = true;
-                                  if(mounted) {
+                                  if (mounted) {
                                     setState(() {});
                                   }
                                   await finish();
