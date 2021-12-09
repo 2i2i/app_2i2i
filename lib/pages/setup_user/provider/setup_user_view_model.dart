@@ -99,18 +99,18 @@ class SetupUserViewModel with ChangeNotifier {
 
     // TODO uncomment try
     // DEBUG - off for faster debugging
-    message = 'gifting your some (test) ALGOs and TESTCOINs';
-    notifyListeners();
-    await algorand.giftALGO(account);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-    final optInToASAFuture = account.optInToASA(
-        assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
-        net: AlgorandNet.testnet);
-    final optInStateTxId = await optInToASAFuture
-        .then((value) => algorand.giftASA(account, waitForConfirmation: false));
-    log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
-    await algorand.waitForConfirmation(
-        txId: optInStateTxId, net: AlgorandNet.testnet);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
+    // message = 'gifting your some (test) ALGOs and TESTCOINs';
+    // notifyListeners();
+    // await algorand.giftALGO(account);
+    // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+    // final optInToASAFuture = account.optInToASA(
+    //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+    //     net: AlgorandNet.testnet);
+    // final optInStateTxId = await optInToASAFuture
+    //     .then((value) => algorand.giftASA(account, waitForConfirmation: false));
+    // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
+    // await algorand.waitForConfirmation(
+    //     txId: optInStateTxId, net: AlgorandNet.testnet);
+    // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
   }
 }

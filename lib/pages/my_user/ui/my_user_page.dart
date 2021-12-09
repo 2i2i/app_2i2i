@@ -235,6 +235,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                                   net: AlgorandNet.testnet);
                               log('done optInToASA');
                               ProgressDialog.loader(false, context);
+                              chosenAccount = accounts[i];
+                              return Navigator.pop(context, chosenAccount);
                             },
                             icon: Icon(Icons.copy)),
                       ),
