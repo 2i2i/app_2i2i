@@ -43,7 +43,12 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
           );
   }
 
-  Widget _buildContents(BuildContext context, WidgetRef ref, MyUserPageViewModel? myUserPageViewModel, AsyncValue<UserModelPrivate> userPrivateAsyncValue, UserModel user) {
+  Widget _buildContents(
+      BuildContext context,
+      WidgetRef ref,
+      MyUserPageViewModel? myUserPageViewModel,
+      AsyncValue<UserModelPrivate> userPrivateAsyncValue,
+      UserModel user) {
     if (myUserPageViewModel == null) return Container();
     if (userPrivateAsyncValue is AsyncLoading) return Container();
 
@@ -54,7 +59,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             child: ElevatedButton.icon(
                 onPressed: () async {
                   showDialog(
-                    context: context, builder: (context)=>SetupBio(model: myUserPageViewModel.user,),
+                    context: context,
+                    builder: (context) => SetupBio(
+                      model: myUserPageViewModel.user,
+                    ),
                     barrierDismissible: false,
                   );
                   /*final newValues =
@@ -82,20 +90,24 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               ),
               trailingIcon: Icon(Icons.check_circle, color: Colors.green),
               onTrailingIconClick: (Bid bid) async {
+                CustomDialogs.loader(true, context);
                 AbstractAccount? account;
                 if (0 < bid.speed.num) {
                   log('bid.speed.num=${bid.speed.num}');
                   account = await _acceptBid(context, myUserPageViewModel, bid);
-                  if (account == null) return;
+                  if (account == null) {
+                    CustomDialogs.loader(false, context);
+                    return;
+                  }
                 }
-                CustomDialogs.loader(true, context);
                 await myUserPageViewModel.acceptBid(bid, account);
                 CustomDialogs.loader(false, context);
               },
             )),
             VerticalDivider(),
             Expanded(
-                child: userPrivateAsyncValue.when(data: (UserModelPrivate userPrivate) {
+                child: userPrivateAsyncValue.when(
+                    data: (UserModelPrivate userPrivate) {
               return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
                 titleWidget: HeadLineSixText(
@@ -207,8 +219,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
       return accounts[firstOptedInAccountIndex];
     }
 
-    AbstractAccount? chosenAccount;
-
     return showDialog<AbstractAccount>(
         context: context,
         builder: (BuildContext context) {
@@ -219,7 +229,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                 accountsBool[i]
                     ? ListTile(
                         title: Text(accounts[i].address.substring(0, 4)),
-                        onTap: () => Navigator.pop(context, chosenAccount),
+                        onTap: () => Navigator.pop(context, accounts[i]),
                       )
                     : ListTile(
                         title: Text(accounts[i].address.substring(0, 4)),
@@ -233,8 +243,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                                   net: AlgorandNet.testnet);
                               log('done optInToASA');
                               CustomDialogs.loader(false, context);
-                              chosenAccount = accounts[i];
-                              return Navigator.pop(context, chosenAccount);
+                              return Navigator.pop(context, accounts[i]);
                             },
                             icon: Icon(Icons.copy)),
                       ),
