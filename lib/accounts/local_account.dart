@@ -6,6 +6,7 @@ import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
+import 'package:dio/dio.dart' as dio;
 
 class LocalAccount extends AbstractAccount {
   LocalAccount._create({
@@ -71,8 +72,10 @@ class LocalAccount extends AbstractAccount {
       account: account,
       assetId: assetId,
     );
+
     if (waitForConfirmation)
       await algorandLib.client[net]!.waitForConfirmation(txId);
+
     return txId;
   }
 

@@ -239,14 +239,17 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                       for (var i = 0; i < account!.balances.length; i++)
                         DropdownMenuItem<Balance>(
                           child: BodyOneText(
-                              title: account!.balances[i].assetHolding.assetId
-                                      .toString() +
-                                  ' - ' +
-                                  account!.balances[i].assetHolding.amount
-                                      .toString() +
-                                  ' - ' +
-                                  account!.balances[i].net.toString(),
-                              textColor: AppTheme().brightBlue),
+                              title: (account!.balances[i].assetHolding.assetId == 0
+                                  ? 'ALGO'
+                                  : account!.balances[i].assetHolding.assetId
+                                          .toString()) +
+                                      ' - ' +
+                                      account!.balances[i].assetHolding.amount
+                                          .toString() +
+                                      ' - ' +
+                                      account!.balances[i].net.toString(),
+                              textColor: AppTheme().brightBlue
+                          ),
                           value: account!.balances[i],
                         )
                     ],

@@ -21,6 +21,13 @@ class AccountService {
   final AlgorandLib algorandLib;
   final SecureStorage storage;
 
+  Future setMainAcccount(String address) =>
+      storage.write('main_account', address);
+  Future<AbstractAccount> getMainAccount() async {
+    final mainAccountAddress = await storage.read('main_account');
+    return (await findAccount(mainAccountAddress!))!;
+  }
+
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
     final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
