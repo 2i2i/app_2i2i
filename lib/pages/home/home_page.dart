@@ -95,6 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: Card(
             elevation: 6,
             child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
               showSelectedLabels: false,
               showUnselectedLabels: false,
               currentIndex: _tabSelectedIndex,
@@ -102,16 +103,11 @@ class _HomePageState extends ConsumerState<HomePage> {
               selectedItemColor: AppTheme().secondary,
               onTap: (i) => _onTap(i),
               items: [
-                BottomNavigationBarItem(
-                    label: "", icon: Icon(Icons.search_rounded)),
-                BottomNavigationBarItem(
-                    label: "", icon: Icon(Icons.person_outlined)),
-                BottomNavigationBarItem(
-                    label: "", icon: Icon(Icons.attach_money_rounded)),
-                BottomNavigationBarItem(
-                    label: "", icon: Icon(Icons.help_outline_rounded)),
-                BottomNavigationBarItem(
-                    label: "", icon: Icon(Icons.qr_code_2_rounded)),
+                BottomNavigationBarItem(label: "", icon: Icon(Icons.search_rounded),tooltip: 'Search'),
+                BottomNavigationBarItem(label: "", icon: Icon(Icons.person_outlined), tooltip: 'Profile'),
+                BottomNavigationBarItem(label: "", icon: Icon(Icons.attach_money_rounded),tooltip: 'Account'),
+                BottomNavigationBarItem(label: "", icon: Icon(Icons.help_outline_rounded),tooltip: 'FAQ'),
+                BottomNavigationBarItem(label: "", icon: Icon(Icons.qr_code_2_rounded), tooltip: 'QR Code'),
               ],
             ),
           ),
