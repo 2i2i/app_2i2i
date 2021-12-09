@@ -65,10 +65,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             child: ListTile(
               title: Text(widget.account.address),
               trailing:
-                  // IconButton(
-                  //     onPressed: () => Clipboard.setData(
-                  //         ClipboardData(text: widget.account.address)),
-                  //     icon: Icon(Icons.copy)),
                   Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
