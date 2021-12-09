@@ -1,9 +1,11 @@
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
+import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
@@ -64,9 +66,20 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var lockUser = ref.watch(lockedUserViewModelProvider);
+    bool loading = lockUser is AsyncLoading || lockUser is AsyncError;
+    print('----------\n\n loading $loading \n\n-----------');
+    if(!loading){
+      print('----------\n\n lockUser?.meeting ${lockUser?.meeting} \n\n-----------');
+      if(lockUser?.meeting is Meeting) {
+        return LockedUserPage();
+      }
+    }
+    if(isUserLocked.value){
+      return LockedUserPage();
+    }
     return WillPopScope(
-      onWillPop: () async =>
-      !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
+      onWillPop: () async => !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         body: Stack(
@@ -75,7 +88,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 .map((index, value) => MapEntry(
                 index, _buildOffstageNavigator(_tabItems[index], index)))
                 .values
-                .toList()),
+                .toList(),
+        ),
         bottomNavigationBar: Container(
           color: Colors.transparent,
           child: Card(

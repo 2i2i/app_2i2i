@@ -88,9 +88,9 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   account = await _acceptBid(context, myUserPageViewModel, bid);
                   if (account == null) return;
                 }
-                ProgressDialog.loader(true, context);
+                CustomDialogs.loader(true, context);
                 await myUserPageViewModel.acceptBid(bid, account);
-                ProgressDialog.loader(false, context);
+                CustomDialogs.loader(false, context);
               },
             )),
             VerticalDivider(),
@@ -226,13 +226,13 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                         enabled: false,
                         trailing: IconButton(
                             onPressed: () async {
-                              ProgressDialog.loader(true, context);
+                              CustomDialogs.loader(true, context);
                               log('about to optInToASA');
                               await accounts[i].optInToASA(
                                   assetId: bid.speed.assetId,
                                   net: AlgorandNet.testnet);
                               log('done optInToASA');
-                              ProgressDialog.loader(false, context);
+                              CustomDialogs.loader(false, context);
                               chosenAccount = accounts[i];
                               return Navigator.pop(context, chosenAccount);
                             },
