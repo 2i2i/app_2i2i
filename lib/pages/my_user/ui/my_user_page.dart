@@ -84,9 +84,13 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               onTrailingIconClick: (Bid bid) async {
                 AbstractAccount? account;
                 if (0 < bid.speed.num) {
+                  log('bid.speed.num=${bid.speed.num}');
                   account = await _acceptBid(context, myUserPageViewModel, bid);
+                  if (account == null) return;
                 }
+                ProgressDialog.loader(true, context);
                 await myUserPageViewModel.acceptBid(bid, account);
+                ProgressDialog.loader(false, context);
               },
             )),
             VerticalDivider(),
@@ -190,12 +194,20 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
   Future<AbstractAccount?> _acceptBid(BuildContext context,
       MyUserPageViewModel myUserPageViewModel, Bid bid) async {
     final accounts = await myUserPageViewModel.accountService.getAllAccounts();
+    log('_acceptBid - accounts.length${accounts.length}');
     final accountsBoolFutures = accounts
         .map((a) => a.isOptedInToASA(
             assetId: bid.speed.assetId, net: AlgorandNet.testnet))
         .toList();
     final accountsBool = await Future.wait(accountsBoolFutures);
-    final firstGoodAccountIndex = accountsBool.indexWhere((e) => e);
+    log('_acceptBid - accountsBool=$accountsBool');
+
+    // if only option is good, return it
+    final numOptedInAccounts = accountsBool.where((a) => a).length;
+    if (numOptedInAccounts == 1) {
+      int firstOptedInAccountIndex = accountsBool.indexWhere((e) => e);
+      return accounts[firstOptedInAccountIndex];
+    }
 
     AbstractAccount? chosenAccount;
 
@@ -204,42 +216,28 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
         builder: (BuildContext context) {
           return SimpleDialog(
             title: const Text('Where to receive coins?'),
-            children: <Widget>[
-              DropdownButton<AbstractAccount>(
-                onChanged: (AbstractAccount? newAccount) {
-                  chosenAccount = newAccount;
-                },
-                value: accounts[firstGoodAccountIndex],
-                items: [
-                  for (var i = 0; i < accounts.length; i++)
-                    DropdownMenuItem<AbstractAccount>(
-                      child: accountsBool[i]
-                          ? ListTile(
-                              title: Text(accounts[i].address.substring(0, 4)))
-                          : ListTile(
-                              title: Text(accounts[i].address.substring(0, 4)),
-                              trailing: IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.copy)),
-                            ),
-                      value: accounts[i],
-                    )
-                ],
-              ),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 50, right: 50, bottom: 10),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(173, 154, 178, 1)),
-                      child: Text('Cancel'),
-                      onPressed: () => Navigator.pop(context, null))),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 50, right: 50, bottom: 10),
-                  child: ElevatedButton(
-                      // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-                      child: Text('Accept'),
-                      onPressed: () => Navigator.pop(context, chosenAccount))),
+            children: [
+              for (var i = 0; i < accounts.length; i++)
+                accountsBool[i]
+                    ? ListTile(
+                        title: Text(accounts[i].address.substring(0, 4)),
+                        onTap: () => Navigator.pop(context, chosenAccount),
+                      )
+                    : ListTile(
+                        title: Text(accounts[i].address.substring(0, 4)),
+                        enabled: false,
+                        trailing: IconButton(
+                            onPressed: () async {
+                              ProgressDialog.loader(true, context);
+                              log('about to optInToASA');
+                              await accounts[i].optInToASA(
+                                  assetId: bid.speed.assetId,
+                                  net: AlgorandNet.testnet);
+                              log('done optInToASA');
+                              ProgressDialog.loader(false, context);
+                            },
+                            icon: Icon(Icons.copy)),
+                      ),
             ],
           );
         });
