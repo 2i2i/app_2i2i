@@ -68,26 +68,15 @@ class LocalAccount extends AbstractAccount {
       required AlgorandNet net,
       waitForConfirmation = true}) async {
     final account = await _libAccount();
-    try {
-      final String txId = await algorandLib.client[net]!.assetManager.optIn(
-        account: account,
-        assetId: assetId,
-      );
+    final String txId = await algorandLib.client[net]!.assetManager.optIn(
+      account: account,
+      assetId: assetId,
+    );
 
-      if (waitForConfirmation)
-        await algorandLib.client[net]!.waitForConfirmation(txId);
+    if (waitForConfirmation)
+      await algorandLib.client[net]!.waitForConfirmation(txId);
 
-      return txId;
-    } on AlgorandException catch (ex) {
-      final cause = ex.cause;
-      if (cause is dio.DioError) {
-        log('AlgorandException ' + cause.response?.data['message']);
-      }
-      return 'error';
-    } on Exception catch (ex) {
-      log('Exception ' + ex.toString());
-      return 'error';
-    }
+    return txId;
   }
 
   @override
