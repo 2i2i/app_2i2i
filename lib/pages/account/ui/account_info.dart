@@ -99,9 +99,12 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
           leading: IconButton(
               color: Color.fromRGBO(116, 117, 109, 1),
               iconSize: 35,
-              onPressed: () => setState(() {
-                    widget.account.updateBalances();
-                  }),
+              onPressed: () async {
+                ProgressDialog.loader(true, context);
+                await widget.account.updateBalances();
+                ProgressDialog.loader(false, context);
+                setState(() {});
+              },
               icon: Icon(Icons.replay_circle_filled)),
         ),
         SizedBox(
