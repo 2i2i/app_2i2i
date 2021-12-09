@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
@@ -8,6 +9,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
+import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             appBar: AppBar(
               title: Text(myUserPageViewModel.user.name),
             ),
-
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
           );
@@ -56,28 +57,41 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0),
             child: ElevatedButton.icon(
                 onPressed: () async {
-                  final newValues = await _editNameAndBio(context, user.name, user.bio);
+                  final newValues =
+                      await _editNameAndBio(context, user.name, user.bio);
                   if (newValues != null) {
-                    myUserPageViewModel.changeNameAndBio(newValues['name']!, newValues['bio']!);
+                    myUserPageViewModel.changeNameAndBio(
+                        newValues['name']!, newValues['bio']!);
                   }
                 },
                 icon: Icon(Icons.edit),
                 label: Text('Edit Name and Bio'))),
         Divider(),
-        Expanded  (
+        Expanded(
             child: Row(
           children: [
             Expanded(
                 child: UserBidsList(
               bidsIds: myUserPageViewModel.user.bidsIn,
-              titleWidget: HeadLineSixText(title: 'Bids In',textColor: AppTheme().deepPurple),
+              titleWidget: HeadLineSixText(
+                  title: 'Bids In', textColor: AppTheme().deepPurple),
               noBidsText: 'no bids in for user',
               leading: Icon(
                 Icons.label_important,
                 color: Colors.green,
               ),
               trailingIcon: Icon(Icons.check_circle, color: Colors.green),
-              onTrailingIconClick: myUserPageViewModel.acceptBid,
+              onTrailingIconClick: (Bid bid) async {
+                AbstractAccount? account;
+                if (0 < bid.speed.num) {
+                  log('bid.speed.num=${bid.speed.num}');
+                  account = await _acceptBid(context, myUserPageViewModel, bid);
+                  if (account == null) return;
+                }
+                ProgressDialog.loader(true, context);
+                await myUserPageViewModel.acceptBid(bid, account);
+                ProgressDialog.loader(false, context);
+              },
             )),
             VerticalDivider(),
             Expanded(
@@ -86,7 +100,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               log('MyUserPage - _buildContents - data - userPrivate=$userPrivate userPrivate.bidsOut=${userPrivate.bidsOut}');
               return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
-                titleWidget: HeadLineSixText(title: 'Bids Out',textColor: AppTheme().deepPurple),
+                titleWidget: HeadLineSixText(
+                    title: 'Bids Out', textColor: AppTheme().deepPurple),
                 noBidsText: 'no bids out for user',
                 // onTap: myUserPageViewModel.cancelBid
                 leading: Transform.rotate(
@@ -118,7 +133,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     );
   }
 
-  Future<Map<String, String>?> _editNameAndBio(BuildContext context, String currentName, String currentBio) async {
+  Future<Map<String, String>?> _editNameAndBio(
+      BuildContext context, String currentName, String currentBio) async {
     final TextEditingController name = TextEditingController(text: currentName);
     final TextEditingController bio = TextEditingController(text: currentBio);
     return showDialog<Map<String, String>>(
@@ -132,8 +148,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                       top: 5, left: 20, right: 20, bottom: 10),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText:
-                          'my cool username',
+                      hintText: 'my cool username',
                       border: OutlineInputBorder(),
                       label: Text('Name'),
                     ),
@@ -169,7 +184,62 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   child: ElevatedButton(
                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
                       child: Text('Save'),
-                      onPressed: () => Navigator.pop(context, {'name': name.text, 'bio': bio.text}))),
+                      onPressed: () => Navigator.pop(
+                          context, {'name': name.text, 'bio': bio.text}))),
+            ],
+          );
+        });
+  }
+
+  Future<AbstractAccount?> _acceptBid(BuildContext context,
+      MyUserPageViewModel myUserPageViewModel, Bid bid) async {
+    final accounts = await myUserPageViewModel.accountService.getAllAccounts();
+    log('_acceptBid - accounts.length${accounts.length}');
+    final accountsBoolFutures = accounts
+        .map((a) => a.isOptedInToASA(
+            assetId: bid.speed.assetId, net: AlgorandNet.testnet))
+        .toList();
+    final accountsBool = await Future.wait(accountsBoolFutures);
+    log('_acceptBid - accountsBool=$accountsBool');
+
+    // if only option is good, return it
+    final numOptedInAccounts = accountsBool.where((a) => a).length;
+    if (numOptedInAccounts == 1) {
+      int firstOptedInAccountIndex = accountsBool.indexWhere((e) => e);
+      return accounts[firstOptedInAccountIndex];
+    }
+
+    AbstractAccount? chosenAccount;
+
+    return showDialog<AbstractAccount>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Where to receive coins?'),
+            children: [
+              for (var i = 0; i < accounts.length; i++)
+                accountsBool[i]
+                    ? ListTile(
+                        title: Text(accounts[i].address.substring(0, 4)),
+                        onTap: () => Navigator.pop(context, chosenAccount),
+                      )
+                    : ListTile(
+                        title: Text(accounts[i].address.substring(0, 4)),
+                        enabled: false,
+                        trailing: IconButton(
+                            onPressed: () async {
+                              ProgressDialog.loader(true, context);
+                              log('about to optInToASA');
+                              await accounts[i].optInToASA(
+                                  assetId: bid.speed.assetId,
+                                  net: AlgorandNet.testnet);
+                              log('done optInToASA');
+                              ProgressDialog.loader(false, context);
+                              chosenAccount = accounts[i];
+                              return Navigator.pop(context, chosenAccount);
+                            },
+                            icon: Icon(Icons.copy)),
+                      ),
             ],
           );
         });
