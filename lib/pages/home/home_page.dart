@@ -3,17 +3,13 @@ import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
-import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
-import 'package:app_2i2i/pages/setup_user/ui/setup_user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,10 +48,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if(isLoaded){
-        final UserModel? myUser = user.data?.value;
-        if(myUser?.name.trim().isEmpty??true){
+        final UserModel myUser = user.data!.value;
+        if(myUser.name.isEmpty){
           showDialog(
-            context: context, builder: (context)=>SetupBio(),
+            context: context, builder: (context)=>SetupBio(user: myUser),
             barrierDismissible: false,
           );
         }
@@ -70,10 +66,10 @@ class _HomePageState extends ConsumerState<HomePage> {
     bool loading = lockUser is AsyncLoading || lockUser is AsyncError;
     log('----------\n\n loading $loading \n\n-----------');
     if(!loading){
-      log('----------\n\n lockUser?.meeting ${lockUser?.meeting} \n\n-----------');
-      if(lockUser?.meeting is Meeting) {
+      log('----------\n\n lockUser?.meeting ${lockUser!.meeting} \n\n-----------');
+      // if(lockUser.meeting is Meeting) {
         return LockedUserPage();
-      }
+      // }
     }
     if(isUserLocked.value){
       return LockedUserPage();

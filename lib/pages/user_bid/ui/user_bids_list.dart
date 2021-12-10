@@ -60,7 +60,6 @@ class UserBidsList extends ConsumerWidget {
               Bid bid = snapshot.data;
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
-              log('_bidsListView');
               final String assetIDString =
                   assetId == 0 ? 'ALGO' : assetId.toString();
               final color = ix % 2 == 0

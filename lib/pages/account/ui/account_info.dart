@@ -23,7 +23,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         itemCount: balances.length,
         itemBuilder: (_, ix) {
           final assetId = balances[ix].assetHolding.assetId;
-          log('balancesList');
           final assetName = assetId == 0
               ? 'ALGO'
               : balances[ix].assetHolding.assetId.toString();

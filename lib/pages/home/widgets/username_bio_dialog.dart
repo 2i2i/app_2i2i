@@ -3,13 +3,12 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SetupBio extends ConsumerStatefulWidget {
-  final UserModel? model;
-  const SetupBio({Key? key, this.model}) : super(key: key);
+  final UserModel user;
+  const SetupBio({Key? key, required this.user}) : super(key: key);
 
   @override
   _SetupBioState createState() => _SetupBioState();
@@ -22,8 +21,8 @@ class _SetupBioState extends ConsumerState<SetupBio> {
 
   @override
   void initState() {
-    userNameEditController.text = widget.model?.name??'';
-    bioEditController.text = widget.model?.bio??'';
+    userNameEditController.text = widget.user.name;
+    bioEditController.text = widget.user.bio;
     super.initState();
   }
 
@@ -48,15 +47,12 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: userNameEditController,
                 textInputAction: TextInputAction.next,
-                validator: (value){
-                  value ??='';
+                validator: (value) {
+                  value ??= '';
                   if(value.trim().isEmpty){
                     return Strings().required;
                   }
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
-                ],
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                     labelText: Strings().writeYourName,
@@ -75,19 +71,13 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                     labelText: Strings().writeYourBio,
                     hintText: Strings().bioExample,
                 ),
-                validator: (value){
-                  value ??='';
-                  if(value.trim().isEmpty){
-                    return Strings().required;
-                  }
-                },
               ),
             ],
           ),
         ),
         actions: [
           Visibility(
-            visible: widget.model?.name.isNotEmpty??false,
+            visible: widget.user.name.isNotEmpty,
             child: TextButton(
               style:TextButton.styleFrom(
                   primary: Theme.of(context).hintColor

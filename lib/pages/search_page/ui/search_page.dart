@@ -147,15 +147,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 final shortBioEnd = min(aPoint, bPoint);
                 final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
                 final score = user.upVotes - user.downVotes;
-                log('score.toString');
-                final scoreString = (0 <= score ? '+' : '-') + score.toString();
-                final iconColor =
-                    0 <= score ? Colors.green : Color.fromRGBO(211, 91, 122, 1);
-                final iconBase = IconButton(
-                  icon: Icon(Icons.change_history, color: iconColor),
-                  onPressed: null,
-                  tooltip: scoreString,
-                );
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
@@ -184,7 +175,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget ratingWidget(score, name) {
-    log('ratingWidget');
     final scoreString = (0 <= score ? '+' : '-') + score.toString();
 
     return Row(

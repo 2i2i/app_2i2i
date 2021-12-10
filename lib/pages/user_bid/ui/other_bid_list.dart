@@ -10,18 +10,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OtherBidList extends ConsumerWidget {
   OtherBidList(
-      {this.user,
+      {required this.user,
       this.onTrailingIconClick,
       this.alreadyExists});
 
-  final UserModel? user;
+  final UserModel user;
   final void Function(Bid bid)? onTrailingIconClick;
   final void Function(bool isPresent)? alreadyExists;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO add sorting
-    if (user!.bidsIn.isEmpty)
+    if (user.bidsIn.isEmpty)
       return Center(
         child: BodyTwoText(title: 'No bid for user'),
       );
@@ -36,7 +36,7 @@ class OtherBidList extends ConsumerWidget {
                 HeadLineSixText(
                     title: 'OTHER BIDS FOR ', textColor: AppTheme().deepPurple),
                 HeadLineSixText(
-                    title: '${user!.name}', textColor: AppTheme().black),
+                    title: '${user.name}', textColor: AppTheme().black),
               ],
             )),
         Expanded(
@@ -49,21 +49,24 @@ class OtherBidList extends ConsumerWidget {
   }
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
-    String? myId = ref.read(myUIDProvider)??'';
+    final myId = ref.read(myUIDProvider);
+    if (myId == null) {
+      return Container();
+    }
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
     log('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
     if(userPrivateAsyncValue is AsyncLoading){
       return Container();
     }
     return ListView.builder(
-      itemCount: user!.bidsIn.length,
+      itemCount: user.bidsIn.length,
       itemBuilder: (_, ix) {
         return StreamBuilder(
-          stream: FirestoreDatabase().bidStream(id: user!.bidsIn[ix]),
+          stream: FirestoreDatabase().bidStream(id: user.bidsIn[ix]),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData) {
               Bid bid = snapshot.data;
-              bool isItCurrentUserBid = userPrivateAsyncValue.data?.value.bidsOut.any((element) => element.bid == bid.id)??false;
+              bool isItCurrentUserBid = userPrivateAsyncValue.data!.value.bidsOut.any((element) => element.bid == bid.id);
               if (isItCurrentUserBid) {
                 alreadyExists!.call(true);
               }

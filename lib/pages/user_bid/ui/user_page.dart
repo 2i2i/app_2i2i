@@ -44,30 +44,30 @@ class _UserPageState extends ConsumerState<UserPage> {
     if (userPageViewModel == null) return WaitPage();
 
     userModel = userPageViewModel.user;
-    bioTextController.text = userModel?.bio ?? "";
+    bioTextController.text = userModel?.bio ?? '';
 
     final shortBioStart = userModel!.bio.indexOf(RegExp(r'\s')) + 1;
     int aPoint = shortBioStart + 10;
     int bPoint = userModel!.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
     final shortBio = userModel!.bio.substring(shortBioStart, shortBioEnd);
-    log('shortBio=$shortBio');
-    final score = ((userModel?.upVotes ?? 0) - (userModel?.downVotes ?? 0));
+    final score = userModel!.upVotes - userModel!.downVotes;
     var statusColor = AppTheme().green;
     if (userModel!.status == 'OFFLINE') statusColor = AppTheme().gray;
     if (userModel!.locked) statusColor = AppTheme().red;
 
     return Scaffold(
       appBar: CustomAppbar(
-        actions: (authStateChanges.data!.value!.uid != userModel?.id)
+        actions: (authStateChanges.data!.value!.uid != userModel!.id)
             ? [
                 IconButton(
-                    onPressed: () async {
-                      await myUserPageViewModel.setUserPrivate(
-                          context: context,
-                          uid: widget.uid,
-                          userPrivate: UserModelPrivate(friends: [widget.uid]));
-                    },
+                    onPressed: () {}, // TODO
+                    // async {
+                    //   await myUserPageViewModel.setUserPrivate(
+                    //       context: context,
+                    //       uid: widget.uid,
+                    //       userPrivate: UserModelPrivate(friends: [widget.uid]));
+                    // },
                     icon: Icon(Icons.favorite_border_rounded,
                         color: AppTheme().black)),
                 SizedBox(width: 6)
@@ -76,7 +76,7 @@ class _UserPageState extends ConsumerState<UserPage> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: authStateChanges.data!.value!.uid == userModel?.id
+        child: authStateChanges.data!.value!.uid == userModel!.id
             ? null
             : Column(
                 mainAxisSize: MainAxisSize.min,
@@ -85,7 +85,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                       maxLine: 1,
                       title: isPresent
                           ? "Your already bid this user, First cancel bid"
-                          : "Do you want to bid for ${userModel?.name}",
+                          : "Do you want to bid for ${userModel!.name}",
                       textColor: Theme.of(context).hintColor),
                   SizedBox(height: 12),
                   Visibility(
@@ -158,7 +158,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           Divider(),
           Expanded(
             child: OtherBidList(
-              user: userModel,
+              user: userModel!,
               alreadyExists: (bool value) => isPresent = value,
               onTrailingIconClick: (Bid bid) async {
                 CustomDialogs.loader(true, context);

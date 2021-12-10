@@ -61,16 +61,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   showDialog(
                     context: context,
                     builder: (context) => SetupBio(
-                      model: myUserPageViewModel.user,
+                      user: myUserPageViewModel.user,
                     ),
                     barrierDismissible: false,
                   );
-                  /*final newValues =
-                      await _editNameAndBio(context, user.name, user.bio);
-                  if (newValues != null) {
-                    myUserPageViewModel.changeNameAndBio(
-                        newValues['name']!, newValues['bio']!);
-                  }*/
                 },
                 icon: Icon(Icons.edit),
                 label: Text('Edit Name and Bio'))),
@@ -141,64 +135,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
         ))
       ],
     );
-  }
-
-  Future<Map<String, String>?> _editNameAndBio(
-      BuildContext context, String currentName, String currentBio) async {
-    final TextEditingController name = TextEditingController(text: currentName);
-    final TextEditingController bio = TextEditingController(text: currentBio);
-    return showDialog<Map<String, String>>(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Edit Name and Bio'),
-            children: <Widget>[
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 5, left: 20, right: 20, bottom: 10),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'my cool username',
-                      border: OutlineInputBorder(),
-                      label: Text('Name'),
-                    ),
-                    minLines: 1,
-                    maxLines: 1,
-                    controller: name,
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 5, left: 20, right: 20, bottom: 10),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText:
-                          'name i love to #talk and #cook. can also give #math #lessons',
-                      border: OutlineInputBorder(),
-                      label: Text('Bio'),
-                    ),
-                    minLines: 4,
-                    maxLines: null,
-                    controller: bio,
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 50, right: 50, bottom: 10),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(173, 154, 178, 1)),
-                      child: Text('Cancel'),
-                      onPressed: () => Navigator.pop(context, null))),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 50, right: 50, bottom: 10),
-                  child: ElevatedButton(
-                      // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-                      child: Text('Save'),
-                      onPressed: () => Navigator.pop(
-                          context, {'name': name.text, 'bio': bio.text}))),
-            ],
-          );
-        });
   }
 
   Future<AbstractAccount?> _acceptBid(BuildContext context,

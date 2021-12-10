@@ -72,15 +72,15 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     }
     var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = getDuration(maxDuration);
-    log(F+ ' ====== $duration');
+    log(F + ' ====== $duration');
     if(duration <= 60) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
-        Future.delayed(Duration.zero).then((value) {
-          if (mounted) {
+        // Future.delayed(Duration.zero).then((value) {
+          // if (mounted) {
             setState(() {});
-          }
-        });
+          // }
+        // });
       }
     }
   }
@@ -169,7 +169,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              Align(
+              widget.meeting.speed.num == 0 ? Container() : Align(
                 alignment: Alignment.centerRight,
                 child: ValueListenableBuilder(
                   valueListenable: progress,

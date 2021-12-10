@@ -5,7 +5,6 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
@@ -53,7 +52,6 @@ class AddBidPageViewModel {
 
     final HttpsCallable addBid = functions.httpsCallable('addBid');
     // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
-    log('addBid');
     final args = {
       'B': user.id,
       'speed': speed.toMap(),
