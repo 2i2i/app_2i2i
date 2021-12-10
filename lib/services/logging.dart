@@ -1,9 +1,10 @@
 import 'package:app_2i2i/common/utils.dart';
 
-const String F = 'ONLY - PROVIDER - ';
-const String G = '2ONLY - ';
+const String F = 'F - ';
+const String G = 'G - ';
+const String H = 'H - ';
 void log(String message) {
-  // if (!message.startsWith(G)) return;
+  // if (!message.startsWith(H)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   print('************* - $now ($N): $message');
