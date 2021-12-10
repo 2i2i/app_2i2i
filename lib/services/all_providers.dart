@@ -2,7 +2,6 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -32,6 +31,8 @@ final authStateChangesProvider = StreamProvider<User?>(
 
 final databaseProvider =
     Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
+
+/*final fireBaseMessagingProvider = Provider<FireBaseMessagingService>((ref) => FireBaseMessagingService());*/
 
 final myAuthUserProvider = authStateChangesProvider;
 
@@ -87,7 +88,6 @@ final searchUsersStreamProvider =
   return database.usersStream(tags: filter);
 });
 
-
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
@@ -99,6 +99,7 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
+  // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
       auth: auth,
@@ -153,17 +154,14 @@ final myUserPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
   // log('myUserPageViewModelProvider - user=$user');
-  final algorandAddress = ref.watch(algorandAddressProvider(0));
-  // log('myUserPageViewModelProvider - algorandAddress=$algorandAddress');
   final userModelChanger = ref.watch(userModelChangerProvider);
   if (userModelChanger == null) return null;
 
-  if (algorandAddress is AsyncError ||
-      user is AsyncError ||
-      algorandAddress is AsyncLoading ||
-      user is AsyncLoading) {
+  if (user is AsyncError || user is AsyncLoading) {
     return null;
   }
+
+  final accountService = ref.watch(accountServiceProvider);
 
   // log('myUserPageViewModelProvider - 2');
 
@@ -171,7 +169,7 @@ final myUserPageViewModelProvider = Provider((ref) {
       database: database,
       functions: functions,
       user: user.data!.value,
-      algorandAddress: algorandAddress.data!.value,
+      accountService: accountService,
       userModelChanger: userModelChanger);
 });
 
@@ -207,17 +205,19 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
+final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
+  (ref) {
     final uid = ref.watch(myUIDProvider)!;
     final user = ref.watch(userProvider(uid));
-    log(F+' $user');
+    log(F + ' $user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
     if (user.data!.value.currentMeeting == null) return null;
     final String currentMeeting = user.data!.value.currentMeeting!;
     final meeting = ref.watch(meetingProvider(currentMeeting));
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
-    return LockedUserViewModel(user: user.data!.value, meeting: meeting.data!.value);
+    return LockedUserViewModel(
+        user: user.data!.value, meeting: meeting.data!.value);
   },
 );
 
@@ -243,11 +243,17 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
   if (meeting is AsyncLoading || meeting is AsyncError) return null;
 
+  final amA = meeting.data!.value.A == user.data!.value.id;
+  final otherUserId = amA ? meeting.data!.value.B : meeting.data!.value.A;
+  final otherUser = ref.watch(userProvider(otherUserId));
+  if (otherUser is AsyncLoading || otherUser is AsyncError) return null;
+
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
 
   return RingingPageViewModel(
       user: user.data!.value,
+      otherUser: otherUser.data!.value,
       algorand: algorand,
       functions: functions,
       meeting: meeting.data!.value);

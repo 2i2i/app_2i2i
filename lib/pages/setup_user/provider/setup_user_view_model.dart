@@ -34,6 +34,7 @@ class SetupUserViewModel with ChangeNotifier {
   String? bio;
   String? uid;
   String? name;
+  String? deviceToken;
 
   void setBio(String _bio) {
     log('SetupUserViewModel - setBio');
@@ -74,6 +75,7 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+
   Future updateBio() async {
     log('SetupUserViewModel - createDatabaseUser');
     message = 'creating database user';
@@ -81,36 +83,37 @@ class SetupUserViewModel with ChangeNotifier {
     // log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
     final tags = UserModel.tagsFromBio(bio!);
     // log('SetupUserViewModel - createDatabaseUser - tags=$tags');
-    await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
+    await database.updateUserNameAndBio(
+        uid!, name!, bio!, [name!, ...tags]);
     // log('SetupUserViewModel - createDatabaseUser - UserModel');
   }
 
   // KEEP account in local scope
   Future setupAlgorandAccount() async {
+    message = 'creating algorand account';
+    notifyListeners();
+    if (0 < await accountService.getNumAccounts()) return;
+    final account = await LocalAccount.create(
+        algorandLib: algorandLib,
+        storage: storage,
+        accountService: accountService);
+    await accountService.setMainAcccount(account.address);
+    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
 
-      message = 'creating algorand account';
-      notifyListeners();
-      if (0 < await accountService.getNumAccounts()) return;
-      final account = await LocalAccount.create(
-          algorandLib: algorandLib,
-          storage: storage,
-          accountService: accountService);
-      log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
-
-      // TODO uncomment try
-      // DEBUG - off for faster debugging
-      // message = 'gifting your some (test) ALGOs and TESTCOINs';
-      // notifyListeners();
-      // await algorand.giftALGO(account);
-      // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-      // final optInToASAFuture = account.optInToASA(
-      //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
-      //     net: AlgorandNet.testnet);
-      // final optInStateTxId = await optInToASAFuture.then(
-      //     (value) => algorand.giftASA(account, waitForConfirmation: false));
-      // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
-      // await algorand.waitForConfirmation(
-      //     txId: optInStateTxId, net: AlgorandNet.testnet);
-      // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
+    // TODO uncomment try
+    // DEBUG - off for faster debugging
+    // message = 'gifting your some (test) ALGOs and TESTCOINs';
+    // notifyListeners();
+    // await algorand.giftALGO(account);
+    // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
+    // final optInToASAFuture = account.optInToASA(
+    //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
+    //     net: AlgorandNet.testnet);
+    // final optInStateTxId = await optInToASAFuture
+    //     .then((value) => algorand.giftASA(account, waitForConfirmation: false));
+    // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
+    // await algorand.waitForConfirmation(
+    //     txId: optInStateTxId, net: AlgorandNet.testnet);
+    // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
   }
 }

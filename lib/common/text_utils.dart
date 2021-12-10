@@ -22,7 +22,7 @@ class CaptionText extends StatelessWidget {
         textAlign: textAlign,
         style: Theme.of(context)
             .textTheme
-            .caption!
+            .overline!
             .copyWith(color: textColor, fontWeight: fontWeight),
         maxLines: maxLine);
   }
@@ -162,7 +162,7 @@ class ButtonText extends StatelessWidget {
         textAlign: textAlign,
         style: Theme.of(context)
             .textTheme
-            .button!
+            .caption!
             .copyWith(color: textColor, fontWeight: fontWeight),
         maxLines: maxLine);
   }

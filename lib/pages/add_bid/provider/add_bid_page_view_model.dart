@@ -14,6 +14,7 @@ class AddBidPageViewModel {
     required this.accounts,
     required this.accountService,
   });
+
   final FirebaseFunctions functions;
   final UserModel user;
   final AlgorandService algorand;
@@ -22,15 +23,17 @@ class AddBidPageViewModel {
 
   bool submitting = false;
 
-  String duration(AbstractAccount account, int speedNum, Balance balance,
-      double budgetPercentage) {
-    if (speedNum == 0) return 'forever';
+  String duration(AbstractAccount account, int speedNum, Balance balance, double budgetPercentage) {
+    if (speedNum == 0) {
+      return 'forever';
+    }
     final budget = balance.assetHolding.amount * budgetPercentage / 100;
     final seconds = budget / speedNum;
     return secondsToSensibleTimePeriod(seconds.round());
   }
 
   Future addBid({
+    // required FireBaseMessagingService fireBaseMessaging,
     required AbstractAccount? account,
     required Balance? balance,
     required int speedNum,
@@ -41,21 +44,18 @@ class AddBidPageViewModel {
     final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final budget = speedNum == 0
-        ? 0
-        : await accountService.calcBudget(
-            assetId: speedAssetId, account: account!, net: balance!.net);
+    final budget = speedNum == 0 ? 0 : await accountService.calcBudget(assetId: speedAssetId, account: account!, net: balance!.net);
     log('AddBidPageViewModel - addBid - budget=$budget');
     final actualBudget = (budget * budgetPercentage / 100).floor();
 
     final speed = Speed(num: speedNum, assetId: speedAssetId);
 
     final HttpsCallable addBid = functions.httpsCallable('addBid');
+    // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
     final args = {
       'B': user.id,
       'speed': speed.toMap(),
-      'net': AlgorandNet.testnet
-          .toString(), //net.toString(), // HARDCODED TO TESTNET FOR NOW
+      'net': AlgorandNet.testnet.toString(),
       'addrA': account?.address,
       'budget': actualBudget,
     };

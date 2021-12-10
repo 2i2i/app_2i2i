@@ -1,14 +1,20 @@
 import 'dart:math';
 
 import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../common/text_utils.dart';
 
@@ -25,6 +31,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   final TextEditingController bioTextController = TextEditingController();
 
   UserModel? userModel;
+  bool isPresent = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,18 +41,21 @@ class _UserPageState extends ConsumerState<UserPage> {
     final authStateChanges = ref.watch(authStateChangesProvider);
     if (authStateChanges is AsyncLoading) return WaitPage();
 
+    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+    if (myUserPageViewModel == null) return WaitPage();
+
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
     if (userPageViewModel == null) return WaitPage();
 
     userModel = userPageViewModel.user;
-    bioTextController.text = userModel?.bio ?? "";
+    bioTextController.text = userModel?.bio ?? '';
 
     final shortBioStart = userModel!.bio.indexOf(RegExp(r'\s')) + 1;
     int aPoint = shortBioStart + 10;
     int bPoint = userModel!.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
     final shortBio = userModel!.bio.substring(shortBioStart, shortBioEnd);
-    final score = ((userModel?.upVotes ?? 0) - (userModel?.downVotes ?? 0));
+    final score = userModel!.upVotes - userModel!.downVotes;
     var statusColor = AppTheme().green;
     if (userModel!.status == 'OFFLINE') statusColor = AppTheme().gray;
     if (userModel!.locked) statusColor = AppTheme().red;
@@ -90,56 +100,54 @@ class _UserPageState extends ConsumerState<UserPage> {
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: authStateChanges.data!.value!.uid == userModel?.id
+        padding: const EdgeInsets.all(8.0),
+        child: authStateChanges.data!.value!.uid == userModel!.id
             ? null
             : Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CaptionText(
-                title: "Do you want to bid for ${userModel?.name}",
+                maxLine: 1,
+                      title: isPresent
+                          ? "Your already bid this user, First cancel bid"
+                          : "Do you want to bid for ${userModel!.name}",
                 textColor: Theme.of(context).hintColor),
             SizedBox(height: 12),
-            Container(
-              height: 35,
+            Visibility(
+              visible: !isPresent,
               child: ElevatedButton(
-                        child: ButtonText(title: "BID"),
-                        onPressed: () => context.goNamed('addbidpage',
-                            params: {'uid': userModel!.id}),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppTheme().lightGreen),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))))),
-                    width: MediaQuery.of(context).size.width / 3.5,
+                            style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              AppTheme().buttonBackground),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                    ))),
+                      onPressed: () {
+                        if (!isPresent) {
+                          CustomNavigation.push(
+                              context,
+                              AddBidPage(
+                                uid: userModel!.id,
+                              ),
+                              Routes.BIDPAGE);
+                        }
+                      },
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: ButtonText(
+                            textAlign: TextAlign.center,
+                            title: "ADD BID",
+                            textColor: AppTheme().black),
+                      ),
+                    ),
                   )
                 ],
               ),
       ),
       body: Column(
         children: [
-          /* SizedBox(height: 4),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-                color: AppTheme().lightBeige,
-                borderRadius: BorderRadius.circular(5)),
-            height: kToolbarHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                IconButton(
-                    iconSize: 35,
-                    onPressed: () => context.goNamed('home'),
-                    icon: Icon(Icons.navigate_before)),
-                SizedBox(width: 10),
-                TitleText(title: userModel!.name),
-              ],
-            ),
-          ),*/
           Container(
             margin:
             const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
@@ -155,9 +163,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                   title: shortBio.toString().trim(),
                   textColor: AppTheme().hintColor,
                   maxLine: 1),
-              onTap: () => context.goNamed('user', params: {
-                'uid': userModel!.id,
-              }), // UserPage.show(context, users[ix].id),
+              // UserPage.show(context, users[ix].id),
             ),
           ),
           Container(
@@ -176,7 +182,16 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           Divider(),
           Expanded(
-            child: OtherBidList(user: userModel),
+            child: OtherBidList(
+              user: userModel!,
+              alreadyExists: (bool value) => isPresent = value,
+              onTrailingIconClick: (Bid bid) async {
+                CustomDialogs.loader(true, context);
+                await myUserPageViewModel.cancelBid(bid);
+                isPresent = false;
+                CustomDialogs.loader(false, context);
+              },
+            ),
           ),
         ],
       ),
@@ -184,6 +199,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   Widget ratingWidget(score, name, context) {
+    log('ratingWidget');
     final scoreString = (0 <= score ? '+' : '-') + score.toString();
 
     return Row(

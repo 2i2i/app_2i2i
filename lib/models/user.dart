@@ -8,13 +8,14 @@ import 'package:flutter/material.dart';
 
 class UserModelChanger {
   UserModelChanger(this.database, this.uid);
+
   final FirestoreDatabase database;
   final String uid;
 
   Future updateHeartbeat() async {
     final heartbeat = epochSecsNow();
     final status = 'ONLINE';
-    await database.updateUserHearbeat(uid, heartbeat, status);
+    await database.updateUserHeartbeat(uid, heartbeat, status);
   }
 
   Future updateNameAndBio(String name, String bio) async {
@@ -30,9 +31,11 @@ class UserModelChanger {
 
   Future addFriend(String targetUid) => database.addFriend(uid, targetUid);
 
-  Future removeBlocked(String targetUid) => database.removeBlocked(uid, targetUid);
+  Future removeBlocked(String targetUid) =>
+      database.removeBlocked(uid, targetUid);
 
-  Future removeFriend(String targetUid) => database.removeFriend(uid, targetUid);
+  Future removeFriend(String targetUid) =>
+      database.removeFriend(uid, targetUid);
 }
 
 @immutable
@@ -185,6 +188,11 @@ class BidOut {
   const BidOut({required this.bid, required this.user});
   final String bid;
   final String user;
+
+  @override
+  String toString() {
+    return 'BidOut{bid: $bid, user: $user}';
+  }
 }
 
 class UserModelPrivate {

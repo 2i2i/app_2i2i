@@ -1,12 +1,17 @@
 import 'dart:math';
 
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -19,20 +24,41 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppbar(
+          leading: IconButton(
+        onPressed: () =>
+            CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
+        icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
+      )),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              cursorWidth: 5,
               cursorColor: AppTheme().gray,
-              cursorHeight: 20,
               decoration: InputDecoration(
+                  filled: true,
+                  isDense: false,
+                  fillColor: Colors.grey.shade300,
+                  focusColor: Colors.grey.shade300,
                   hintText: 'Search user',
-                  contentPadding: EdgeInsets.symmetric(vertical: 4),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.grey.withOpacity(0.6), width: 1),
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.grey.withOpacity(0.6), width: 1),
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.6)),
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
+                        color: Colors.grey.withOpacity(0.6), width: 1),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   prefixIcon: Icon(Icons.search)),
               onSubmitted: (value) {
@@ -40,69 +66,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ref.watch(searchFilterProvider).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
-            ),
-          ),
-          Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-            child: Row(
-              children: [
-                Container(
-                  width: 110,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Center(
-                      child: SubtitleText(
-                          title: "RATING", fontWeight: FontWeight.w400)),
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Center(
-                        child: SubtitleText(
-                            title: "USER", fontWeight: FontWeight.w400)),
-                  ),
-                ),
-                SizedBox(width: 4),
-                Container(
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          width: 2, color: Color.fromRGBO(214, 219, 134, 1)),
-                      borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SubtitleText(
-                          title: "ONLINE", fontWeight: FontWeight.w400),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Icon(Icons.circle, color: AppTheme().green),
-                      ),
-                      SubtitleText(
-                          title: "OFFLINE", fontWeight: FontWeight.w400),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Icon(Icons.circle, color: AppTheme().gray),
-                      ),
-                      SubtitleText(
-                          title: "ONCALL", fontWeight: FontWeight.w400),
-                      Icon(Icons.circle, color: AppTheme().red),
-                    ],
-                  ),
-                ),
-              ],
             ),
           ),
           Divider(),
@@ -114,16 +77,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider).state;
+    // log(H + '_SearchPageState - _buildContents - filter=$filter');
+
     return StreamBuilder(
       stream: FirestoreDatabase().usersStream(tags: filter),
       builder: (BuildContext contextMain, AsyncSnapshot<dynamic> snapshot) {
+        // log(H + '_SearchPageState - _buildContents - snapshot=$snapshot');
         if (snapshot.hasData) {
           return ListView.builder(
               itemCount: snapshot.data.length,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (_, ix) {
+                // log(H + 'Search - _buildContents - ix=$ix');
                 if (snapshot.data[ix] == null) return Container();
-                final user = snapshot.data[ix]!;
+                final user = snapshot.data[ix]! as UserModel;
+                if (user.name.isEmpty) return Container();
+                // log(H +
+                //     'Search - _buildContents - !user.name.isEmpty - user=$user');
 
                 final name = user.name;
                 final bio = user.bio;
@@ -133,35 +103,25 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 final shortBioEnd = min(aPoint, bPoint);
                 final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
                 final score = user.upVotes - user.downVotes;
-                final scoreString = (0 <= score ? '+' : '-') + score.toString();
-                final iconColor = 0 <= score ? Colors.green : Color.fromRGBO(211, 91, 122, 1);
-                final iconBase = IconButton(
-                  icon: Icon(Icons.change_history, color: iconColor),
-                  onPressed: null,
-                  tooltip: scoreString,
-                );
-                final iconRotated = 0 <= score
-                    ? iconBase
-                    : Transform.rotate(angle: pi, child: iconBase);
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
                 if (user.locked) statusColor = AppTheme().red;
 
-                return Container(
+                return Card(
                   margin: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.withOpacity(0.6)),
-                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 4,
+                  // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
                   child: ListTile(
-                    leading: ratingWidget(score, name),
-                    title: TitleText(title: name),
-                    subtitle: Text(shortBio),
-                    trailing: Icon(Icons.circle, color: statusColor),
-                    onTap: () => context.goNamed('user', params: {
-                      'uid': user.id,
-                    }), // UserPage.show(context, users[ix].id),
-                  ),
+                      leading: ratingWidget(score, name),
+                      title: TitleText(title: name),
+                      subtitle: Text(shortBio),
+                      trailing: Icon(Icons.circle, color: statusColor),
+                      onTap: () => CustomNavigation.push(
+                          context,
+                          UserPage(uid: user.id),
+                          Routes
+                              .USER)), // UserPage.show(context, users[ix].id),
                 );
               });
         }

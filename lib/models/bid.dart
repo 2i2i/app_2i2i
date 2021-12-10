@@ -52,6 +52,7 @@ class Bid extends Equatable {
     final String status = data['status'];
     final String B = data['B'];
     final Speed speed = Speed.fromMap(data['speed']);
+    log('Bid.fromMap');
     final AlgorandNet net = AlgorandNet.values
         .firstWhere((e) => e.toString() == data['net']);
 
@@ -65,6 +66,7 @@ class Bid extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
+    log('Bid.toMap');
     return {
       'status': status,
       'B': B,

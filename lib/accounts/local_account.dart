@@ -71,8 +71,10 @@ class LocalAccount extends AbstractAccount {
       account: account,
       assetId: assetId,
     );
+
     if (waitForConfirmation)
       await algorandLib.client[net]!.waitForConfirmation(txId);
+
     return txId;
   }
 

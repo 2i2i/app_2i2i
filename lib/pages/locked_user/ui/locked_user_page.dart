@@ -1,14 +1,11 @@
 import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
 import 'package:app_2i2i/pages/web_rtc/call_page.dart';
-import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 
 class LockedUserPage extends ConsumerStatefulWidget {
   const LockedUserPage({Key? key}) : super(key: key);
@@ -21,8 +18,6 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(myUIDProvider)!;
-    final user = ref.watch(userProvider(uid));
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
     if (lockedUserViewModel == null) {
       return WaitPage();
