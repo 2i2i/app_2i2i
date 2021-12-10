@@ -118,7 +118,8 @@ class FirestoreDatabase {
       path: FirestorePath.users(),
       builder: (data, documentId) {
         try {
-          return UserModel.fromMap(data, documentId);
+          final user = UserModel.fromMap(data, documentId);
+          return user.name.isEmpty ? null : user;
         } catch (e) {
           return null;
         }
