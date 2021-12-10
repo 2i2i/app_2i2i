@@ -6,7 +6,6 @@ import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
-import 'package:dio/dio.dart' as dio;
 
 class LocalAccount extends AbstractAccount {
   LocalAccount._create({

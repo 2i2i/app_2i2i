@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
@@ -35,6 +36,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               cursorColor: AppTheme().gray,
+              cursorHeight: 18,
               decoration: InputDecoration(
                   filled: true,
                   isDense: false,
@@ -45,18 +47,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
+                        color: Colors.grey[300]!, width: 0),
+                    borderRadius: BorderRadius.circular(25.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
+                        color: Colors.grey[300]!, width: 0),
+                    borderRadius: BorderRadius.circular(25.0),
                   ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
+                        color: Colors.grey[300]!, width: 0),
+                    borderRadius: BorderRadius.circular(25.0),
                   ),
                   prefixIcon: Icon(Icons.search)),
               onSubmitted: (value) {
@@ -188,18 +190,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           ],
         ),
         SizedBox(width: 10),
-        Container(
-          height: 40,
-          width: 40,
-          child: Center(
-              child: Text("${name.toString().isNotEmpty ? name : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase())),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.fromRGBO(214, 219, 134, 1),
-          ),
-        )
+        CustomImageProfileView(text: name)
       ],
     );
   }

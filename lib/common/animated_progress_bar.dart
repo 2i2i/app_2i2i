@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:app_2i2i/test2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';

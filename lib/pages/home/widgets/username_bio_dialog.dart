@@ -1,4 +1,4 @@
-import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/cupertino.dart';
