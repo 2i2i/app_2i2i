@@ -178,25 +178,22 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                     double height = value * width / 100;
                     return Padding(
                       padding: const EdgeInsets.only(right: 30),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white24,
-                              shape: BoxShape.rectangle,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white24,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(20)
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Material(
+                            shadowColor: Colors.black,
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Material(
-                              shadowColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)
-                              ),
-                              type: MaterialType.card,
-                              child: ProgressBar(
-                                height: height,
-                              ),
+                            ),
+                            type: MaterialType.card,
+                            child: ProgressBar(
+                              height: height,
                             ),
                           ),
                         ),
@@ -241,28 +238,25 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom:8.0),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white38,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(20)
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Material(
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Icon(
-                                Icons.call_end,
-                                color: Colors.white,
-                              ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white38,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Material(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              Icons.call_end,
+                              color: Colors.white,
                             ),
-                            color: Color.fromARGB(255, 239, 102, 84),
-                            shadowColor: Colors.white,
-                            type: MaterialType.circle,
                           ),
+                          color: Color.fromARGB(255, 239, 102, 84),
+                          shadowColor: Colors.white,
+                          type: MaterialType.circle,
                         ),
                       ),
                     ),
