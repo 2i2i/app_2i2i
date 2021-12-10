@@ -112,14 +112,15 @@ class FirestoreDatabase {
       );
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {
-    log('FirestoreDatabase - usersStream');
+    // log(H + 'FirestoreDatabase - usersStream - tags=$tags');
     return _service
         .collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
         try {
           final user = UserModel.fromMap(data, documentId);
-          return user.name.isEmpty ? null : user;
+          // log(H + 'FirestoreDatabase - usersStream - user=$user');
+          return user;
         } catch (e) {
           return null;
         }
@@ -141,10 +142,10 @@ class FirestoreDatabase {
 
       //   return 1;
       // },
-    )
-        .handleError((value) {
-      log(value);
-    });
+    );
+      //   .handleError((value) {
+      // log(value);
+    // });
   }
 
   Stream<Room> roomStream({required String meetingId}) =>

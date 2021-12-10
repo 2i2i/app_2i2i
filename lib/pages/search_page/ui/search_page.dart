@@ -4,6 +4,7 @@ import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
@@ -76,16 +77,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider).state;
+    // log(H + '_SearchPageState - _buildContents - filter=$filter');
+
     return StreamBuilder(
       stream: FirestoreDatabase().usersStream(tags: filter),
       builder: (BuildContext contextMain, AsyncSnapshot<dynamic> snapshot) {
+        // log(H + '_SearchPageState - _buildContents - snapshot=$snapshot');
         if (snapshot.hasData) {
           return ListView.builder(
               itemCount: snapshot.data.length,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (_, ix) {
+                // log(H + 'Search - _buildContents - ix=$ix');
                 if (snapshot.data[ix] == null) return Container();
-                final user = snapshot.data[ix]!;
+                final user = snapshot.data[ix]! as UserModel;
+                if (user.name.isEmpty) return Container();
+                // log(H +
+                //     'Search - _buildContents - !user.name.isEmpty - user=$user');
 
                 final name = user.name;
                 final bio = user.bio;
