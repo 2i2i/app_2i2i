@@ -66,11 +66,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
   Future cancelMeeting({String? reason}) async {
-    await finish();
+    final finishFuture = finish();
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
     final args = {'meetingId': meeting.id};
     if (reason != null) args['reason'] = reason;
-    await endMeeting(args);
+    final endMeetingFuture = endMeeting(args);
+    await Future.wait([finishFuture, endMeetingFuture]);
   }
 
   @override
@@ -169,8 +170,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
                           onPressed: () async {
-                            await finish();
-                            ringingPageViewModel.cancelMeeting();
+                            final finishFuture = finish();
+                            final cancelMeetingFuture = ringingPageViewModel.cancelMeeting();
+                            await Future.wait([finishFuture, cancelMeetingFuture]);
                           },
                         ),
                         SizedBox(height: 8),
@@ -195,8 +197,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   if (mounted) {
                                     setState(() {});
                                   }
-                                  await finish();
-                                  ringingPageViewModel.acceptMeeting();
+                                  final finishFuture = finish();
+                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
+                                  await Future.wait([finishFuture, acceptMeetingFuture]);
                                 },
                               ),
                             ),
