@@ -27,6 +27,7 @@ class Bid extends Equatable {
     required this.id,
     required this.status,
     required this.B,
+    required this.A,
     required this.speed,
     required this.net,
   });
@@ -34,6 +35,7 @@ class Bid extends Equatable {
   final String id;
   final String status;
   final String B;
+  final String A;
   final Speed speed;
   final AlgorandNet net;
 
@@ -51,15 +53,18 @@ class Bid extends Equatable {
 
     final String status = data['status'];
     final String B = data['B'];
+    final String A =
+        data.containsKey('A') && data['A'] != null ? data['A'] : "";
     final Speed speed = Speed.fromMap(data['speed']);
     log('Bid.fromMap');
-    final AlgorandNet net = AlgorandNet.values
-        .firstWhere((e) => e.toString() == data['net']);
+    final AlgorandNet net =
+        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
 
     return Bid(
       id: documentId,
       status: status,
       B: B,
+      A: A,
       speed: speed,
       net: net,
     );
@@ -70,6 +75,7 @@ class Bid extends Equatable {
     return {
       'status': status,
       'B': B,
+      'A': A,
       'speed': speed.toMap(),
       'net': net.toString(),
     };

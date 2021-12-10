@@ -37,6 +37,7 @@ class AddBidPageViewModel {
     required AbstractAccount? account,
     required Balance? balance,
     required int speedNum,
+    required String userid,
     required double budgetPercentage,
   }) async {
     log('AddBidPageViewModel - addBid');
@@ -54,6 +55,7 @@ class AddBidPageViewModel {
     // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
     final args = {
       'B': user.id,
+      'A': userid,
       'speed': speed.toMap(),
       'net': AlgorandNet.testnet.toString(),
       'addrA': account?.address,

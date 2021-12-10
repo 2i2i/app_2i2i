@@ -24,11 +24,14 @@ class AddBidPage extends ConsumerStatefulWidget {
 
 class _AddBidPageState extends ConsumerState<AddBidPage> {
   _AddBidPageState({required this.uid});
+
   final String uid;
   AbstractAccount? account;
   Balance? balance;
   int speedNum = 0;
   double budgetPercentage = 100.0;
+
+  String userid = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +40,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     // final fireBaseMessaging = ref.watch(fireBaseMessagingProvider);
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();
+    userid = ref.watch(myUIDProvider)!;
 
     return Scaffold(
       appBar: CustomAppbar(
@@ -319,17 +323,20 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   }
 
   Future connectCall({AddBidPageViewModel? addBidPageViewModel}) async {
-    CustomDialogs.loader(true, context);
-    await addBidPageViewModel!
-        .addBid(
-            account: account,
-            balance: balance,
-            speedNum: speedNum,
-            budgetPercentage: budgetPercentage)
-        .then((value) {
-      log('$value');
-    });
-    CustomDialogs.loader(false, context);
-    CustomNavigation.pop(context);
+    if (userid.isNotEmpty) {
+      CustomDialogs.loader(true, context);
+      await addBidPageViewModel!
+          .addBid(
+              userid: userid,
+              account: account,
+              balance: balance,
+              speedNum: speedNum,
+              budgetPercentage: budgetPercentage)
+          .then((value) {
+        log('$value');
+      });
+      CustomDialogs.loader(false, context);
+      CustomNavigation.pop(context);
+    }
   }
 }

@@ -35,7 +35,7 @@ class ProgressDialog {
     );
 
     if (!isLoading) {
-      Navigator.pop(context);
+      Navigator.of(context, rootNavigator: true).pop();
     } else {
       showDialog(
         barrierDismissible: false,
@@ -53,28 +53,8 @@ class ProgressDialog {
 
   static showConfirmAlertDialog(BuildContext context, VoidCallback onPressed) {
     AlertDialog alert = AlertDialog(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HeadLineSixText(
-            title: "Block User",
-            fontWeight: FontWeight.w800,
-          ),
-          SizedBox(height: 4),
-          BodyTwoText(title: "Are you sure want to block this user?"),
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.block_rounded,size: 40,color: AppTheme().red),
-          )
-        ],
-      ),
-      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
+      title: Text("Block User"),
+      content: Text("Are you sure want to block this user?"),
       actions: [
         TextButton(
           onPressed: () {
@@ -95,8 +75,6 @@ class ProgressDialog {
         )
       ],
     );
-
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

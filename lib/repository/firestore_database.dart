@@ -107,8 +107,7 @@ class FirestoreDatabase {
   Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.userPrivate(uid),
-        builder: (data, documentId) =>
-            UserModelPrivate.fromMap(data, documentId),
+        builder: (data, documentId) => UserModelPrivate.fromMap(data, documentId),
       );
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {

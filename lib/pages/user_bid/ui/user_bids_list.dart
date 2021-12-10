@@ -1,4 +1,5 @@
 import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ class UserBidsList extends ConsumerWidget {
     required this.bidsIds,
     required this.titleWidget,
     required this.noBidsText,
-    // required this.onTap,
+    required this.userModelPrivate,
     required this.leading,
     this.trailingIcon,
     this.onTrailingIconClick,
@@ -18,6 +19,7 @@ class UserBidsList extends ConsumerWidget {
   final Widget titleWidget;
   final String noBidsText;
   final List<String> bidsIds;
+  final UserModelPrivate userModelPrivate;
 
   // final void Function(Bid bid) onTap;
   final Widget leading;
@@ -66,18 +68,20 @@ class UserBidsList extends ConsumerWidget {
                   ? Color.fromRGBO(223, 239, 223, 1)
                   : Color.fromRGBO(197, 234, 197, 1);
 
-              return Card(
-                  color: color,
-                  child: ListTile(
-                    leading: leading,
-                    trailing: trailingIcon == null
-                        ? null
-                        : IconButton(
-                            onPressed: () => onTrailingIconClick!(bid),
-                            icon: trailingIcon!),
-                    title: Text('$num'),
-                    subtitle: Text('[$assetIDString/sec]'),
-                    // tileColor: color,
+              return (userModelPrivate.blocked.contains(bid.A))
+                  ? Container()
+                  : Card(
+                      color: color,
+                      child: ListTile(
+                        leading: leading,
+                        trailing: trailingIcon == null
+                            ? null
+                            : IconButton(
+                                onPressed: () => onTrailingIconClick!(bid),
+                                icon: trailingIcon!),
+                        title: Text('$num'),
+                        subtitle: Text('[$assetIDString/sec]'),
+                        // tileColor: color,
                     // onTap: () => onTap(bid),
                   ));
             }

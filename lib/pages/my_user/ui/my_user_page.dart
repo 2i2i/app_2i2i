@@ -25,6 +25,8 @@ class MyUserPage extends ConsumerStatefulWidget {
 }
 
 class _MyUserPageState extends ConsumerState<MyUserPage> {
+  List<String> bidIn = [];
+
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
@@ -35,22 +37,39 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
         ? WaitPage()
         : Scaffold(
             appBar: CustomAppbar(
-              title: myUserPageViewModel.user.name,
-              hideLeading: true,
-            ),
-            body: _buildContents(context, ref, myUserPageViewModel,
-                userPrivateAsyncValue, myUserPageViewModel.user),
-          );
+        title: myUserPageViewModel.user.name,
+        hideLeading: true,
+      ),
+      body: _buildContents(context, ref, myUserPageViewModel,
+          userPrivateAsyncValue, myUserPageViewModel.user),
+    );
   }
 
-  Widget _buildContents(
-      BuildContext context,
+  Widget _buildContents(BuildContext context,
       WidgetRef ref,
       MyUserPageViewModel? myUserPageViewModel,
       AsyncValue<UserModelPrivate> userPrivateAsyncValue,
       UserModel user) {
     if (myUserPageViewModel == null) return Container();
     if (userPrivateAsyncValue is AsyncLoading) return Container();
+
+    bidIn = myUserPageViewModel.user.bidsIn;
+
+    bidIn.removeWhere((element) =>
+        userPrivateAsyncValue.data!.value.blocked.contains(element));
+
+    var list = bidIn
+        .where((element) =>
+            userPrivateAsyncValue.data!.value.blocked.contains(element))
+        .toList();
+
+    List<String> favorites = List.from(list);
+
+    bidIn.removeWhere((element) => favorites.contains(element));
+
+    bidIn.insertAll(0, favorites);
+
+    print(bidIn);
 
     return Column(
       children: [
@@ -71,9 +90,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
         Divider(),
         Expanded(
             child: Row(
-          children: [
-            Expanded(
-                child: UserBidsList(
+              children: [
+                Expanded(
+                    child: UserBidsList(
+                      userModelPrivate: userPrivateAsyncValue.data!.value,
               bidsIds: myUserPageViewModel.user.bidsIn,
               titleWidget: HeadLineSixText(
                   title: 'Bids In', textColor: AppTheme().deepPurple),
@@ -85,24 +105,25 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               trailingIcon: Icon(Icons.check_circle, color: Colors.green),
               onTrailingIconClick: (Bid bid) async {
                 CustomDialogs.loader(true, context);
-                AbstractAccount? account;
-                if (0 < bid.speed.num) {
-                  log('bid.speed.num=${bid.speed.num}');
-                  account = await _acceptBid(context, myUserPageViewModel, bid);
-                  if (account == null) {
-                    CustomDialogs.loader(false, context);
-                    return;
-                  }
-                }
-                await myUserPageViewModel.acceptBid(bid, account);
-                CustomDialogs.loader(false, context);
-              },
-            )),
-            VerticalDivider(),
-            Expanded(
-                child: userPrivateAsyncValue.when(
-                    data: (UserModelPrivate userPrivate) {
-              return UserBidsList(
+                        AbstractAccount? account;
+                        if (0 < bid.speed.num) {
+                          log('bid.speed.num=${bid.speed.num}');
+                          account = await _acceptBid(context, myUserPageViewModel, bid);
+                          if (account == null) {
+                            CustomDialogs.loader(false, context);
+                            return;
+                          }
+                        }
+                        await myUserPageViewModel.acceptBid(bid, account);
+                        CustomDialogs.loader(false, context);
+                      },
+                    )),
+                VerticalDivider(),
+                Expanded(
+                    child: userPrivateAsyncValue.when(
+                        data: (UserModelPrivate userPrivate) {
+                          return UserBidsList(
+                            userModelPrivate: userPrivateAsyncValue.data!.value,
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
                 titleWidget: HeadLineSixText(
                     title: 'Bids Out', textColor: AppTheme().deepPurple),
@@ -114,25 +135,25 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                       Icons.label_important,
                       color: Color.fromRGBO(104, 160, 242, 1),
                     )),
-                trailingIcon: Icon(
-                  Icons.cancel,
-                  color: Color.fromRGBO(104, 160, 242, 1),
-                ),
-                onTrailingIconClick: (Bid bid) async {
-                  CustomDialogs.loader(true, context);
-                  await myUserPageViewModel.cancelBid(bid);
-                  CustomDialogs.loader(false, context);
-                },
-              );
-            }, loading: () {
-              log('MyUserPage - _buildContents - loading');
-              return const CircularProgressIndicator();
-            }, error: (_, __) {
-              log('MyUserPage - _buildContents - error');
-              return const Center(child: Text('error'));
-            })),
-          ],
-        ))
+                            trailingIcon: Icon(
+                              Icons.cancel,
+                              color: Color.fromRGBO(104, 160, 242, 1),
+                            ),
+                            onTrailingIconClick: (Bid bid) async {
+                              CustomDialogs.loader(true, context);
+                              await myUserPageViewModel.cancelBid(bid);
+                              CustomDialogs.loader(false, context);
+                            },
+                          );
+                        }, loading: () {
+                      log('MyUserPage - _buildContents - loading');
+                      return const CircularProgressIndicator();
+                    }, error: (_, __) {
+                      log('MyUserPage - _buildContents - error');
+                      return const Center(child: Text('error'));
+                    })),
+              ],
+            ))
       ],
     );
   }
@@ -143,7 +164,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     log('_acceptBid - accounts.length${accounts.length}');
     final accountsBoolFutures = accounts
         .map((a) => a.isOptedInToASA(
-            assetId: bid.speed.assetId, net: AlgorandNet.testnet))
+        assetId: bid.speed.assetId, net: AlgorandNet.testnet))
         .toList();
     final accountsBool = await Future.wait(accountsBoolFutures);
     log('_acceptBid - accountsBool=$accountsBool');
@@ -164,25 +185,25 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
               for (var i = 0; i < accounts.length; i++)
                 accountsBool[i]
                     ? ListTile(
-                        title: Text(accounts[i].address.substring(0, 4)),
-                        onTap: () => Navigator.pop(context, accounts[i]),
-                      )
+                  title: Text(accounts[i].address.substring(0, 4)),
+                  onTap: () => Navigator.pop(context, accounts[i]),
+                )
                     : ListTile(
-                        title: Text(accounts[i].address.substring(0, 4)),
-                        enabled: false,
-                        trailing: IconButton(
-                            onPressed: () async {
-                              CustomDialogs.loader(true, context);
-                              log('about to optInToASA');
-                              await accounts[i].optInToASA(
-                                  assetId: bid.speed.assetId,
-                                  net: AlgorandNet.testnet);
-                              log('done optInToASA');
-                              CustomDialogs.loader(false, context);
-                              return Navigator.pop(context, accounts[i]);
-                            },
-                            icon: Icon(Icons.add_circle_outline)),
-                      ),
+                  title: Text(accounts[i].address.substring(0, 4)),
+                  enabled: false,
+                  trailing: IconButton(
+                      onPressed: () async {
+                        CustomDialogs.loader(true, context);
+                        log('about to optInToASA');
+                        await accounts[i].optInToASA(
+                            assetId: bid.speed.assetId,
+                            net: AlgorandNet.testnet);
+                        log('done optInToASA');
+                        CustomDialogs.loader(false, context);
+                        return Navigator.pop(context, accounts[i]);
+                      },
+                      icon: Icon(Icons.add_circle_outline)),
+                ),
             ],
           );
         });

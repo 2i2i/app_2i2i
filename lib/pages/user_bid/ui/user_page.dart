@@ -1,19 +1,21 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/common/progress_dialog.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../common/text_utils.dart';
@@ -32,6 +34,8 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   UserModel? userModel;
   bool isPresent = false;
+  bool isBlockUser = false;
+  bool isFavoriteUser = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,16 @@ class _UserPageState extends ConsumerState<UserPage> {
     if (userPageViewModel == null) return WaitPage();
 
     userModel = userPageViewModel.user;
+
+    final userPrivateAsyncValue =
+        ref.watch(userPrivateProvider(myUserPageViewModel.user.id));
+    if (userPrivateAsyncValue is AsyncLoading) return WaitPage();
+
+    isBlockUser =
+        userPrivateAsyncValue.data!.value.blocked.contains(userModel!.id);
+    isFavoriteUser =
+        userPrivateAsyncValue.data!.value.friends.contains(userModel!.id);
+
     bioTextController.text = userModel?.bio ?? '';
 
     final shortBioStart = userModel!.bio.indexOf(RegExp(r'\s')) + 1;
@@ -61,69 +75,71 @@ class _UserPageState extends ConsumerState<UserPage> {
     if (userModel!.locked) statusColor = AppTheme().red;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme().lightGray,
-        leading: IconButton(
-            iconSize: 35,
-            onPressed: () => context.goNamed('home'),
-            icon: Icon(Icons.navigate_before, color: AppTheme().black)),
-        centerTitle: true,
-        actions: [
-          Tooltip(
-            message: "Favorite",
-            child: IconButton(
-                onPressed: () async {
-                  ProgressDialog.loader(true, context);
-                  await userModelChanger!.addFriend(userPageViewModel.user.id);
-                  ProgressDialog.loader(false, context);
-                },
-                icon: Icon(Icons.favorite_border_rounded,
-                    color: AppTheme().black)),
-          ),
-          Tooltip(
-            message: "Block User",
-            child: IconButton(
-                onPressed: () async {
-                  ProgressDialog.showConfirmAlertDialog(context, () async {
-                    Navigator.of(context).pop();
-                    ProgressDialog.loader(true, context);
-                    await userModelChanger!.addBlocked(userPageViewModel.user.id);
-                    ProgressDialog.loader(false, context);
-                  });
-                },
-                icon: Icon(Icons.block_rounded, color: AppTheme().red)),
-          ),
-          SizedBox(
-            width: 8,
-          )
-        ],
-        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
+      appBar: CustomAppbar(
+        actions: (authStateChanges.data!.value!.uid != userModel?.id)
+            ? [
+                Tooltip(
+                  message: "Favorite",
+                  child: IconButton(
+                      onPressed: () async {
+                        ProgressDialog.loader(true, context);
+                        if (isFavoriteUser) {
+                          await userModelChanger!
+                              .removeFriend(userPageViewModel.user.id);
+                        } else {
+                          await userModelChanger!
+                              .addFriend(userPageViewModel.user.id);
+                        }
+                        ProgressDialog.loader(false, context);
+                      },
+                      icon: Icon(
+                          isFavoriteUser
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: AppTheme().black)),
+                ),
+                Tooltip(
+                  message: isBlockUser ? "Unblock User" : "Block User",
+                  child: IconButton(
+                      onPressed: () async {
+                        await blockUser(
+                            context, userModelChanger, userPageViewModel);
+                      },
+                      icon: Icon(Icons.block_rounded,
+                          color:
+                              isBlockUser ? AppTheme().black : AppTheme().red)),
+                ),
+                SizedBox(
+                  width: 8,
+                )
+              ]
+            : null,
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: authStateChanges.data!.value!.uid == userModel!.id
             ? null
             : Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CaptionText(
-                maxLine: 1,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CaptionText(
+                      maxLine: 1,
                       title: isPresent
                           ? "Your already bid this user, First cancel bid"
                           : "Do you want to bid for ${userModel!.name}",
-                textColor: Theme.of(context).hintColor),
-            SizedBox(height: 12),
-            Visibility(
-              visible: !isPresent,
-              child: ElevatedButton(
-                            style: ButtonStyle(
+                      textColor: Theme.of(context).hintColor),
+                  SizedBox(height: 12),
+                  Visibility(
+                    visible: !isPresent,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               AppTheme().buttonBackground),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4.0),
-                    ))),
+                          ))),
                       onPressed: () {
                         if (!isPresent) {
                           CustomNavigation.push(
@@ -196,6 +212,25 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
     );
+  }
+
+  Future<void> blockUser(
+      BuildContext context,
+      UserModelChanger? userModelChanger,
+      UserPageViewModel userPageViewModel) async {
+    if (isBlockUser) {
+      ProgressDialog.loader(true, context);
+      await userModelChanger!.removeBlocked(userPageViewModel.user.id);
+      ProgressDialog.loader(false, context);
+    } else {
+      ProgressDialog.showConfirmAlertDialog(context, () async {
+        Navigator.of(context, rootNavigator: true).pop();
+        ProgressDialog.loader(true, context);
+        await userModelChanger!.addBlocked(userPageViewModel.user.id);
+        ProgressDialog.loader(false, context);
+      });
+    }
+
   }
 
   Widget ratingWidget(score, name, context) {
