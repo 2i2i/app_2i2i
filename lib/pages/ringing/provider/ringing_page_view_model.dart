@@ -9,6 +9,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 class RingingPageViewModel {
   RingingPageViewModel(
       {required this.user,
+      required this.otherUser,
       required this.meeting,
       required this.algorand,
       required this.functions}) {
@@ -20,6 +21,7 @@ class RingingPageViewModel {
   final FirebaseFunctions functions;
   final AlgorandService algorand;
   final UserModel user;
+  final UserModel otherUser;
   final Meeting meeting;
 
   bool amA() {
@@ -43,11 +45,13 @@ class RingingPageViewModel {
       String? txId;
 
       if (meeting.speed.num != 0) {
-        txId = await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
+        txId = await algorand.lockCoins(
+            meeting: meeting, waitForConfirmation: false);
 
         log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
         if (txId == 'error') {
-          final HttpsCallable meetingTxnFailed = functions.httpsCallable('meetingTxnFailed');
+          final HttpsCallable meetingTxnFailed =
+              functions.httpsCallable('meetingTxnFailed');
           await meetingTxnFailed({'meetingId': meeting.id});
           return;
         }
@@ -56,8 +60,8 @@ class RingingPageViewModel {
       // update meeting
       await _updateMeetingAsLockCoinsStarted(txId: txId);
 
-      await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(txId: txId, net: meeting.net);
-
+      await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
+          txId: txId, net: meeting.net);
     } catch (e) {
       log(e.toString());
     }
@@ -66,27 +70,31 @@ class RingingPageViewModel {
   Future _updateMeetingAsLockCoinsStarted({required String? txId}) async {
     log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
 
-    final HttpsCallable meetingLockCoinsStarted = functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId}).then((value) {
-      log(F+ ' == 1');
+    final HttpsCallable meetingLockCoinsStarted =
+        functions.httpsCallable('meetingLockCoinsStarted');
+    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId})
+        .then((value) {
+      log(F + ' == 1');
     });
   }
 
-  Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed({required String? txId, required AlgorandNet net}) async {
+  Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
+      {required String? txId, required AlgorandNet net}) async {
     // wait for transaction to confirm
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
     if (txId != null) {
       await algorand.waitForConfirmation(txId: txId, net: net).then((value) {
-        log(F+ ' == 2');
+        log(F + ' == 2');
       });
     }
 
     // update meeting
     // message = 'updating meeting';
     // notifyListeners();
-    final HttpsCallable meetingLockCoinsConfirmed = functions.httpsCallable('meetingLockCoinsConfirmed');
+    final HttpsCallable meetingLockCoinsConfirmed =
+        functions.httpsCallable('meetingLockCoinsConfirmed');
     await meetingLockCoinsConfirmed({'meetingId': meeting.id}).then((value) {
-      log(F+ ' == 3');
+      log(F + ' == 3');
     });
   }
 }

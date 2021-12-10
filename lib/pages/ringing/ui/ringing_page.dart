@@ -145,12 +145,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      ringingPageViewModel.amA() ? "Incoming Call" : "Calling",
+                      'Connecting with',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     SizedBox(height: 10),
                     Text(
-                      ringingPageViewModel.user.name,
+                       ringingPageViewModel.otherUser.name,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -175,9 +175,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             await Future.wait([finishFuture, cancelMeetingFuture]);
                           },
                         ),
-                        SizedBox(height: 8),
-                        Text('Reject',
-                            style: Theme.of(context).textTheme.caption)
                       ],
                     ),
                     Visibility(
@@ -203,9 +200,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 },
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text('Accept',
-                                style: Theme.of(context).textTheme.caption)
                           ],
                         ),
                       ),

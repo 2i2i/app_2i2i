@@ -20,13 +20,17 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
+final firebaseAuthProvider =
+    Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
-final firebaseFunctionsProvider = Provider<FirebaseFunctions>((ref) => FirebaseFunctions.instance);
+final firebaseFunctionsProvider =
+    Provider<FirebaseFunctions>((ref) => FirebaseFunctions.instance);
 
-final authStateChangesProvider = StreamProvider<User?>((ref) => ref.watch(firebaseAuthProvider).authStateChanges());
+final authStateChangesProvider = StreamProvider<User?>(
+    (ref) => ref.watch(firebaseAuthProvider).authStateChanges());
 
-final databaseProvider = Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
+final databaseProvider =
+    Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
 
 /*final fireBaseMessagingProvider = Provider<FireBaseMessagingService>((ref) => FireBaseMessagingService());*/
 
@@ -83,7 +87,6 @@ final searchUsersStreamProvider =
   final filter = ref.watch(searchFilterProvider).state;
   return database.usersStream(tags: filter);
 });
-
 
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
@@ -154,8 +157,7 @@ final myUserPageViewModelProvider = Provider((ref) {
   final userModelChanger = ref.watch(userModelChangerProvider);
   if (userModelChanger == null) return null;
 
-  if (user is AsyncError ||
-      user is AsyncLoading) {
+  if (user is AsyncError || user is AsyncLoading) {
     return null;
   }
 
@@ -203,17 +205,19 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final lockedUserViewModelProvider = Provider<LockedUserViewModel?>((ref) {
+final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
+  (ref) {
     final uid = ref.watch(myUIDProvider)!;
     final user = ref.watch(userProvider(uid));
-    log(F+' $user');
+    log(F + ' $user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
     if (user.data!.value.currentMeeting == null) return null;
     final String currentMeeting = user.data!.value.currentMeeting!;
     final meeting = ref.watch(meetingProvider(currentMeeting));
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
-    return LockedUserViewModel(user: user.data!.value, meeting: meeting.data!.value);
+    return LockedUserViewModel(
+        user: user.data!.value, meeting: meeting.data!.value);
   },
 );
 
@@ -239,11 +243,17 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
   if (meeting is AsyncLoading || meeting is AsyncError) return null;
 
+  final amA = meeting.data!.value.A == user.data!.value.id;
+  final otherUserId = amA ? meeting.data!.value.B : meeting.data!.value.A;
+  final otherUser = ref.watch(userProvider(otherUserId));
+  if (otherUser is AsyncLoading || otherUser is AsyncError) return null;
+
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
 
   return RingingPageViewModel(
       user: user.data!.value,
+      otherUser: otherUser.data!.value,
       algorand: algorand,
       functions: functions,
       meeting: meeting.data!.value);
