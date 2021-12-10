@@ -179,7 +179,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                     return Padding(
                       padding: const EdgeInsets.only(right: 30),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                        filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.white24,
@@ -242,7 +242,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom:8.0),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                       child: Container(
                         decoration: BoxDecoration(
                             color: Colors.white38,

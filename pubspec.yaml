@@ -39,7 +39,7 @@ dependencies:
   qr_flutter: ^4.0.0
   flutter_styled_toast: ^2.0.0
   flutter_rating_bar: ^4.0.0
-  flutter_speed_dial: ^5.0.0
+  flutter_speed_dial: ^4.6.6
   percent_indicator: ^3.4.0
   dotted_border: ^2.0.0+2
   flutter_animator: ^3.2.0
