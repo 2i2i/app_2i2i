@@ -114,7 +114,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     },
                   ),
                   SpeedDialChild(
-                    child: Icon(Icons.folder_open_outlined),
+                    child: Image.asset('walletconnect-circle-white.png'),
                     onTap: () async {
                       await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
                     },
