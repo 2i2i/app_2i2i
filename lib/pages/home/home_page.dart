@@ -1,5 +1,4 @@
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
@@ -10,7 +9,6 @@ import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +20,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-
   var _tabSelectedIndex = 0;
   var _tabPopStack = false;
 
@@ -41,17 +38,19 @@ class _HomePageState extends ConsumerState<HomePage> {
       _tabSelectedIndex = index;
     });
   }
+
   @override
   void initState() {
     Future.delayed(Duration(seconds: 7)).then((value) {
       final uid = ref.watch(myUIDProvider)!;
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
-      if(isLoaded){
+      if (isLoaded) {
         final UserModel myUser = user.data!.value;
-        if(myUser.name.isEmpty){
+        if (myUser.name.isEmpty) {
           showDialog(
-            context: context, builder: (context)=>SetupBio(user: myUser),
+            context: context,
+            builder: (context) => SetupBio(user: myUser),
             barrierDismissible: false,
           );
         }
@@ -63,28 +62,30 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     var lockUser = ref.watch(lockedUserViewModelProvider);
-    bool loading = lockUser is AsyncLoading || lockUser is AsyncError;
+    bool loading =
+        lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
     log('----------\n\n loading $loading \n\n-----------');
-    if(!loading){
-      log('----------\n\n lockUser?.meeting ${lockUser!.meeting} \n\n-----------');
+    if (!loading) {
+      log('----------\n\n lockUser?.meeting ${lockUser.meeting} \n\n-----------');
       // if(lockUser.meeting is Meeting) {
-        return LockedUserPage();
+      return LockedUserPage();
       // }
     }
-    if(isUserLocked.value){
+    if (isUserLocked.value) {
       return LockedUserPage();
     }
     return WillPopScope(
-      onWillPop: () async => !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
+      onWillPop: () async =>
+          !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         body: Stack(
-            children: _tabItems
-                .asMap()
-                .map((index, value) => MapEntry(
-                index, _buildOffstageNavigator(_tabItems[index], index)))
-                .values
-                .toList(),
+          children: _tabItems
+              .asMap()
+              .map((index, value) => MapEntry(
+                  index, _buildOffstageNavigator(_tabItems[index], index)))
+              .values
+              .toList(),
         ),
         bottomNavigationBar: Container(
           color: Colors.transparent,
@@ -99,11 +100,26 @@ class _HomePageState extends ConsumerState<HomePage> {
               selectedItemColor: AppTheme().secondary,
               onTap: (i) => _onTap(i),
               items: [
-                BottomNavigationBarItem(label: "", icon: Icon(Icons.search_rounded),tooltip: 'Search'),
-                BottomNavigationBarItem(label: "", icon: Icon(Icons.person_outlined), tooltip: 'Profile'),
-                BottomNavigationBarItem(label: "", icon: Icon(Icons.attach_money_rounded),tooltip: 'Account'),
-                BottomNavigationBarItem(label: "", icon: Icon(Icons.help_outline_rounded),tooltip: 'FAQ'),
-                BottomNavigationBarItem(label: "", icon: Icon(Icons.qr_code_2_rounded), tooltip: 'QR Code'),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: Icon(Icons.search_rounded),
+                    tooltip: 'Search'),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: Icon(Icons.person_outlined),
+                    tooltip: 'Profile'),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: Icon(Icons.attach_money_rounded),
+                    tooltip: 'Account'),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: Icon(Icons.help_outline_rounded),
+                    tooltip: 'FAQ'),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: Icon(Icons.qr_code_2_rounded),
+                    tooltip: 'QR Code'),
               ],
             ),
           ),

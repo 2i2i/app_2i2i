@@ -9,7 +9,6 @@ import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,57 +65,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ref.watch(searchFilterProvider).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Center(
-                    child: CaptionText(
-                        textColor: AppTheme().gray,
-                        title: "RATING",
-                        fontWeight: FontWeight.w400)),
-                SizedBox(width: 4),
-                Expanded(
-                  flex: 3,
-                  child: Center(
-                      child: CaptionText(
-                          textColor: AppTheme().gray,
-                          title: "USER",
-                          fontWeight: FontWeight.w400)),
-                ),
-                SizedBox(width: 4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CaptionText(
-                        textColor: AppTheme().gray,
-                        title: "ONLINE",
-                        fontWeight: FontWeight.w400),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child:
-                          Icon(Icons.circle, color: AppTheme().green, size: 15),
-                    ),
-                    CaptionText(
-                        textColor: AppTheme().gray,
-                        title: "OFFLINE",
-                        fontWeight: FontWeight.w400),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child:
-                          Icon(Icons.circle, color: AppTheme().gray, size: 15),
-                    ),
-                    CaptionText(
-                        textColor: AppTheme().gray,
-                        title: "ONCALL",
-                        fontWeight: FontWeight.w400),
-                    Icon(Icons.circle, color: AppTheme().red, size: 15),
-                  ],
-                ),
-              ],
             ),
           ),
           Divider(),
