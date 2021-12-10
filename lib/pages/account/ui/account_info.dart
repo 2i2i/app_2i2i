@@ -72,7 +72,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       ? IconButton(
                           onPressed: () => _showPrivateKey(
                               context, widget.account as LocalAccount),
-                          icon: Icon(Icons.keyboard))
+                          icon: Icon(Icons.vpn_key))
                       : Container(),
                   IconButton(
                       onPressed: () async {
@@ -83,7 +83,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                             assetId: asaId, net: AlgorandNet.testnet);
                         CustomDialogs.loader(false, context);
                       },
-                      icon: Icon(Icons.opacity)),
+                      icon: Icon(Icons.add_circle_outline)),
                   IconButton(
                       onPressed: () => Clipboard.setData(
                           ClipboardData(text: widget.account.address)),

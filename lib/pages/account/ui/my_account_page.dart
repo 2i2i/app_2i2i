@@ -106,7 +106,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 tooltip: 'Add account',
                 children: [
                   SpeedDialChild(
-                    child: Icon(Icons.new_label),
+                    child: Icon(Icons.smartphone),
                     onTap: () async {
                       CustomDialogs.loader(true, context);
                       await myAccountPageViewModel.addLocalAccount();
@@ -114,7 +114,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     },
                   ),
                   SpeedDialChild(
-                    child: Icon(Icons.folder_open_outlined),
+                    child: Image.asset('walletconnect-circle-white.png'),
                     onTap: () async {
                       await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
                     },
