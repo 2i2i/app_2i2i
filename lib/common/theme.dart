@@ -18,13 +18,15 @@ class AppTheme{
   Color buttonBackground = Color.fromRGBO(208, 226, 105, 1);
   Color green = Color.fromRGBO(80, 121, 66, 1);
   Color red = Color.fromARGB(255, 239, 102, 84);
+  Color pink = Color.fromARGB(255, 244, 162, 163);
   Color gray = Color.fromRGBO(112, 112, 108, 1);
   Color hintColor = CupertinoColors.black.withOpacity(0.6);
   Color lightGray = Color.fromRGBO(221, 221, 217, 1);
   Color lightGreen = Color.fromRGBO(214, 219, 134, 1);
   Color brightBlue = Color.fromRGBO(69, 104, 177, 1);
   Color lightBeige = Color.fromRGBO(224, 224, 213, 1);
-  Color black = CupertinoColors.black;
+  Color black = Colors.black;
+  Color white = Colors.white;
   Color deepPurple = Colors.deepPurple;
 
   TextStyle? body1Text(BuildContext context){
@@ -51,7 +53,7 @@ class AppTheme{
           surface: Colors.red,
           background: Colors.red,
           error: Colors.red,
-          onPrimary: Color.fromRGBO(189, 239, 204, 1),
+          onPrimary: Colors.black,
           onSecondary: Colors.black,
           onSurface: Colors.black,
           onBackground: Colors.black,

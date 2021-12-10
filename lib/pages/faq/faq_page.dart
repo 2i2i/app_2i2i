@@ -1,4 +1,5 @@
 // import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/pages/faq/faq.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -129,8 +130,9 @@ class _FAQPageState extends State<FAQPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('FAQ'),
+        appBar: CustomAppbar(
+          title: "FAQ",
+          hideLeading: true,
         ),
         body: Container(
           margin: const EdgeInsets.all(10),

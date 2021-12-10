@@ -1,8 +1,10 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/cupertino.dart';
 
 class MyUserPageViewModel {
   MyUserPageViewModel(
@@ -35,5 +37,11 @@ class MyUserPageViewModel {
 
   Future changeNameAndBio(String name, String bio) async {
     await userModelChanger.updateNameAndBio(name, bio);
+  }
+
+  Future setUserPrivate({required BuildContext context,required String uid, required UserModelPrivate userPrivate}) async {
+    CustomDialogs.loader(true, context);
+    await database.setUserPrivate(uid: uid,userPrivate: userPrivate);
+    CustomDialogs.loader(false, context);
   }
 }

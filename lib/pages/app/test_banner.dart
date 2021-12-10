@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class TestBanner extends StatelessWidget {
-  const TestBanner(this.w, {Key? key}) : super(key: key);
-  final Widget w;
+  const TestBanner({Key? key, this.widget}) : super(key: key);
+  final Widget? widget;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        w,
+        widget!,
         Align(
           alignment: Alignment.topRight,
           child: Container(

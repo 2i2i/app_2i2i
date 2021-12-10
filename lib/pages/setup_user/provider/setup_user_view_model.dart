@@ -34,6 +34,7 @@ class SetupUserViewModel with ChangeNotifier {
   String? bio;
   String? uid;
   String? name;
+  String? deviceToken;
 
   void setBio(String _bio) {
     log('SetupUserViewModel - setBio');
@@ -74,6 +75,7 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+
   Future updateBio() async {
     log('SetupUserViewModel - createDatabaseUser');
     message = 'creating database user';
@@ -81,7 +83,8 @@ class SetupUserViewModel with ChangeNotifier {
     // log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
     final tags = UserModel.tagsFromBio(bio!);
     // log('SetupUserViewModel - createDatabaseUser - tags=$tags');
-    await database.updateUserNameAndBio(uid!, name!, bio!, [name!, ...tags]);
+    await database.updateUserNameAndBio(
+        uid!, name!, bio!, [name!, ...tags]);
     // log('SetupUserViewModel - createDatabaseUser - UserModel');
   }
 

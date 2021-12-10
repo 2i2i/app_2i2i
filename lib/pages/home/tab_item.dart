@@ -12,20 +12,20 @@ class TabItemData {
   final String title;
   final IconData icon;
 
-  static const Map<TabItem, TabItemData> allTabs = {
+  static Map<TabItem, TabItemData> allTabs = {
     TabItem.search: TabItemData(
       key: Keys.searchTab,
-      title: Strings.search,
+      title: Strings().search,
       icon: Icons.work,
     ),
     TabItem.myAccount: TabItemData(
       key: Keys.myAccountTab,
-      title: Strings.myAccount,
+      title: Strings().myAccount,
       icon: Icons.view_headline,
     ),
     TabItem.bidsIn: TabItemData(
       key: Keys.bidsInTab,
-      title: Strings.bidsIn,
+      title: Strings().bidsIn,
       icon: Icons.person,
     ),
   };

@@ -1,6 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/common/progress_dialog.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -78,10 +78,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       onPressed: () async {
                         final asaId = await _optInToASA(context);
                         if (asaId == null) return;
-                        ProgressDialog.loader(true, context);
+                        CustomDialogs.loader(true, context);
                         await widget.account.optInToASA(
                             assetId: asaId, net: AlgorandNet.testnet);
-                        ProgressDialog.loader(false, context);
+                        CustomDialogs.loader(false, context);
                       },
                       icon: Icon(Icons.opacity)),
                   IconButton(
@@ -103,9 +103,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               color: Color.fromRGBO(116, 117, 109, 1),
               iconSize: 35,
               onPressed: () async {
-                ProgressDialog.loader(true, context);
+                CustomDialogs.loader(true, context);
                 await widget.account.updateBalances();
-                ProgressDialog.loader(false, context);
+                CustomDialogs.loader(false, context);
                 setState(() {});
               },
               icon: Icon(Icons.replay_circle_filled)),

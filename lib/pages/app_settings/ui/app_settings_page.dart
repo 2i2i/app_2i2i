@@ -1,4 +1,6 @@
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,16 +36,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
   Widget build(BuildContext context) {
     var algorand = ref.watch(algorandProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('App Settings'),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.navigate_before,
-              size: 40,
-            )),
+      appBar: CustomAppbar(
+        title: "App Settings",
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -83,6 +77,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                       setState(() {
                         _value = value!;
                       });
+                      log('setNetworkMode');
                       await algorand.setNetworkMode(networkList[_value].toString());
                     },
                   ),
