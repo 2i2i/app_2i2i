@@ -181,7 +181,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                               CustomDialogs.loader(false, context);
                               return Navigator.pop(context, accounts[i]);
                             },
-                            icon: Icon(Icons.copy)),
+                            icon: Icon(Icons.add_circle_outline)),
                       ),
             ],
           );
