@@ -11,6 +11,7 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,6 +51,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     int bPoint = userModel!.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
     final shortBio = userModel!.bio.substring(shortBioStart, shortBioEnd);
+    log('shortBio=$shortBio');
     final score = ((userModel?.upVotes ?? 0) - (userModel?.downVotes ?? 0));
     var statusColor = AppTheme().green;
     if (userModel!.status == 'OFFLINE') statusColor = AppTheme().gray;
@@ -103,7 +105,8 @@ class _UserPageState extends ConsumerState<UserPage> {
                               context,
                               AddBidPage(
                                 uid: userModel!.id,
-                              ),Routes.BIDPAGE);
+                              ),
+                              Routes.BIDPAGE);
                         }
                       },
                       child: ListTile(
@@ -128,15 +131,15 @@ class _UserPageState extends ConsumerState<UserPage> {
                     Border.all(color: Colors.grey.withOpacity(0.6), width: 1.5),
                 borderRadius: BorderRadius.circular(5)),
             child: ListTile(
-                trailing: Icon(Icons.circle, color: statusColor),
-                leading: ratingWidget(score, userModel!.name, context),
-                title: TitleText(title: userModel!.name, maxLine: 1),
-                subtitle: CaptionText(
-                    title: shortBio.toString().trim(),
-                    textColor: AppTheme().hintColor,
-                    maxLine: 1),
-                // UserPage.show(context, users[ix].id),
-                ),
+              trailing: Icon(Icons.circle, color: statusColor),
+              leading: ratingWidget(score, userModel!.name, context),
+              title: TitleText(title: userModel!.name, maxLine: 1),
+              subtitle: CaptionText(
+                  title: shortBio.toString().trim(),
+                  textColor: AppTheme().hintColor,
+                  maxLine: 1),
+              // UserPage.show(context, users[ix].id),
+            ),
           ),
           Container(
             child: TextField(
@@ -171,6 +174,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   Widget ratingWidget(score, name, context) {
+    log('ratingWidget');
     final scoreString = (0 <= score ? '+' : '-') + score.toString();
 
     return Row(

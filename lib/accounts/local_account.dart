@@ -143,6 +143,7 @@ class LocalAccount extends AbstractAccount {
     _numAccount = await accountService.getNumLocalAccounts();
     final storageAccountKey = 'account_$_numAccount';
     final newNumAccounts = _numAccount + 1;
+    log('_storeAccount - newNumAccounts=$newNumAccounts');
     await storage.write('num_accounts', newNumAccounts.toString());
     await storage.write(storageAccountKey, privateKey);
   }

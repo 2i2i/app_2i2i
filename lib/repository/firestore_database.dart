@@ -37,13 +37,13 @@ class FirestoreDatabase {
       );
 
   Future<void> setUser(UserModel user) async {
-    print('setUser - user=$user - map=${user.toMap()}');
+    log('setUser - user=$user - map=${user.toMap()}');
     _service.setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
     );
-    print('setUser - done');
+    log('setUser - done');
   }
 
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
@@ -142,7 +142,7 @@ class FirestoreDatabase {
       // },
     )
         .handleError((value) {
-      print(value);
+      log(value);
     });
   }
 

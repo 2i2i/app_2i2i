@@ -8,6 +8,7 @@ import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -212,6 +213,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   }
 
   Widget assetWidget(AddBidPageViewModel addBidPageViewModel) {
+    log('assetWidget');
     return balance != null && speedNum != 0
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +328,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             speedNum: speedNum,
             budgetPercentage: budgetPercentage)
         .then((value) {
-      print('$value');
+      log('$value');
     });
     CustomDialogs.loader(false, context);
     CustomNavigation.pop(context);

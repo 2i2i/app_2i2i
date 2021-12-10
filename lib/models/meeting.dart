@@ -109,6 +109,7 @@ class Meeting extends Equatable {
     final String B = data['B'];
     final Speed speed = Speed.fromMap(data['speed']);
     final int budget = data['budget'];
+    log('Meeting.fromMap');
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
     final String? lockTxId = data['lockTxId'];
@@ -117,6 +118,7 @@ class Meeting extends Equatable {
     final String? addrB = data['addrB'];
     final List<MeetingStatus> status =
         List<MeetingStatus>.from(data['status'].map((item) {
+      log('Meeting.fromMap 2');
       final value = MeetingValue.values
           .firstWhere((e) => e.toString().endsWith(item['value']));
       final ts = item['ts'] as int;

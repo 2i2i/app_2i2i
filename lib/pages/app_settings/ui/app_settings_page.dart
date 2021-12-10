@@ -1,5 +1,6 @@
 import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,6 +77,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                       setState(() {
                         _value = value!;
                       });
+                      log('setNetworkMode');
                       await algorand.setNetworkMode(networkList[_value].toString());
                     },
                   ),

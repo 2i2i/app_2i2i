@@ -2,6 +2,7 @@ import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 
 class CustomNavigation {
@@ -10,7 +11,7 @@ class CustomNavigation {
   }
 
   static push(BuildContext context, Widget page, String pageName) {
-    print('============\n\n $pageName \n\n============');
+    log('============\n\n $pageName \n\n============');
     final locked = isUserLocked.value;
     final goingToLocked = pageName == Routes.LOCK;
 

@@ -53,6 +53,7 @@ class AddBidPageViewModel {
 
     final HttpsCallable addBid = functions.httpsCallable('addBid');
     // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
+    log('addBid');
     final args = {
       'B': user.id,
       'speed': speed.toMap(),

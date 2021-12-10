@@ -18,11 +18,9 @@ class UserModelChanger {
     await database.updateUserHeartbeat(uid, heartbeat, status);
   }
 
-
   Future updateNameAndBio(String name, String bio) async {
     final tags = UserModel.tagsFromBio(bio);
-    await database.updateUserNameAndBio(
-        uid, name, bio, [name, ...tags]);
+    await database.updateUserNameAndBio(uid, name, bio, [name, ...tags]);
   }
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
@@ -31,8 +29,10 @@ class UserModelChanger {
   // friend users: we see their bids on top
   Future addBlocked(String targetUid) => database.addBlocked(uid, targetUid);
   Future addFriend(String targetUid) => database.addFriend(uid, targetUid);
-  Future removeBlocked(String targetUid) => database.removeBlocked(uid, targetUid);
-  Future removeFriend(String targetUid) => database.removeFriend(uid, targetUid);
+  Future removeBlocked(String targetUid) =>
+      database.removeBlocked(uid, targetUid);
+  Future removeFriend(String targetUid) =>
+      database.removeFriend(uid, targetUid);
 }
 
 @immutable

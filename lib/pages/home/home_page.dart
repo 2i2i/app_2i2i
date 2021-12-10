@@ -68,9 +68,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     var lockUser = ref.watch(lockedUserViewModelProvider);
     bool loading = lockUser is AsyncLoading || lockUser is AsyncError;
-    print('----------\n\n loading $loading \n\n-----------');
+    log('----------\n\n loading $loading \n\n-----------');
     if(!loading){
-      print('----------\n\n lockUser?.meeting ${lockUser?.meeting} \n\n-----------');
+      log('----------\n\n lockUser?.meeting ${lockUser?.meeting} \n\n-----------');
       if(lockUser?.meeting is Meeting) {
         return LockedUserPage();
       }
@@ -153,7 +153,7 @@ class TabNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('selectedIndex= $selectedIndex, popStack= $popStack');
+    log('selectedIndex= $selectedIndex, popStack= $popStack');
 
     _popStackIfRequired(context);
 

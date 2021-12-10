@@ -4,6 +4,7 @@ import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +51,7 @@ class OtherBidList extends ConsumerWidget {
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
     String? myId = ref.read(myUIDProvider)??'';
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
-    print('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
+    log('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
     if(userPrivateAsyncValue is AsyncLoading){
       return Container();
     }
@@ -66,8 +67,10 @@ class OtherBidList extends ConsumerWidget {
               if (isItCurrentUserBid) {
                 alreadyExists!.call(true);
               }
+              log('bid.speed.num');
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
+              log('assetId');
               final String assetIDString =
                   assetId == 0 ? 'ALGO' : assetId.toString();
               final color = ix % 2 == 0

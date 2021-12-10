@@ -9,6 +9,7 @@ import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,9 +27,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       backgroundColor: Colors.grey[50],
       appBar: CustomAppbar(
           leading: IconButton(
-            onPressed: () => CustomNavigation.push(context, AppSettingPage(),Routes.AppSetting),
-            icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
-          )),
+        onPressed: () =>
+            CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
+        icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
+      )),
       body: Column(
         children: [
           Container(
@@ -40,7 +42,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   isDense: false,
                   fillColor: Colors.grey.shade300,
                   focusColor: Colors.grey.shade300,
-                  hintText: 'Search user',
+                  hintText: 'Search user6',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   enabledBorder: OutlineInputBorder(
@@ -67,20 +69,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Center(
                     child: CaptionText(
-                      textColor: AppTheme().gray,
-                        title: "RATING", fontWeight: FontWeight.w400)),
+                        textColor: AppTheme().gray,
+                        title: "RATING",
+                        fontWeight: FontWeight.w400)),
                 SizedBox(width: 4),
                 Expanded(
                   flex: 3,
                   child: Center(
                       child: CaptionText(
                           textColor: AppTheme().gray,
-                          title: "USER", fontWeight: FontWeight.w400)),
+                          title: "USER",
+                          fontWeight: FontWeight.w400)),
                 ),
                 SizedBox(width: 4),
                 Row(
@@ -89,22 +93,27 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   children: [
                     CaptionText(
                         textColor: AppTheme().gray,
-                        title: "ONLINE", fontWeight: FontWeight.w400),
+                        title: "ONLINE",
+                        fontWeight: FontWeight.w400),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(Icons.circle, color: AppTheme().green,size: 15),
+                      child:
+                          Icon(Icons.circle, color: AppTheme().green, size: 15),
                     ),
                     CaptionText(
                         textColor: AppTheme().gray,
-                        title: "OFFLINE", fontWeight: FontWeight.w400),
+                        title: "OFFLINE",
+                        fontWeight: FontWeight.w400),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(Icons.circle, color: AppTheme().gray,size: 15),
+                      child:
+                          Icon(Icons.circle, color: AppTheme().gray, size: 15),
                     ),
                     CaptionText(
                         textColor: AppTheme().gray,
-                        title: "ONCALL", fontWeight: FontWeight.w400),
-                    Icon(Icons.circle, color: AppTheme().red,size: 15),
+                        title: "ONCALL",
+                        fontWeight: FontWeight.w400),
+                    Icon(Icons.circle, color: AppTheme().red, size: 15),
                   ],
                 ),
               ],
@@ -138,8 +147,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 final shortBioEnd = min(aPoint, bPoint);
                 final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
                 final score = user.upVotes - user.downVotes;
+                log('score.toString');
                 final scoreString = (0 <= score ? '+' : '-') + score.toString();
-                final iconColor = 0 <= score ? Colors.green : Color.fromRGBO(211, 91, 122, 1);
+                final iconColor =
+                    0 <= score ? Colors.green : Color.fromRGBO(211, 91, 122, 1);
                 final iconBase = IconButton(
                   icon: Icon(Icons.change_history, color: iconColor),
                   onPressed: null,
@@ -159,7 +170,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       title: TitleText(title: name),
                       subtitle: Text(shortBio),
                       trailing: Icon(Icons.circle, color: statusColor),
-                      onTap: () => CustomNavigation.push(context, UserPage(uid: user.id),Routes.USER)), // UserPage.show(context, users[ix].id),
+                      onTap: () => CustomNavigation.push(
+                          context,
+                          UserPage(uid: user.id),
+                          Routes
+                              .USER)), // UserPage.show(context, users[ix].id),
                 );
               });
         }
@@ -169,6 +184,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget ratingWidget(score, name) {
+    log('ratingWidget');
     final scoreString = (0 <= score ? '+' : '-') + score.toString();
 
     return Row(

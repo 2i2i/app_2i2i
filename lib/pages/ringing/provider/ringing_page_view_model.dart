@@ -59,7 +59,7 @@ class RingingPageViewModel {
       await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(txId: txId, net: meeting.net);
 
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
   }
 
