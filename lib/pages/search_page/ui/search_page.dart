@@ -42,7 +42,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   isDense: false,
                   fillColor: Colors.grey.shade300,
                   focusColor: Colors.grey.shade300,
-                  hintText: 'Search user6',
+                  hintText: 'Search user',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   enabledBorder: OutlineInputBorder(

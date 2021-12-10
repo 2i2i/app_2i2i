@@ -91,7 +91,7 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
-    // _initBudgetTimer();
+    _initBudgetTimer();
 
     signaling = Signaling(
         meeting: widget.meeting,
