@@ -75,21 +75,23 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             Visibility(
               visible: _displayUri.isNotEmpty,
               child: Center(
-                child: QrImage(data: _displayUri),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: QrImage(data: _displayUri),
+                ),
               ),
             ),
             Visibility(
               visible: _displayUri.isEmpty,
-              child: ListView(
-                children: List.generate(
-                    myAccountPageViewModel.accounts?.length??0,
-                    (index) {
-                      log(F+' accounts ${myAccountPageViewModel.accounts![index].address}');
-                      return AccountInfo(
-                        key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                          account: myAccountPageViewModel.accounts![index],
-                      );
-                    },
+              child: ListView.separated(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                separatorBuilder: (BuildContext context, int index) =>
+                    Divider(),
+                itemBuilder: (BuildContext context, int index) => AccountInfo(
+                  key: ObjectKey(
+                      myAccountPageViewModel.accounts![index].address),
+                  account: myAccountPageViewModel.accounts![index],
                 ),
               ),
             )

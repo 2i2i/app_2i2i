@@ -6,7 +6,6 @@ import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animator/widgets/attention_seekers/bounce.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,20 +97,21 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   alignment: Alignment.center,
                   children: [
                     Ripples(
-                      size: 140,
+                      size: MediaQuery.of(context).size.height * 0.17,
                       color: Colors.green,
                       child: CircleAvatar(
-                          radius: 100,
+                          radius: MediaQuery.of(context).size.height * 0.11,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.asset(
                               'assets/logo.png',
-                              scale: 1,
+                              height: MediaQuery.of(context).size.height * 0.11,
+                              width: MediaQuery.of(context).size.height * 0.11,
                             ),
                           )),
                     ),
                     CircularPercentIndicator(
-                      radius: 230.0,
+                      radius: MediaQuery.of(context).size.height * 0.22,
                       lineWidth: 4.0,
                       animation: true,
                       animationDuration: 30000,
@@ -120,21 +120,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       progressColor: Colors.white,
                       backgroundColor: Colors.blueAccent,
                       animateFromLastPercent: true,
-                    ),
-                    DottedBorder(
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(220),
-                      strokeWidth: 3,
-                      dashPattern: [8],
-                      strokeCap: StrokeCap.butt,
-                      color: Colors.blueAccent,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        child: Container(
-                          height: 222,
-                          width: 222,
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -160,13 +145,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
                 ),
               ),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        FloatingActionButton(
+                child: Container(
+                  width: MediaQuery.of(context).size.height * 0.6,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: FloatingActionButton(
                           child: Icon(Icons.call_end, color: Colors.white),
                           backgroundColor: Color.fromARGB(255, 239, 102, 84),
                           onPressed: () async {
@@ -175,36 +162,31 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             await Future.wait([finishFuture, cancelMeetingFuture]);
                           },
                         ),
-                      ],
-                    ),
-                    Visibility(
-                      visible: !isClicked &&
-                          ringingPageViewModel.amA() &&
-                          ringingPageViewModel.meeting.isInit(),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 150),
-                        child: Column(
-                          children: [
-                            Bounce(
-                              child: FloatingActionButton(
-                                child: Icon(Icons.call, color: Colors.white),
-                                backgroundColor: Colors.green,
-                                onPressed: () async {
-                                  isClicked = true;
-                                  if (mounted) {
-                                    setState(() {});
-                                  }
-                                  final finishFuture = finish();
-                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                  await Future.wait([finishFuture, acceptMeetingFuture]);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    )
-                  ],
+                      Visibility(
+                        visible: !isClicked &&
+                            ringingPageViewModel.amA() &&
+                            ringingPageViewModel.meeting.isInit(),
+                        child: Expanded(
+                          child: Bounce(
+                            child: FloatingActionButton(
+                              child: Icon(Icons.call, color: Colors.white),
+                              backgroundColor: Colors.green,
+                              onPressed: () async {
+                                isClicked = true;
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                                final finishFuture = finish();
+                                final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
+                                await Future.wait([finishFuture, acceptMeetingFuture]);
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               )
             ],

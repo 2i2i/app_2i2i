@@ -17,6 +17,90 @@ class AccountInfo extends ConsumerStatefulWidget {
 }
 
 class _AccountInfoState extends ConsumerState<AccountInfo> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(
+              'Algorand address',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            leading: Icon(
+              Icons.paid,
+              size: 35,
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Container(
+              margin: const EdgeInsets.only(
+                  top: 10, left: 20, right: 20, bottom: 10),
+              color: Color.fromRGBO(223, 239, 223, 1),
+              child: ListTile(
+                title: Text(widget.account.address),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    widget.account is LocalAccount
+                        ? IconButton(
+                            onPressed: () => _showPrivateKey(
+                                context, widget.account as LocalAccount),
+                            icon: Icon(Icons.vpn_key))
+                        : Container(),
+                    IconButton(
+                        onPressed: () async {
+                          final asaId = await _optInToASA(context);
+                          if (asaId == null) return;
+                          CustomDialogs.loader(true, context);
+                          await widget.account.optInToASA(
+                              assetId: asaId, net: AlgorandNet.testnet);
+                          await widget.account.updateBalances();
+                          CustomDialogs.loader(false, context);
+                        },
+                        icon: Icon(Icons.add_circle_outline)),
+                    IconButton(
+                        onPressed: () => Clipboard.setData(
+                            ClipboardData(text: widget.account.address)),
+                        icon: Icon(Icons.copy)),
+                  ],
+                ),
+              )),
+          SizedBox(
+            height: 10,
+          ),
+          ListTile(
+            title: Text(
+              'Balances',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            leading: IconButton(
+                color: Color.fromRGBO(116, 117, 109, 1),
+                iconSize: 35,
+                onPressed: () async {
+                  CustomDialogs.loader(true, context);
+                  await widget.account.updateBalances();
+                  CustomDialogs.loader(false, context);
+                  setState(() {});
+                },
+                icon: Icon(Icons.replay_circle_filled)),
+          ),
+          SizedBox(
+            height: 10,
+            child: Divider(),
+          ),
+          balancesList(widget.account.balances),
+          SizedBox(
+            height: 8,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
         shrinkWrap: true,
@@ -29,96 +113,13 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
           final assetAmount = balances[ix].assetHolding.amount;
           final net = balances[ix].net;
           return Container(
-              margin: const EdgeInsets.only(
-                  top: 10, left: 20, right: 20, bottom: 10),
+              margin: EdgeInsets.symmetric(horizontal: 20,vertical: 8),
               color: Color.fromRGBO(197, 234, 197, 1),
               child: ListTile(
+                leading: Image.asset('assets/dollar.png',height: 25,width: 25,),
                 title: Text('$assetName - $assetAmount - $net'),
               ));
         });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        ListTile(
-          title: Text(
-            'Algorand address',
-            style: Theme.of(context).textTheme.headline6,
-          ),
-          leading: Icon(
-            Icons.paid,
-            size: 35,
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-            margin:
-                const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-            color: Color.fromRGBO(223, 239, 223, 1),
-            child: ListTile(
-              title: Text(widget.account.address),
-              trailing:
-                  Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  widget.account is LocalAccount
-                      ? IconButton(
-                          onPressed: () => _showPrivateKey(
-                              context, widget.account as LocalAccount),
-                          icon: Icon(Icons.vpn_key))
-                      : Container(),
-                  IconButton(
-                      onPressed: () async {
-                        final asaId = await _optInToASA(context);
-                        if (asaId == null) return;
-                        CustomDialogs.loader(true, context);
-                        await widget.account.optInToASA(
-                            assetId: asaId, net: AlgorandNet.testnet);
-                        CustomDialogs.loader(false, context);
-                      },
-                      icon: Icon(Icons.add_circle_outline)),
-                  IconButton(
-                      onPressed: () => Clipboard.setData(
-                          ClipboardData(text: widget.account.address)),
-                      icon: Icon(Icons.copy)),
-                ],
-              ),
-            )),
-        SizedBox(
-          height: 50,
-        ),
-        ListTile(
-          title: Text(
-            'Balances',
-            style: Theme.of(context).textTheme.headline6,
-          ),
-          leading: IconButton(
-              color: Color.fromRGBO(116, 117, 109, 1),
-              iconSize: 35,
-              onPressed: () async {
-                CustomDialogs.loader(true, context);
-                await widget.account.updateBalances();
-                CustomDialogs.loader(false, context);
-                setState(() {});
-              },
-              icon: Icon(Icons.replay_circle_filled)),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        balancesList(widget.account.balances),
-        SizedBox(
-          height: 20,
-        ),
-      ],
-    );
   }
 
   Future _showPrivateKey(BuildContext context, LocalAccount account) async {
