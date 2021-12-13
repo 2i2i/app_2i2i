@@ -1,6 +1,7 @@
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,6 +61,13 @@ class UserBidsList extends ConsumerWidget {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData) {
               Bid bid = snapshot.data;
+
+              var bidPrivate = ref.watch(bidPrivateProvider(bid.id)) ;
+              if(bidPrivate is AsyncLoading){
+                return Container();
+              }
+              print(bidPrivate);
+
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
               final String assetIDString =
@@ -68,9 +76,7 @@ class UserBidsList extends ConsumerWidget {
                   ? Color.fromRGBO(223, 239, 223, 1)
                   : Color.fromRGBO(197, 234, 197, 1);
 
-              return (userModelPrivate.blocked.contains(bid.A))
-                  ? Container()
-                  : Card(
+              return Card(
                       color: color,
                       child: ListTile(
                         leading: leading,

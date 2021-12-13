@@ -107,13 +107,19 @@ class FirestoreDatabase {
   Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.userPrivate(uid),
-        builder: (data, documentId) => UserModelPrivate.fromMap(data, documentId),
+        builder: (data, documentId) =>
+            UserModelPrivate.fromMap(data, documentId),
+      );
+
+  Stream<BidPrivate> bidPrivateStream({required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidPrivate(bidId),
+        builder: (data, documentId) => BidPrivate.fromMap(data, documentId),
       );
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {
     // log(H + 'FirestoreDatabase - usersStream - tags=$tags');
-    return _service
-        .collectionStream(
+    return _service.collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
         try {

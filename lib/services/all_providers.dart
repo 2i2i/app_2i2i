@@ -2,6 +2,7 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -59,6 +60,12 @@ final userPrivateProvider =
   final database = ref.watch(databaseProvider);
   // log('userPrivateProvider - database=$database');
   return database.userPrivateStream(uid: uid);
+});
+
+final bidPrivateProvider =
+    StreamProvider.autoDispose.family<BidPrivate, String>((ref, bidId) {
+  final database = ref.watch(databaseProvider);
+  return database.bidPrivateStream(bidId: bidId);
 });
 
 final userPageViewModelProvider =
