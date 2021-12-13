@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -79,6 +81,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     final ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
     if (ringingPageViewModel == null) return WaitPage();
     log(F + 'RingingPage - scaffold');
+    print(ringingPageViewModel);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -134,13 +137,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       style: Theme.of(context).textTheme.caption,
                     ),
                     SizedBox(height: 10),
-                    Text(
-                       ringingPageViewModel.otherUser.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ),
+                    HeadLineSixText(
+                      title: ringingPageViewModel.otherUser.name,
+                      fontWeight: FontWeight.w600,
+                    )
                   ],
                 ),
               ),
@@ -164,9 +164,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         ),
                       ),
                       Visibility(
-                        visible: !isClicked &&
-                            ringingPageViewModel.amA() &&
-                            ringingPageViewModel.meeting.isInit(),
+                        visible: !isClicked && ringingPageViewModel.amA() && ringingPageViewModel.meeting.isInit(),
                         child: Expanded(
                           child: Bounce(
                             child: FloatingActionButton(
@@ -195,4 +193,5 @@ class RingingPageState extends ConsumerState<RingingPage> {
       ),
     );
   }
+
 }
