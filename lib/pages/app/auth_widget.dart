@@ -4,17 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthWidget extends ConsumerWidget {
-  AuthWidget({required this.homePageBuilder, required this.setupPageBuilder});
+  AuthWidget({required this.homePageBuilder});
 
   final WidgetBuilder homePageBuilder;
-  final WidgetBuilder setupPageBuilder;
 
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final authStateChanges = ref.watch(authStateChangesProvider);
-
     return authStateChanges.when(data: (user) {
       if (user == null) {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
@@ -27,11 +24,7 @@ class AuthWidget extends ConsumerWidget {
         // return setupPageBuilder(context);
       }
 
-      final signUpViewModel = ref.read(setupUserViewModelProvider);
-      if (!signUpViewModel.signUpInProcess) {
-        return homePageBuilder(context);
-      }
-      return setupPageBuilder(context);
+      return homePageBuilder(context);
     }, loading: () {
       return  WaitPage();
     }, error: (_, __) {

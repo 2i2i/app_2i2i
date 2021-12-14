@@ -24,18 +24,20 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         itemBuilder: (_, ix) {
           final assetId = balances[ix].assetHolding.assetId;
           final assetName = assetId == 0
-              ? 'ALGO'
-              : balances[ix].assetHolding.assetId.toString();
-          final assetAmount = balances[ix].assetHolding.amount;
-          final net = balances[ix].net;
-          return Container(
-              margin: const EdgeInsets.only(
-                  top: 10, left: 20, right: 20, bottom: 10),
-              color: Color.fromRGBO(197, 234, 197, 1),
-              child: ListTile(
-                title: Text('$assetName - $assetAmount - $net'),
-              ));
-        });
+            ? 'ALGO'
+            : balances[ix].assetHolding.assetId.toString();
+        final assetAmount = balances[ix].assetHolding.amount;
+        final net = balances[ix].net;
+        return Container(
+          margin: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+          // color: Color.fromRGBO(197, 234, 197, 1),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          child: ListTile(
+            title: Text('$assetName - $assetAmount - $net'),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -46,10 +48,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
           height: 20,
         ),
         ListTile(
-          title: Text(
-            'Algorand address',
-            style: Theme.of(context).textTheme.headline6,
-          ),
+          title: Text('Algorand address'),
           leading: Icon(
             Icons.paid,
             size: 35,
@@ -61,7 +60,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         Container(
             margin:
                 const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-            color: Color.fromRGBO(223, 239, 223, 1),
+            // color: Color.fromRGBO(223, 239, 223, 1),
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
             child: ListTile(
               title: Text(widget.account.address),
               trailing:
@@ -97,10 +97,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         ListTile(
           title: Text(
             'Balances',
-            style: Theme.of(context).textTheme.headline6,
           ),
           leading: IconButton(
-              color: Color.fromRGBO(116, 117, 109, 1),
+              // color: Color.fromRGBO(116, 117, 109, 1),
               iconSize: 35,
               onPressed: () async {
                 CustomDialogs.loader(true, context);
@@ -108,7 +107,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 CustomDialogs.loader(false, context);
                 setState(() {});
               },
-              icon: Icon(Icons.replay_circle_filled)),
+              icon: Icon(Icons.replay_circle_filled),
+          ),
         ),
         SizedBox(
           height: 20,

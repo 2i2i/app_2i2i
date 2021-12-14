@@ -1,6 +1,10 @@
 class Strings {
   static final Strings _singleton = Strings._internal();
 
+  String aboutYou = 'About you';
+
+  String aboutYouDesc = 'Fill below form to communicate with cool people';
+
   Strings._internal();
 
   factory Strings() {
@@ -40,7 +44,6 @@ class Strings {
    String topAppBarTitle = '2i2i';
 
    //SetUp User page
-
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
   String yourNameHint = 'My cool username';
   String writeYourBio = 'Write your bio';
@@ -48,16 +51,14 @@ class Strings {
   String bioExample = 'e.g: I love #cooking and #design';
   String save = 'Save';
   String required = 'Required';
-  String aboutYou = 'About you';
 
-  String aboutYouDesc = 'Fill below form to communicate with cool people';
-
-
-  //App Rating
+   //App Rating
   String appRatingTitle = 'Did you like this meeting?';
   String appRatingMessage = 'Write your feedback to this meeting.';
   String appRatingSubmitButton= 'Submit';
 
-
+  //App Setting
+  String selectNetworkMode = 'Select Network Mode:';
+  String themeMode = 'Color Scheme:';
 
 }

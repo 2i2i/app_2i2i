@@ -1,8 +1,11 @@
-import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'widgets/mode_widgets.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
@@ -14,6 +17,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
 
   List<String> networkList = ["Main", "Test", "Both"];
 
+  int selectedRadio = 0;
+  int selectedRadioTile = 0;
+
   @override
   void initState() {
     getMode();
@@ -21,9 +27,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
   }
 
   Future<void> getMode() async {
-    String? mode =
-        await ref.read(algorandProvider).getNetworkMode();
-    int itemIndex = networkList.indexWhere((element) => element == mode);
+    String? networkMode = await ref.read(algorandProvider).getNetworkMode();
+    int itemIndex = networkList.indexWhere((element) => element == networkMode);
     if (itemIndex < 0) {
       itemIndex = 0;
     }
@@ -35,22 +40,67 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
   @override
   Widget build(BuildContext context) {
     var algorand = ref.watch(algorandProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
     return Scaffold(
-      appBar: CustomAppbar(
-        title: "App Settings",
+      appBar: AppBar(
+        title: Text('App Settings'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 15),
-            Text('Select Network Mode:',
+            Text(Strings().themeMode,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1!
                     .copyWith(fontWeight: FontWeight.bold)),
-            SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ModeWidgets(
+                      isDarkMode: false,
+                      isSelected: appSettingModel.currentThemeMode == ThemeMode.light,
+                      onTap: () {
+                        appSettingModel.setThemeMode("LIGHT");
+                      }),
+                  ModeWidgets(
+                    isDarkMode: true,
+                    isSelected: appSettingModel.currentThemeMode == ThemeMode.dark,
+                    onTap: () {
+                      appSettingModel.setThemeMode("DARK");
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: Colors.transparent),
+            ListTile(
+              title: Text('Automatic'),
+              trailing: Transform.scale(
+                  scale: 0.7,
+                  child: CupertinoSwitch(
+                    value: appSettingModel.isAutoModeEnable,
+                    onChanged: (value) async {
+                      String mode = await appSettingModel.getThemeMode()??"";
+                      appSettingModel.setThemeMode(value ? "AUTO" : mode);
+                    },
+                    activeColor: Theme.of(context).iconTheme.color,
+                    thumbColor: Theme.of(context).scaffoldBackgroundColor,
+                  )),
+            ),
+            Divider(),
+            SizedBox(height: 8),
+            Text(Strings().selectNetworkMode,
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle1!
+                    .copyWith(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
             Card(
               elevation: 4,
               child: Padding(
@@ -78,16 +128,24 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                         _value = value!;
                       });
                       log('setNetworkMode');
-                      await algorand.setNetworkMode(networkList[_value].toString());
+                      await algorand
+                          .setNetworkMode(networkList[_value].toString());
                     },
                   ),
                 ),
               ),
             ),
-            Divider()
+            Divider(),
+            SizedBox(height: 8),
           ],
         ),
       ),
     );
+  }
+
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+    });
   }
 }

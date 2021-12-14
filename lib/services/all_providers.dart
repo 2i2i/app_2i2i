@@ -6,6 +6,7 @@ import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
+import 'package:app_2i2i/pages/app_settings/ui/provider/app_setting_model.dart';
 import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
 import 'package:app_2i2i/pages/locked_user/ui/lock_watch_widget.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
@@ -125,6 +126,12 @@ final algorandProvider = Provider((ref) {
       functions: functions,
       accountService: accountService,
       algorandLib: algorandLib);
+});
+
+final appSettingProvider =
+    ChangeNotifierProvider<AppSettingModel>((ref) {
+  final storage = ref.watch(storageProvider);
+  return AppSettingModel(storage: storage);
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());

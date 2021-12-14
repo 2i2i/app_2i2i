@@ -1,6 +1,3 @@
-
-import 'package:app_2i2i/common/text_utils.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -59,14 +56,15 @@ class CustomDialogs {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HeadLineSixText(
-            title: Strings().appRatingTitle,
-            fontWeight: FontWeight.w800,
+          Text(
+            Strings().appRatingTitle,
+            style: Theme.of(context).textTheme.headline4,
           ),
           SizedBox(height: 5),
-          BodyTwoText(
-              title: Strings().appRatingMessage,
-              textColor: AppTheme().hintColor),
+          Text(
+            Strings().appRatingMessage,
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
         ],
       ),
       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -76,18 +74,11 @@ class CustomDialogs {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: ButtonText(
-              title: Strings().cancel,
-              textAlign: TextAlign.center,
-              fontWeight: FontWeight.w600),
+          child: Text(Strings().cancel, style: Theme.of(context).textTheme.button),
         ),
         TextButton(
           onPressed: () {},
-          child: ButtonText(
-              title: Strings().appRatingSubmitButton,
-              textAlign: TextAlign.center,
-              textColor: AppTheme().brightBlue,
-              fontWeight: FontWeight.w600),
+          child: Text(Strings().appRatingSubmitButton,style: Theme.of(context).textTheme.button),
         )
       ],
       content: Container(
