@@ -14,23 +14,25 @@ class FAQ extends StatelessWidget {
   const FAQ({
     Key? key,
     required this.data,
-    required this.backgroundColor,
+    required this.backgroundColor, required this.index,
   }) : super(key: key);
   final FAQData data;
   final Color backgroundColor;
+  final int index;
 
   // final GlobalKey<ExpansionTileCardState> key = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    Color bg = index %2 ==0?Theme.of(context).primaryColor.withOpacity(0.5):Theme.of(context).primaryColor.withOpacity(0.2);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
         child: ExpansionTileCard(
           key: key,
           leading: Icon(Icons.label_important),
           title: Text(data.title),
-          baseColor: backgroundColor,
-          expandedTextColor: Color.fromRGBO(100, 34, 84, 1),
+          baseColor: bg,
+          expandedTextColor: Theme.of(context).primaryColor,
           children: <Widget>[
             Divider(
               thickness: 1.0,

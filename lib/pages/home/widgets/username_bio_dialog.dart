@@ -1,4 +1,4 @@
-import 'package:app_2i2i/common/strings.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
@@ -77,9 +77,6 @@ class _SetupBioState extends ConsumerState<SetupBio> {
           Visibility(
             visible: widget.user.name.isNotEmpty,
             child: TextButton(
-              style:TextButton.styleFrom(
-                  primary: Theme.of(context).hintColor
-              ),
               onPressed: () {
                 Navigator.of(context).maybePop();
               },

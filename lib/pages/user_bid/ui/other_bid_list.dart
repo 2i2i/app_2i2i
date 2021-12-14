@@ -1,4 +1,3 @@
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
@@ -23,7 +22,8 @@ class OtherBidList extends ConsumerWidget {
     // TODO add sorting
     if (user.bidsIn.isEmpty)
       return Center(
-        child: BodyTwoText(title: 'No bid for user'),
+        child: Text('No bid for user',
+            style: Theme.of(context).textTheme.bodyText2),
       );
 
     return Column(
@@ -33,10 +33,10 @@ class OtherBidList extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 20, left: 25),
             child: Row(
               children: [
-                HeadLineSixText(
-                    title: 'OTHER BIDS FOR ', textColor: AppTheme().deepPurple),
-                HeadLineSixText(
-                    title: '${user.name}', textColor: AppTheme().black),
+                Text('OTHER BIDS FOR ',
+                    style: Theme.of(context).textTheme.headline6),
+                Text('${user.name}',
+                    style: Theme.of(context).textTheme.headline6),
               ],
             )),
         Expanded(
@@ -84,13 +84,12 @@ class OtherBidList extends ConsumerWidget {
                   color: color,
                   child: ListTile(
                     leading: Icon(Icons.circle, color: AppTheme().gray),
-                    title: BodyTwoText(title: '$num'),
-                    subtitle: BodyTwoText(
-                      title: '[$assetIDString/sec]',
-                      textColor: AppTheme().brightBlue,
-                    ),
+                    title: Text('$num',
+                        style: Theme.of(context).textTheme.bodyText1),
+                    subtitle: Text('[$assetIDString/sec]',
+                        style: Theme.of(context).textTheme.bodyText2),
                     trailing: Visibility(
-                      visible:isItCurrentUserBid,
+                      visible: isItCurrentUserBid,
                       child: Tooltip(
                         message: "Cancel Bid",
                         child: IconButton(

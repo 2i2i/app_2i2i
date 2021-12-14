@@ -1,6 +1,5 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/account/ui/account_info.dart';
@@ -61,9 +60,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
 
     return Scaffold(
-        appBar: CustomAppbar(
-          title: "My Account",
-          hideLeading: true,
+        appBar: AppBar(
+          title: Text("My Account"),
         ),
         body: Stack(
           fit: StackFit.expand,

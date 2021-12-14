@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/theme.dart';
@@ -15,7 +14,6 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../common/text_utils.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({required this.uid});
@@ -57,21 +55,21 @@ class _UserPageState extends ConsumerState<UserPage> {
     if (userModel!.locked) statusColor = AppTheme().red;
 
     return Scaffold(
-      appBar: CustomAppbar(
+      appBar: AppBar(
+        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
         actions: (authStateChanges.data!.value!.uid != userModel!.id)
             ? [
-                IconButton(
-                    onPressed: () {}, // TODO
-                    // async {
-                    //   await myUserPageViewModel.setUserPrivate(
-                    //       context: context,
-                    //       uid: widget.uid,
-                    //       userPrivate: UserModelPrivate(friends: [widget.uid]));
-                    // },
-                    icon: Icon(Icons.favorite_border_rounded,
-                        color: AppTheme().black)),
-                SizedBox(width: 6)
-              ]
+          IconButton(
+              onPressed: () {}, // TODO
+              // async {
+              //   await myUserPageViewModel.setUserPrivate(
+              //       context: context,
+              //       uid: widget.uid,
+              //       userPrivate: UserModelPrivate(friends: [widget.uid]));
+              // },
+              icon: Icon(Icons.favorite_border_rounded)),
+          SizedBox(width: 6)
+        ]
             : null,
       ),
       bottomNavigationBar: Padding(
@@ -81,24 +79,23 @@ class _UserPageState extends ConsumerState<UserPage> {
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CaptionText(
-                      maxLine: 1,
-                      title: isPresent
+                  Text(
+                      isPresent
                           ? "Your already bid this user, First cancel bid"
                           : "Do you want to bid for ${userModel!.name}",
-                      textColor: Theme.of(context).hintColor),
+                      style: Theme.of(context).textTheme.caption),
                   SizedBox(height: 12),
                   Visibility(
                     visible: !isPresent,
                     child: ElevatedButton(
-                      style: ButtonStyle(
+                      /*style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               AppTheme().buttonBackground),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4.0),
-                          ))),
+                          ))),*/
                       onPressed: () {
                         if (!isPresent) {
                           CustomNavigation.push(
@@ -111,10 +108,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: ButtonText(
-                            textAlign: TextAlign.center,
-                            title: "ADD BID",
-                            textColor: AppTheme().black),
+                        title: Text("ADD BID",textAlign: TextAlign.center,),
                       ),
                     ),
                   )
@@ -133,11 +127,8 @@ class _UserPageState extends ConsumerState<UserPage> {
             child: ListTile(
               trailing: Icon(Icons.circle, color: statusColor),
               leading: ratingWidget(score, userModel!.name, context),
-              title: TitleText(title: userModel!.name, maxLine: 1),
-              subtitle: CaptionText(
-                  title: shortBio.toString().trim(),
-                  textColor: AppTheme().hintColor,
-                  maxLine: 1),
+              title: Text(userModel!.name),
+              subtitle: Text(shortBio.toString().trim()),
               // UserPage.show(context, users[ix].id),
             ),
           ),

@@ -1,5 +1,4 @@
 import 'package:app_2i2i/common/custom_navigation.dart';
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
@@ -17,19 +16,22 @@ class NotificationWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: ListTile(
-          onTap: () => CustomNavigation.push(context, MyUserPage(),Routes.MY_USER),
+          onTap: () =>
+              CustomNavigation.push(context, MyUserPage(), Routes.MY_USER),
           leading: Image.asset('assets/logo.png', height: 80, width: 80),
-          title: HeadLineSixText(
-              title: "You got new bid now!", textColor: AppTheme().brightBlue),
+          title: Text(
+            "You got new bid now!"
+          ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Row(
               children: [
                 ElevatedButton(
-                  onPressed: () => CustomNavigation.push(context, MyUserPage(),Routes.MY_USER),
-                  child: ButtonText(
-                    title: "View Bid",
-                    textColor: AppTheme().black,
+                  onPressed: () => CustomNavigation.push(
+                      context, MyUserPage(), Routes.MY_USER),
+                  child: Text(
+                    "View Bid",
+                    style: Theme.of(context).textTheme.button,
                   ),
                 ),
               ],

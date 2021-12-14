@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
-import 'package:app_2i2i/common/text_utils.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -34,9 +31,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
     return myUserPageViewModel == null
         ? WaitPage()
         : Scaffold(
-            appBar: CustomAppbar(
-              title: myUserPageViewModel.user.name,
-              hideLeading: true,
+            appBar: AppBar(
+              title: Text(myUserPageViewModel.user.name),
             ),
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
@@ -67,16 +63,18 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                   );
                 },
                 icon: Icon(Icons.edit),
-                label: Text('Edit Name and Bio'))),
+                label: Text('Edit Name and Bio'),
+            ),
+        ),
         Divider(),
         Expanded(
             child: Row(
           children: [
             Expanded(
                 child: UserBidsList(
-              bidsIds: myUserPageViewModel.user.bidsIn,
-              titleWidget: HeadLineSixText(
-                  title: 'Bids In', textColor: AppTheme().deepPurple),
+                  bidsIds: myUserPageViewModel.user.bidsIn,
+              titleWidget:
+                  Text('Bids In', style: Theme.of(context).textTheme.headline6),
               noBidsText: 'no bids in for user',
               leading: Icon(
                 Icons.label_important,
@@ -104,8 +102,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> {
                     data: (UserModelPrivate userPrivate) {
               return UserBidsList(
                 bidsIds: userPrivate.bidsOut.map((b) => b.bid).toList(),
-                titleWidget: HeadLineSixText(
-                    title: 'Bids Out', textColor: AppTheme().deepPurple),
+                titleWidget: Text('Bids Out',
+                    style: Theme.of(context).textTheme.headline6),
                 noBidsText: 'no bids out for user',
                 // onTap: myUserPageViewModel.cancelBid
                 leading: Transform.rotate(

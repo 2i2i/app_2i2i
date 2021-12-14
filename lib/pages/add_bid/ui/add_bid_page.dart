@@ -1,8 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
@@ -39,8 +37,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
     if (addBidPageViewModel.submitting) return WaitPage();
 
     return Scaffold(
-      appBar: CustomAppbar(
-        title: 'Add bid for ${addBidPageViewModel.user.name}',
+      appBar: AppBar(
+        title: Text('Add bid for ${addBidPageViewModel.user.name}'),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -49,15 +47,17 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        speedNum == 0
-                            ? AppTheme().buttonBackground
-                            : Theme.of(context).disabledColor),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
+                /*style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      speedNum == 0
+                          ? AppTheme().buttonBackground
+                          : Theme.of(context).disabledColor),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
-                    ))),
+                    ),
+                  ),
+                ),*/
                 onPressed: speedNum == 0 && !addBidPageViewModel.submitting
                     ? () async {
                         await connectCall(
@@ -66,8 +66,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     : null,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: ButtonText(
-                      title: "Free Call", textColor: AppTheme().black),
+                  title: Text("Free Call",
+                      style: Theme.of(context).textTheme.button),
                   trailing: Icon(Icons.call, color: AppTheme().black),
                 ),
               ),
@@ -111,8 +111,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     : null,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: ButtonText(
-                      title: "Bid Call", textColor: AppTheme().white),
+                  title: Text("Bid Call",
+                      style: Theme.of(context).textTheme.button),
                   trailing: Icon(Icons.monetization_on_outlined,
                       color: AppTheme().white),
                 ),
@@ -134,8 +134,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
               decoration: InputDecoration(
                 hintText: 'How many coin/sec? (in base units, e.g. microAlgo)',
                 border: OutlineInputBorder(),
-                label: BodyOneText(
-                    title: 'Speed', textColor: AppTheme().hintColor),
+                label:
+                    Text('Speed', style: Theme.of(context).textTheme.bodyText1),
               ),
               onChanged: (value) {
                 setState(() {
@@ -147,9 +147,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
               visible: speedNum == 0,
               child: Container(
                 padding: EdgeInsets.only(top: 8),
-                child: CaptionText(
-                    title: 'Note: For Bid Call speed should greater than 0',
-                    textColor: AppTheme().hintColor),
+                child: Text('Note: For Bid Call speed should greater than 0',
+                    style: Theme.of(context).textTheme.caption),
               ),
             ),
             accountWidget(addBidPageViewModel),
@@ -168,8 +167,9 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 12),
-          TitleText(
-            title: "Accounts: ",
+          Text(
+            "Accounts: ",
+            style: Theme.of(context).textTheme.subtitle1,
           ),
           SizedBox(height: 6),
           Card(
@@ -181,7 +181,10 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                   focusColor: Colors.transparent,
                   borderRadius: BorderRadius.circular(5),
                   underline: Container(),
-                  hint: BodyTwoText(title: "Select Account"),
+                  hint: Text(
+                    "Select Account",
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
                   onChanged: (AbstractAccount? newAccount) {
                     setState(() {
                       if (newAccount != null && account != newAccount) {
@@ -196,10 +199,10 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         i < addBidPageViewModel.accounts.length;
                         i++)
                       DropdownMenuItem<AbstractAccount>(
-                        child: BodyOneText(
-                            title: addBidPageViewModel.accounts[i].address
+                        child: Text(
+                            addBidPageViewModel.accounts[i].address
                                 .substring(0, 4),
-                            textColor: AppTheme().brightBlue),
+                            style: Theme.of(context).textTheme.bodyText1),
                         value: addBidPageViewModel.accounts[i],
                       )
                   ],
@@ -218,7 +221,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 12),
-              TitleText(title: "Assets: "),
+              Text("Assets: ", style: Theme.of(context).textTheme.subtitle1),
               SizedBox(height: 6),
               Card(
                 elevation: 6,
@@ -229,7 +232,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     focusColor: Colors.transparent,
                     borderRadius: BorderRadius.circular(5),
                     underline: Container(),
-                    hint: BodyTwoText(title: "Select Asset"),
+                    hint: Text("Select Asset",
+                        style: Theme.of(context).textTheme.bodyText2),
                     onChanged: (Balance? newBalance) {
                       setState(() {
                         balance = newBalance;
@@ -239,18 +243,18 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     items: [
                       for (var i = 0; i < account!.balances.length; i++)
                         DropdownMenuItem<Balance>(
-                          child: BodyOneText(
-                              title: (account!.balances[i].assetHolding.assetId == 0
-                                  ? 'ALGO'
-                                  : account!.balances[i].assetHolding.assetId
+                          child: Text(
+                              (account!.balances[i].assetHolding.assetId == 0
+                                      ? 'ALGO'
+                                      : account!
+                                          .balances[i].assetHolding.assetId
                                           .toString()) +
-                                      ' - ' +
-                                      account!.balances[i].assetHolding.amount
-                                          .toString() +
-                                      ' - ' +
-                                      account!.balances[i].net.toString(),
-                              textColor: AppTheme().brightBlue
-                          ),
+                                  ' - ' +
+                                  account!.balances[i].assetHolding.amount
+                                      .toString() +
+                                  ' - ' +
+                                  account!.balances[i].net.toString(),
+                              style: Theme.of(context).textTheme.bodyText1),
                           value: account!.balances[i],
                         )
                     ],
@@ -270,13 +274,13 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 12),
-          TitleText(title: 'Budget: '),
+          Text('Budget: ', style: Theme.of(context).textTheme.subtitle1),
           SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                BodyOneText(title: "0"),
+                Text("0", style: Theme.of(context).textTheme.bodyText1),
                 Expanded(
                   child: SliderTheme(
                     data: SliderThemeData(
@@ -295,21 +299,21 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         }),
                   ),
                 ),
-                BodyOneText(title: "100"),
+                Text("100", style: Theme.of(context).textTheme.bodyText1),
               ],
             ),
           ),
           SizedBox(height: 6),
           Row(
             children: [
-              TitleText(title: 'Max duration: '),
-              TitleText(
-                textColor: AppTheme().brightBlue,
-                title: (account == null
-                    ? 'select account'
-                    : addBidPageViewModel.duration(
-                        account!, speedNum, balance!, budgetPercentage)),
-              ),
+              Text('Max duration: ',
+                  style: Theme.of(context).textTheme.subtitle1),
+              Text(
+                  account == null
+                      ? 'select account'
+                      : addBidPageViewModel.duration(
+                          account!, speedNum, balance!, budgetPercentage),
+                  style: Theme.of(context).textTheme.subtitle1),
             ],
           ),
           Divider()

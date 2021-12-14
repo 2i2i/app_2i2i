@@ -78,7 +78,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       onWillPop: () async =>
           !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
         body: Stack(
           children: _tabItems
               .asMap()
@@ -96,30 +95,34 @@ class _HomePageState extends ConsumerState<HomePage> {
               showSelectedLabels: false,
               showUnselectedLabels: false,
               currentIndex: _tabSelectedIndex,
-              unselectedItemColor: AppTheme().black,
               selectedItemColor: AppTheme().secondary,
               onTap: (i) => _onTap(i),
               items: [
                 BottomNavigationBarItem(
                     label: "",
                     icon: Icon(Icons.search_rounded),
-                    tooltip: 'Search'),
+                    tooltip: 'Search',
+                ),
                 BottomNavigationBarItem(
                     label: "",
                     icon: Icon(Icons.person_outlined),
-                    tooltip: 'Profile'),
+                    tooltip: 'Profile',
+                ),
                 BottomNavigationBarItem(
                     label: "",
                     icon: Icon(Icons.attach_money_rounded),
-                    tooltip: 'Account'),
+                    tooltip: 'Account',
+                ),
                 BottomNavigationBarItem(
                     label: "",
                     icon: Icon(Icons.help_outline_rounded),
-                    tooltip: 'FAQ'),
+                    tooltip: 'FAQ',
+                ),
                 BottomNavigationBarItem(
                     label: "",
                     icon: Icon(Icons.qr_code_2_rounded),
-                    tooltip: 'QR Code'),
+                    tooltip: 'QR Code',
+                ),
               ],
             ),
           ),

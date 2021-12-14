@@ -1,8 +1,6 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
@@ -24,43 +22,41 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: CustomAppbar(
+      appBar: AppBar(
+          title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
           leading: IconButton(
-        onPressed: () =>
-            CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
-        icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
-      )),
+            onPressed: () => CustomNavigation.push(
+                context, AppSettingPage(), Routes.AppSetting),
+            icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
+          )),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              cursorColor: AppTheme().gray,
+              cursorColor: Theme.of(context).primaryColor,
               decoration: InputDecoration(
                   filled: true,
                   isDense: false,
-                  fillColor: Colors.grey.shade300,
-                  focusColor: Colors.grey.shade300,
+                  // fillColor: Colors.grey.shade300,
+                  // focusColor: Colors.grey.shade300,
                   hintText: 'Search user',
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
+                    borderSide: BorderSide(color: Theme.of(context).disabledColor, width: 1),
                     borderRadius: BorderRadius.circular(3.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
+                    borderSide: BorderSide(color: Theme.of(context).disabledColor, width: 1),
                     borderRadius: BorderRadius.circular(3.0),
                   ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.6), width: 1),
+                        color: Theme.of(context).disabledColor, width: 1),
                     borderRadius: BorderRadius.circular(3.0),
                   ),
-                  prefixIcon: Icon(Icons.search)),
+                  prefixIcon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+              ),
               onSubmitted: (value) {
                 value = value.trim();
                 ref.watch(searchFilterProvider).state =
@@ -114,7 +110,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
                   child: ListTile(
                       leading: ratingWidget(score, name),
-                      title: TitleText(title: name),
+                      title: Text(name),
                       subtitle: Text(shortBio),
                       trailing: Icon(Icons.circle, color: statusColor),
                       onTap: () => CustomNavigation.push(
@@ -155,8 +151,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           width: 40,
           child: Center(
               child: Text("${name.toString().isNotEmpty ? name : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase())),
+                  .substring(0, 1).toUpperCase(),style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                color: AppTheme().black
+              ),)),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color.fromRGBO(214, 219, 134, 1),

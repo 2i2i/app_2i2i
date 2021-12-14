@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
@@ -42,13 +41,15 @@ class QRCodePage extends ConsumerWidget {
           painter: QrPainter(
             data: message,
             version: QrVersions.auto,
-            eyeStyle: const QrEyeStyle(
+            eyeStyle:  QrEyeStyle(
               eyeShape: QrEyeShape.circle,
-              color: Color.fromRGBO(0, 171, 107, 1),
+              // color: Color.fromRGBO(0, 171, 107, 1),
+              color: Theme.of(context).primaryColor,
             ),
-            dataModuleStyle: const QrDataModuleStyle(
+            dataModuleStyle:  QrDataModuleStyle(
               dataModuleShape: QrDataModuleShape.circle,
-              color: Color.fromRGBO(0, 171, 107, 1),
+              // color: Color.fromRGBO(0, 171, 107, 1),
+              color: Theme.of(context).primaryColor,
             ),
             // size: 320.0,
             embeddedImage: snapshot.data,
@@ -60,9 +61,8 @@ class QRCodePage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: CustomAppbar(
-        title: "QR Code",
-        hideLeading: true,
+      appBar: AppBar(
+        title: Text('QR Code'),
       ),
       body: Center(child: qrFutureBuilder),
     );
