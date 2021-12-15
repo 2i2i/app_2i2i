@@ -117,13 +117,10 @@ class _UserPageState extends ConsumerState<UserPage> {
       ),
       body: Column(
         children: [
-          Container(
+          Card(
+            elevation: 4,
             margin:
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-            decoration: BoxDecoration(
-                border:
-                    Border.all(color: Colors.grey.withOpacity(0.6), width: 1.5),
-                borderRadius: BorderRadius.circular(5)),
             child: ListTile(
               trailing: Icon(Icons.circle, color: statusColor),
               leading: ratingWidget(score, userModel!.name, context),

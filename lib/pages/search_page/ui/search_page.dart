@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
+import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
@@ -35,6 +37,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               cursorColor: Theme.of(context).primaryColor,
+              cursorHeight: 18,
               decoration: InputDecoration(
                   filled: true,
                   isDense: false,
@@ -146,19 +149,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           ],
         ),
         SizedBox(width: 10),
-        Container(
-          height: 40,
-          width: 40,
-          child: Center(
-              child: Text("${name.toString().isNotEmpty ? name : "X"}"
-                  .substring(0, 1).toUpperCase(),style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                color: AppTheme().black
-              ),)),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.fromRGBO(214, 219, 134, 1),
-          ),
-        )
+        CustomImageProfileView(text: name)
       ],
     );
   }

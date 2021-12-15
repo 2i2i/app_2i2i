@@ -34,19 +34,7 @@ class UserBidsList extends ConsumerWidget {
     log('UserBids - bidsIds=$bidsIds');
     log('UserBids - bidsIds.length=${bidsIds.length}');
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-            padding: const EdgeInsets.only(top: 20, left: 25),
-            child: titleWidget),
-        Expanded(
-            child: Container(
-                padding: const EdgeInsets.only(
-                    top: 10, left: 20, right: 20, bottom: 10),
-                child: _bidsListView(ref, context))),
-      ],
-    );
+    return _bidsListView(ref, context);
   }
 
   ListView _bidsListView(WidgetRef ref, BuildContext context) {
