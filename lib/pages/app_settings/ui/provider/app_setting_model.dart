@@ -1,6 +1,5 @@
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class AppSettingModel extends ChangeNotifier {
   final SecureStorage storage;
@@ -25,7 +24,7 @@ class AppSettingModel extends ChangeNotifier {
     return themeMode;
   }
 
-  ThemeMode getTheme(String mode) {
+  ThemeMode getTheme(String mode, {bool notify = false}) {
     switch (mode) {
       case "DARK":
         isAutoModeEnable = false;
@@ -38,11 +37,9 @@ class AppSettingModel extends ChangeNotifier {
       case "AUTO":
       default:
         isAutoModeEnable = true;
-        var brightness = SchedulerBinding.instance?.window.platformBrightness;
-        currentThemeMode =
-            brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+        currentThemeMode = ThemeMode.system;
     }
-    notifyListeners();
+     notifyListeners();
     return currentThemeMode!;
   }
 }

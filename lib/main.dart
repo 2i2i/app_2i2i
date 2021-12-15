@@ -7,6 +7,7 @@ import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
@@ -20,21 +21,24 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-    },
-    appRunner: () => runApp(
-      ProviderScope(
-        child: MainWidget(),
-      ),
-    ),
-  );
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  }, appRunner: () {
+    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+      return runApp(
+        ProviderScope(
+          child: MainWidget(themeMode: value ?? "AUTO"),
+        ),
+      );
+    });
+  });
 }
 
 class MainWidget extends ConsumerStatefulWidget {
-  const MainWidget({Key? key}) : super(key: key);
+  final String themeMode;
+
+  const MainWidget({required this.themeMode, Key? key}) : super(key: key);
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -45,14 +49,17 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 
   @override
   void initState() {
-    if (timer == null) {
-      timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-        final userModelChanger = ref.watch(userModelChangerProvider);
-        if (userModelChanger == null) return;
-        await userModelChanger.updateHeartbeat();
-      });
-    }
-    ref.read(appSettingProvider).getThemeMode();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (timer == null) {
+        timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+          final userModelChanger = ref.watch(userModelChangerProvider);
+          if (userModelChanger == null) return;
+          await userModelChanger.updateHeartbeat();
+        });
+      }
+      ref.watch(appSettingProvider).getTheme(widget.themeMode);
+    });
+
     super.initState();
   }
 

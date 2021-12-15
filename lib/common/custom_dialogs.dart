@@ -3,6 +3,8 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import '../constants/strings.dart';
+
 class CustomDialogs {
   static loader(bool isLoading, BuildContext context, {bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(

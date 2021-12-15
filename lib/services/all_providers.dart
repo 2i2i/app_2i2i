@@ -305,9 +305,3 @@ final userModelChangerProvider = Provider((ref) {
   if (uid == null) return null;
   return UserModelChanger(database, uid);
 });
-
-final numAccountsProvider = FutureProvider((ref) {
-  log('numAccountsProvider');
-  final accountService = ref.watch(accountServiceProvider);
-  return accountService.getNumAccounts();
-});

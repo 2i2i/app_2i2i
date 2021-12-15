@@ -28,6 +28,7 @@ class FAQ extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
         child: ExpansionTileCard(
+          elevation: 4,
           key: key,
           leading: Icon(Icons.label_important),
           title: Text(data.title),

@@ -37,10 +37,9 @@ class AccountService {
 
     // final futureResults =
     //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
-    final futureResults =
-        await Future.wait([balanceALGOFuture]);
+    final futureResults = await Future.wait([balanceALGOFuture]);
 
-    final balanceALGO = futureResults[0] as int;
+    final balanceALGO = futureResults[0];
 
     // final assetHoldings = (futureResults[1] as AccountInformation).assets;
 

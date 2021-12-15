@@ -51,7 +51,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                   backgroundColor: MaterialStateProperty.all<Color>(
                       speedNum == 0
                           ? AppTheme().buttonBackground
-                          : Theme.of(context).disabledColor),
+                          : AppTheme().lightGray),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
@@ -74,13 +74,13 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             ),
             SizedBox(width: 4),
             Expanded(
-              flex: 5,
+              flex: 3,
               child: ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
                         speedNum != 0
                             ? AppTheme().green
-                            : AppTheme().green.withOpacity(0.5)),
+                            : AppTheme().green.withOpacity(0.5) ),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),

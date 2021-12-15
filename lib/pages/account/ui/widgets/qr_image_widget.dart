@@ -1,47 +1,50 @@
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-class QRCodePage extends ConsumerWidget {
-  const QRCodePage({Key? key}) : super(key: key);
+class QrImagePage extends StatelessWidget {
+  final String imageUrl;
+
+  const QrImagePage({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(myUIDProvider);
-    if (uid == null) return WaitPage();
-
-    final message = 'https://test.2i2i.app/user/$uid';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('QR Code'),
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
-      body: Container(
-        width: double.infinity,
+      elevation: 0.0,
+      backgroundColor: Colors.white,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        width: MediaQuery.of(context).size.height * 0.4,
+        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8)),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            QrWidget(
-              message: message,
-              logoSize: 60,
-              imageSize: 280,
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.close)),
             ),
-            SizedBox(
-              height: 10,
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              height: MediaQuery.of(context).size.height * 0.30,
+              width: MediaQuery.of(context).size.height * 0.30,
+              child: QrImage(data: imageUrl,backgroundColor: Colors.white,foregroundColor: Colors.black,),
             ),
             Container(
               padding: const EdgeInsets.all(20.0),
-              width: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.height * 0.4,
               child: TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 readOnly: true,
-                initialValue: message,
-                maxLines: null,
+                initialValue: imageUrl,
+                maxLines: 2,
                 textAlign: TextAlign.center,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
@@ -55,7 +58,7 @@ class QRCodePage extends ConsumerWidget {
                         color: Theme.of(context).primaryColor,
                       ),
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: message));
+                        Clipboard.setData(ClipboardData(text: imageUrl));
                         showToast('Copied to Clipboard',
                             context: context,
                             animation: StyledToastAnimation.slideFromTop,
