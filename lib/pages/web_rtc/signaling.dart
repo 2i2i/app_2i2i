@@ -281,14 +281,14 @@ class Signaling {
       log(G + 'Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
 
       // if (roomId != null) {
-      final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-      iceCandidatesB.docs.forEach((document) => document.reference.delete());
+      // final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
+      // iceCandidatesB.docs.forEach((document) => document.reference.delete());
 
-      final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-      iceCandidatesA.docs.forEach((document) => document.reference.delete());
+      // final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
+      // iceCandidatesA.docs.forEach((document) => document.reference.delete());
 
-      await roomRef.delete();
-      log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
+      // await roomRef.delete();
+      // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
       // }
 
       localStream.dispose();
