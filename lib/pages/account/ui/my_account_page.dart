@@ -2,7 +2,6 @@ import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
-import 'package:app_2i2i/pages/account/ui/account_info.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -10,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
+import 'account_info.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
   const MyAccountPage({Key? key}) : super(key: key);
@@ -78,17 +79,16 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ),
             Visibility(
               visible: _displayUri.isEmpty,
-              child: ListView(
-                children: List.generate(
-                    myAccountPageViewModel.accounts?.length??0,
-                    (index) {
-                      log(F+' accounts ${myAccountPageViewModel.accounts![index].address}');
-                      return AccountInfo(
-                        key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                          account: myAccountPageViewModel.accounts![index],
-                      );
-                    },
-                ),
+              child: ListView.builder(
+                itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                padding: EdgeInsets.all(20),
+                itemBuilder: (BuildContext context, int index) {
+                  return AccountInfo(
+                    key: ObjectKey(
+                        myAccountPageViewModel.accounts![index].address),
+                    account: myAccountPageViewModel.accounts![index],
+                  );
+                },
               ),
             )
           ],

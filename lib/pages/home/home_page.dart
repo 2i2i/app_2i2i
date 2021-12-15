@@ -95,7 +95,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               showSelectedLabels: false,
               showUnselectedLabels: false,
               currentIndex: _tabSelectedIndex,
-              selectedItemColor: AppTheme().secondary,
               onTap: (i) => _onTap(i),
               items: [
                 BottomNavigationBarItem(

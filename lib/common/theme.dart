@@ -59,22 +59,14 @@ class AppTheme{
     },
   );*/
 
-  Color primaryVariant = Color.fromRGBO(157, 193, 131, 1);
-  Color secondary = Color.fromRGBO(199, 234, 70, 1);
-  Color secondaryVariant = Color.fromRGBO(199, 234, 70, 1);
   Color buttonBackground = Color.fromRGBO(208, 226, 105, 1);
   Color green = Color.fromRGBO(80, 121, 66, 1);
   Color red = Color.fromARGB(255, 239, 102, 84);
   Color pink = Color.fromARGB(255, 244, 162, 163);
   Color gray = Color.fromRGBO(112, 112, 108, 1);
-  Color hintColor = CupertinoColors.black.withOpacity(0.6);
   Color lightGray = Color.fromRGBO(221, 221, 217, 1);
-  Color lightGreen = Color.fromRGBO(214, 219, 134, 1);
-  Color brightBlue = Color.fromRGBO(69, 104, 177, 1);
-  Color lightBeige = Color.fromRGBO(224, 224, 213, 1);
   Color black = Colors.black;
   Color white = Colors.white;
-  Color deepPurple = Colors.deepPurple;
 
   Color primaryColor = Color(0xFF9dc183);
   Color primaryLightColor = Color(0xFFcff4b3);
@@ -89,27 +81,40 @@ class AppTheme{
     return ThemeData(
       fontFamily: 'ShipporiAntique',
       brightness: Brightness.light,
-      primaryColor: primaryColor,
-      primaryColorLight: primaryLightColor,
-      primaryColorDark: primaryDarkColor,
-      colorScheme: ColorScheme.light(
-        secondary: secondaryColor,
-      ),
-      textTheme: themeMode(),
-      appBarTheme: appBarTheme(false),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(primary: Colors.black),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        primaryColor: primaryColor,
+        primaryColorLight: primaryLightColor,
+        primaryColorDark: primaryDarkColor,
+        colorScheme: ColorScheme.light(
+          secondary: secondaryColor,
+        ),
+        textTheme: themeMode(),
+        appBarTheme: appBarTheme(false),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.black),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: primaryColor,
+            selectedIconTheme: IconThemeData(color: Colors.white)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(primary: primaryColor),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: primaryColor,
-          selectedIconTheme: IconThemeData(color: Colors.white)),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(primary: primaryColor),
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-      ),
-    );
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+            color: primaryDarkColor
+          ),
+          enabledBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(5.0),
+            borderSide: BorderSide(color: primaryColor),
+          ),
+          focusedBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(5.0),
+            borderSide: BorderSide(color: primaryColor),
+          ),
+        ),
+        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryColor));
   }
 
   ThemeData get darkTheme {
@@ -131,8 +136,22 @@ class AppTheme{
         style: ElevatedButton.styleFrom(primary: primaryColor),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
+        backgroundColor: primaryLightColor,
       ),
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+              color: primaryLightColor
+          ),
+          enabledBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(5.0),
+            borderSide: BorderSide(color: primaryLightColor),
+          ),
+          focusedBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(5.0),
+            borderSide: BorderSide(color: primaryLightColor),
+          ),
+        ),
+        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor)
     );
   }
 
