@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class AppTheme{
   static final AppTheme _singleton = AppTheme._internal();
@@ -101,10 +99,11 @@ class AppTheme{
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: primaryColor,
         ),
+        tabBarTheme: TabBarTheme(
+          indicator: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: primaryColor),
+        ),
         inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(
-            color: primaryDarkColor
-          ),
+          labelStyle: TextStyle(color: primaryDarkColor),
           enabledBorder: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(5.0),
             borderSide: BorderSide(color: primaryColor),
@@ -128,20 +127,22 @@ class AppTheme{
       textTheme: themeMode(),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(primary: Colors.white),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: primaryColor,
-          selectedIconTheme: IconThemeData(color: Colors.black)),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(primary: primaryColor),
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryLightColor,
-      ),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: primaryColor,
+            selectedIconTheme: IconThemeData(color: Colors.black)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(primary: primaryColor),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: primaryLightColor,
+        ),
+        tabBarTheme: TabBarTheme(
+          indicator: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0), color: primaryColor),
+        ),
         inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(
-              color: primaryLightColor
-          ),
+          labelStyle: TextStyle(color: primaryLightColor),
           enabledBorder: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(5.0),
             borderSide: BorderSide(color: primaryLightColor),

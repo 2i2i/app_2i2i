@@ -1,5 +1,3 @@
-import 'package:app_2i2i/common/text_utils.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomImageProfileView extends StatelessWidget {
@@ -15,13 +13,15 @@ class CustomImageProfileView extends StatelessWidget {
       height: radius,
       width: radius,
       child: Center(
-          child: TitleText(
-              title: "${text.toString().isNotEmpty ? text : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase())),
+          child: Text(
+        "${text.toString().isNotEmpty ? text : "X"}"
+            .substring(0, 1)
+            .toUpperCase(),
+        style: Theme.of(context).textTheme.headline4,
+      )),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppTheme().lightGreen,
+        color: Color.fromRGBO(214, 219, 134, 1),
       ),
     );
   }

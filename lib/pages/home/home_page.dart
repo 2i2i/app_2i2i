@@ -1,4 +1,3 @@
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';

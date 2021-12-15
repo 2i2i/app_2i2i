@@ -11,10 +11,6 @@ class Strings {
     return _singleton;
   }
 
-  String aboutYou = 'About you';
-
-  String aboutYouDesc = 'Fill below form to communicate with cool people';
-
   String appName = '2i2i';
 
   // Generic strings

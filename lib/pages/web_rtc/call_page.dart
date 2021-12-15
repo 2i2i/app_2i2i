@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/common/animated_progress_bar.dart';

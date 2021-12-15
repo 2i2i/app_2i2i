@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
-import 'package:app_2i2i/common/text_utils.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';

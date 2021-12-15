@@ -1,6 +1,6 @@
 import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/pages/user_bid/ui/widgets/no_bid_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,15 +26,12 @@ class UserBidsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO add sorting
-    if (bidsIds.isEmpty)
-      return Center(
-        child: Text(noBidsText),
+    if (bidsIds.isNotEmpty)
+      return _bidsListView(ref, context);
+    else
+      return NoBidPage(
+        noBidsText: noBidsText,
       );
-    log('UserBids - bidsIds=$bidsIds');
-    log('UserBids - bidsIds.length=${bidsIds.length}');
-
-    return _bidsListView(ref, context);
   }
 
   ListView _bidsListView(WidgetRef ref, BuildContext context) {

@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
-import 'package:app_2i2i/common/text_utils.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
@@ -110,12 +108,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   ),
                   child: TabBar(
                     controller: _tabController,
-                    indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: AppTheme().lightGreen,
-                    ),
-                    labelColor: AppTheme().black,
-                    unselectedLabelColor: Colors.black,
                     tabs: [
                       Tab(
                         text: Strings().bidIn,
@@ -133,8 +125,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     children: [
                       UserBidsList(
                         bidsIds: myUserPageViewModel.user.bidsIn,
-                        titleWidget: HeadLineSixText(
-                            title: 'Bids In', textColor: AppTheme().deepPurple),
+                        titleWidget: Text('Bids In',
+                            style: Theme.of(context).textTheme.headline6),
                         noBidsText: Strings().noBidFound,
                         leading: Icon(
                           Icons.label_important,
@@ -160,9 +152,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                         return UserBidsList(
                           bidsIds:
                               userPrivate.bidsOut.map((b) => b.bid).toList(),
-                          titleWidget: HeadLineSixText(
-                              title: 'Bids Out',
-                              textColor: AppTheme().deepPurple),
+                          titleWidget: Text('Bids Out',
+                              style: Theme.of(context).textTheme.headline6),
                           noBidsText: Strings().noBidFound,
                           // onTap: myUserPageViewModel.cancelBid
                           leading: Transform.rotate(
