@@ -174,35 +174,35 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         ),
                       ),
                       visible: widget.account is LocalAccount),
-                  InkResponse(
-                    onTap: () async {
-                      final asaId = await _optInToASA(context);
-                      if (asaId == null) return;
-                      CustomDialogs.loader(true, context);
-                      await widget.account
-                          .optInToASA(assetId: asaId, net: AlgorandNet.testnet);
-                      CustomDialogs.loader(false, context);
-                    },
-                    child: Card(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      elevation: 4,
-                      shadowColor: Theme.of(context).primaryColor,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(6)),
-                        child: Icon(
-                          Icons.add_circle_outline,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // InkResponse(
+                  //   onTap: () async {
+                  //     final asaId = await _optInToASA(context);
+                  //     if (asaId == null) return;
+                  //     CustomDialogs.loader(true, context);
+                  //     await widget.account
+                  //         .optInToASA(assetId: asaId, net: AlgorandNet.testnet);
+                  //     CustomDialogs.loader(false, context);
+                  //   },
+                  //   child: Card(
+                  //     margin: EdgeInsets.symmetric(horizontal: 4),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(6.0),
+                  //     ),
+                  //     elevation: 4,
+                  //     shadowColor: Theme.of(context).primaryColor,
+                  //     child: Container(
+                  //       height: 40,
+                  //       width: 40,
+                  //       decoration: BoxDecoration(
+                  //           color: Theme.of(context).cardColor,
+                  //           borderRadius: BorderRadius.circular(6)),
+                  //       child: Icon(
+                  //         Icons.add_circle_outline,
+                  //         size: 20,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   InkResponse(
                     onTap: () => Clipboard.setData(
                         ClipboardData(text: widget.account.address)),
