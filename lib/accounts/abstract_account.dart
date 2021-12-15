@@ -32,20 +32,23 @@ class AccountService {
       {required String address, required AlgorandNet net}) async {
     final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-    final accountInfoFuture =
-        algorandLib.client[net]!.getAccountByAddress(address);
+    // final accountInfoFuture =
+    //     algorandLib.client[net]!.getAccountByAddress(address);
 
+    // final futureResults =
+    //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
     final futureResults =
-        await Future.wait([balanceALGOFuture, accountInfoFuture]);
+        await Future.wait([balanceALGOFuture]);
 
     final balanceALGO = futureResults[0] as int;
 
-    final assetHoldings = (futureResults[1] as AccountInformation).assets;
+    // final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
     final algoAssetHolding = AssetHolding(
         amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
 
-    return [algoAssetHolding, ...assetHoldings];
+    return [algoAssetHolding];
+    // return [algoAssetHolding, ...assetHoldings];
   }
 
   Future<int> getNumLocalAccounts() async {
