@@ -74,16 +74,16 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                               context, widget.account as LocalAccount),
                           icon: Icon(Icons.vpn_key))
                       : Container(),
-                  IconButton(
-                      onPressed: () async {
-                        final asaId = await _optInToASA(context);
-                        if (asaId == null) return;
-                        CustomDialogs.loader(true, context);
-                        await widget.account.optInToASA(
-                            assetId: asaId, net: AlgorandNet.testnet);
-                        CustomDialogs.loader(false, context);
-                      },
-                      icon: Icon(Icons.add_circle_outline)),
+                  // IconButton(
+                  //     onPressed: () async {
+                  //       final asaId = await _optInToASA(context);
+                  //       if (asaId == null) return;
+                  //       CustomDialogs.loader(true, context);
+                  //       await widget.account.optInToASA(
+                  //           assetId: asaId, net: AlgorandNet.testnet);
+                  //       CustomDialogs.loader(false, context);
+                  //     },
+                  //     icon: Icon(Icons.add_circle_outline)),
                   IconButton(
                       onPressed: () => Clipboard.setData(
                           ClipboardData(text: widget.account.address)),
