@@ -10,7 +10,6 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,7 +48,6 @@ class _UserPageState extends ConsumerState<UserPage> {
     int bPoint = userModel.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
     final shortBio = userModel.bio.substring(shortBioStart, shortBioEnd);
-    final score = userModel.upVotes - userModel.downVotes;
     var statusColor = AppTheme().green;
     if (userModel.status == 'OFFLINE') statusColor = AppTheme().gray;
     if (userModel.locked) statusColor = AppTheme().red;
@@ -123,7 +121,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
             child: ListTile(
               trailing: Icon(Icons.circle, color: statusColor),
-              leading: ratingWidget(score, userModel.name, context),
+              leading: ratingWidget(userModel.rating, userModel.name, context),
               title: Text(userModel.name),
               subtitle: Text(shortBio.toString().trim()),
               // UserPage.show(context, users[ix].id),
@@ -162,9 +160,6 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   Widget ratingWidget(score, name, context) {
-    log('ratingWidget');
-    final scoreString = (0 <= score ? '+' : '-') + score.toString();
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -178,7 +173,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                     child: Icon(Icons.change_history,
                         color: Color.fromRGBO(211, 91, 122, 1))),
             SizedBox(height: 4),
-            Text(scoreString, style: Theme.of(context).textTheme.caption)
+            Text(score.toString(), style: Theme.of(context).textTheme.caption)
           ],
         ),
         SizedBox(width: 10),

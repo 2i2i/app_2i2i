@@ -100,7 +100,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 int bPoint = bio.length;
                 final shortBioEnd = min(aPoint, bPoint);
                 final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
-                final score = user.upVotes - user.downVotes;
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
@@ -111,7 +110,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   elevation: 4,
                   // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
                   child: ListTile(
-                      leading: ratingWidget(score, name),
+                      leading: ratingWidget(user.rating, name),
                       title: Text(name),
                       subtitle: Text(shortBio),
                       trailing: Icon(Icons.circle, color: statusColor),
@@ -129,8 +128,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget ratingWidget(score, name) {
-    final scoreString = (0 <= score ? '+' : '-') + score.toString();
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -144,7 +141,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     child: Icon(Icons.change_history,
                         color: Color.fromRGBO(211, 91, 122, 1))),
             SizedBox(height: 4),
-            Text(scoreString, style: Theme.of(context).textTheme.caption)
+            Text(score.toString(), style: Theme.of(context).textTheme.caption)
           ],
         ),
         SizedBox(width: 10),

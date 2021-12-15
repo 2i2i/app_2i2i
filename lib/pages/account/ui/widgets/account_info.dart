@@ -1,8 +1,6 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

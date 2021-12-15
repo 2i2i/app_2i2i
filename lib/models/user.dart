@@ -47,8 +47,8 @@ class UserModel extends Equatable {
     this.bidsIn = const [],
     this.name = '',
     this.bio = '',
-    this.upVotes = 0,
-    this.downVotes = 0,
+    this.rating = 1,
+    this.numRatings = 0,
     this.heartbeat = 0,
   }) {
     _tags = tagsFromBio(bio);
@@ -62,8 +62,8 @@ class UserModel extends Equatable {
   final String bio;
   final String name;
   late final List<String> _tags;
-  final int upVotes;
-  final int downVotes;
+  final double rating;
+  final int numRatings;
   final int heartbeat;
 
   static List<String> tagsFromBio(String bio) {
@@ -99,8 +99,8 @@ class UserModel extends Equatable {
     final List<String> bidsIn = List.castFrom(data['bidsIn'] as List);
     final name = data['name'] as String;
     final bio = data['bio'] as String;
-    final upVotes = data['upVotes'] as int;
-    final downVotes = data['downVotes'] as int;
+    final rating = data['rating'] as double;
+    final numRatings = data['numRatings'] as int;
     final heartbeat = data['heartbeat'] as int;
 
     return UserModel(
@@ -111,8 +111,8 @@ class UserModel extends Equatable {
       bidsIn: bidsIn,
       name: name,
       bio: bio,
-      upVotes: upVotes,
-      downVotes: downVotes,
+      rating: rating,
+      numRatings: numRatings,
       heartbeat: heartbeat,
     );
   }
@@ -169,15 +169,15 @@ class UserModel extends Equatable {
       'bio': bio,
       'name': name,
       'tags': _tags,
-      'upVotes': upVotes,
-      'downVotes': downVotes,
+      'rating': rating,
+      'numRatings': numRatings,
       'heartbeat': heartbeat,
     };
   }
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bidsIn: $bidsIn, bio: $bio, name: $name, _tags: $_tags, upVotes: $upVotes, downVotes: $downVotes, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bidsIn: $bidsIn, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 }
 
