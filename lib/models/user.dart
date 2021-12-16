@@ -93,15 +93,26 @@ class UserModel extends Equatable {
     // log('UserModel.fromMap - data=${data['bidsIn']}');
     // log('UserModel.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final status = data['status'] as String;
-    final locked = data['locked'] as bool;
-    final currentMeeting = data['currentMeeting'] as String?;
-    final List<String> bidsIn = List.castFrom(data['bidsIn'] as List);
-    final name = data['name'] as String;
-    final bio = data['bio'] as String;
-    final rating = data['rating'] as double;
-    final numRatings = data['numRatings'] as int;
-    final heartbeat = data['heartbeat'] as int;
+    String status = "";
+    bool locked = false;
+    String currentMeeting = "";
+    List<String> bidsIn = [];
+    String name = "";
+    String bio = "";
+    double rating = 0.0;
+    int numRatings = 0;
+    int heartbeat = 0;
+
+    if (data['status'] is String) status = data['status'];
+    if (data['locked'] is String) locked = data['locked'];
+    if (data['currentMeeting'] is String)
+      currentMeeting = data['currentMeeting'];
+    if (data['bidsIn'] is List) bidsIn = List.castFrom(data['bidsIn']);
+    if (data['name'] is String) name = data['name'];
+    if (data['bio'] is String) bio = data['bio'];
+    if (data['rating'] is String) rating = data['rating'];
+    if (data['numRatings'] is String) numRatings = data['numRatings'];
+    if (data['heartbeat'] is String) heartbeat = data['heartbeat'];
 
     return UserModel(
       id: documentId,

@@ -9,20 +9,25 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class CallPage extends StatefulWidget {
-
+class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
 
-  CallPage({Key? key, required this.meeting, required this.user}) : super(key: key);
+  CallPage({
+    Key? key,
+    required this.meeting,
+    required this.user,
+  }) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
 }
 
-class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
+class _CallPageState extends ConsumerState<CallPage>
+    with TickerProviderStateMixin {
   bool swapped = false;
   Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
@@ -35,11 +40,14 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   ValueNotifier<double> progress = ValueNotifier(100);
   DateTime? countDownTimerDate;
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   void _initBudgetTimer() {
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
+    var maxDuration =
+        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
     int duration = getDuration(maxDuration);
 
     budgetTimer = Timer(Duration(seconds: duration), () {
@@ -117,8 +125,9 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: OrientationBuilder(builder: (context, orientation) {
-          return Container(
+      key: _scaffoldKey,
+      body: OrientationBuilder(builder: (context, orientation) {
+        return Container(
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
@@ -130,9 +139,9 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                     )
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      renderer: _remoteRenderer,
-                    ),
+                width: MediaQuery.of(context).size.width,
+                renderer: _remoteRenderer,
+              ),
               Positioned(
                 top: 40,
                 left: 40,
@@ -144,26 +153,26 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
-                                renderer: _localRenderer,
-                        )
-                            : secondVideoView(
-                                height: MediaQuery.of(context).size.height*0.3,
-                                width: MediaQuery.of(context).size.height*0.3,
-                                renderer: _remoteRenderer,
-                        ),
-                    ),
-                    InkResponse(
-                        onTap: (){
-                            swapped = !swapped;
-                          setState(() {});
-                        },
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16.0),
-                            child: Container(
+                              renderer: _localRenderer,
+                            )
+                          : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
+                              renderer: _remoteRenderer,
                             ),
+                    ),
+                    InkResponse(
+                      onTap: () {
+                        swapped = !swapped;
+                        setState(() {});
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          width: MediaQuery.of(context).size.height * 0.3,
                         ),
+                      ),
                     )
                   ],
                 ),
@@ -179,24 +188,22 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                       padding: const EdgeInsets.only(right: 30),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.white24,
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(20)
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Material(
-                            shadowColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)
+                                  color: Colors.white24,
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Material(
+                                  shadowColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  type: MaterialType.card,
+                                  child: ProgressBar(
+                                    height: height,
+                                  ),
+                                ),
+                              ),
                             ),
-                            type: MaterialType.card,
-                            child: ProgressBar(
-                              height: height,
-                            ),
-                          ),
-                        ),
-                      ),
                     );
                   },
                 ),
@@ -225,12 +232,12 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     try {
                       if (budgetTimer?.isActive ?? false) {
                         budgetTimer?.cancel();
                       }
-                      signaling?.hangUp(_localRenderer);
+                      await signaling?.hangUp(_localRenderer);
                     } catch (e) {
                       log(e.toString());
                     }
@@ -240,9 +247,8 @@ class _CallPageState extends State<CallPage> with TickerProviderStateMixin {
                     child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white38,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20)
-                      ),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(20)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Material(

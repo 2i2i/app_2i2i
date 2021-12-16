@@ -3,6 +3,7 @@ import 'package:app_2i2i/pages/qr_code/widgets/qr_image.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NoBidPage extends ConsumerWidget {
   final String noBidsText;
@@ -51,7 +52,9 @@ class NoBidPage extends ConsumerWidget {
               ),
               Flexible(
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Share.share('Your friend and invite for join 2i2i\n$message');
+                    },
                     icon: Icon(
                       Icons.share,
                       color: Theme.of(context).primaryColor,

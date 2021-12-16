@@ -157,3 +157,36 @@ class Meeting extends Equatable {
     };
   }
 }
+
+@immutable
+class RatingModel {
+  RatingModel({
+    required this.rating,
+    required this.comment,
+  });
+
+  final String rating;
+  final String comment;
+
+  factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('RatingModel.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final String rating = data['rating'];
+    final String comment = data['comment'];
+
+    return RatingModel(
+      rating: rating,
+      comment: comment,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'rating': rating,
+      'comment': comment,
+    };
+  }
+}

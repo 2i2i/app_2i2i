@@ -243,8 +243,7 @@ class Signaling {
   Future<void> openUserMedia() async {
     log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-    final stream = await navigator.mediaDevices
-        .getUserMedia({'video': true, 'audio': true});
+    final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
     localStream = stream;
@@ -263,18 +262,20 @@ class Signaling {
       if (reason != null) args['reason'] = reason;
       await endMeeting(args);
 
-      log(G +
-          'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
-      List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-      tracks.forEach((track) {
-        track.stop();
-      });
+      log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      if (localVideo.srcObject != null) {
+        List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+        tracks.forEach((track) {
+          track.stop();
+        });
+      }
 
       log(G + 'Signaling - hangUp - ${meeting.id} - local track.stop');
 
       if (remoteStream != null) {
         remoteStream!.getTracks().forEach((track) => track.stop());
       }
+
       log(G + 'Signaling - hangUp - ${meeting.id} - remote track.stop');
 
       if (peerConnection != null) peerConnection!.close();
@@ -291,7 +292,8 @@ class Signaling {
       // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
       // }
 
-      localStream.dispose();
+
+      // localStream.dispose();
       log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
       remoteStream?.dispose();
       log(G + 'Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');

@@ -9,7 +9,6 @@ import 'package:app_2i2i/repository/firestore_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 class FirestoreDatabase {
   FirestoreDatabase();
 
@@ -46,6 +45,18 @@ class FirestoreDatabase {
     log('setUser - done');
   }
 
+  Future<void> giveRating(
+          String uid, String meetingId, RatingModel ratingModel) =>
+      _service
+          .setData(
+        path: FirestorePath.rating(uid, meetingId),
+        data: ratingModel.toMap(),
+        merge: true,
+      )
+          .onError((error, stackTrace) {
+        print(error);
+      });
+
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
         path: FirestorePath.userPrivate(uid),
         data: {
@@ -53,6 +64,7 @@ class FirestoreDatabase {
         },
         merge: true,
       );
+
   Future<void> addFriend(String uid, String targetUid) => _service.setData(
         path: FirestorePath.userPrivate(uid),
         data: {
@@ -60,6 +72,7 @@ class FirestoreDatabase {
         },
         merge: true,
       );
+
   Future<void> removeBlocked(String uid, String targetUid) => _service.setData(
         path: FirestorePath.userPrivate(uid),
         data: {
@@ -143,9 +156,51 @@ class FirestoreDatabase {
       //   return 1;
       // },
     );
-      //   .handleError((value) {
-      // log(value);
+    //   .handleError((value) {
+    // log(value);
     // });
+  }
+
+  Stream<List<Meeting?>> meetingHistoryA(String uid) {
+    return _service
+        .collectionStream(
+      path: FirestorePath.meetings(),
+      builder: (data, documentId) {
+        try {
+          final user = Meeting.fromMap(data, documentId);
+          return user;
+        } catch (e) {
+          return null;
+        }
+      },
+      queryBuilder: (query) {
+        return query.where('A', isEqualTo: uid);
+      },
+    )
+        .handleError((value) {
+      log(value);
+    });
+  }
+
+  Stream<List<Meeting?>> meetingHistoryB(String uid) {
+    return _service
+        .collectionStream(
+      path: FirestorePath.meetings(),
+      builder: (data, documentId) {
+        try {
+          final user = Meeting.fromMap(data, documentId);
+          return user;
+        } catch (e) {
+          return null;
+        }
+      },
+      queryBuilder: (query) {
+        return query.where('B', isEqualTo: uid);
+      },
+    )
+        .handleError((value) {
+      log(value);
+    });
   }
 
   Stream<Room> roomStream({required String meetingId}) =>

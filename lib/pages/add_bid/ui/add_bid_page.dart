@@ -161,6 +161,12 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   }
 
   Widget accountWidget(AddBidPageViewModel addBidPageViewModel) {
+    if (addBidPageViewModel.accounts.isNotEmpty &&
+        balance == null &&
+        account == null) {
+      account = addBidPageViewModel.accounts.first;
+      balance = account!.balances.first;
+    }
     return Visibility(
       visible: speedNum != 0,
       child: Column(
@@ -194,18 +200,16 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     });
                   },
                   value: account,
-                  items: [
-                    for (var i = 0;
-                        i < addBidPageViewModel.accounts.length;
-                        i++)
-                      DropdownMenuItem<AbstractAccount>(
-                        child: Text(
-                            addBidPageViewModel.accounts[i].address
-                                .substring(0, 4),
-                            style: Theme.of(context).textTheme.bodyText1),
-                        value: addBidPageViewModel.accounts[i],
-                      )
-                  ],
+                  items: List.generate(addBidPageViewModel.accounts.length,
+                      (index) {
+                    return DropdownMenuItem<AbstractAccount>(
+                      child: Text(
+                          addBidPageViewModel.accounts[index].address
+                              .substring(0, 4),
+                          style: Theme.of(context).textTheme.bodyText1),
+                      value: addBidPageViewModel.accounts[index],
+                    );
+                  }),
                 ),
               )),
           Divider(),

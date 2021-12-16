@@ -34,9 +34,9 @@ class OtherBidList extends ConsumerWidget {
             child: Row(
               children: [
                 Text('OTHER BIDS FOR ',
-                    style: Theme.of(context).textTheme.headline6),
+                    style: Theme.of(context).textTheme.subtitle2),
                 Text('${user.name}',
-                    style: Theme.of(context).textTheme.headline6),
+                    style: Theme.of(context).textTheme.subtitle2!.copyWith(color: Theme.of(context).primaryColor)),
               ],
             )),
         Expanded(
@@ -77,17 +77,15 @@ class OtherBidList extends ConsumerWidget {
               final String assetIDString =
                   assetId == 0 ? 'ALGO' : assetId.toString();
               final color = ix % 2 == 0
-                  ? Color.fromRGBO(223, 239, 223, 1)
-                  : Color.fromRGBO(197, 234, 197, 1);
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).cardColor;
 
               return Card(
                   color: color,
                   child: ListTile(
                     leading: Icon(Icons.circle, color: AppTheme().gray),
-                    title: Text('$num',
-                        style: Theme.of(context).textTheme.bodyText1),
-                    subtitle: Text('[$assetIDString/sec]',
-                        style: Theme.of(context).textTheme.bodyText2),
+                    title: Text('$num'),
+                    subtitle: Text('[$assetIDString/sec]'),
                     trailing: Visibility(
                       visible: isItCurrentUserBid,
                       child: Tooltip(

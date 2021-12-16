@@ -51,9 +51,12 @@ class CustomDialogs {
     }
   }
 
-  static inAppRatingDialog(BuildContext context) {
+  static inAppRatingDialog(BuildContext context,
+      {required Function onPressed, bool rootNavigator = true}) {
+    double totalRating = 3;
+    TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,14 +76,17 @@ class CustomDialogs {
       actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(Strings().cancel, style: Theme.of(context).textTheme.button),
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          child:
+              Text(Strings().cancel, style: Theme.of(context).textTheme.button),
         ),
         TextButton(
-          onPressed: () {},
-          child: Text(Strings().appRatingSubmitButton,style: Theme.of(context).textTheme.button),
+          onPressed: () {
+            onPressed(totalRating, ratingFeedBack.text);
+          },
+          child: Text(Strings().appRatingSubmitButton,
+              style: Theme.of(context).textTheme.button),
         )
       ],
       content: Container(
@@ -92,7 +98,7 @@ class CustomDialogs {
             Container(
               margin: EdgeInsets.only(bottom: 20, top: 8),
               child: RatingBar.builder(
-                initialRating: 3,
+                initialRating: totalRating,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -106,6 +112,7 @@ class CustomDialogs {
                 ),
                 onRatingUpdate: (rating) {
                   log(rating.toString());
+                  totalRating = rating;
                 },
               ),
             ),
@@ -113,26 +120,7 @@ class CustomDialogs {
               // width: MediaQuery.of(context).size.width * 0.8,
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: TextFormField(
-                decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(5.0),
-                      borderSide: new BorderSide(color: Colors.transparent),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey.shade300,
-                    focusColor: Colors.grey.shade300),
+                controller: ratingFeedBack,
                 maxLines: 5,
               ),
             ),

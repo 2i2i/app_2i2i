@@ -21,6 +21,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../pages/history/provider/history_view_model.dart';
+
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
@@ -206,10 +208,20 @@ final myUserLockedProvider = Provider((ref) {
 });
 
 final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
-  // log('meetingProvider');
   final database = ref.watch(databaseProvider);
-  // log('meetingProvider - database=$database');
   return database.meetingStream(id: id);
+});
+
+final meetingHistoryA =
+    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+  final database = ref.watch(databaseProvider);
+  return database.meetingHistoryA(id);
+});
+
+final meetingHistoryB =
+    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+  final database = ref.watch(databaseProvider);
+  return database.meetingHistoryB(id);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
@@ -264,6 +276,21 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       algorand: algorand,
       functions: functions,
       meeting: meeting.data!.value);
+});
+
+final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
+    final meetingHistoryAList = ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
+    return null;
+  final meetingHistoryBList = ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
+    return null;
+
+  var list = [
+    ...meetingHistoryAList.data!.value,
+    ...meetingHistoryBList.data!.value
+  ];
+  return HistoryViewModel(meetingList: list);
 });
 
 final addBidPageViewModelProvider =
