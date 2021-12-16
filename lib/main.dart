@@ -4,7 +4,9 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/auth_widget.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -14,6 +16,24 @@ import 'constants/strings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  print('User granted permission: ${settings.authorizationStatus}');
+
+  final token = await messaging.getToken(
+      vapidKey:
+          "BJAuI8w0710AHhIbunDcq8QnCf1QRKDoWjs5e665AIt5pwPBV1D4GovUBx__W2jbyYWABVSqxhfthjkHY5lCN5g");
+  log('token=$token');
 
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
