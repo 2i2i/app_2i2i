@@ -15,10 +15,12 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
+  final Function onHangPhone;
 
   CallPage({
     Key? key,
     required this.meeting,
+    required this.onHangPhone,
     required this.user,
   }) : super(key: key);
 
@@ -238,6 +240,7 @@ class _CallPageState extends ConsumerState<CallPage>
                         budgetTimer?.cancel();
                       }
                       await signaling?.hangUp(_localRenderer);
+                      widget.onHangPhone(widget.user.id, widget.meeting.id);
                     } catch (e) {
                       log(e.toString());
                     }

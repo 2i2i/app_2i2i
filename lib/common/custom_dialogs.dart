@@ -83,6 +83,7 @@ class CustomDialogs {
         ),
         TextButton(
           onPressed: () {
+            Navigator.of(context, rootNavigator: rootNavigator).pop();
             onPressed(totalRating, ratingFeedBack.text);
           },
           child: Text(Strings().appRatingSubmitButton,

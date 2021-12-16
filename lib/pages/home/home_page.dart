@@ -1,3 +1,5 @@
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
@@ -67,11 +69,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     if (!loading) {
       log('----------\n\n lockUser?.meeting ${lockUser.meeting} \n\n-----------');
       // if(lockUser.meeting is Meeting) {
-      return LockedUserPage();
+      return LockedUserPage(
+        onHangPhone: (uid, meetingId) {
+          submitReview(uid, meetingId);
+        },
+      );
       // }
     }
     if (isUserLocked.value) {
-      return LockedUserPage();
+      return LockedUserPage(
+        onHangPhone: (uid, meetingId) {
+          submitReview(uid, meetingId);
+        },
+      );
     }
     return WillPopScope(
       onWillPop: () async =>
@@ -97,29 +107,29 @@ class _HomePageState extends ConsumerState<HomePage> {
               onTap: (i) => _onTap(i),
               items: [
                 BottomNavigationBarItem(
-                    label: "",
-                    icon: Icon(Icons.search_rounded),
-                    tooltip: 'Search',
+                  label: "",
+                  icon: Icon(Icons.search_rounded),
+                  tooltip: 'Search',
                 ),
                 BottomNavigationBarItem(
-                    label: "",
-                    icon: Icon(Icons.person_outlined),
-                    tooltip: 'Profile',
+                  label: "",
+                  icon: Icon(Icons.person_outlined),
+                  tooltip: 'Profile',
                 ),
                 BottomNavigationBarItem(
-                    label: "",
-                    icon: Icon(Icons.attach_money_rounded),
-                    tooltip: 'Account',
+                  label: "",
+                  icon: Icon(Icons.attach_money_rounded),
+                  tooltip: 'Account',
                 ),
                 BottomNavigationBarItem(
-                    label: "",
-                    icon: Icon(Icons.help_outline_rounded),
-                    tooltip: 'FAQ',
+                  label: "",
+                  icon: Icon(Icons.help_outline_rounded),
+                  tooltip: 'FAQ',
                 ),
                 BottomNavigationBarItem(
-                    label: "",
-                    icon: Icon(Icons.qr_code_2_rounded),
-                    tooltip: 'QR Code',
+                  label: "",
+                  icon: Icon(Icons.qr_code_2_rounded),
+                  tooltip: 'QR Code',
                 ),
               ],
             ),
@@ -138,6 +148,15 @@ class _HomePageState extends ConsumerState<HomePage> {
             tabItem: tabItem, popStack: _tabPopStack, selectedIndex: tabIndex),
       ),
     );
+  }
+
+  submitReview(uid, meetingId) {
+    CustomDialogs.inAppRatingDialog(context,
+        onPressed: (rating, ratingFeedBack) {
+      final database = ref.watch(databaseProvider);
+      database.giveRating(uid, meetingId,
+          RatingModel(rating: rating.toString(), comment: ratingFeedBack));
+    });
   }
 }
 
