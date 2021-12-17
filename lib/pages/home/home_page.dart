@@ -150,12 +150,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  submitReview(uid, meetingId) {
+  submitReview(otherUid, meetingId) {
     CustomDialogs.inAppRatingDialog(context,
-        onPressed: (rating, ratingFeedBack) {
+        onPressed: (double rating, String? ratingFeedBack) {
       final database = ref.watch(databaseProvider);
-      database.giveRating(uid, meetingId,
-          RatingModel(rating: rating.toString(), comment: ratingFeedBack));
+      database.addRating(
+          otherUid,
+          RatingModel(
+              rating: rating, comment: ratingFeedBack, meeting: meetingId));
     });
   }
 }

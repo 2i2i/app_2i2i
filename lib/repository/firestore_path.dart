@@ -15,8 +15,7 @@ class FirestorePath {
 
   static String meeting(String id) => 'meetings/$id';
 
-  static String rating(String id, String meetingId) =>
-      'meetings/$meetingId/ratings/$id';
+  static String rating(String uid) => 'users/$uid/ratings/';
 
   // static String meetingMessages(String meetingId, String sourceUid, String targetUid) => 'meetings/$meetingId/$sourceUid->$targetUid';
   static String room(String meetingId) => 'meetings/$meetingId/rooms/main';

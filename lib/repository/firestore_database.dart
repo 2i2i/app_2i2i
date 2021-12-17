@@ -45,13 +45,12 @@ class FirestoreDatabase {
     log('setUser - done');
   }
 
-  Future<void> giveRating(
-          String uid, String meetingId, RatingModel ratingModel) =>
+  Future<void> addRating(
+          String uid, RatingModel rating) =>
       _service
-          .setData(
-        path: FirestorePath.rating(uid, meetingId),
-        data: ratingModel.toMap(),
-        merge: true,
+          .createData(
+        path: FirestorePath.rating(uid),
+        data: rating.toMap(),
       )
           .onError((error, stackTrace) {
         print(error);
