@@ -66,4 +66,7 @@ class Strings {
   String bidIn = 'Bid in';
   String bidOut = 'Bid out';
   String noBidFound = 'No bid found';
+
+  //Meeting History
+  String meetingsHistory = 'Meetings History';
 }

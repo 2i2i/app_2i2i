@@ -2,15 +2,18 @@ import 'dart:math';
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/history/history_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
@@ -98,27 +101,55 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(
-                      25.0,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(
+                            25.0,
+                          ),
+                        ),
+                        child: TabBar(
+                          controller: _tabController,
+                          tabs: [
+                            Tab(
+                              text: Strings().bidIn,
+                            ),
+                            Tab(
+                              text: Strings().bidOut,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    tabs: [
-                      Tab(
-                        text: Strings().bidIn,
+                    Tooltip(
+                      message: "History",
+                      child: InkResponse(
+                        onTap: () => CustomNavigation.push(
+                            context, HistoryPage(uid: user.id), Routes.HISTORY),
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          margin: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(
+                              25.0,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.history_edu_rounded,
+                            size: 20,
+                          ),
+                        ),
                       ),
-                      Tab(
-                        text: Strings().bidOut,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Divider(color: Colors.transparent,),
+                Divider(color: Colors.transparent),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,

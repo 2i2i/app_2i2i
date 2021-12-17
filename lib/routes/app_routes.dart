@@ -9,6 +9,7 @@ class Routes {
   static const IMI = '/imi';
   static const SOLLI = '/solli';
   static const ABOUT = '/about';
+  static const HISTORY = '/history';
   static const AppSetting = '/app_setting';
   static const CallPage = '/call_page';
 

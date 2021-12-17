@@ -48,8 +48,8 @@ class UserBidsList extends ConsumerWidget {
               final String assetIDString =
                   assetId == 0 ? 'ALGO' : assetId.toString();
               final color = ix % 2 == 0
-                  ? Color.fromRGBO(223, 239, 223, 1)
-                  : Color.fromRGBO(197, 234, 197, 1);
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).cardColor;
 
               return Card(
                   color: color,

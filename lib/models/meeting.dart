@@ -92,6 +92,7 @@ class Meeting extends Equatable {
     }
     return null;
   }
+
   int? initTime() {
     for (final st in status) {
       if (st.value == MeetingValue.INIT) return st.ts;
@@ -154,6 +155,44 @@ class Meeting extends Equatable {
       'addrB': addrB,
       'status': status,
       'currentRoom': currentRoom,
+    };
+  }
+}
+
+@immutable
+class RatingModel {
+  RatingModel({
+    required this.rating,
+    required this.comment,
+    required this.meeting,
+  });
+
+  final double rating;
+  final String? comment;
+  final String meeting;
+
+  factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('RatingModel.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final double rating = data['rating'];
+    final String? comment = data['comment'];
+    final String meeting = data['meeting'];
+
+    return RatingModel(
+      rating: rating,
+      comment: comment,
+      meeting: meeting,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'rating': rating,
+      'comment': comment,
+      'meeting': meeting,
     };
   }
 }

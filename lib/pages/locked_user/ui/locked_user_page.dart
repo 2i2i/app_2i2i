@@ -8,7 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LockedUserPage extends ConsumerStatefulWidget {
-  const LockedUserPage({Key? key}) : super(key: key);
+  final Function? onHangPhone;
+
+  const LockedUserPage({
+    this.onHangPhone,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _LockedUserPageState createState() => _LockedUserPageState();
@@ -42,7 +47,12 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       children: [
         Visibility(
           visible: (isConfirmedAndA || isActive),
-          child: CallPage(meeting: lockedUserViewModel.meeting, user: lockedUserViewModel.user),
+          child: CallPage(
+              onHangPhone: (uid, meetingId) {
+                widget.onHangPhone!(uid, meetingId);
+              },
+              meeting: lockedUserViewModel.meeting,
+              user: lockedUserViewModel.user),
         ),
         Visibility(
             visible: (isInit || isStarted || isConfirmedAndB),
