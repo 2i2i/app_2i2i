@@ -5,6 +5,7 @@ import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
@@ -26,14 +27,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       appBar: AppBar(
           title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
           leading: IconButton(
-            // onPressed: () => CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
-            onPressed: () {
-              CustomDialogs.inAppRatingDialog(context,
-                  onPressed: (rating, ratingFeedBack) {
-                print(rating);
-                print(ratingFeedBack);
-              });
-            },
+            onPressed: () => CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
             icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
           )),
       body: Column(
