@@ -24,7 +24,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
+          title:
+              Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
           leading: IconButton(
             // onPressed: () => CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
             onPressed: () {
@@ -44,28 +45,34 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               cursorColor: Theme.of(context).primaryColor,
               cursorHeight: 18,
               decoration: InputDecoration(
-                  filled: true,
-                  isDense: false,
-                  // fillColor: Colors.grey.shade300,
-                  // focusColor: Colors.grey.shade300,
-                  hintText: 'Search user',
-                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).disabledColor, width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).disabledColor, width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).disabledColor, width: 1),
-                    borderRadius: BorderRadius.circular(3.0),
-                  ),
-                  prefixIcon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+                filled: true,
+                isDense: false,
+                // fillColor: Colors.grey.shade300,
+                // focusColor: Colors.grey.shade300,
+                hintText: 'Search user',
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).disabledColor, width: 1),
+                  borderRadius: BorderRadius.circular(3.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).disabledColor, width: 1),
+                  borderRadius: BorderRadius.circular(3.0),
+                ),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).disabledColor, width: 1),
+                  borderRadius: BorderRadius.circular(3.0),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
-              onSubmitted: (value) {
+              onChanged: (value) {
                 value = value.trim();
                 ref.watch(searchFilterProvider).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
