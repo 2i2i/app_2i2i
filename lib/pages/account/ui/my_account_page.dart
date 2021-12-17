@@ -6,9 +6,11 @@ import 'package:app_2i2i/pages/account/ui/widgets/qr_image_widget.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'widgets/account_info.dart';
 
@@ -22,21 +24,27 @@ class MyAccountPage extends ConsumerStatefulWidget {
 class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   // wallet connect part
   String _displayUri = '';
-  void _changeDisplayUri(String uri) {
+  Future _changeDisplayUri(String uri) async {
     log('_changeDisplayUri - uri=$uri');
     setState(() {
       _displayUri = uri;
     });
-    showDialog(
-      context: context,
-      builder: (context) =>
-          QrImagePage(imageUrl: _displayUri),
-      barrierDismissible: false,
-    );
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android) {
+      await launch(uri);
+    } else {
+      await showDialog(
+        context: context,
+        builder: (context) => QrImagePage(imageUrl: _displayUri),
+        barrierDismissible: false,
+      );
+    }
   }
 
-  Future _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
-    final account = WalletConnectAccount.fromNewConnector(accountService: accountService);
+  Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
+      AccountService accountService) async {
+    final account =
+        WalletConnectAccount.fromNewConnector(accountService: accountService);
     // Create a new session
     if (!account.connector.connected) {
       final session = await account.connector.createSession(
@@ -104,14 +112,14 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     onTap: () async {
                       CustomDialogs.loader(true, context);
                       await myAccountPageViewModel.addLocalAccount();
-                       CustomDialogs.loader(false, context,rootNavigator: true);
+                      CustomDialogs.loader(false, context, rootNavigator: true);
                     },
                   ),
                   SpeedDialChild(
                     child: Image.asset('walletconnect-circle-white.png'),
                     onTap: () async {
-                      await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
-
+                      await _createSession(myAccountPageViewModel,
+                          myAccountPageViewModel.accountService!);
                     },
                   ),
                 ],
