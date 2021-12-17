@@ -53,7 +53,7 @@ class CustomDialogs {
 
   static inAppRatingDialog(BuildContext context,
       {required Function onPressed, bool rootNavigator = true}) {
-    double totalRating = 3;
+    double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
       backgroundColor: Theme.of(context).cardColor,
@@ -84,7 +84,7 @@ class CustomDialogs {
         TextButton(
           onPressed: () {
             Navigator.of(context, rootNavigator: rootNavigator).pop();
-            onPressed(totalRating, ratingFeedBack.text);
+            onPressed(totalRating / 5, ratingFeedBack.text);
           },
           child: Text(Strings().appRatingSubmitButton,
               style: Theme.of(context).textTheme.button),

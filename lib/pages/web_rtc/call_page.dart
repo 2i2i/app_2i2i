@@ -240,7 +240,7 @@ class _CallPageState extends ConsumerState<CallPage>
                         budgetTimer?.cancel();
                       }
                       await signaling?.hangUp(_localRenderer);
-                      widget.onHangPhone(widget.user.id, widget.meeting.id);
+                      widget.onHangPhone(widget.meeting.A == widget.user.id ? widget.meeting.B : widget.meeting.A, widget.meeting.id);
                     } catch (e) {
                       log(e.toString());
                     }
