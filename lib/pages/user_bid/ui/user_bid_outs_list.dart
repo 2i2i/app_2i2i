@@ -4,9 +4,10 @@ import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserBidsList extends ConsumerWidget {
-  UserBidsList({
-    required this.bidsIds,
+class UserBidOutsList extends ConsumerWidget {
+  UserBidOutsList({
+    required this.uid,
+    // required this.bidsIds,
     required this.titleWidget,
     required this.noBidsText,
     // required this.onTap,
@@ -15,34 +16,36 @@ class UserBidsList extends ConsumerWidget {
     this.onTrailingIconClick,
   });
 
+  final String uid;
   final Widget titleWidget;
   final String noBidsText;
-  final List<String> bidsIds;
+  // final List<String> bidsIds;
 
   // final void Function(Bid bid) onTap;
   final Widget leading;
   final Icon? trailingIcon;
-  final void Function(Bid bid)? onTrailingIconClick;
+  final void Function(BidOut bid)? onTrailingIconClick;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (bidsIds.isNotEmpty)
-      return _bidsListView(ref, context);
-    else
-      return NoBidPage(
-        noBidsText: noBidsText,
-      );
+    return _bidsListView(ref, context);
+    // if (bidsIds.isNotEmpty)
+    //   return _bidsListView(ref, context);
+    // else
+    //   return NoBidPage(
+    //     noBidsText: noBidsText,
+    //   );
   }
 
   ListView _bidsListView(WidgetRef ref, BuildContext context) {
     return ListView.builder(
-      itemCount: bidsIds.length,
+      // itemCount: bidsIds.length,
       itemBuilder: (_, ix) {
         return StreamBuilder(
-          stream: FirestoreDatabase().bidStream(id: bidsIds[ix]),
+          stream: FirestoreDatabase().bidOutsStream(uid: uid),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData) {
-              Bid bid = snapshot.data;
+              BidOut bid = snapshot.data;
               final String num = bid.speed.num.toString();
               final int assetId = bid.speed.assetId;
               final String assetIDString =

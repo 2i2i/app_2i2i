@@ -3,6 +3,7 @@ import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -19,29 +20,43 @@ class MyUserPageViewModel {
   final UserModelChanger userModelChanger;
   final AccountService accountService;
 
-  Future acceptBid(Bid bid, AbstractAccount? account) async {
+  Future acceptBid(BidIn bidIn, AbstractAccount? account) async {
     final HttpsCallable acceptBid = functions.httpsCallable('acceptBid');
     // TODO only get algorandAddress if bid.speed.num != 0
     await acceptBid({
       'addrB': account?.address,
-      'bid': bid.id,
+      'bid': bidIn.id,
     });
   }
 
-  Future cancelBid(Bid bid) async {
-    final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid({
-      'bid': bid.id,
+  // TODO clean separation into firestore_service and firestore_database
+  Future cancelBid({required String bidId, required String B}) async {
+    final bidOutRef = FirebaseFirestore.instance
+        .collection('users/${user.id}/bidOuts')
+        .doc(bidId);
+    final bidInRef = FirebaseFirestore.instance
+        .collection('users/$B/bidIns')
+        .doc(bidId);
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      transaction.set(bidOutRef, {'cancelled': true}, SetOptions(merge: true));
+      transaction.set(bidInRef, {'cancelled': true}, SetOptions(merge: true));
     });
+    // final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+    // await cancelBid({
+    //   'bid': bid.id,
+    // });
   }
 
   Future changeNameAndBio(String name, String bio) async {
     await userModelChanger.updateNameAndBio(name, bio);
   }
 
-  Future setUserPrivate({required BuildContext context,required String uid, required UserModelPrivate userPrivate}) async {
+  Future setUserPrivate(
+      {required BuildContext context,
+      required String uid,
+      required UserModelPrivate userPrivate}) async {
     CustomDialogs.loader(true, context);
-    await database.setUserPrivate(uid: uid,userPrivate: userPrivate);
+    await database.setUserPrivate(uid: uid, userPrivate: userPrivate);
     CustomDialogs.loader(false, context);
   }
 }

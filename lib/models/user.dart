@@ -44,7 +44,7 @@ class UserModel extends Equatable {
     this.status = 'ONLINE',
     this.locked = false,
     this.currentMeeting,
-    this.bidsIn = const [],
+    // this.bidsIn = const [],
     this.name = '',
     this.bio = '',
     this.rating = 1,
@@ -58,7 +58,7 @@ class UserModel extends Equatable {
   final String status;
   final bool locked;
   final String? currentMeeting;
-  final List<String> bidsIn;
+  // final List<String> bidsIn;
   final String bio;
   final String name;
   late final List<String> _tags;
@@ -96,7 +96,7 @@ class UserModel extends Equatable {
     final status = data['status'] as String;
     final locked = data['locked'] as bool;
     final currentMeeting = data['currentMeeting'] as String?;
-    final List<String> bidsIn = List.castFrom(data['bidsIn'] as List);
+    // final List<String> bidsIn = List.castFrom(data['bidsIn'] as List);
     final name = data['name'] as String;
     final bio = data['bio'] as String;
     final rating = data['rating'] as double;
@@ -108,7 +108,7 @@ class UserModel extends Equatable {
       status: status,
       locked: locked,
       currentMeeting: currentMeeting,
-      bidsIn: bidsIn,
+      // bidsIn: bidsIn,
       name: name,
       bio: bio,
       rating: rating,
@@ -165,7 +165,7 @@ class UserModel extends Equatable {
       'status': status,
       'locked': locked,
       'currentMeeting': currentMeeting,
-      'bidsIn': bidsIn,
+      // 'bidsIn': bidsIn,
       'bio': bio,
       'name': name,
       'tags': _tags,
@@ -177,29 +177,29 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bidsIn: $bidsIn, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 }
 
-class BidOut {
-  const BidOut({required this.bid, required this.user});
-  final String bid;
-  final String user;
+// class BidOut {
+//   const BidOut({required this.bid, required this.user});
+//   final String bid;
+//   final String user;
 
-  @override
-  String toString() {
-    return 'BidOut{bid: $bid, user: $user}';
-  }
-}
+//   @override
+//   String toString() {
+//     return 'BidOut{bid: $bid, user: $user}';
+//   }
+// }
 
 class UserModelPrivate {
   UserModelPrivate({
-    this.bidsOut = const <BidOut>[],
+    // this.bidsOut = const <String>[],
     this.blocked = const <String>[],
     this.friends = const <String>[],
   });
 
-  final List<BidOut> bidsOut;
+  // final List<String> bidsOut;
   final List<String> blocked;
   final List<String> friends;
 
@@ -210,14 +210,12 @@ class UserModelPrivate {
       throw StateError('missing data for uid: $documentId');
     }
 
-    final List<BidOut> bidsOut = List<BidOut>.from(data['bidsOut'].map((item) {
-      return BidOut(bid: item['bid'], user: item['user']);
-    }));
+    // final List<String> bidsOut = List.castFrom(data['bidsOut'] as List);
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModelPrivate(
-      bidsOut: bidsOut,
+      // bidsOut: bidsOut,
       blocked: blocked,
       friends: friends,
     );
@@ -225,7 +223,7 @@ class UserModelPrivate {
 
   Map<String, dynamic> toMap() {
     return {
-      'bidsOut': bidsOut,
+      // 'bidsOut': bidsOut,
       'blocked': blocked,
       'friends': friends,
     };

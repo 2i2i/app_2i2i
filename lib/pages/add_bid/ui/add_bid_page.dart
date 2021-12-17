@@ -38,7 +38,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add bid for ${addBidPageViewModel.user.name}'),
+        title: Text('Add bid for ${addBidPageViewModel.B.name}'),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),

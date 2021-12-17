@@ -309,12 +309,16 @@ final addBidPageViewModelProvider =
 
   final accountService = ref.watch(accountServiceProvider);
 
+  final database = ref.watch(databaseProvider);
+
   return AddBidPageViewModel(
+      uid: uid,
+      database: database,
       functions: functions,
       algorand: algorand,
       accounts: accounts.data!.value,
       accountService: accountService,
-      user: user.data!.value);
+      B: user.data!.value);
 });
 
 final accountsProvider = FutureProvider((ref) {
