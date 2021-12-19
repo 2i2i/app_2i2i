@@ -22,17 +22,15 @@ class Speed {
 }
 
 @immutable
-class Bid extends Equatable {
-  Bid({
+class BidOut extends Equatable {
+  BidOut({
     required this.id,
-    required this.status,
     required this.B,
     required this.speed,
     required this.net,
   });
 
   final String id;
-  final String status;
   final String B;
   final Speed speed;
   final AlgorandNet net;
@@ -43,22 +41,19 @@ class Bid extends Equatable {
   @override
   bool get stringify => true;
 
-  factory Bid.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory BidOut.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
-      log('Bid.fromMap - data == null');
+      log('BidOut.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
 
-    final String status = data['status'];
     final String B = data['B'];
     final Speed speed = Speed.fromMap(data['speed']);
-    log('Bid.fromMap');
-    final AlgorandNet net = AlgorandNet.values
-        .firstWhere((e) => e.toString() == data['net']);
+    final AlgorandNet net =
+        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
 
-    return Bid(
+    return BidOut(
       id: documentId,
-      status: status,
       B: B,
       speed: speed,
       net: net,
@@ -66,44 +61,83 @@ class Bid extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    log('Bid.toMap');
     return {
-      'status': status,
       'B': B,
       'speed': speed.toMap(),
       'net': net.toString(),
+      'active': true, // TODO should support false as well
     };
   }
 }
 
 @immutable
-class BidPrivate {
-  BidPrivate({
+class BidIn extends Equatable {
+  BidIn({
+    required this.id,
+    required this.speed,
+    required this.net,
+  });
+
+  final String id;
+  final Speed speed;
+  final AlgorandNet net;
+
+  @override
+  List<Object> get props => [id];
+
+  @override
+  bool get stringify => true;
+
+  factory BidIn.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('BidIn.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final Speed speed = Speed.fromMap(data['speed']);
+    final AlgorandNet net =
+        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
+
+    return BidIn(
+      id: documentId,
+      speed: speed,
+      net: net,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'speed': speed.toMap(),
+      'net': net.toString(),
+      'active': true, // TODO should support false as well
+    };
+  }
+}
+
+@immutable
+class BidInPrivate {
+  BidInPrivate({
     required this.A,
-    required this.B,
     required this.addrA,
     required this.budget,
   });
 
   final String A;
-  final String B;
   final String? addrA;
   final int budget;
 
-  factory BidPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
-      log('BidPrivate.fromMap - data == null');
+      log('BidInPrivate.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
 
     final String A = data['A'];
-    final String B = data['B'];
-    final String? addrA = data['addrA'];
+    final String addrA = data['addrA'];
     final int budget = data['budget'];
 
-    return BidPrivate(
+    return BidInPrivate(
       A: A,
-      B: B,
       addrA: addrA,
       budget: budget,
     );
@@ -112,7 +146,6 @@ class BidPrivate {
   Map<String, dynamic> toMap() {
     return {
       'A': A,
-      'B': B,
       'addrA': addrA,
       'budget': budget,
     };

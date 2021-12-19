@@ -130,8 +130,7 @@ final algorandProvider = Provider((ref) {
       algorandLib: algorandLib);
 });
 
-final appSettingProvider =
-    ChangeNotifierProvider<AppSettingModel>((ref) {
+final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
@@ -228,12 +227,14 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
   (ref) {
     final uid = ref.watch(myUIDProvider)!;
     final user = ref.watch(userProvider(uid));
-    log(F + ' $user');
+    log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
     if (user.data!.value.currentMeeting == null) return null;
     final String currentMeeting = user.data!.value.currentMeeting!;
+    log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
     final meeting = ref.watch(meetingProvider(currentMeeting));
+    log('lockedUserViewModelProvider - meeting=$meeting');
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
     return LockedUserViewModel(
         user: user.data!.value, meeting: meeting.data!.value);
@@ -279,10 +280,12 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 });
 
 final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
-    final meetingHistoryAList = ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final meetingHistoryAList =
+      ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
-  final meetingHistoryBList = ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final meetingHistoryBList =
+      ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
   if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
     return null;
 
@@ -309,12 +312,19 @@ final addBidPageViewModelProvider =
 
   final accountService = ref.watch(accountServiceProvider);
 
+  final database = ref.watch(databaseProvider);
+
+  final myUid = ref.watch(myUIDProvider);
+  if (myUid == null) return null;
+
   return AddBidPageViewModel(
+      uid: myUid,
+      database: database,
       functions: functions,
       algorand: algorand,
       accounts: accounts.data!.value,
       accountService: accountService,
-      user: user.data!.value);
+      B: user.data!.value);
 });
 
 final accountsProvider = FutureProvider((ref) {

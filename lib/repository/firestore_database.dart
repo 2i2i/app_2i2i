@@ -9,10 +9,13 @@ import 'package:app_2i2i/repository/firestore_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 class FirestoreDatabase {
   FirestoreDatabase();
 
   final _service = FirestoreService.instance;
+
+  String newDocId({required String path}) => _service.newDocId(path: path);
 
   Future<void> setTestA() => _service.setData(
         path: FirestorePath.testA(),
@@ -45,9 +48,7 @@ class FirestoreDatabase {
     log('setUser - done');
   }
 
-  Future<void> addRating(
-          String uid, RatingModel rating) =>
-      _service
+  Future<void> addRating(String uid, RatingModel rating) => _service
           .createData(
         path: FirestorePath.rating(uid),
         data: rating.toMap(),
@@ -125,8 +126,7 @@ class FirestoreDatabase {
 
   Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {
     // log(H + 'FirestoreDatabase - usersStream - tags=$tags');
-    return _service
-        .collectionStream(
+    return _service.collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
         try {
@@ -221,21 +221,36 @@ class FirestoreDatabase {
     );
   }
 
-  Stream<Bid> bidStream({required String id}) => _service.documentStream(
-        path: FirestorePath.bid(id),
-        builder: (data, documentId) => Bid.fromMap(data, documentId),
-      );
+  Stream<List<BidIn>> bidInsStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidIns(uid),
+      builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+    );
+  }
 
-  Future<void> setBid(Bid bid) => _service.setData(
-        path: FirestorePath.bid(bid.id),
-        data: bid.toMap(),
-        merge: true,
-      );
-  Future<void> setBidPrivate(String bidId, BidPrivate bid) => _service.setData(
-        path: FirestorePath.bidPrivate(bidId),
-        data: bid.toMap(),
-        merge: true,
-      );
+  Stream<List<BidOut>> bidOutsStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidOuts(uid),
+      builder: (data, documentId) => BidOut.fromMap(data, documentId),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+    );
+  }
+
+  Future<BidInPrivate?> getBidInPrivate(
+      {required String uid, required String bidId}) async {
+    DocumentSnapshot documentSnapshot =
+        await _service.getData(path: FirestorePath.bidPrivate(uid, bidId));
+    if (documentSnapshot.exists) {
+      String id = documentSnapshot.id;
+      final data = documentSnapshot.data();
+      if (data is Map) BidInPrivate.fromMap(data.cast<String, dynamic>(), id);
+      throw Exception('getBidInPrivate data is not Map');
+    }
+    return null;
+  }
 
   Stream<Meeting> meetingStream({required String id}) =>
       _service.documentStream(

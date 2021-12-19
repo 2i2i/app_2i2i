@@ -48,10 +48,8 @@ class _CallPageState extends ConsumerState<CallPage>
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration =
-        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = getDuration(maxDuration);
-
+    final maxDuration = widget.meeting.maxDuration()!;
+    final duration = getDuration(maxDuration);
     budgetTimer = Timer(Duration(seconds: duration), () {
       progressTimer?.cancel();
       signaling?.hangUp(_localRenderer, reason: 'BUDGET');
@@ -66,7 +64,7 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   int getDuration(int maxDuration) {
-    int duration= maxDuration;
+    int duration = maxDuration;
     final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
@@ -76,19 +74,19 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   void showCountDown(int duration) {
-    if(countDownTimerDate != null){
+    if (countDownTimerDate != null) {
       return;
     }
-    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = getDuration(maxDuration);
+    final maxDuration = widget.meeting.maxDuration()!;
+    final duration = getDuration(maxDuration);
     log(F + ' ====== $duration');
-    if(duration <= 60) {
+    if (duration <= 60) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
         // Future.delayed(Duration.zero).then((value) {
-          // if (mounted) {
-            setState(() {});
-          // }
+        // if (mounted) {
+        setState(() {});
+        // }
         // });
       }
     }
@@ -96,7 +94,6 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
-
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
@@ -141,9 +138,9 @@ class _CallPageState extends ConsumerState<CallPage>
                     )
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                renderer: _remoteRenderer,
-              ),
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _remoteRenderer,
+                    ),
               Positioned(
                 top: 40,
                 left: 40,
@@ -179,17 +176,20 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              widget.meeting.speed.num == 0 ? Container() : Align(
-                alignment: Alignment.centerRight,
-                child: ValueListenableBuilder(
-                  valueListenable: progress,
-                  builder: (BuildContext context, double value, Widget? child) {
-                    double width = MediaQuery.of(context).size.height / 3;
-                    double height = value * width / 100;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 30),
-                      child: Container(
-                        decoration: BoxDecoration(
+              widget.meeting.speed.num == 0
+                  ? Container()
+                  : Align(
+                      alignment: Alignment.centerRight,
+                      child: ValueListenableBuilder(
+                        valueListenable: progress,
+                        builder: (BuildContext context, double value,
+                            Widget? child) {
+                          double width = MediaQuery.of(context).size.height / 3;
+                          double height = value * width / 100;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 30),
+                            child: Container(
+                              decoration: BoxDecoration(
                                   color: Colors.white24,
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(20)),
@@ -206,10 +206,10 @@ class _CallPageState extends ConsumerState<CallPage>
                                 ),
                               ),
                             ),
-                    );
-                  },
-                ),
-              ),
+                          );
+                        },
+                      ),
+                    ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Visibility(
@@ -221,10 +221,13 @@ class _CallPageState extends ConsumerState<CallPage>
                       width: 100,
                       child: Center(
                         child: AnimateCountdownText(
-                          dateTime: countDownTimerDate??DateTime.now(),
+                          dateTime: countDownTimerDate ?? DateTime.now(),
                           format: _formatHMS,
                           animationType: AnimationType.scaleIn,
-                          characterTextStyle: Theme.of(context).textTheme.headline3!.copyWith(color: Colors.white),
+                          characterTextStyle: Theme.of(context)
+                              .textTheme
+                              .headline3!
+                              .copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -240,13 +243,17 @@ class _CallPageState extends ConsumerState<CallPage>
                         budgetTimer?.cancel();
                       }
                       await signaling?.hangUp(_localRenderer);
-                      widget.onHangPhone(widget.meeting.A == widget.user.id ? widget.meeting.B : widget.meeting.A, widget.meeting.id);
+                      widget.onHangPhone(
+                          widget.meeting.A == widget.user.id
+                              ? widget.meeting.B
+                              : widget.meeting.A,
+                          widget.meeting.id);
                     } catch (e) {
                       log(e.toString());
                     }
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom:8.0),
+                    padding: const EdgeInsets.only(bottom: 8.0),
                     child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white38,
@@ -271,7 +278,6 @@ class _CallPageState extends ConsumerState<CallPage>
                   ),
                 ),
               ),
-
             ],
           ),
         );
@@ -279,7 +285,8 @@ class _CallPageState extends ConsumerState<CallPage>
     );
   }
 
-  Widget firstVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget firstVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
@@ -291,7 +298,8 @@ class _CallPageState extends ConsumerState<CallPage>
     );
   }
 
-  Widget secondVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget secondVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,

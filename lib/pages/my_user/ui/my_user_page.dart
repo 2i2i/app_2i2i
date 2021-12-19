@@ -11,7 +11,8 @@ import 'package:app_2i2i/pages/history/history_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/home/widgets/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_bids_list.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_bid_ins_list.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_bid_outs_list.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -154,8 +155,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      UserBidsList(
-                        bidsIds: myUserPageViewModel.user.bidsIn,
+                      UserBidInsList(
+                        uid: user.id,
                         titleWidget: Text('Bids In',
                             style: Theme.of(context).textTheme.headline6),
                         noBidsText: Strings().noBidFound,
@@ -165,7 +166,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                         ),
                         trailingIcon:
                             Icon(Icons.check_circle, color: Colors.green),
-                        onTrailingIconClick: (Bid bid) async {
+                        onTrailingIconClick: (BidIn bid) async {
                           AbstractAccount? account;
                           if (0 < bid.speed.num) {
                             log('bid.speed.num=${bid.speed.num}');
@@ -180,9 +181,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                       ),
                       userPrivateAsyncValue.when(
                           data: (UserModelPrivate userPrivate) {
-                        return UserBidsList(
-                          bidsIds:
-                              userPrivate.bidsOut.map((b) => b.bid).toList(),
+                        return UserBidOutsList(
+                          uid: user.id,
                           titleWidget: Text('Bids Out',
                               style: Theme.of(context).textTheme.headline6),
                           noBidsText: Strings().noBidFound,
@@ -197,9 +197,9 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                             Icons.cancel,
                             color: Color.fromRGBO(104, 160, 242, 1),
                           ),
-                          onTrailingIconClick: (Bid bid) async {
+                          onTrailingIconClick: (BidOut bidOut) async {
                             CustomDialogs.loader(true, context);
-                            await myUserPageViewModel.cancelBid(bid);
+                            await myUserPageViewModel.cancelBid(bidId: bidOut.id, B: bidOut.B);
                             CustomDialogs.loader(false, context);
                           },
                         );
@@ -222,12 +222,12 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
   }
 
   Future<AbstractAccount?> _acceptBid(BuildContext context,
-      MyUserPageViewModel myUserPageViewModel, Bid bid) async {
+      MyUserPageViewModel myUserPageViewModel, BidIn bidIn) async {
     final accounts = await myUserPageViewModel.accountService.getAllAccounts();
     log('_acceptBid - accounts.length${accounts.length}');
     final accountsBoolFutures = accounts
         .map((a) => a.isOptedInToASA(
-            assetId: bid.speed.assetId, net: AlgorandNet.testnet))
+            assetId: bidIn.speed.assetId, net: AlgorandNet.testnet))
         .toList();
     final accountsBool = await Future.wait(accountsBoolFutures);
     log('_acceptBid - accountsBool=$accountsBool');
@@ -259,7 +259,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                               CustomDialogs.loader(true, context);
                               log('about to optInToASA');
                               await accounts[i].optInToASA(
-                                  assetId: bid.speed.assetId,
+                                  assetId: bidIn.speed.assetId,
                                   net: AlgorandNet.testnet);
                               log('done optInToASA');
                               CustomDialogs.loader(false, context);

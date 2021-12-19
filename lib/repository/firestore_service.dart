@@ -4,6 +4,8 @@ class FirestoreService {
   FirestoreService._();
   static final instance = FirestoreService._();
 
+  String newDocId({required String path}) => FirebaseFirestore.instance.collection(path).doc().id;
+
   Future<void> createData({
     required String path,
     required Map<String, dynamic> data,
@@ -24,9 +26,7 @@ class FirestoreService {
     await reference.set(data, SetOptions(merge: merge));
   }
 
-  Future<DocumentSnapshot> getData({
-    required String path
-  }) async {
+  Future<DocumentSnapshot> getData({required String path}) async {
     final reference = FirebaseFirestore.instance.doc(path);
     // print('$path: $data');
     return await reference.get(GetOptions(source: Source.serverAndCache));

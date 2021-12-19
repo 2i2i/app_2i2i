@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
@@ -42,14 +43,14 @@ class RingingPageViewModel {
     try {
       log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
-      String? txId;
+      Map<String, String> txnsIds = {};
 
       if (meeting.speed.num != 0) {
-        txId = await algorand.lockCoins(
-            meeting: meeting, waitForConfirmation: false);
-
-        log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
-        if (txId == 'error') {
+        try {
+          txnsIds = await algorand.lockCoins(
+              meeting: meeting, waitForConfirmation: false);
+          log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txnsIds');
+        } catch (ex) {
           final HttpsCallable meetingTxnFailed =
               functions.httpsCallable('meetingTxnFailed');
           await meetingTxnFailed({'meetingId': meeting.id});
@@ -58,10 +59,13 @@ class RingingPageViewModel {
       }
 
       // update meeting
-      await _updateMeetingAsLockCoinsStarted(txId: txId);
+      await _updateMeetingAsLockCoinsStarted(
+          txId:
+              txnsIds['GROUP']); // TODO quickfix. needs change for ASA support
 
+      // TODO quickfix. needs change for ASA support
       await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: txId, net: meeting.net);
+          txId: txnsIds['GROUP'], net: meeting.net, paymentTxnId: txnsIds['LOCK']);
     } catch (e) {
       log(e.toString());
     }
@@ -72,20 +76,32 @@ class RingingPageViewModel {
 
     final HttpsCallable meetingLockCoinsStarted =
         functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId})
-        .then((value) {
-      log(F + ' == 1');
-    });
+    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId});
   }
 
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-      {required String? txId, required AlgorandNet net}) async {
+      {required String? txId,
+      required AlgorandNet net,
+      String? paymentTxnId}) async {
     // wait for transaction to confirm
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
+    // int budget = 0;
     if (txId != null) {
-      await algorand.waitForConfirmation(txId: txId, net: net).then((value) {
-        log(F + ' == 2');
-      });
+      await algorand.waitForConfirmation(txId: txId, net: net);
+      // if (paymentTxnId != null) {
+      //   final txn = await algorand.getTransactionResponse(paymentTxnId, net);
+      //   budget = txn.transaction.paymentTransaction!.amount;
+      // }
+      // final rawTxn = txn.transaction.transaction;
+      // final a = rawTxn is PaymentTransaction;
+      // final b = rawTxn is ApplicationBaseTransaction;
+      // final paymentTxn = txn.transaction.transaction as PaymentTransaction;
+      // budget = paymentTxn.amount! -
+      //     AlgorandService.LOCK_ALGO_FEE; // TODO incorrect for ASA
+      // log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
+      // log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txn.transaction.toJson()=${txn.transaction.toJson()}');
+      // for (int i = 0; i < txn.innerTxns.length; i++)
+      //   log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txn.innerTxns[i].transaction.toJson()=${txn.innerTxns[i].transaction.toJson()}');
     }
 
     // update meeting
@@ -93,8 +109,7 @@ class RingingPageViewModel {
     // notifyListeners();
     final HttpsCallable meetingLockCoinsConfirmed =
         functions.httpsCallable('meetingLockCoinsConfirmed');
-    await meetingLockCoinsConfirmed({'meetingId': meeting.id}).then((value) {
-      log(F + ' == 3');
-    });
+    await meetingLockCoinsConfirmed(
+        {'meetingId': meeting.id});
   }
 }

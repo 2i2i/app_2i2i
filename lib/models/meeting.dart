@@ -50,7 +50,7 @@ class Meeting extends Equatable {
   final String A;
   final String B;
   final Speed speed;
-  final int budget;
+  final int? budget;
   final AlgorandNet net;
 
   // null in free call
@@ -75,6 +75,11 @@ class Meeting extends Equatable {
     return st == MeetingValue.END_A ||
         st == MeetingValue.END_B ||
         st == MeetingValue.END_SYSTEM;
+  }
+
+  int? maxDuration() {
+    if (budget == null) return null;
+    return (budget! / speed.num).floor();
   }
 
   bool isInit() {
@@ -109,7 +114,7 @@ class Meeting extends Equatable {
     final String A = data['A'];
     final String B = data['B'];
     final Speed speed = Speed.fromMap(data['speed']);
-    final int budget = data['budget'];
+    final int? budget = data['budget'];
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
     final String? lockTxId = data['lockTxId'];
