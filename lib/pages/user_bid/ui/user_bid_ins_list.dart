@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UserBidInsList extends ConsumerWidget {
   UserBidInsList({
     required this.uid,
-    // required this.bidInsIds,
     required this.titleWidget,
     required this.noBidsText,
     // required this.onTap,
@@ -20,7 +19,6 @@ class UserBidInsList extends ConsumerWidget {
   final String uid;
   final Widget titleWidget;
   final String noBidsText;
-  // final List<String> bidInsIds;
 
   // final void Function(Bid bid) onTap;
   final Widget leading;

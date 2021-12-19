@@ -40,10 +40,6 @@ class MyUserPageViewModel {
       transaction.set(bidOutRef, {'active': false}, SetOptions(merge: true));
       transaction.set(bidInRef, {'active': false}, SetOptions(merge: true));
     });
-    // final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    // await cancelBid({
-    //   'bid': bid.id,
-    // });
   }
 
   Future changeNameAndBio(String name, String bio) async {

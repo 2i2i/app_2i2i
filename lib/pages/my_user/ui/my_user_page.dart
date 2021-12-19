@@ -157,7 +157,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     children: [
                       UserBidInsList(
                         uid: user.id,
-                        // bidsIds: myUserPageViewModel.user.bidsIn,
                         titleWidget: Text('Bids In',
                             style: Theme.of(context).textTheme.headline6),
                         noBidsText: Strings().noBidFound,
@@ -184,8 +183,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                           data: (UserModelPrivate userPrivate) {
                         return UserBidOutsList(
                           uid: user.id,
-                          // bidsIds:
-                          //     userPrivate.bidsOut.map((b) => b.bid).toList(),
                           titleWidget: Text('Bids Out',
                               style: Theme.of(context).textTheme.headline6),
                           noBidsText: Strings().noBidFound,
