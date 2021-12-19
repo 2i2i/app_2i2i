@@ -119,10 +119,12 @@ class BidInPrivate {
   BidInPrivate({
     required this.A,
     required this.addrA,
+    required this.budget,
   });
 
   final String A;
   final String? addrA;
+  final int budget;
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -132,10 +134,12 @@ class BidInPrivate {
 
     final String A = data['A'];
     final String addrA = data['addrA'];
+    final int budget = data['budget'];
 
     return BidInPrivate(
       A: A,
       addrA: addrA,
+      budget: budget,
     );
   }
 
@@ -143,6 +147,7 @@ class BidInPrivate {
     return {
       'A': A,
       'addrA': addrA,
+      'budget': budget,
     };
   }
 }

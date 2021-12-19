@@ -114,7 +114,7 @@ class Meeting extends Equatable {
     final String A = data['A'];
     final String B = data['B'];
     final Speed speed = Speed.fromMap(data['speed']);
-    final int budget = data['budget'];
+    final int? budget = data['budget'];
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
     final String? lockTxId = data['lockTxId'];
