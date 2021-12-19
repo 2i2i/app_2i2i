@@ -130,8 +130,7 @@ final algorandProvider = Provider((ref) {
       algorandLib: algorandLib);
 });
 
-final appSettingProvider =
-    ChangeNotifierProvider<AppSettingModel>((ref) {
+final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
@@ -279,10 +278,12 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 });
 
 final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
-    final meetingHistoryAList = ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final meetingHistoryAList =
+      ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
-  final meetingHistoryBList = ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final meetingHistoryBList =
+      ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
   if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
     return null;
 
@@ -311,8 +312,11 @@ final addBidPageViewModelProvider =
 
   final database = ref.watch(databaseProvider);
 
+  final myUid = ref.watch(myUIDProvider);
+  if (myUid == null) return null;
+
   return AddBidPageViewModel(
-      uid: uid,
+      uid: myUid,
       database: database,
       functions: functions,
       algorand: algorand,

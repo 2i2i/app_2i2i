@@ -226,7 +226,7 @@ class FirestoreDatabase {
       path: FirestorePath.bidIns(uid),
       builder: (data, documentId) => BidIn.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('cancelled', isNotEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
@@ -235,7 +235,7 @@ class FirestoreDatabase {
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('cancelled', isNotEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 

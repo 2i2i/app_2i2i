@@ -65,6 +65,7 @@ class BidOut extends Equatable {
       'B': B,
       'speed': speed.toMap(),
       'net': net.toString(),
+      'active': true, // TODO should support false as well
     };
   }
 }
@@ -108,6 +109,7 @@ class BidIn extends Equatable {
     return {
       'speed': speed.toMap(),
       'net': net.toString(),
+      'active': true, // TODO should support false as well
     };
   }
 }
@@ -116,11 +118,11 @@ class BidIn extends Equatable {
 class BidInPrivate {
   BidInPrivate({
     required this.A,
-    required this.budget,
+    required this.addrA,
   });
 
   final String A;
-  final int budget; // energy budget
+  final String? addrA;
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -129,18 +131,18 @@ class BidInPrivate {
     }
 
     final String A = data['A'];
-    final int budget = data['budget'];
+    final String addrA = data['addrA'];
 
     return BidInPrivate(
       A: A,
-      budget: budget,
+      addrA: addrA,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'A': A,
-      'budget': budget,
+      'addrA': addrA,
     };
   }
 }

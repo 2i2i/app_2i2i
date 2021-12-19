@@ -26,53 +26,45 @@ class UserBidOutsList extends ConsumerWidget {
   final Icon? trailingIcon;
   final void Function(BidOut bid)? onTrailingIconClick;
 
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _bidsListView(ref, context);
-    // if (bidsIds.isNotEmpty)
-    //   return _bidsListView(ref, context);
-    // else
-    //   return NoBidPage(
-    //     noBidsText: noBidsText,
-    //   );
-  }
-
-  ListView _bidsListView(WidgetRef ref, BuildContext context) {
-    return ListView.builder(
-      // itemCount: bidsIds.length,
-      itemBuilder: (_, ix) {
-        return StreamBuilder(
-          stream: FirestoreDatabase().bidOutsStream(uid: uid),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasData) {
-              BidOut bid = snapshot.data;
-              final String num = bid.speed.num.toString();
-              final int assetId = bid.speed.assetId;
-              final String assetIDString =
-                  assetId == 0 ? 'ALGO' : assetId.toString();
-              final color = ix % 2 == 0
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).cardColor;
-
-              return Card(
-                  color: color,
-                  child: ListTile(
-                    leading: leading,
-                    trailing: trailingIcon == null
-                        ? null
-                        : IconButton(
-                            onPressed: () => onTrailingIconClick!(bid),
-                            icon: trailingIcon!),
-                    title: Text('$num'),
-                    subtitle: Text('[$assetIDString/sec]'),
-                    // tileColor: color,
-                    // onTap: () => onTap(bid),
-                  ));
+    return StreamBuilder(
+        stream: FirestoreDatabase().bidOutsStream(uid: uid),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length == 0) {
+              return NoBidPage(noBidsText: noBidsText);
             }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
-      },
-    );
+
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                itemBuilder: (_, ix) {
+                  BidOut bid = snapshot.data[ix];
+                  final String num = bid.speed.num.toString();
+                  final int assetId = bid.speed.assetId;
+                  final String assetIDString =
+                      assetId == 0 ? 'ALGO' : assetId.toString();
+                  final color = ix % 2 == 0
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).cardColor;
+
+                  return Card(
+                      color: color,
+                      child: ListTile(
+                        leading: leading,
+                        trailing: trailingIcon == null
+                            ? null
+                            : IconButton(
+                                onPressed: () => onTrailingIconClick!(bid),
+                                icon: trailingIcon!),
+                        title: Text('$num'),
+                        subtitle: Text('[$assetIDString/sec]'),
+                        // tileColor: color,
+                        // onTap: () => onTap(bid),
+                      ));
+                });
+          }
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }

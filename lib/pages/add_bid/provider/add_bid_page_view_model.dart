@@ -29,12 +29,11 @@ class AddBidPageViewModel {
 
   bool submitting = false;
 
-  String duration(AbstractAccount account, int speedNum, Balance balance,
-      double budgetPercentage) {
+  String duration(AbstractAccount account, int speedNum, Balance balance) {
     if (speedNum == 0) {
       return 'forever';
     }
-    final budget = balance.assetHolding.amount * budgetPercentage / 100;
+    final budget = balance.assetHolding.amount;
     final seconds = budget / speedNum;
     return secondsToSensibleTimePeriod(seconds.round());
   }
@@ -44,19 +43,11 @@ class AddBidPageViewModel {
     required AbstractAccount? account,
     required Balance? balance,
     required int speedNum,
-    required double budgetPercentage,
   }) async {
     log('AddBidPageViewModel - addBid');
 
     final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
-
-    final budget = speedNum == 0
-        ? 0
-        : await accountService.calcBudget(
-            assetId: speedAssetId, account: account!, net: balance!.net);
-    log('AddBidPageViewModel - addBid - budget=$budget');
-    final actualBudget = (budget * budgetPercentage / 100).floor();
 
     final speed = Speed(num: speedNum, assetId: speedAssetId);
 
@@ -75,23 +66,12 @@ class AddBidPageViewModel {
         .doc(bidId)
         .collection('private')
         .doc('main');
-    final bidInPrivate = BidInPrivate(A: uid, budget: actualBudget);
+    final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
       transaction.set(
           bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
     });
-
-    // final HttpsCallable addBid = functions.httpsCallable('addBid');
-    // // fireBaseMessaging.sendNotification(user.deviceToken!, "Test", "Text body", "routeName");
-    // final args = {
-    //   'B': B.id,
-    //   'speed': speed.toMap(),
-    //   'net': AlgorandNet.testnet.toString(),
-    //   'addrA': account?.address,
-    //   'budget': actualBudget,
-    // };
-    // await addBid(args);
   }
 }

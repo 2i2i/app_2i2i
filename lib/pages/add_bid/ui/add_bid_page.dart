@@ -26,7 +26,6 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   AbstractAccount? account;
   Balance? balance;
   int speedNum = 0;
-  double budgetPercentage = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +86,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     ))),
                 onPressed: speedNum != 0 && !addBidPageViewModel.submitting
                     ? () async {
-                        final budget = (balance!.assetHolding.amount *
-                            budgetPercentage /
-                            100);
+                        final budget = balance!.assetHolding.amount;
                         final seconds = budget / speedNum;
                         if (seconds > 9) {
                           await connectCall(
@@ -277,37 +274,6 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 12),
-          Text('Budget: ', style: Theme.of(context).textTheme.subtitle1),
-          SizedBox(height: 6),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text("0", style: Theme.of(context).textTheme.bodyText1),
-                Expanded(
-                  child: SliderTheme(
-                    data: SliderThemeData(
-                        thumbColor: AppTheme().green,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 10)),
-                    child: Slider(
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        value: budgetPercentage,
-                        onChanged: (x) {
-                          setState(() {
-                            budgetPercentage = x;
-                          });
-                        }),
-                  ),
-                ),
-                Text("100", style: Theme.of(context).textTheme.bodyText1),
-              ],
-            ),
-          ),
-          SizedBox(height: 6),
           Row(
             children: [
               Text('Max duration: ',
@@ -316,7 +282,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                   account == null
                       ? 'select account'
                       : addBidPageViewModel.duration(
-                          account!, speedNum, balance!, budgetPercentage),
+                          account!, speedNum, balance!),
                   style: Theme.of(context).textTheme.subtitle1),
             ],
           ),
@@ -333,7 +299,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             account: account,
             balance: balance,
             speedNum: speedNum,
-            budgetPercentage: budgetPercentage)
+            )
         .then((value) {
       log('$value');
     });

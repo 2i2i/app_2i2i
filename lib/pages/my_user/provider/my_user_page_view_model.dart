@@ -34,12 +34,11 @@ class MyUserPageViewModel {
     final bidOutRef = FirebaseFirestore.instance
         .collection('users/${user.id}/bidOuts')
         .doc(bidId);
-    final bidInRef = FirebaseFirestore.instance
-        .collection('users/$B/bidIns')
-        .doc(bidId);
+    final bidInRef =
+        FirebaseFirestore.instance.collection('users/$B/bidIns').doc(bidId);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, {'cancelled': true}, SetOptions(merge: true));
-      transaction.set(bidInRef, {'cancelled': true}, SetOptions(merge: true));
+      transaction.set(bidOutRef, {'active': false}, SetOptions(merge: true));
+      transaction.set(bidInRef, {'active': false}, SetOptions(merge: true));
     });
     // final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
     // await cancelBid({
