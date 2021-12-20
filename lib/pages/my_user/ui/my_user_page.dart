@@ -165,8 +165,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                           Icons.label_important,
                           color: Colors.green,
                         ),
-                        trailingIcon:
-                            Icon(Icons.check_circle, color: Colors.green),
+                        trailingIcon: Icon(Icons.check_circle, color: Colors.green),
                         onTrailingIconClick: (BidIn bid) async {
                           AbstractAccount? account;
                           if (0 < bid.speed.num) {

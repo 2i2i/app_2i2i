@@ -1,4 +1,5 @@
 import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/pages/user_bid/ui/widgets/no_bid_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
@@ -46,36 +47,63 @@ class UserBidInsList extends ConsumerWidget {
                 itemBuilder: (_, ix) {
                   BidIn bid = snapshot.data[ix];
 
-                  final bidInPrivate = ref.watch(getBidInPrivate(bid.id)) ;
-                  if (bidInPrivate is AsyncLoading || bidInPrivate is AsyncError){
-                    return CircularProgressIndicator();
+                  final bidInPrivate = ref.watch(getBidInPrivate(bid.id));
+                  if (bidInPrivate is AsyncLoading ||
+                      bidInPrivate is AsyncError) {
+                    return Center(child: CircularProgressIndicator());
                   }
-                  print(bidInPrivate);
+
+                  final user =
+                      ref.watch(userProvider(bidInPrivate.data!.value!.A));
+                  if (user is AsyncLoading || user is AsyncError) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  var statusColor = AppTheme().green;
+                  if (user.data!.value.status == 'OFFLINE')
+                    statusColor = AppTheme().gray;
+                  if (user.data!.value.locked) statusColor = AppTheme().red;
 
                   final String num = bid.speed.num.toString();
                   final int assetId = bid.speed.assetId;
-                  final String assetIDString = assetId == 0 ? 'ALGO' : assetId.toString();
+                  final String assetIDString =
+                      assetId == 0 ? 'ALGO' : assetId.toString();
                   final color = ix % 2 == 0
                       ? Theme.of(context).primaryColor
                       : Theme.of(context).cardColor;
 
                   return InkResponse(
                     onTap: () => CustomDialogs.bidInInfoDialog(
-                        context: context, bidInModel: bid,bidInPrivate: bidInPrivate.data!.value!,onTapTalk: () => onTrailingIconClick!(bid)),
-                    child: Card(
-                        color: color,
-                        child: ListTile(
-                          leading: leading,
-                          trailing: trailingIcon == null
-                              ? null
-                              : IconButton(
-                                  onPressed: () => onTrailingIconClick!(bid),
-                                  icon: trailingIcon!),
-                          title: Text('$num'),
-                          subtitle: Text('[$assetIDString/sec]'),
-                          // tileColor: color,
-                          // onTap: () => onTap(bid),
-                        )),
+                        context: context,
+                        bidInModel: bid,
+                        bidInPrivate: bidInPrivate.data!.value!,
+                        onTapTalk: () => onTrailingIconClick!(bid)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Card(
+                              color: color,
+                              child: ListTile(
+                                leading: leading,
+                                trailing: Icon(Icons.circle, color: statusColor),
+                                title: Text('$num'),
+                                subtitle: Text('[$assetIDString/sec]'),
+                                // tileColor: color,
+                                // onTap: () => onTap(bid),
+                              )),
+                        ),
+                        trailingIcon != null?Card(
+                          color: color,
+                          child: Container(
+                            width: kToolbarHeight,
+                            height: kToolbarHeight,
+                            child: IconButton(
+                                onPressed: () =>
+                                    onTrailingIconClick!(bid),
+                                icon: trailingIcon!),
+                          ),
+                        ):Container(),
+                      ],
+                    ),
                   );
                 });
           }
