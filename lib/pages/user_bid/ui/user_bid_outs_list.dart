@@ -10,7 +10,6 @@ class UserBidOutsList extends ConsumerWidget {
     required this.titleWidget,
     required this.noBidsText,
     // required this.onTap,
-    required this.leading,
     this.trailingIcon,
     this.onTrailingIconClick,
   });
@@ -20,7 +19,6 @@ class UserBidOutsList extends ConsumerWidget {
   final String noBidsText;
 
   // final void Function(Bid bid) onTap;
-  final Widget leading;
   final Icon? trailingIcon;
   final void Function(BidOut bid)? onTrailingIconClick;
 
@@ -49,7 +47,6 @@ class UserBidOutsList extends ConsumerWidget {
                   return Card(
                       color: color,
                       child: ListTile(
-                        leading: leading,
                         trailing: trailingIcon == null
                             ? null
                             : IconButton(

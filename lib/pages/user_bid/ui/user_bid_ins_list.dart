@@ -14,7 +14,6 @@ class UserBidInsList extends ConsumerWidget {
     required this.titleWidget,
     required this.noBidsText,
     // required this.onTap,
-    required this.leading,
     this.trailingIcon,
     this.onTrailingIconClick,
   });
@@ -24,7 +23,6 @@ class UserBidInsList extends ConsumerWidget {
   final String noBidsText;
 
   // final void Function(Bid bid) onTap;
-  final Widget leading;
   final Icon? trailingIcon;
   final void Function(BidIn bid)? onTrailingIconClick;
 
@@ -53,8 +51,7 @@ class UserBidInsList extends ConsumerWidget {
                     return Center(child: CircularProgressIndicator());
                   }
 
-                  final user =
-                      ref.watch(userProvider(bidInPrivate.data!.value!.A));
+                  final user = ref.watch(userProvider(bidInPrivate.data!.value!.A));
                   if (user is AsyncLoading || user is AsyncError) {
                     return Center(child: CircularProgressIndicator());
                   }
@@ -77,33 +74,19 @@ class UserBidInsList extends ConsumerWidget {
                         bidInModel: bid,
                         bidInPrivate: bidInPrivate.data!.value!,
                         onTapTalk: () => onTrailingIconClick!(bid)),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                              color: color,
-                              child: ListTile(
-                                leading: leading,
-                                trailing: Icon(Icons.circle, color: statusColor),
-                                title: Text('$num'),
-                                subtitle: Text('[$assetIDString/sec]'),
-                                // tileColor: color,
-                                // onTap: () => onTap(bid),
-                              )),
-                        ),
-                        trailingIcon != null?Card(
-                          color: color,
-                          child: Container(
-                            width: kToolbarHeight,
-                            height: kToolbarHeight,
-                            child: IconButton(
-                                onPressed: () =>
-                                    onTrailingIconClick!(bid),
-                                icon: trailingIcon!),
-                          ),
-                        ):Container(),
-                      ],
-                    ),
+                    child: Card(
+                        color: color,
+                        child: ListTile(
+                          leading: IconButton(icon: Icon(Icons.circle, color: statusColor),onPressed: null,),
+                          trailing: IconButton(
+                              onPressed: () =>
+                                  onTrailingIconClick!(bid),
+                              icon: trailingIcon!),
+                          title: Text('$num'),
+                          subtitle: Text('[$assetIDString/sec]'),
+                          // tileColor: color,
+                          // onTap: () => onTap(bid),
+                        )),
                   );
                 });
           }
