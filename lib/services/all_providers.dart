@@ -2,6 +2,7 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -217,10 +218,15 @@ final meetingHistoryA =
   return database.meetingHistoryA(id);
 });
 
-final meetingHistoryB =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+final meetingHistoryB = StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(id);
+});
+
+final getBidInPrivate = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+  final uid = ref.watch(myUIDProvider)!;
+  final database = ref.watch(databaseProvider);
+  return database.getBidInPrivate(uid: uid,bidId: bidIn);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(

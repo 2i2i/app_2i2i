@@ -48,6 +48,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     final uid = ref.watch(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+    final databaseProviderModel = ref.watch(databaseProvider);
 
     return myUserPageViewModel == null
         ? WaitPage()
