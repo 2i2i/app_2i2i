@@ -279,10 +279,13 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 });
 
 final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
-    final meetingHistoryAList = ref.watch(meetingHistoryA('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final uid = ref.watch(myUIDProvider)!;
+  final meetingHistoryAList =
+      ref.watch(meetingHistoryA(uid));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
-  final meetingHistoryBList = ref.watch(meetingHistoryB('QlICVgqgyuXNKAeRTNWhO0YDqAE2'));
+  final meetingHistoryBList =
+      ref.watch(meetingHistoryB(uid));
   if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
     return null;
 

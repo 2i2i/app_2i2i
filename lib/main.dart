@@ -11,6 +11,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
+import 'pages/rating/ui/rating_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

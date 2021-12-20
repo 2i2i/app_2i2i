@@ -1,10 +1,12 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
+import 'package:app_2i2i/pages/rating/ui/rating_page.dart';
+import 'package:app_2i2i/pages/search_page/ui/widgtes/star_widget.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
@@ -24,19 +26,34 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
-          leading: IconButton(
-            // onPressed: () => CustomNavigation.push(context, AppSettingPage(), Routes.AppSetting),
-            onPressed: () {
-              CustomDialogs.inAppRatingDialog(context,
-                  onPressed: (rating, ratingFeedBack) {
-                print(rating);
-                print(ratingFeedBack);
-              });
-            },
-            icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
-          )),
+        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
+        leading: IconButton(
+          onPressed: () => CustomNavigation.push(
+              context, AppSettingPage(), Routes.AppSetting),
+          icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
+        ),
+        centerTitle: true,
+        actions: [
+          InkWell(
+            onTap: () => CustomNavigation.push(
+                context, RatingPage(), Routes.RATING),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                StarWidget(
+                  value: 25 / 100,
+                  height: 40,
+                  width: 25,
+                ),
+                SizedBox(height: 2),
+                Text('2.5', style: Theme.of(context).textTheme.overline)
+              ],
+            ),
+          ),
+          SizedBox(width: 8)
+        ],
+      ),
       body: Column(
         children: [
           Container(
@@ -163,3 +180,4 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 }
+

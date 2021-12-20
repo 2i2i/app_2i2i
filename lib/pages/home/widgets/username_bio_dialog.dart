@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SetupBio extends ConsumerStatefulWidget {
   final UserModel user;
+
   const SetupBio({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -16,6 +21,8 @@ class _SetupBioState extends ConsumerState<SetupBio> {
   TextEditingController userNameEditController = TextEditingController();
   TextEditingController bioEditController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  File? imageFile;
 
   @override
   void initState() {
@@ -37,24 +44,71 @@ class _SetupBioState extends ConsumerState<SetupBio> {
           key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(Strings().aboutYouDesc),
-              SizedBox(height: 40),
+              SizedBox(height: 20),
+              CircleAvatar(
+                radius: MediaQuery.of(context).size.height * 0.055,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: ClipOval(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        imageFile != null
+                            ? Image.network(imageFile!.path,
+                            fit: BoxFit.cover)
+                            : Image.network(
+                                "https://picsum.photos/id/237/200/300",
+                                fit: BoxFit.cover),
+                        InkWell(
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () async {
+                            final ImagePicker _picker = ImagePicker();
+                            final XFile? image = await _picker.pickImage(
+                                source: ImageSource.gallery,imageQuality: 50);
+                            imageFile = File(image!.path);
+                            setState(() {});
+                          },
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              color: Colors.black.withOpacity(0.8),
+                              // alignment: Alignment.bottomCenter,
+                              width: double.infinity,
+                              padding: EdgeInsets.all(4),
+                              child: Text('Edit',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .overline!
+                                      .copyWith(color: AppTheme().white)),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: userNameEditController,
                 textInputAction: TextInputAction.next,
                 validator: (value) {
                   value ??= '';
-                  if(value.trim().isEmpty){
+                  if (value.trim().isEmpty) {
                     return Strings().required;
                   }
                 },
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                    labelText: Strings().writeYourName,
-                    hintText: Strings().yourNameHint,
+                  labelText: Strings().writeYourName,
+                  hintText: Strings().yourNameHint,
                 ),
               ),
               SizedBox(height: 20),
@@ -65,9 +119,9 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 minLines: 6,
                 maxLines: 6,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: Strings().writeYourBio,
-                    hintText: Strings().bioExample,
+                  border: OutlineInputBorder(),
+                  labelText: Strings().writeYourBio,
+                  hintText: Strings().bioExample,
                 ),
               ),
             ],
@@ -85,7 +139,7 @@ class _SetupBioState extends ConsumerState<SetupBio> {
           ),
           TextButton(
             style:TextButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+              primary: Theme.of(context).primaryColor,
             ),
             onPressed: () {
               if(formKey.currentState?.validate()??false) {
