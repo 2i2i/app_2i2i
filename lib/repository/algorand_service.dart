@@ -15,13 +15,20 @@ class AlgorandLib {
     AlgorandNet.testnet: AlgoExplorer.TESTNET_ALGOD_API_URL,
     AlgorandNet.betanet: AlgoExplorer.BETANET_ALGOD_API_URL,
   };
+  static const Map<AlgorandNet, String> INDEXER_URL = {
+    AlgorandNet.mainnet: AlgoExplorer.MAINNET_INDEXER_API_URL,
+    AlgorandNet.testnet: AlgoExplorer.TESTNET_INDEXER_API_URL,
+    AlgorandNet.betanet: AlgoExplorer.BETANET_INDEXER_API_URL,
+  };
   AlgorandLib() {
     client[AlgorandNet.mainnet] = Algorand(
         algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.mainnet]!),
-        indexerClient: IndexerClient(apiUrl: API_URL[AlgorandNet.mainnet]!));
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.mainnet]!));
     client[AlgorandNet.testnet] = Algorand(
         algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.testnet]!),
-        indexerClient: IndexerClient(apiUrl: API_URL[AlgorandNet.testnet]!));
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.testnet]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
@@ -106,7 +113,7 @@ class AlgorandService {
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
-  Future<Map<String, String>> lockCoins(
+  Future<MeetingTxns> lockCoins(
       {required Meeting meeting, waitForConfirmation = true}) async {
     log('lock - meeting.speed.assetId=${meeting.speed.assetId}');
     final account = await accountService.findAccount(meeting.addrA!);
@@ -130,7 +137,7 @@ class AlgorandService {
     );
   }
 
-  Future<Map<String, String>> _lockALGO(
+  Future<MeetingTxns> _lockALGO(
       {required String B,
       required int speed,
       required AbstractAccount account,
@@ -145,7 +152,6 @@ class AlgorandService {
     log('lockALGO - params=$params');
 
     final List<RawTransaction> txns = [];
-    final Map<String, String> txnsIds = {};
 
     final optedIntoSystem =
         await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
@@ -156,7 +162,6 @@ class AlgorandService {
             ..suggestedParams = params)
           .build();
       txns.add(optInTxn);
-      txnsIds['OPT_IN'] = optInTxn.id;
     }
 
     int budget =
@@ -171,7 +176,6 @@ class AlgorandService {
         .build();
     log('lockALGO - lockTxn=$lockTxn');
     txns.add(lockTxn);
-    txnsIds['LOCK'] = lockTxn.id;
 
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
     log('lockALGO - arguments=$arguments');
@@ -184,7 +188,6 @@ class AlgorandService {
         .build();
     log('lockALGO - stateTxn=$stateTxn');
     txns.add(stateTxn);
-    txnsIds['STATE'] = stateTxn.id;
 
     AtomicTransfer.group(txns);
     log('lockALGO - grouped');
@@ -195,12 +198,19 @@ class AlgorandService {
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      txnsIds['GROUP'] = txId;
       log('lockALGO - txId=$txId');
 
       if (waitForConfirmation)
         await algorandLib.client[net]!.waitForConfirmation(txId);
       log('lockALGO - done');
+
+      // tx ids
+      final txnsIds = MeetingTxns(
+        group: txId,
+        lockALGO: lockTxn.id,
+        state: stateTxn.id,
+      );
+      if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
 
       return txnsIds;
     } on AlgorandException catch (ex) {
@@ -215,7 +225,7 @@ class AlgorandService {
     }
   }
 
-  Future<Map<String, String>> _lockASA(
+  Future<MeetingTxns> _lockASA(
       {required String B,
       required int speed,
       required int assetId,
@@ -238,7 +248,6 @@ class AlgorandService {
     log('lockASA - params=$params');
 
     final List<RawTransaction> txns = [];
-    final Map<String, String> txnsIds = {};
 
     final optedIntoSystem =
         await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
@@ -249,7 +258,6 @@ class AlgorandService {
             ..suggestedParams = params)
           .build();
       txns.add(optInTxn);
-      txnsIds['OPT_IN'] = optInTxn.id;
     }
 
     final lockALGOTxn = await (PaymentTransactionBuilder()
@@ -261,7 +269,6 @@ class AlgorandService {
         .build();
     // log('lockASA - lockALGOTxn=$lockALGOTxn');
     txns.add(lockALGOTxn);
-    txnsIds['LOCK_FEE'] = lockALGOTxn.id;
 
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
     log('lockASA - arguments=$arguments');
@@ -280,7 +287,6 @@ class AlgorandService {
         .build();
     // log('lockASA - stateTxn=$stateTxn');
     txns.add(stateTxn);
-    txnsIds['STATE'] = stateTxn.id;
 
     int budget = await accountService.calcBudget(
         assetId: assetId, account: account, net: net);
@@ -295,7 +301,6 @@ class AlgorandService {
         .build();
     // log('lockASA - lockASATxn=$lockASATxn');
     txns.add(lockASATxn);
-    txnsIds['LOCK'] = lockASATxn.id;
 
     // TODO in parallel
     AtomicTransfer.group(txns);
@@ -306,7 +311,6 @@ class AlgorandService {
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      txnsIds['GROUP'] = txId;
       log('lockASA - txId=$txId');
       if (waitForConfirmation)
         await algorandLib.client[net]!.waitForConfirmation(txId);
@@ -320,6 +324,15 @@ class AlgorandService {
           'assetId': assetId,
         });
       }
+
+      // tx ids
+      final txnsIds = MeetingTxns(
+        group: txId,
+        lockALGO: lockALGOTxn.id,
+        state: stateTxn.id,
+        lockASA: lockASATxn.id,
+      );
+      if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
 
       return txnsIds;
     } on AlgorandException catch (ex) {

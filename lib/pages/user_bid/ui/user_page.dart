@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
