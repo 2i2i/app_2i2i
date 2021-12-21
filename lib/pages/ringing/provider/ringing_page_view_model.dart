@@ -85,15 +85,20 @@ class RingingPageViewModel {
       'meetingId': meeting.id
     };
 
-    await algorand.waitForConfirmation(txId: txns.group, net: net);
+    if (txns.group != null) {
+      await algorand.waitForConfirmation(txId: txns.group!, net: net);
+    }
 
-    final isALGO = meeting.speed.assetId == 0;
-    final txnResponse = await algorand.getTransactionResponse(
-        txns.lockId(isALGO: isALGO)!, net);
-    final budget = isALGO
-        ? txnResponse.transaction.paymentTransaction!.amount -
-            AlgorandService.LOCK_ALGO_FEE
-        : txnResponse.transaction.assetTransferTransaction!.amount;
+    int budget = 0;
+    if (txns.lockALGO != null) {
+      final isALGO = meeting.speed.assetId == 0;
+      final txnResponse = await algorand.getTransactionResponse(
+          txns.lockId(isALGO: isALGO)!, net);
+      budget = isALGO
+          ? txnResponse.transaction.paymentTransaction!.amount -
+              AlgorandService.LOCK_ALGO_FEE
+          : txnResponse.transaction.assetTransferTransaction!.amount;
+    }
     meetingLockCoinsConfirmedData['budget'] = budget;
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
 
