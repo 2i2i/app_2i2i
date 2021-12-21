@@ -49,10 +49,6 @@ class AddBidPageViewModel {
     final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final budget = speedNum == 0 ? 0 : await accountService.calcBudget(assetId: speedAssetId, account: account!, net: balance!.net);
-    log('AddBidPageViewModel - addBid - budget=$budget');
-    final actualBudget = budget.floor();
-
     final speed = Speed(num: speedNum, assetId: speedAssetId);
 
     // TODO clean separation into firestore_service and firestore_database
@@ -70,7 +66,7 @@ class AddBidPageViewModel {
         .doc(bidId)
         .collection('private')
         .doc('main');
-    final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address, budget: actualBudget);
+    final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));

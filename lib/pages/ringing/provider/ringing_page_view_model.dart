@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
@@ -16,7 +15,7 @@ class RingingPageViewModel {
       required this.functions}) {
     if (meeting.currentStatus() == MeetingValue.LOCK_COINS_STARTED)
       _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: meeting.lockTxId, net: meeting.net);
+          txns: meeting.txns, net: meeting.net);
   }
 
   final FirebaseFunctions functions;
@@ -43,13 +42,13 @@ class RingingPageViewModel {
     try {
       log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
-      Map<String, String> txnsIds = {};
+      MeetingTxns txns = MeetingTxns();
 
       if (meeting.speed.num != 0) {
         try {
-          txnsIds = await algorand.lockCoins(
+          txns = await algorand.lockCoins(
               meeting: meeting, waitForConfirmation: false);
-          log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txnsIds');
+          log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
           final HttpsCallable meetingTxnFailed =
               functions.httpsCallable('meetingTxnFailed');
@@ -59,57 +58,51 @@ class RingingPageViewModel {
       }
 
       // update meeting
-      await _updateMeetingAsLockCoinsStarted(
-          txId:
-              txnsIds['GROUP']); // TODO quickfix. needs change for ASA support
+      await _updateMeetingAsLockCoinsStarted(txns);
 
-      // TODO quickfix. needs change for ASA support
       await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: txnsIds['GROUP'], net: meeting.net, paymentTxnId: txnsIds['LOCK']);
+          txns: txns, net: meeting.net);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future _updateMeetingAsLockCoinsStarted({required String? txId}) async {
-    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
+  Future _updateMeetingAsLockCoinsStarted(MeetingTxns txns) async {
+    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txns=$txns');
 
+    final data = {'meetingId': meeting.id, 'txns': txns.toMap()};
     final HttpsCallable meetingLockCoinsStarted =
         functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId});
+    await meetingLockCoinsStarted(data);
   }
 
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-      {required String? txId,
-      required AlgorandNet net,
-      String? paymentTxnId}) async {
+      {required MeetingTxns txns, required AlgorandNet net}) async {
     // wait for transaction to confirm
-    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
+    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txns=$txns');
     // int budget = 0;
-    if (txId != null) {
-      await algorand.waitForConfirmation(txId: txId, net: net);
-      // if (paymentTxnId != null) {
-      //   final txn = await algorand.getTransactionResponse(paymentTxnId, net);
-      //   budget = txn.transaction.paymentTransaction!.amount;
-      // }
-      // final rawTxn = txn.transaction.transaction;
-      // final a = rawTxn is PaymentTransaction;
-      // final b = rawTxn is ApplicationBaseTransaction;
-      // final paymentTxn = txn.transaction.transaction as PaymentTransaction;
-      // budget = paymentTxn.amount! -
-      //     AlgorandService.LOCK_ALGO_FEE; // TODO incorrect for ASA
-      // log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
-      // log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txn.transaction.toJson()=${txn.transaction.toJson()}');
-      // for (int i = 0; i < txn.innerTxns.length; i++)
-      //   log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txn.innerTxns[i].transaction.toJson()=${txn.innerTxns[i].transaction.toJson()}');
-    }
+
+    final meetingLockCoinsConfirmedData = <String, dynamic>{
+      'meetingId': meeting.id
+    };
+
+    await algorand.waitForConfirmation(txId: txns.group, net: net);
+
+    final isALGO = meeting.speed.assetId == 0;
+    final txnResponse = await algorand.getTransactionResponse(
+        txns.lockId(isALGO: isALGO)!, net);
+    final budget = isALGO
+        ? txnResponse.transaction.paymentTransaction!.amount -
+            AlgorandService.LOCK_ALGO_FEE
+        : txnResponse.transaction.assetTransferTransaction!.amount;
+    meetingLockCoinsConfirmedData['budget'] = budget;
+    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
 
     // update meeting
     // message = 'updating meeting';
     // notifyListeners();
     final HttpsCallable meetingLockCoinsConfirmed =
         functions.httpsCallable('meetingLockCoinsConfirmed');
-    await meetingLockCoinsConfirmed(
-        {'meetingId': meeting.id});
+    await meetingLockCoinsConfirmed(meetingLockCoinsConfirmedData);
   }
 }

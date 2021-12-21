@@ -38,8 +38,7 @@ class Meeting extends Equatable {
     required this.speed,
     required this.budget,
     required this.net,
-    required this.lockTxId,
-    required this.unlockTxId,
+    required this.txns,
     required this.addrA,
     required this.addrB,
     required this.status,
@@ -54,8 +53,7 @@ class Meeting extends Equatable {
   final AlgorandNet net;
 
   // null in free call
-  final String? lockTxId;
-  final String? unlockTxId;
+  final MeetingTxns txns;
   final String? addrA;
   final String? addrB;
 
@@ -117,8 +115,7 @@ class Meeting extends Equatable {
     final int? budget = data['budget'];
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
-    final String? lockTxId = data['lockTxId'];
-    final String? unlockTxId = data['unlockTxId'];
+    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
     final List<MeetingStatus> status =
@@ -137,8 +134,7 @@ class Meeting extends Equatable {
       speed: speed,
       budget: budget,
       net: net,
-      lockTxId: lockTxId,
-      unlockTxId: unlockTxId,
+      txns: txns,
       addrA: addrA,
       addrB: addrB,
       status: status,
@@ -154,8 +150,7 @@ class Meeting extends Equatable {
       'speed': speed.toMap(),
       'budget': budget,
       'net': net.toString(),
-      'lockTxId': lockTxId,
-      'unlockTxId': unlockTxId,
+      'txns': txns.toMap(),
       'addrA': addrA,
       'addrB': addrB,
       'status': status,
@@ -200,4 +195,48 @@ class RatingModel {
       'meeting': meeting,
     };
   }
+}
+
+class MeetingTxns {
+  MeetingTxns(
+      {this.group,
+      this.lockALGO,
+      this.lockASA,
+      this.state,
+      this.unlock,
+      this.optIn});
+  String? group;
+  String? lockALGO;
+  String? lockASA;
+  String? state;
+  String? unlock;
+  String? optIn;
+  factory MeetingTxns.fromMap(Map<String, dynamic> data) {
+    final String? group = data['group'];
+    final String? lockALGO = data['lockALGO'];
+    final String? lockASA = data['lockASA'];
+    final String? state = data['state'];
+    final String? unlock = data['unlock'];
+    final String? optIn = data['optIn'];
+    return MeetingTxns(
+      group: group,
+      lockALGO: lockALGO,
+      lockASA: lockASA,
+      state: state,
+      unlock: unlock,
+      optIn: optIn,
+    );
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      'group': group,
+      'lockALGO': lockALGO,
+      'lockASA': lockASA,
+      'state': state,
+      'unlock': unlock,
+      'optIn': optIn,
+    };
+  }
+
+  String? lockId({required bool isALGO}) => isALGO ? lockALGO : lockASA;
 }
