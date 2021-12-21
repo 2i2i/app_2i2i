@@ -48,7 +48,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     final uid = ref.watch(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
-    final databaseProviderModel = ref.watch(databaseProvider);
 
     return myUserPageViewModel == null
         ? WaitPage()
@@ -161,10 +160,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                         titleWidget: Text('Bids In',
                             style: Theme.of(context).textTheme.headline6),
                         noBidsText: Strings().noBidFound,
-                        leading: Icon(
-                          Icons.label_important,
-                          color: Colors.green,
-                        ),
                         trailingIcon: Icon(Icons.check_circle, color: Colors.green),
                         onTrailingIconClick: (BidIn bid) async {
                           AbstractAccount? account;
@@ -186,13 +181,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                           titleWidget: Text('Bids Out',
                               style: Theme.of(context).textTheme.headline6),
                           noBidsText: Strings().noBidFound,
-                          // onTap: myUserPageViewModel.cancelBid
-                          leading: Transform.rotate(
-                              angle: pi,
-                              child: Icon(
-                                Icons.label_important,
-                                color: Color.fromRGBO(104, 160, 242, 1),
-                              )),
                           trailingIcon: Icon(
                             Icons.cancel,
                             color: Color.fromRGBO(104, 160, 242, 1),
