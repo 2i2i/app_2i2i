@@ -23,7 +23,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../pages/history/provider/history_view_model.dart';
-import '../pages/web_rtc/provider/call_screen_provider.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -136,10 +135,6 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
-
-//call provider
-final callProvider =
-    ChangeNotifierProvider<CallScreenModel>((ref) => CallScreenModel());
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 

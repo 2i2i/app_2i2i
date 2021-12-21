@@ -7,6 +7,8 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -14,9 +16,6 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
-import 'provider/call_screen_provider.dart';
-
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
@@ -127,7 +126,10 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   Widget build(BuildContext context) {
-    CallScreenModel callScreenModel = ref.watch(callProvider);
+    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
+    if (lockedUserViewModel == null) {
+      return WaitPage();
+    }
     return Scaffold(
       key: _scaffoldKey,
       body: OrientationBuilder(builder: (context, orientation) {
@@ -135,7 +137,7 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              callScreenModel.swapped
+              lockedUserViewModel.swapped
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -153,7 +155,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !callScreenModel.swapped
+                      child: !lockedUserViewModel.swapped
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -167,7 +169,7 @@ class _CallPageState extends ConsumerState<CallPage>
                     ),
                     InkResponse(
                       onTap: () {
-                        callScreenModel.swapped = !callScreenModel.swapped;
+                        lockedUserViewModel.swapped = !lockedUserViewModel.swapped;
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
@@ -256,11 +258,11 @@ class _CallPageState extends ConsumerState<CallPage>
                         backgroundColor: AppTheme().red,
                         onTap: () {
                           _localRenderer.muted = !_localRenderer.muted;
-                          callScreenModel.hangCall();
+                          lockedUserViewModel.hangCall();
                         },
                       ),
                       CircleButton(
-                        icon: callScreenModel.isMute
+                        icon: lockedUserViewModel.isMute
                             ? Icons.mic_off_rounded
                             : Icons.mic_rounded,
                         onTap: () {
@@ -272,12 +274,12 @@ class _CallPageState extends ConsumerState<CallPage>
                         },
                       ),
                       CircleButton(
-                        icon: callScreenModel.isDisableVideo
+                        icon: lockedUserViewModel.isDisableVideo
                             ? Icons.videocam_off_rounded
                             : Icons.videocam_rounded,
                         onTap: () {
-                          callScreenModel.isDisableVideo =
-                              !callScreenModel.isDisableVideo;
+                          lockedUserViewModel.isDisableVideo =
+                              !lockedUserViewModel.isDisableVideo;
                         },
                       ),
                       CircleButton(

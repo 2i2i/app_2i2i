@@ -154,7 +154,7 @@ class CustomDialogs {
     AlertDialog ratingDialog = AlertDialog(
       backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
-      title: Text("${bidInPrivate.budget}"),
+      title: Text("${bidInPrivate}"),
       // contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       // actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
       actions: [
