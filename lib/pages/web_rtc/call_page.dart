@@ -7,6 +7,7 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -39,6 +40,7 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Timer? budgetTimer;
   Timer? progressTimer;
+  CallScreenModel? callScreenModel;
 
   ValueNotifier<double> progress = ValueNotifier(100);
   DateTime? countDownTimerDate;
@@ -123,22 +125,14 @@ class _CallPageState extends ConsumerState<CallPage>
     super.dispose();
   }
 
-  Widget firstVideoView(
-      {double? height, double? width, RTCVideoRenderer? renderer}) {
-    return Container(
-      width: width,
-      height: height,
-      child: RTCVideoView(
-        renderer!,
-        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-      ),
-      decoration: BoxDecoration(color: Colors.black54),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    final callScreenModel = ref.watch(callScreenProvider);
+    callScreenModel = ref.watch(callScreenProvider);
+    final userModel = ref.watch(userProvider(widget.meeting.A));
+    if (userModel is AsyncLoading || userModel is AsyncError) {
+      return Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -147,12 +141,12 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              callScreenModel.swapped
+              callScreenModel?.swapped ?? false
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                renderer: _localRenderer,
-              )
+                      renderer: _localRenderer,
+                      userModel: userModel.data!.value)
                   : secondVideoView(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
@@ -165,12 +159,12 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !callScreenModel.swapped
+                      child: !(callScreenModel?.swapped ?? false)
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                            )
+                              userModel: userModel.data!.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -178,8 +172,8 @@ class _CallPageState extends ConsumerState<CallPage>
                             ),
                     ),
                     InkResponse(
-                      onTap: () =>
-                          callScreenModel.swapped = !callScreenModel.swapped,
+                      onTap: () => callScreenModel!.swapped =
+                          !(callScreenModel?.swapped ?? false),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: Container(
@@ -191,35 +185,55 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              (widget.meeting.speed.num) == 0
-                  ? Container()
-                  : Align(
+              if ((1) == 0) Container() else Align(
                 alignment: Alignment.centerRight,
                 child: ValueListenableBuilder(
                   valueListenable: progress,
-                  builder: (BuildContext context, double value,
-                      Widget? child) {
+                  builder: (BuildContext context, double value, Widget? child) {
                     double width = MediaQuery.of(context).size.height / 3;
                     double height = value * width / 100;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 30),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white24,
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Material(
-                            shadowColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            type: MaterialType.card,
-                            child: ProgressBar(
-                              height: height,
+                    return Container(
+                      height: width,
+                      width: 28,
+                      margin: const EdgeInsets.only(right: 30,left: 30),
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Material(
+                                color: Colors.transparent,
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                type: MaterialType.card,
+                                child: SizedBox(
+                                  height: width,
+                                  width: 20,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          Align(
+                            alignment:Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Material(
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                type: MaterialType.card,
+                                child: ProgressBar(
+                                  height: height,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -276,21 +290,21 @@ class _CallPageState extends ConsumerState<CallPage>
                             }
                           }),
                       CircleButton(
-                          icon: callScreenModel.isMuteEnable
+                          icon: callScreenModel?.isMuteEnable ?? false
                               ? Icons.mic_rounded
                               : Icons.mic_off_rounded,
-                          onTap: () => callScreenModel.muteCall(
+                          onTap: () => callScreenModel!.muteCall(
                               signaling: signaling!,
                               localRenderer: _localRenderer)),
                       CircleButton(
-                          icon: callScreenModel.isVideoEnable
+                          icon: callScreenModel?.isVideoEnable ?? false
                               ? Icons.videocam_rounded
                               : Icons.videocam_off_rounded,
-                          onTap: () => callScreenModel.disableVideo(
-                              signaling: signaling!)),
+                          onTap: () => callScreenModel!
+                              .disableVideo(signaling: signaling!)),
                       CircleButton(
                           icon: Icons.cameraswitch_rounded,
-                          onTap: () => callScreenModel.cameraSwitch(
+                          onTap: () => callScreenModel!.cameraSwitch(
                               context: context, signaling: signaling!)),
                     ],
                   ),
@@ -305,13 +319,40 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Widget secondVideoView(
       {double? height, double? width, RTCVideoRenderer? renderer}) {
-    print(renderer!.renderVideo);
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer,
-          mirror: true,
-          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+      child: signaling!.checkVideoView()
+          ? RTCVideoView(renderer!,
+              mirror: true,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
+          : Center(
+              child: Text(
+              "userModel!.name",
+              style: TextStyle(color: Colors.white),
+            )),
+      decoration: BoxDecoration(color: Colors.black54),
+    );
+  }
+
+  Widget firstVideoView(
+      {double? height,
+      double? width,
+      RTCVideoRenderer? renderer,
+      UserModel? userModel}) {
+    return Container(
+      width: width,
+      height: height,
+      child: signaling!.checkVideoView()
+          ? RTCVideoView(
+              renderer!,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+            )
+          : Center(
+              child: Text(
+              "${userModel!.name}",
+              style: TextStyle(color: Colors.white),
+            )),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }

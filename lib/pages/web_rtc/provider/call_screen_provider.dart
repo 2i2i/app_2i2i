@@ -46,11 +46,13 @@ class CallScreenModel extends ChangeNotifier {
     localRenderer.muted = !isMuteEnable;
     signaling.localStream.getAudioTracks().first.enabled = !isMuteEnable;
     _isMuteEnable = !_isMuteEnable;
+    notifyListeners();
   }
 
   disableVideo({required Signaling signaling}) {
     signaling.localStream.getVideoTracks().first.enabled = !isVideoEnable;
     _isVideoEnable = !isVideoEnable;
+    notifyListeners();
   }
 
   Future<void> cameraSwitch(

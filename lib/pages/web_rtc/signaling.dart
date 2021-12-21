@@ -333,10 +333,7 @@ class Signaling {
     };
   }
 
-  Future<void> muteCall() async {
-    final videoTrack = localStream
-        .getVideoTracks()
-        .firstWhere((track) => track.kind == 'video');
-    await Helper.switchCamera(videoTrack);
+  bool checkVideoView() {
+    return remoteStream!.getVideoTracks().first.enabled;
   }
 }
