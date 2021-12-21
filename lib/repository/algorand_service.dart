@@ -108,7 +108,7 @@ class AlgorandService {
 
   // not using this method in the other methods due to naming clash
   Future<PendingTransaction> waitForConfirmation(
-      {required txId, required AlgorandNet net}) {
+      {required String txId, required AlgorandNet net}) {
     log('AlgorandService - waitForConfirmation - txId=$txId');
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
