@@ -14,6 +14,7 @@ import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
+import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
@@ -135,6 +136,8 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
+
+final callScreenProvider = ChangeNotifierProvider<CallScreenModel>((ref)=>CallScreenModel());
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 

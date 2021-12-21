@@ -7,7 +7,6 @@ import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -39,7 +38,6 @@ class _CallPageState extends ConsumerState<CallPage>
   TextEditingController textEditingController = TextEditingController(text: '');
 
   Timer? budgetTimer;
-  bool swapped = false;
   Timer? progressTimer;
 
   ValueNotifier<double> progress = ValueNotifier(100);
@@ -109,6 +107,7 @@ class _CallPageState extends ConsumerState<CallPage>
         remoteVideo: _remoteRenderer);
     signaling!.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
+      ref.read(callScreenProvider).getInitialValue(signaling!.localStream);
       setState(() {});
     });
 
@@ -124,12 +123,23 @@ class _CallPageState extends ConsumerState<CallPage>
     super.dispose();
   }
 
+  Widget firstVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
+    return Container(
+      width: width,
+      height: height,
+      child: RTCVideoView(
+        renderer!,
+        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+      ),
+      decoration: BoxDecoration(color: Colors.black54),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
-    if (lockedUserViewModel == null) {
-      return WaitPage();
-    }
+    final callScreenModel = ref.watch(callScreenProvider);
+
     return Scaffold(
       key: _scaffoldKey,
       body: OrientationBuilder(builder: (context, orientation) {
@@ -137,7 +147,7 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              swapped
+              callScreenModel.swapped
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -155,7 +165,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !swapped
+                      child: !callScreenModel.swapped
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -168,10 +178,8 @@ class _CallPageState extends ConsumerState<CallPage>
                             ),
                     ),
                     InkResponse(
-                      onTap: () {
-                        swapped = !swapped;
-                        setState(() {});
-                      },
+                      onTap: () =>
+                          callScreenModel.swapped = !callScreenModel.swapped,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: Container(
@@ -183,7 +191,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              (/*widget.meeting.speed.num*/ 0) == 0
+              (widget.meeting.speed.num) == 0
                   ? Container()
                   : Align(
                 alignment: Alignment.centerRight,
@@ -254,49 +262,36 @@ class _CallPageState extends ConsumerState<CallPage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CircleButton(
-                        icon: Icons.call_end,
-                        iconColor: Colors.white,
-                        backgroundColor: AppTheme().red,
-                        onTap: () {
-                          try {
-                            if (budgetTimer?.isActive ?? false) {
-                              budgetTimer?.cancel();
+                          icon: Icons.call_end,
+                          iconColor: Colors.white,
+                          backgroundColor: AppTheme().red,
+                          onTap: () {
+                            try {
+                              if (budgetTimer?.isActive ?? false) {
+                                budgetTimer?.cancel();
+                              }
+                              signaling?.hangUp(_localRenderer);
+                            } catch (e) {
+                              log(e.toString());
                             }
-                            signaling?.hangUp(_localRenderer);
-                          } catch (e) {
-                            log(e.toString());
-                          }
-                        },
-                      ),
+                          }),
                       CircleButton(
-                        icon: signaling!.localStream.getAudioTracks().first.enabled
-                            ? Icons.mic_rounded
-                            : Icons.mic_off_rounded,
-                        onTap: () {
-                          try {
-                            _localRenderer.muted = !_localRenderer.muted;
-                            signaling!.localStream.getAudioTracks().first.enabled = !signaling!.localStream.getAudioTracks().first.enabled;
-                          } catch (e) {
-                            print(e);
-                          }
-                        },
-                      ),
+                          icon: callScreenModel.isMuteEnable
+                              ? Icons.mic_rounded
+                              : Icons.mic_off_rounded,
+                          onTap: () => callScreenModel.muteCall(
+                              signaling: signaling!,
+                              localRenderer: _localRenderer)),
                       CircleButton(
-                        icon: signaling!.localStream.getVideoTracks().first.enabled
-                            ? Icons.videocam_rounded
-                            : Icons.videocam_off_rounded,
-                        onTap: () async {
-                          try {
-                            lockedUserViewModel.isDisableVideo = !lockedUserViewModel.isDisableVideo;
-                            signaling!.localStream.getVideoTracks().first.enabled = !signaling!.localStream.getVideoTracks().first.enabled;
-                          } catch (e) {
-                            print(e);
-                          }
-                        },
-                      ),
+                          icon: callScreenModel.isVideoEnable
+                              ? Icons.videocam_rounded
+                              : Icons.videocam_off_rounded,
+                          onTap: () => callScreenModel.disableVideo(
+                              signaling: signaling!)),
                       CircleButton(
-                        icon: Icons.cameraswitch_rounded,
-                      ),
+                          icon: Icons.cameraswitch_rounded,
+                          onTap: () => callScreenModel.cameraSwitch(
+                              context: context, signaling: signaling!)),
                     ],
                   ),
                 ),
@@ -308,25 +303,13 @@ class _CallPageState extends ConsumerState<CallPage>
     );
   }
 
-  Widget firstVideoView(
-      {double? height, double? width, RTCVideoRenderer? renderer}) {
-    return Container(
-      width: width,
-      height: height,
-      child: RTCVideoView(
-        renderer!,
-        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-      ),
-      decoration: BoxDecoration(color: Colors.black54),
-    );
-  }
-
   Widget secondVideoView(
       {double? height, double? width, RTCVideoRenderer? renderer}) {
+    print(renderer!.renderVideo);
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer!,
+      child: RTCVideoView(renderer,
           mirror: true,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
