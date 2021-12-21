@@ -330,4 +330,14 @@ class Signaling {
       remoteStream = stream;
     };
   }
+
+  Future<void> muteCall() async {
+    // if (remoteStream != null) {
+    //   remoteStream!.getAudioTracks()[0].enabled = false;
+    //   remoteStream!.getAudioTracks()[0].setMicrophoneMute(true);
+    // } else {
+    //   remoteStream!.getAudioTracks()[0].enabled = true;
+    //   remoteStream!.getAudioTracks()[0].setMicrophoneMute(true);
+    // }
+  }
 }

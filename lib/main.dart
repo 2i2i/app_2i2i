@@ -67,9 +67,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
-      home: AuthWidget(
-        homePageBuilder: (_) => HomePage(),
-      ),
+      home: AuthWidget(homePageBuilder: (_) => HomePage(),),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       themeMode: appSettingModel.currentThemeMode,

@@ -77,33 +77,20 @@ class UserBidInsList extends ConsumerWidget {
                         bidInModel: bid,
                         bidInPrivate: bidInPrivate.data!.value!,
                         onTapTalk: () => onTrailingIconClick!(bid)),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                              color: color,
-                              child: ListTile(
-                                leading: leading,
-                                trailing: Icon(Icons.circle, color: statusColor),
-                                title: Text('$num'),
-                                subtitle: Text('[$assetIDString/sec]'),
-                                // tileColor: color,
-                                // onTap: () => onTap(bid),
-                              )),
-                        ),
-                        trailingIcon != null?Card(
-                          color: color,
-                          child: Container(
-                            width: kToolbarHeight,
-                            height: kToolbarHeight,
-                            child: IconButton(
-                                onPressed: () =>
-                                    onTrailingIconClick!(bid),
-                                icon: trailingIcon!),
-                          ),
-                        ):Container(),
-                      ],
-                    ),
+                    child: Card(
+                        color: color,
+                        child: ListTile(
+                          leading: Icon(Icons.circle, color: statusColor),
+                          trailing: trailingIcon != null
+                              ? IconButton(
+                                  onPressed: () => onTrailingIconClick!(bid),
+                                  icon: trailingIcon!)
+                              : null,
+                          title: Text('$num'),
+                          subtitle: Text('[$assetIDString/sec]'),
+                          // tileColor: color,
+                          // onTap: () => onTap(bid),
+                        )),
                   );
                 });
           }

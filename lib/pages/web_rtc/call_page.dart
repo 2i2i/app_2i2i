@@ -3,14 +3,19 @@ import 'dart:math';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/common/animated_progress_bar.dart';
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
+import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
+import 'provider/call_screen_provider.dart';
 
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
@@ -30,7 +35,6 @@ class CallPage extends ConsumerStatefulWidget {
 
 class _CallPageState extends ConsumerState<CallPage>
     with TickerProviderStateMixin {
-  bool swapped = false;
   Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -123,6 +127,7 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   Widget build(BuildContext context) {
+    CallScreenModel callScreenModel = ref.watch(callProvider);
     return Scaffold(
       key: _scaffoldKey,
       body: OrientationBuilder(builder: (context, orientation) {
@@ -130,17 +135,17 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              swapped
+              callScreenModel.swapped
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      renderer: _localRenderer,
-                    )
+                renderer: _localRenderer,
+              )
                   : secondVideoView(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      renderer: _remoteRenderer,
-                    ),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                renderer: _remoteRenderer,
+              ),
               Positioned(
                 top: 40,
                 left: 40,
@@ -148,7 +153,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !swapped
+                      child: !callScreenModel.swapped
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -162,8 +167,7 @@ class _CallPageState extends ConsumerState<CallPage>
                     ),
                     InkResponse(
                       onTap: () {
-                        swapped = !swapped;
-                        setState(() {});
+                        callScreenModel.swapped = !callScreenModel.swapped;
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
@@ -176,40 +180,40 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              widget.meeting.speed.num == 0
+              (/*widget.meeting.speed.num*/ 0) == 0
                   ? Container()
                   : Align(
-                      alignment: Alignment.centerRight,
-                      child: ValueListenableBuilder(
-                        valueListenable: progress,
-                        builder: (BuildContext context, double value,
-                            Widget? child) {
-                          double width = MediaQuery.of(context).size.height / 3;
-                          double height = value * width / 100;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 30),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Material(
-                                  shadowColor: Colors.black,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  type: MaterialType.card,
-                                  child: ProgressBar(
-                                    height: height,
-                                  ),
-                                ),
-                              ),
+                alignment: Alignment.centerRight,
+                child: ValueListenableBuilder(
+                  valueListenable: progress,
+                  builder: (BuildContext context, double value,
+                      Widget? child) {
+                    double width = MediaQuery.of(context).size.height / 3;
+                    double height = value * width / 100;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 30),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white24,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Material(
+                            shadowColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            type: MaterialType.card,
+                            child: ProgressBar(
+                              height: height,
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
-                    ),
+                    );
+                  },
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Visibility(
@@ -236,45 +240,50 @@ class _CallPageState extends ConsumerState<CallPage>
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  onTap: () async {
-                    try {
-                      if (budgetTimer?.isActive ?? false) {
-                        budgetTimer?.cancel();
-                      }
-                      await signaling?.hangUp(_localRenderer);
-                      widget.onHangPhone(
-                          widget.meeting.A == widget.user.id
-                              ? widget.meeting.B
-                              : widget.meeting.A,
-                          widget.meeting.id);
-                    } catch (e) {
-                      log(e.toString());
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white38,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Material(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              Icons.call_end,
-                              color: Colors.white,
-                            ),
-                          ),
-                          color: Color.fromARGB(255, 239, 102, 84),
-                          shadowColor: Colors.white,
-                          type: MaterialType.circle,
-                        ),
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleButton(
+                        icon: Icons.call_end,
+                        iconColor: Colors.white,
+                        backgroundColor: AppTheme().red,
+                        onTap: () {
+                          _localRenderer.muted = !_localRenderer.muted;
+                          callScreenModel.hangCall();
+                        },
                       ),
-                    ),
+                      CircleButton(
+                        icon: callScreenModel.isMute
+                            ? Icons.mic_off_rounded
+                            : Icons.mic_rounded,
+                        onTap: () {
+                          try {
+                            _localRenderer.muted = !_localRenderer.muted;
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                      ),
+                      CircleButton(
+                        icon: callScreenModel.isDisableVideo
+                            ? Icons.videocam_off_rounded
+                            : Icons.videocam_rounded,
+                        onTap: () {
+                          callScreenModel.isDisableVideo =
+                              !callScreenModel.isDisableVideo;
+                        },
+                      ),
+                      CircleButton(
+                        icon: Icons.cameraswitch_rounded,
+                      ),
+                    ],
                   ),
                 ),
               ),
