@@ -2,6 +2,7 @@ import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class LockedUserViewModel with ChangeNotifier {
   LockedUserViewModel({required this.user, required this.meeting});
@@ -19,11 +20,10 @@ class LockedUserViewModel with ChangeNotifier {
     log('LockedUserViewModel - amA - x=$x');
     return x;
   }
-  bool _swapped = false;
+
   bool _isMute = false;
   bool _isDisableVideo = false;
 
-  bool get swapped => _swapped;
 
   bool get isMute => _isMute;
 
@@ -34,35 +34,17 @@ class LockedUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  set swapped(bool value) {
-    _swapped = value;
-    notifyListeners();
-  }
 
   set isDisableVideo(bool value) {
     _isDisableVideo = value;
     notifyListeners();
   }
 
-  hangCall() {
-    /* try {
-
-      if (budgetTimer?.isActive ?? false) {
-        budgetTimer?.cancel();
-      }
-
-
-      await signaling?.hangUp(_localRenderer);
-
-    widget.onHangPhone(widget.meeting.A == widget.user.id? widget.meeting.B: widget.meeting.A,widget.meeting.id);
-
-    } catch (e) {
-    log(e.toString());
-    }*/
-  }
 
 
   Future<void> muteCall() async {
+
+
     // if (mediaStream != null) {
     //   mediaStream.getAudioTracks()[0]?.enabled = false;
     //   mediaStream.getAudioTracks()[0]?.setMicrophoneMute(true);

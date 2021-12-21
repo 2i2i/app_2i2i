@@ -8,7 +8,6 @@ import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
 import 'package:app_2i2i/services/all_providers.dart';
@@ -40,6 +39,7 @@ class _CallPageState extends ConsumerState<CallPage>
   TextEditingController textEditingController = TextEditingController(text: '');
 
   Timer? budgetTimer;
+  bool swapped = false;
   Timer? progressTimer;
 
   ValueNotifier<double> progress = ValueNotifier(100);
@@ -137,7 +137,7 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              lockedUserViewModel.swapped
+              swapped
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -155,7 +155,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !lockedUserViewModel.swapped
+                      child: !swapped
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -169,7 +169,8 @@ class _CallPageState extends ConsumerState<CallPage>
                     ),
                     InkResponse(
                       onTap: () {
-                        lockedUserViewModel.swapped = !lockedUserViewModel.swapped;
+                        swapped = !swapped;
+                        setState(() {});
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
@@ -257,29 +258,40 @@ class _CallPageState extends ConsumerState<CallPage>
                         iconColor: Colors.white,
                         backgroundColor: AppTheme().red,
                         onTap: () {
-                          _localRenderer.muted = !_localRenderer.muted;
-                          lockedUserViewModel.hangCall();
+                          try {
+                            if (budgetTimer?.isActive ?? false) {
+                              budgetTimer?.cancel();
+                            }
+                            signaling?.hangUp(_localRenderer);
+                          } catch (e) {
+                            log(e.toString());
+                          }
                         },
                       ),
                       CircleButton(
-                        icon: lockedUserViewModel.isMute
-                            ? Icons.mic_off_rounded
-                            : Icons.mic_rounded,
+                        icon: signaling!.localStream.getAudioTracks().first.enabled
+                            ? Icons.mic_rounded
+                            : Icons.mic_off_rounded,
                         onTap: () {
                           try {
                             _localRenderer.muted = !_localRenderer.muted;
+                            signaling!.localStream.getAudioTracks().first.enabled = !signaling!.localStream.getAudioTracks().first.enabled;
                           } catch (e) {
                             print(e);
                           }
                         },
                       ),
                       CircleButton(
-                        icon: lockedUserViewModel.isDisableVideo
-                            ? Icons.videocam_off_rounded
-                            : Icons.videocam_rounded,
-                        onTap: () {
-                          lockedUserViewModel.isDisableVideo =
-                              !lockedUserViewModel.isDisableVideo;
+                        icon: signaling!.localStream.getVideoTracks().first.enabled
+                            ? Icons.videocam_rounded
+                            : Icons.videocam_off_rounded,
+                        onTap: () async {
+                          try {
+                            lockedUserViewModel.isDisableVideo = !lockedUserViewModel.isDisableVideo;
+                            signaling!.localStream.getVideoTracks().first.enabled = !signaling!.localStream.getVideoTracks().first.enabled;
+                          } catch (e) {
+                            print(e);
+                          }
                         },
                       ),
                       CircleButton(

@@ -64,6 +64,7 @@ class Signaling {
   final RTCVideoRenderer localVideo;
   final RTCVideoRenderer remoteVideo;
   late final DocumentReference roomRef;
+  List<MediaDeviceInfo>? cameras;
 
   Map<String, dynamic> configuration = {
     'iceServers': [
@@ -244,11 +245,12 @@ class Signaling {
     log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
     final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
-
+    cameras = await Helper.cameras;
     localVideo.srcObject = stream;
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
+
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
@@ -332,12 +334,9 @@ class Signaling {
   }
 
   Future<void> muteCall() async {
-    // if (remoteStream != null) {
-    //   remoteStream!.getAudioTracks()[0].enabled = false;
-    //   remoteStream!.getAudioTracks()[0].setMicrophoneMute(true);
-    // } else {
-    //   remoteStream!.getAudioTracks()[0].enabled = true;
-    //   remoteStream!.getAudioTracks()[0].setMicrophoneMute(true);
-    // }
+    final videoTrack = localStream
+        .getVideoTracks()
+        .firstWhere((track) => track.kind == 'video');
+    await Helper.switchCamera(videoTrack);
   }
 }
