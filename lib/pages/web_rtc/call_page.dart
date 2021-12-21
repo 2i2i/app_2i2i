@@ -322,15 +322,10 @@ class _CallPageState extends ConsumerState<CallPage>
     return Container(
       width: width,
       height: height,
-      child: signaling!.checkVideoView()
-          ? RTCVideoView(renderer!,
+      child:RTCVideoView(renderer!,
               mirror: true,
               objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
-          : Center(
-              child: Text(
-              "userModel!.name",
-              style: TextStyle(color: Colors.white),
-            )),
+         ,
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
@@ -343,16 +338,10 @@ class _CallPageState extends ConsumerState<CallPage>
     return Container(
       width: width,
       height: height,
-      child: signaling!.checkVideoView()
-          ? RTCVideoView(
+      child: RTCVideoView(
               renderer!,
               objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-            )
-          : Center(
-              child: Text(
-              "${userModel!.name}",
-              style: TextStyle(color: Colors.white),
-            )),
+            ),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
