@@ -44,24 +44,20 @@ class AddBidPageViewModel {
     required Balance? balance,
     required int speedNum,
   }) async {
-    try {
-      log('AddBidPageViewModel - addBid');
+    log('AddBidPageViewModel - addBid');
 
-      final int speedAssetId =
-          speedNum == 0 ? 0 : balance!.assetHolding.assetId;
-      log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
+    final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
+    log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
+    final speed = Speed(num: speedNum, assetId: speedAssetId);
 
-
-      final speed = Speed(num: speedNum, assetId: speedAssetId);
-
-      // TODO clean separation into firestore_service and firestore_database
+    // TODO clean separation into firestore_service and firestore_database
     final net = AlgorandNet.testnet;
     final bidId = database.newDocId(path: 'users/$uid/bidOuts');
-      final bidOutRef =
+    final bidOutRef =
         FirebaseFirestore.instance.collection('users/$uid/bidOuts').doc(bidId);
     final bidOut = BidOut(id: bidId, B: B.id, speed: speed, net: net);
-      final bidInRef = FirebaseFirestore.instance
+    final bidInRef = FirebaseFirestore.instance
         .collection('users/${B.id}/bidIns')
         .doc(bidId);
     final bidIn = BidIn(id: bidId, speed: speed, net: net);
@@ -70,15 +66,12 @@ class AddBidPageViewModel {
         .doc(bidId)
         .collection('private')
         .doc('main');
-        final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address);
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
+    final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address);
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
       transaction.set(
           bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
     });
-    } catch (e) {
-      print(e);
-    }
   }
 }

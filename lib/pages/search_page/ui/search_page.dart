@@ -42,8 +42,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         actions: [
           InkWell(
             onTap: () => CustomNavigation.push(context,
-                RatingPage(userModel: user.data?.value), Routes.RATING),
-            child: (user.data?.value.rating ?? 0) > 0
+                RatingPage(userModel: user.data!.value), Routes.RATING),
+            child: (user.data!.value.rating ?? 0) > 0
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Column(
@@ -51,12 +51,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         StarWidget(
-                          value: (user.data?.value.rating ?? 0) * 5,
+                          value: (user.data!.value.rating ?? 0) * 5,
                           height: 40,
                           width: 25,
                         ),
                         SizedBox(height: 2),
-                        Text('${(user.data?.value.rating ?? 0) * 5}',
+                        Text('${(user.data!.value.rating ?? 0) * 5}',
                             style: Theme.of(context).textTheme.overline)
                       ],
                     ),
