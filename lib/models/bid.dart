@@ -130,9 +130,8 @@ class BidInPrivate {
       throw StateError('missing data for id: $documentId');
     }
 
-    final String A = data['A'];
-    final String addrA = data['addrA'];
-
+    String A = data['A'];
+    String addrA = data['addrA'];
     return BidInPrivate(
       A: A,
       addrA: addrA,

@@ -2,6 +2,7 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -13,6 +14,7 @@ import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
+import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
@@ -135,6 +137,8 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   return AppSettingModel(storage: storage);
 });
 
+final callScreenProvider = ChangeNotifierProvider<CallScreenModel>((ref)=>CallScreenModel());
+
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
 final algorandAddressProvider =
@@ -217,10 +221,15 @@ final meetingHistoryA =
   return database.meetingHistoryA(id);
 });
 
-final meetingHistoryB =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+final meetingHistoryB = StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(id);
+});
+
+final getBidInPrivate = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+  final uid = ref.watch(myUIDProvider)!;
+  final database = ref.watch(databaseProvider);
+  return database.getBidInPrivate(uid: uid,bidId: bidIn);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(

@@ -46,13 +46,12 @@ class RingingPageViewModel {
 
       if (meeting.speed.num != 0) {
         try {
-          txns = await algorand.lockCoins(
-              meeting: meeting, waitForConfirmation: false);
+          txns = await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
-          final HttpsCallable meetingTxnFailed =
-              functions.httpsCallable('meetingTxnFailed');
+          final HttpsCallable meetingTxnFailed = functions.httpsCallable('meetingTxnFailed');
           await meetingTxnFailed({'meetingId': meeting.id});
+          print(meetingTxnFailed);
           return;
         }
       }

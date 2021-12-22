@@ -225,8 +225,7 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidIns(uid),
       builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
@@ -239,18 +238,13 @@ class FirestoreDatabase {
     );
   }
 
-  Future<BidInPrivate?> getBidInPrivate(
-      {required String uid, required String bidId}) async {
-    DocumentSnapshot documentSnapshot =
-        await _service.getData(path: FirestorePath.bidPrivate(uid, bidId));
-    if (documentSnapshot.exists) {
-      String id = documentSnapshot.id;
-      final data = documentSnapshot.data();
-      if (data is Map) BidInPrivate.fromMap(data.cast<String, dynamic>(), id);
-      throw Exception('getBidInPrivate data is not Map');
-    }
-    return null;
-  }
+  Stream<BidInPrivate?> getBidInPrivate({required String uid, required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidPrivate(uid, bidId),
+        builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
+      );
+
+
 
   Stream<Meeting> meetingStream({required String id}) =>
       _service.documentStream(
