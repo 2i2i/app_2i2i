@@ -322,10 +322,11 @@ class _CallPageState extends ConsumerState<CallPage>
     return Container(
       width: width,
       height: height,
-      child:RTCVideoView(renderer!,
+      child: (renderer!.srcObject!.getVideoTracks().first.enabled)
+          ? RTCVideoView(renderer,
               mirror: true,
               objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
-         ,
+          : Text("Here User name",style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white)),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
@@ -338,10 +339,12 @@ class _CallPageState extends ConsumerState<CallPage>
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(
-              renderer!,
+      child: (renderer!.srcObject!.getVideoTracks().first.enabled)
+          ? RTCVideoView(
+              renderer,
               objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-            ),
+            )
+          : Text("HERE IMAGE",style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white)),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
