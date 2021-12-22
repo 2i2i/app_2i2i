@@ -1,9 +1,12 @@
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class RatingPage extends StatefulWidget {
-  const RatingPage({Key? key}) : super(key: key);
+  final UserModel? userModel;
+
+  const RatingPage({Key? key, this.userModel}) : super(key: key);
 
   @override
   _RatingPageState createState() => _RatingPageState();
@@ -30,7 +33,7 @@ class _RatingPageState extends State<RatingPage> {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 20),
                     child: RatingBar.builder(
-                      initialRating: 3,
+                      initialRating: (widget.userModel?.rating ?? 0) * 5,
                       minRating: 1,
                       direction: Axis.horizontal,
                       allowHalfRating: true,
@@ -52,10 +55,10 @@ class _RatingPageState extends State<RatingPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('4.2 out of 5',
+                      Text('${(widget.userModel?.rating ?? 0) * 5} out of 5',
                           style: Theme.of(context).textTheme.subtitle2),
                       SizedBox(width: 4),
-                      Text('(800 Reviews)',
+                      Text('(${(widget.userModel?.numRatings ?? 0)} reviews)',
                           style: Theme.of(context).textTheme.caption),
                     ],
                   ),

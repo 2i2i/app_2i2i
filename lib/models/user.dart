@@ -46,7 +46,7 @@ class UserModel extends Equatable {
     this.currentMeeting,
     this.name = '',
     this.bio = '',
-    this.rating = 1,
+    this.rating,
     this.numRatings = 0,
     this.heartbeat = 0,
   }) {
@@ -60,7 +60,7 @@ class UserModel extends Equatable {
   final String bio;
   final String name;
   late final List<String> _tags;
-  final double rating;
+  final double? rating;
   final int numRatings;
   final int heartbeat;
 

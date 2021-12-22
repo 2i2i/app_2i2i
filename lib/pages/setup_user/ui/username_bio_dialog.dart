@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/my_user/ui/widgets/profile_widget.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,17 +24,20 @@ class _SetupBioState extends ConsumerState<SetupBio> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   File? imageFile;
+  String imageUrl = "";
 
   @override
   void initState() {
     userNameEditController.text = widget.user.name;
     bioEditController.text = widget.user.bio;
+    imageUrl = widget.user.name;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+
     return WillPopScope(
       onWillPop: (){
         return Future.value(true);
@@ -56,12 +60,8 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        imageFile != null
-                            ? Image.network(imageFile!.path,
-                            fit: BoxFit.cover)
-                            : Image.network(
-                                "https://picsum.photos/id/237/200/300",
-                                fit: BoxFit.cover),
+                        ProfileWidget(
+                            imageFile: imageFile, imageUrlString: imageUrl),
                         InkWell(
                           hoverColor: Colors.transparent,
                           splashColor: Colors.transparent,
@@ -69,7 +69,7 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                           onTap: () async {
                             final ImagePicker _picker = ImagePicker();
                             final XFile? image = await _picker.pickImage(
-                                source: ImageSource.gallery,imageQuality: 50);
+                                source: ImageSource.gallery, imageQuality: 50);
                             imageFile = File(image!.path);
                             setState(() {});
                           },
@@ -99,6 +99,10 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: userNameEditController,
                 textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  imageUrl = value;
+                  setState(() {});
+                },
                 validator: (value) {
                   value ??= '';
                   if (value.trim().isEmpty) {
