@@ -32,7 +32,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               context, AppSettingPage(), Routes.AppSetting),
           icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
         ),
-        centerTitle: true,
         actions: [
           InkWell(
             onTap: () => CustomNavigation.push(
