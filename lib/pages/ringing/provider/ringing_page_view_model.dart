@@ -15,7 +15,7 @@ class RingingPageViewModel {
       required this.functions}) {
     if (meeting.currentStatus() == MeetingValue.LOCK_COINS_STARTED)
       _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: meeting.lockTxId, net: meeting.net);
+          txns: meeting.txns, net: meeting.net);
   }
 
   final FirebaseFunctions functions;
@@ -42,59 +42,71 @@ class RingingPageViewModel {
     try {
       log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
-      String? txId;
+      MeetingTxns txns = MeetingTxns();
 
       if (meeting.speed.num != 0) {
-        txId = await algorand.lockCoins(
-            meeting: meeting, waitForConfirmation: false);
-
-        log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txId=$txId');
-        if (txId == 'error') {
-          final HttpsCallable meetingTxnFailed =
-              functions.httpsCallable('meetingTxnFailed');
+        try {
+          txns = await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
+          log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
+        } catch (ex) {
+          final HttpsCallable meetingTxnFailed = functions.httpsCallable('meetingTxnFailed');
           await meetingTxnFailed({'meetingId': meeting.id});
+          print(meetingTxnFailed);
           return;
         }
       }
 
       // update meeting
-      await _updateMeetingAsLockCoinsStarted(txId: txId);
+      await _updateMeetingAsLockCoinsStarted(txns);
 
       await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-          txId: txId, net: meeting.net);
+          txns: txns, net: meeting.net);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future _updateMeetingAsLockCoinsStarted({required String? txId}) async {
-    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txId=$txId');
+  Future _updateMeetingAsLockCoinsStarted(MeetingTxns txns) async {
+    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txns=$txns');
 
+    final data = {'meetingId': meeting.id, 'txns': txns.toMap()};
     final HttpsCallable meetingLockCoinsStarted =
         functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted({'meetingId': meeting.id, 'lockTxId': txId})
-        .then((value) {
-      log(F + ' == 1');
-    });
+    await meetingLockCoinsStarted(data);
   }
 
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
-      {required String? txId, required AlgorandNet net}) async {
+      {required MeetingTxns txns, required AlgorandNet net}) async {
     // wait for transaction to confirm
-    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txId=$txId');
-    if (txId != null) {
-      await algorand.waitForConfirmation(txId: txId, net: net).then((value) {
-        log(F + ' == 2');
-      });
+    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txns=$txns');
+    // int budget = 0;
+
+    final meetingLockCoinsConfirmedData = <String, dynamic>{
+      'meetingId': meeting.id
+    };
+
+    if (txns.group != null) {
+      await algorand.waitForConfirmation(txId: txns.group!, net: net);
     }
+
+    int budget = 0;
+    if (txns.lockALGO != null) {
+      final isALGO = meeting.speed.assetId == 0;
+      final txnResponse = await algorand.getTransactionResponse(
+          txns.lockId(isALGO: isALGO)!, net);
+      budget = isALGO
+          ? txnResponse.transaction.paymentTransaction!.amount -
+              AlgorandService.LOCK_ALGO_FEE
+          : txnResponse.transaction.assetTransferTransaction!.amount;
+    }
+    meetingLockCoinsConfirmedData['budget'] = budget;
+    log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
 
     // update meeting
     // message = 'updating meeting';
     // notifyListeners();
     final HttpsCallable meetingLockCoinsConfirmed =
         functions.httpsCallable('meetingLockCoinsConfirmed');
-    await meetingLockCoinsConfirmed({'meetingId': meeting.id}).then((value) {
-      log(F + ' == 3');
-    });
+    await meetingLockCoinsConfirmed(meetingLockCoinsConfirmedData);
   }
 }

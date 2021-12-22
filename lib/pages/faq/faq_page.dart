@@ -109,8 +109,17 @@ class _FAQPageState extends State<FAQPage> {
     and the system will take 300 TACOCOIN.
     '''),
     FAQData(title: 'How does the bio/name work?', description: '''
-    The first word is your name. Use # to declare your keywords.
+    Use # to declare your keywords.
     Keywords are used to seach for users.
+    '''),
+    FAQData(title: 'Does 2i2i have access to the escrow?', description: '''
+    2i2i created the escrow account (a smart contract) and currently has access to it.
+    This means, 2i2i can modify the smart contract and extract funds from the escrow.
+    The plan is to remove that access.
+    We are keeping access for now until all edge cases are resolved. Until then, we
+    will sometimes need to unlock users' coins for them if an unexpected case occurs.
+    Once we are confident that nobody's coins are left locked in escrow indefinitely,
+    we will remove our access from the smart contract.
     '''),
   ];
 

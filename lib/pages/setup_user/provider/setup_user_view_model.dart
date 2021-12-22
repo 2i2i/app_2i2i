@@ -66,9 +66,9 @@ class SetupUserViewModel with ChangeNotifier {
         await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
 
     final userCredential = futureResults[0];
-    uid = userCredential.user!.uid;
+    uid = userCredential.B!.uid;
     log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
-    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.user?.uid}');
+    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.B?.uid}');
 
     message = 'done';
     workDone = true;

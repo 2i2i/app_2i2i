@@ -2,6 +2,7 @@
 
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
@@ -13,6 +14,7 @@ import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
+import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
@@ -130,11 +132,12 @@ final algorandProvider = Provider((ref) {
       algorandLib: algorandLib);
 });
 
-final appSettingProvider =
-    ChangeNotifierProvider<AppSettingModel>((ref) {
+final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
+
+final callScreenProvider = ChangeNotifierProvider<CallScreenModel>((ref)=>CallScreenModel());
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
@@ -218,22 +221,29 @@ final meetingHistoryA =
   return database.meetingHistoryA(id);
 });
 
-final meetingHistoryB =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+final meetingHistoryB = StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(id);
+});
+
+final getBidInPrivate = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+  final uid = ref.watch(myUIDProvider)!;
+  final database = ref.watch(databaseProvider);
+  return database.getBidInPrivate(uid: uid,bidId: bidIn);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
   (ref) {
     final uid = ref.watch(myUIDProvider)!;
     final user = ref.watch(userProvider(uid));
-    log(F + ' $user');
+    log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
     if (user.data!.value.currentMeeting == null) return null;
     final String currentMeeting = user.data!.value.currentMeeting!;
+    log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
     final meeting = ref.watch(meetingProvider(currentMeeting));
+    log('lockedUserViewModelProvider - meeting=$meeting');
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
     return LockedUserViewModel(
         user: user.data!.value, meeting: meeting.data!.value);
@@ -312,12 +322,19 @@ final addBidPageViewModelProvider =
 
   final accountService = ref.watch(accountServiceProvider);
 
+  final database = ref.watch(databaseProvider);
+
+  final myUid = ref.watch(myUIDProvider);
+  if (myUid == null) return null;
+
   return AddBidPageViewModel(
+      uid: myUid,
+      database: database,
       functions: functions,
       algorand: algorand,
       accounts: accounts.data!.value,
       accountService: accountService,
-      user: user.data!.value);
+      B: user.data!.value);
 });
 
 final accountsProvider = FutureProvider((ref) {

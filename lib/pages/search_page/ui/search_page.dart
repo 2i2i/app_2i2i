@@ -27,7 +27,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
-        leading: IconButton(
+        centerTitle: true,leading: IconButton(
           onPressed: () => CustomNavigation.push(
               context, AppSettingPage(), Routes.AppSetting),
           icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
@@ -105,6 +105,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider).state;
+    final mainUserID = ref.watch(myUIDProvider)!;
     // log(H + '_SearchPageState - _buildContents - filter=$filter');
 
     return StreamBuilder(
@@ -135,20 +136,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
                 if (user.locked) statusColor = AppTheme().red;
 
-                return Card(
-                  margin: EdgeInsets.all(4),
-                  elevation: 4,
-                  // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
-                  child: ListTile(
-                      leading: ratingWidget(user.rating, name),
-                      title: Text(name),
-                      subtitle: Text(shortBio),
-                      trailing: Icon(Icons.circle, color: statusColor),
-                      onTap: () => CustomNavigation.push(
-                          context,
-                          UserPage(uid: user.id),
-                          Routes
-                              .USER)), // UserPage.show(context, users[ix].id),
+                return Visibility(
+                  visible: user.id != mainUserID,
+                  child: Card(
+                    margin: EdgeInsets.all(4),
+                    elevation: 4,
+                    // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
+                    child: ListTile(
+                        leading: ratingWidget(user.rating, name),
+                        title: Text(name),
+                        subtitle: Text(shortBio),
+                        trailing: Icon(Icons.circle, color: statusColor),
+                        onTap: () => CustomNavigation.push(
+                            context,
+                            UserPage(uid: user.id),
+                            Routes
+                                .USER)), // UserPage.show(context, users[ix].id),
+                  ),
                 );
               });
         }

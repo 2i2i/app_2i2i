@@ -7,24 +7,22 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OtherBidList extends ConsumerWidget {
-  OtherBidList(
-      {required this.user,
-      this.onTrailingIconClick,
-      this.alreadyExists});
+class OtherBidInList extends ConsumerWidget {
+  OtherBidInList({required this.B, required this.database});
 
-  final UserModel user;
-  final void Function(Bid bid)? onTrailingIconClick;
-  final void Function(bool isPresent)? alreadyExists;
+  final FirestoreDatabase database;
+  final UserModel B;
+  // final void Function(BidIn bid)? onTrailingIconClick;
+  // final void Function(bool isPresent)? alreadyExists;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO add sorting
-    if (user.bidsIn.isEmpty)
-      return Center(
-        child: Text('No bid for user',
-            style: Theme.of(context).textTheme.bodyText2),
-      );
+    // if (user.bidsIn.isEmpty)
+    //   return Center(
+    //     child: Text('No bid for user',
+    //         style: Theme.of(context).textTheme.bodyText2),
+    //   );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,8 +33,11 @@ class OtherBidList extends ConsumerWidget {
               children: [
                 Text('OTHER BIDS FOR ',
                     style: Theme.of(context).textTheme.subtitle2),
-                Text('${user.name}',
-                    style: Theme.of(context).textTheme.subtitle2!.copyWith(color: Theme.of(context).primaryColor)),
+                Text('${B.name}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle2!
+                        .copyWith(color: Theme.of(context).primaryColor)),
               ],
             )),
         Expanded(
@@ -54,55 +55,56 @@ class OtherBidList extends ConsumerWidget {
       return Container();
     }
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
-    log('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
-    if(userPrivateAsyncValue is AsyncLoading){
+    // log('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
+    if (userPrivateAsyncValue is AsyncLoading) {
       return Container();
     }
-    return ListView.builder(
-      itemCount: user.bidsIn.length,
-      itemBuilder: (_, ix) {
-        return StreamBuilder(
-          stream: FirestoreDatabase().bidStream(id: user.bidsIn[ix]),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasData) {
-              Bid bid = snapshot.data;
-              bool isItCurrentUserBid = userPrivateAsyncValue.data!.value.bidsOut.any((element) => element.bid == bid.id);
-              if (isItCurrentUserBid) {
-                alreadyExists!.call(true);
-              }
-              log('bid.speed.num');
-              final String num = bid.speed.num.toString();
-              final int assetId = bid.speed.assetId;
-              log('assetId');
-              final String assetIDString =
-                  assetId == 0 ? 'ALGO' : assetId.toString();
-              final color = ix % 2 == 0
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).cardColor;
 
-              return Card(
-                  color: color,
-                  child: ListTile(
-                    leading: Icon(Icons.circle, color: AppTheme().gray),
-                    title: Text('$num'),
-                    subtitle: Text('[$assetIDString/sec]'),
-                    trailing: Visibility(
-                      visible: isItCurrentUserBid,
-                      child: Tooltip(
-                        message: "Cancel Bid",
-                        child: IconButton(
-                          icon: Icon(Icons.cancel_rounded,
-                              color: Color.fromRGBO(104, 160, 242, 1)),
-                          onPressed: () => onTrailingIconClick!(bid),
-                        ),
-                      ),
-                    ),
-                  ));
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
-      },
-    );
+    return StreamBuilder(
+        stream: FirestoreDatabase().bidInsStream(uid: B.id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, ix) {
+                  BidIn bidIn = snapshot.data[ix];
+                  // bool isItCurrentUserBid = userPrivateAsyncValue
+                  //     .data!.value.bidsOut
+                  //     .any((element) => element == bidIn.id);
+                  // if (isItCurrentUserBid) {
+                  //   alreadyExists!.call(true);
+                  // }
+                  log('bid.speed.num');
+                  final String num = bidIn.speed.num.toString();
+                  final int assetId = bidIn.speed.assetId;
+                  log('assetId');
+                  final String assetIDString =
+                      assetId == 0 ? 'ALGO' : assetId.toString();
+                  final color = ix % 2 == 0
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).cardColor;
+
+                  return Card(
+                      color: color,
+                      child: ListTile(
+                        leading: Icon(Icons.circle, color: AppTheme().gray),
+                        title: Text('$num'),
+                        subtitle: Text('[$assetIDString/sec]'),
+                        // trailing: Visibility(
+                        //   visible: isItCurrentUserBid,
+                        //   child: Tooltip(
+                        //     message: "Cancel Bid",
+                        //     child: IconButton(
+                        //       icon: Icon(Icons.cancel_rounded,
+                        //           color: Color.fromRGBO(104, 160, 242, 1)),
+                        //       onPressed: () => onTrailingIconClick!(bidIn),
+                        //     ),
+                        //   ),
+                        // ),
+                      ));
+                });
+          }
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }

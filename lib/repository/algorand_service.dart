@@ -6,6 +6,7 @@ import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
+
 enum AlgorandNet { mainnet, testnet, betanet }
 
 class AlgorandLib {
@@ -14,11 +15,20 @@ class AlgorandLib {
     AlgorandNet.testnet: AlgoExplorer.TESTNET_ALGOD_API_URL,
     AlgorandNet.betanet: AlgoExplorer.BETANET_ALGOD_API_URL,
   };
+  static const Map<AlgorandNet, String> INDEXER_URL = {
+    AlgorandNet.mainnet: AlgoExplorer.MAINNET_INDEXER_API_URL,
+    AlgorandNet.testnet: AlgoExplorer.TESTNET_INDEXER_API_URL,
+    AlgorandNet.betanet: AlgoExplorer.BETANET_INDEXER_API_URL,
+  };
   AlgorandLib() {
     client[AlgorandNet.mainnet] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.mainnet]!));
+        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.mainnet]!),
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.mainnet]!));
     client[AlgorandNet.testnet] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.testnet]!));
+        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.testnet]!),
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.testnet]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
@@ -66,6 +76,10 @@ class AlgorandService {
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
+  Future<TransactionResponse> getTransactionResponse(
+          String transactionId, AlgorandNet net) =>
+      algorandLib.client[net]!.indexer().getTransactionById(transactionId);
+
   Future<String> giftALGO(AbstractAccount account,
       {waitForConfirmation = true}) async {
     log('AlgorandService - giftALGO - account=${account.address} - waitForConfirmation=$waitForConfirmation');
@@ -93,13 +107,14 @@ class AlgorandService {
   }
 
   // not using this method in the other methods due to naming clash
-  Future waitForConfirmation({required txId, required AlgorandNet net}) async {
+  Future<PendingTransaction> waitForConfirmation(
+      {required String txId, required AlgorandNet net}) {
     log('AlgorandService - waitForConfirmation - txId=$txId');
-    await algorandLib.client[net]!.waitForConfirmation(txId);
-    log('AlgorandService - waitForConfirmation - done');
+    return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
-  Future<String> lockCoins({required Meeting meeting, waitForConfirmation = true}) async {
+  Future<MeetingTxns> lockCoins(
+      {required Meeting meeting, waitForConfirmation = true}) async {
     log('lock - meeting.speed.assetId=${meeting.speed.assetId}');
     final account = await accountService.findAccount(meeting.addrA!);
 
@@ -107,31 +122,28 @@ class AlgorandService {
       return _lockALGO(
         B: meeting.addrB!,
         speed: meeting.speed.num,
-        budget: meeting.budget,
         account: account!,
         net: meeting.net,
         waitForConfirmation: waitForConfirmation,
       );
     }
     return _lockASA(
-        B: meeting.addrB!,
-        speed: meeting.speed.num,
-        budget: meeting.budget,
-        assetId: meeting.speed.assetId,
-        account: account!,
-        net: meeting.net,
-        waitForConfirmation: waitForConfirmation,
+      B: meeting.addrB!,
+      speed: meeting.speed.num,
+      assetId: meeting.speed.assetId,
+      account: account!,
+      net: meeting.net,
+      waitForConfirmation: waitForConfirmation,
     );
   }
 
-  Future<String> _lockALGO(
+  Future<MeetingTxns> _lockALGO(
       {required String B,
       required int speed,
-      required int budget,
       required AbstractAccount account,
       required AlgorandNet net,
       waitForConfirmation = true}) async {
-    log('lockALGO - B=$B - speed=$speed - budget=$budget - waitForConfirmation=$waitForConfirmation');
+    log('lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
 
     log('lockALGO - account=${account.address}');
 
@@ -145,12 +157,15 @@ class AlgorandService {
         await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
     if (!optedIntoSystem) {
       final optInTxn = await (ApplicationOptInTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..applicationId = SYSTEM_ID[net]!
-          ..suggestedParams = params)
-        .build();
+            ..sender = Address.fromAlgorandAddress(address: account.address)
+            ..applicationId = SYSTEM_ID[net]!
+            ..suggestedParams = params)
+          .build();
       txns.add(optInTxn);
     }
+
+    int budget =
+        await accountService.calcBudget(assetId: 0, account: account, net: net);
 
     final lockTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
@@ -183,35 +198,41 @@ class AlgorandService {
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      // await algorandLib[net]!.sendTransactions([lockTxnSigned, stateTxnSigned]);
       log('lockALGO - txId=$txId');
 
       if (waitForConfirmation)
         await algorandLib.client[net]!.waitForConfirmation(txId);
       log('lockALGO - done');
 
-      return txId;
+      // tx ids
+      final txnsIds = MeetingTxns(
+        group: txId,
+        lockALGO: lockTxn.id,
+        state: stateTxn.id,
+      );
+      if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+
+      return txnsIds;
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {
         log('AlgorandException ' + cause.response?.data['message']);
       }
-      return 'error';
+      throw ex;
     } on Exception catch (ex) {
       log('Exception ' + ex.toString());
-      return 'error';
+      throw ex;
     }
   }
 
-  Future<String> _lockASA(
+  Future<MeetingTxns> _lockASA(
       {required String B,
       required int speed,
-      required int budget,
       required int assetId,
       required AbstractAccount account,
       required AlgorandNet net,
       waitForConfirmation = true}) async {
-    log('lockASA - B=$B - speed=$speed - budget=$budget - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
+    log('lockASA - B=$B - speed=$speed - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
     log('lockASA - account=${account.address}');
 
     // calc LOCK_ASA_TOTAL_FEE depending on whether SYSTEM is opted-in to ASA or not
@@ -228,14 +249,14 @@ class AlgorandService {
 
     final List<RawTransaction> txns = [];
 
-        final optedIntoSystem =
+    final optedIntoSystem =
         await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
     if (!optedIntoSystem) {
       final optInTxn = await (ApplicationOptInTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..applicationId = SYSTEM_ID[net]!
-          ..suggestedParams = params)
-        .build();
+            ..sender = Address.fromAlgorandAddress(address: account.address)
+            ..applicationId = SYSTEM_ID[net]!
+            ..suggestedParams = params)
+          .build();
       txns.add(optInTxn);
     }
 
@@ -267,6 +288,9 @@ class AlgorandService {
     // log('lockASA - stateTxn=$stateTxn');
     txns.add(stateTxn);
 
+    int budget = await accountService.calcBudget(
+        assetId: assetId, account: account, net: net);
+
     final lockASATxn = await (AssetTransferTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
           ..assetId = assetId
@@ -282,8 +306,7 @@ class AlgorandService {
     AtomicTransfer.group(txns);
     log('lockASA - grouped');
 
-    final signedTxnsBytes =
-        await account.sign(txns);
+    final signedTxnsBytes = await account.sign(txns);
 
     try {
       final txId =
@@ -302,16 +325,25 @@ class AlgorandService {
         });
       }
 
-      return txId;
+      // tx ids
+      final txnsIds = MeetingTxns(
+        group: txId,
+        lockALGO: lockALGOTxn.id,
+        state: stateTxn.id,
+        lockASA: lockASATxn.id,
+      );
+      if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+
+      return txnsIds;
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {
         log('AlgorandException ' + cause.response?.data['message']);
       }
-      return 'error';
+      throw ex;
     } on Exception catch (ex) {
       log('Exception ' + ex.toString());
-      return 'error';
+      throw ex;
     }
   }
 

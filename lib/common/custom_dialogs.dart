@@ -1,4 +1,5 @@
 import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -127,6 +128,69 @@ class CustomDialogs {
             ),
           ],
         ),
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: ratingDialog);
+      },
+    );
+  }
+
+  static bidInInfoDialog(
+      {required BuildContext context,
+      required BidIn bidInModel,
+      required BidInPrivate bidInPrivate,
+      required VoidCallback? onTapTalk,
+      bool rootNavigator = true}) {
+    final int assetId = bidInModel.speed.assetId;
+    final String assetIDString = assetId == 0 ? 'ALGO' : assetId.toString();
+    AlertDialog ratingDialog = AlertDialog(
+      backgroundColor: Theme.of(context).cardColor,
+      elevation: 0,
+      title: Text("${bidInPrivate}"),
+      // contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      // actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
+      actions: [
+        TextButton(
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          child: Text(Strings().ok, style: Theme.of(context).textTheme.button),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: rootNavigator).pop();
+            onTapTalk!();
+          },
+          child:
+              Text(Strings().talk, style: Theme.of(context).textTheme.button),
+        ),
+      ],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Speed: '),
+              Text('${bidInModel.speed.num}'),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('budget/max: '),
+              Text('[$assetIDString/sec]'),
+            ],
+          ),
+        ],
       ),
     );
     showDialog(

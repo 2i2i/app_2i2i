@@ -3,15 +3,18 @@ import 'dart:math';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/common/animated_progress_bar.dart';
+import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
+import 'package:app_2i2i/pages/web_rtc/widgets/circle_button.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
@@ -30,7 +33,6 @@ class CallPage extends ConsumerStatefulWidget {
 
 class _CallPageState extends ConsumerState<CallPage>
     with TickerProviderStateMixin {
-  bool swapped = false;
   Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -38,6 +40,7 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Timer? budgetTimer;
   Timer? progressTimer;
+  CallScreenModel? callScreenModel;
 
   ValueNotifier<double> progress = ValueNotifier(100);
   DateTime? countDownTimerDate;
@@ -48,10 +51,8 @@ class _CallPageState extends ConsumerState<CallPage>
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
-    var maxDuration =
-        ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = getDuration(maxDuration);
-
+    final maxDuration = widget.meeting.maxDuration()!;
+    final duration = getDuration(maxDuration);
     budgetTimer = Timer(Duration(seconds: duration), () {
       progressTimer?.cancel();
       signaling?.hangUp(_localRenderer, reason: 'BUDGET');
@@ -66,7 +67,7 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   int getDuration(int maxDuration) {
-    int duration= maxDuration;
+    int duration = maxDuration;
     final activeTime = widget.meeting.activeTime();
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
@@ -76,19 +77,19 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   void showCountDown(int duration) {
-    if(countDownTimerDate != null){
+    if (countDownTimerDate != null) {
       return;
     }
-    var maxDuration = ((widget.meeting.budget) / (widget.meeting.speed.num)).floor();
-    int duration = getDuration(maxDuration);
+    final maxDuration = widget.meeting.maxDuration()!;
+    final duration = getDuration(maxDuration);
     log(F + ' ====== $duration');
-    if(duration <= 60) {
+    if (duration <= 60) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
         // Future.delayed(Duration.zero).then((value) {
-          // if (mounted) {
-            setState(() {});
-          // }
+        // if (mounted) {
+        setState(() {});
+        // }
         // });
       }
     }
@@ -96,7 +97,6 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
-
     _localRenderer.initialize();
     _remoteRenderer.initialize();
 
@@ -109,6 +109,7 @@ class _CallPageState extends ConsumerState<CallPage>
         remoteVideo: _remoteRenderer);
     signaling!.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
+      ref.read(callScreenProvider).getInitialValue(signaling!.localStream);
       setState(() {});
     });
 
@@ -124,8 +125,15 @@ class _CallPageState extends ConsumerState<CallPage>
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+    callScreenModel = ref.watch(callScreenProvider);
+    final userModel = ref.watch(userProvider(widget.meeting.A));
+    if (userModel is AsyncLoading || userModel is AsyncError) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       body: OrientationBuilder(builder: (context, orientation) {
@@ -133,14 +141,14 @@ class _CallPageState extends ConsumerState<CallPage>
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              swapped
+              callScreenModel?.swapped ?? false
                   ? firstVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       renderer: _localRenderer,
-                    )
+                      userModel: userModel.data!.value)
                   : secondVideoView(
-                      height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 renderer: _remoteRenderer,
               ),
@@ -151,12 +159,12 @@ class _CallPageState extends ConsumerState<CallPage>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: !swapped
+                      child: !(callScreenModel?.swapped ?? false)
                           ? firstVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                            )
+                              userModel: userModel.data!.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -164,10 +172,8 @@ class _CallPageState extends ConsumerState<CallPage>
                             ),
                     ),
                     InkResponse(
-                      onTap: () {
-                        swapped = !swapped;
-                        setState(() {});
-                      },
+                      onTap: () => callScreenModel!.swapped =
+                          !(callScreenModel?.swapped ?? false),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: Container(
@@ -179,33 +185,56 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              widget.meeting.speed.num == 0 ? Container() : Align(
+              if ((1) == 0) Container() else Align(
                 alignment: Alignment.centerRight,
                 child: ValueListenableBuilder(
                   valueListenable: progress,
                   builder: (BuildContext context, double value, Widget? child) {
                     double width = MediaQuery.of(context).size.height / 3;
                     double height = value * width / 100;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 30),
-                      child: Container(
-                        decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Material(
-                                  shadowColor: Colors.black,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  type: MaterialType.card,
-                                  child: ProgressBar(
-                                    height: height,
-                                  ),
+                    return Container(
+                      height: width,
+                      width: 28,
+                      margin: const EdgeInsets.only(right: 30,left: 30),
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Material(
+                                color: Colors.transparent,
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                type: MaterialType.card,
+                                child: SizedBox(
+                                  height: width,
+                                  width: 20,
                                 ),
                               ),
                             ),
+                          ),
+                          Align(
+                            alignment:Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Material(
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                type: MaterialType.card,
+                                child: ProgressBar(
+                                  height: height,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -221,10 +250,13 @@ class _CallPageState extends ConsumerState<CallPage>
                       width: 100,
                       child: Center(
                         child: AnimateCountdownText(
-                          dateTime: countDownTimerDate??DateTime.now(),
+                          dateTime: countDownTimerDate ?? DateTime.now(),
                           format: _formatHMS,
                           animationType: AnimationType.scaleIn,
-                          characterTextStyle: Theme.of(context).textTheme.headline3!.copyWith(color: Colors.white),
+                          characterTextStyle: Theme.of(context)
+                              .textTheme
+                              .headline3!
+                              .copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -233,45 +265,51 @@ class _CallPageState extends ConsumerState<CallPage>
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  onTap: () async {
-                    try {
-                      if (budgetTimer?.isActive ?? false) {
-                        budgetTimer?.cancel();
-                      }
-                      await signaling?.hangUp(_localRenderer);
-                      widget.onHangPhone(widget.meeting.A == widget.user.id ? widget.meeting.B : widget.meeting.A, widget.meeting.id);
-                    } catch (e) {
-                      log(e.toString());
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom:8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white38,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Material(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              Icons.call_end,
-                              color: Colors.white,
-                            ),
-                          ),
-                          color: Color.fromARGB(255, 239, 102, 84),
-                          shadowColor: Colors.white,
-                          type: MaterialType.circle,
-                        ),
-                      ),
-                    ),
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleButton(
+                          icon: Icons.call_end,
+                          iconColor: Colors.white,
+                          backgroundColor: AppTheme().red,
+                          onTap: () {
+                            try {
+                              if (budgetTimer?.isActive ?? false) {
+                                budgetTimer?.cancel();
+                              }
+                              signaling?.hangUp(_localRenderer);
+                            } catch (e) {
+                              log(e.toString());
+                            }
+                          }),
+                      CircleButton(
+                          icon: callScreenModel?.isMuteEnable ?? false
+                              ? Icons.mic_rounded
+                              : Icons.mic_off_rounded,
+                          onTap: () => callScreenModel!.muteCall(
+                              signaling: signaling!,
+                              localRenderer: _localRenderer)),
+                      CircleButton(
+                          icon: callScreenModel?.isVideoEnable ?? false
+                              ? Icons.videocam_rounded
+                              : Icons.videocam_off_rounded,
+                          onTap: () => callScreenModel!
+                              .disableVideo(signaling: signaling!)),
+                      CircleButton(
+                          icon: Icons.cameraswitch_rounded,
+                          onTap: () => callScreenModel!.cameraSwitch(
+                              context: context, signaling: signaling!)),
+                    ],
                   ),
                 ),
               ),
-
             ],
           ),
         );
@@ -279,25 +317,31 @@ class _CallPageState extends ConsumerState<CallPage>
     );
   }
 
-  Widget firstVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget secondVideoView(
+      {double? height, double? width, RTCVideoRenderer? renderer}) {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(
-        renderer!,
-        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-      ),
+      child:RTCVideoView(renderer!,
+              mirror: true,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
+         ,
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
 
-  Widget secondVideoView({double? height, double? width, RTCVideoRenderer? renderer}) {
+  Widget firstVideoView(
+      {double? height,
+      double? width,
+      RTCVideoRenderer? renderer,
+      UserModel? userModel}) {
     return Container(
       width: width,
       height: height,
-      child: RTCVideoView(renderer!,
-          mirror: true,
-          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+      child: RTCVideoView(
+              renderer!,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+            ),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
