@@ -185,7 +185,7 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              if ((/*widget.meeting.speed.num*/ 1) == 0)
+              if ((widget.meeting.speed.num) == 0)
                 Container()
               else
                 Align(
