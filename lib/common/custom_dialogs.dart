@@ -109,7 +109,7 @@ class CustomDialogs {
                 unratedColor: Colors.grey.shade300,
                 itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                 itemBuilder: (context, _) => Icon(
-                  Icons.star,
+                  Icons.star_rounded,
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {

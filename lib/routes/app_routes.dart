@@ -4,6 +4,7 @@ class Routes {
   static const LOCK = '/lock';
   static const HOME = '/home';
   static const USER = '/user/:uid';
+  static const RATING = '/rating';
   static const MY_USER = '/my_user';
   static const BIDPAGE = '/user/:uid/addbidpage';
   static const IMI = '/imi';
