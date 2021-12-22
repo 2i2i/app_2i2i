@@ -185,60 +185,71 @@ class _CallPageState extends ConsumerState<CallPage>
                   ],
                 ),
               ),
-              if ((1) == 0) Container() else Align(
-                alignment: Alignment.centerRight,
-                child: ValueListenableBuilder(
-                  valueListenable: progress,
-                  builder: (BuildContext context, double value, Widget? child) {
-                    double width = MediaQuery.of(context).size.height / 3;
-                    double height = value * width / 100;
-                    return Container(
-                      height: width,
-                      width: 28,
-                      margin: const EdgeInsets.only(right: 30,left: 30),
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white24,
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Material(
-                                color: Colors.transparent,
-                                shadowColor: Colors.black,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                type: MaterialType.card,
-                                child: SizedBox(
-                                  height: width,
-                                  width: 20,
+              if ((widget.meeting.speed.num) == 0)
+                Container()
+              else
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ValueListenableBuilder(
+                    valueListenable: progress,
+                    builder:
+                        (BuildContext context, double value, Widget? child) {
+                      double width = MediaQuery.of(context).size.height / 3;
+                      double height = value * width / 100;
+                      return RotationTransition(
+                        turns: new AlwaysStoppedAnimation(
+                            signaling!.amA ? 0 : 180 / 360),
+                        child: Container(
+                          height: width,
+                          width: 28,
+                          margin: const EdgeInsets.only(right: 30, left: 30),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    shadowColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    type: MaterialType.card,
+                                    child: SizedBox(
+                                      height: width,
+                                      width: 20,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Align(
-                            alignment:Alignment.bottomCenter,
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Material(
-                                shadowColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                type: MaterialType.card,
-                                child: ProgressBar(
-                                  height: height,
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    shadowColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    type: MaterialType.card,
+                                    child: ProgressBar(
+                                      height: height,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Visibility(
@@ -279,12 +290,14 @@ class _CallPageState extends ConsumerState<CallPage>
                           icon: Icons.call_end,
                           iconColor: Colors.white,
                           backgroundColor: AppTheme().red,
-                          onTap: () {
+                          onTap: () async {
                             try {
                               if (budgetTimer?.isActive ?? false) {
                                 budgetTimer?.cancel();
                               }
-                              signaling?.hangUp(_localRenderer);
+                              await signaling?.hangUp(_localRenderer);
+                              widget.onHangPhone(
+                                  widget.user.id, widget.meeting.id);
                             } catch (e) {
                               log(e.toString());
                             }
@@ -322,10 +335,9 @@ class _CallPageState extends ConsumerState<CallPage>
     return Container(
       width: width,
       height: height,
-      child:RTCVideoView(renderer!,
-              mirror: true,
-              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
-         ,
+      child: RTCVideoView(renderer!,
+          mirror: true,
+          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
@@ -339,9 +351,9 @@ class _CallPageState extends ConsumerState<CallPage>
       width: width,
       height: height,
       child: RTCVideoView(
-              renderer!,
-              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-            ),
+        renderer!,
+        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+      ),
       decoration: BoxDecoration(color: Colors.black54),
     );
   }
