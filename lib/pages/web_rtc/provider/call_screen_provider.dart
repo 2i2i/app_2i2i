@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app_2i2i/pages/web_rtc/signaling.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 

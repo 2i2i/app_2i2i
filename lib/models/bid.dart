@@ -1,3 +1,4 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:equatable/equatable.dart';
@@ -112,17 +113,27 @@ class BidIn extends Equatable {
       'active': true, // TODO should support false as well
     };
   }
+
+  Future<num> estMaxDuration(
+      BidInPrivate bidInPrivate, AccountService accountService) async {
+    if (bidInPrivate.addrA == null) return double.infinity;
+    final balance = await accountService.getBalance(
+        address: bidInPrivate.addrA!, assetId: speed.assetId, net: net);
+    return (balance!.amount / speed.num).floor();
+  }
 }
 
 @immutable
 class BidInPrivate {
   BidInPrivate({
     required this.A,
-    required this.addrA,
+    this.addrA,
+    this.comment,
   });
 
   final String A;
   final String? addrA;
+  final String? comment;
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -131,10 +142,12 @@ class BidInPrivate {
     }
 
     String A = data['A'];
-    String addrA = data['addrA'];
+    String? addrA = data['addrA'];
+    String? comment = data['comment'];
     return BidInPrivate(
       A: A,
       addrA: addrA,
+      comment: comment,
     );
   }
 
@@ -142,6 +155,7 @@ class BidInPrivate {
     return {
       'A': A,
       'addrA': addrA,
+      'comment': comment,
     };
   }
 }

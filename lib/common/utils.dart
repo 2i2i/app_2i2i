@@ -4,7 +4,9 @@ int epochSecsNow() {
   return s.round();
 }
 
-String secondsToSensibleTimePeriod(int secs) {
+String secondsToSensibleTimePeriod(num secs) {
+  if (secs == double.infinity) return 'foreever';
+
   String currentBestTimePeriod = 'secs';
   double currentBestNum = secs.toDouble();
   // int currentBestNumDigits = mainPartLength(currentBestNum);

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
@@ -160,8 +158,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                         titleWidget: Text('Bids In',
                             style: Theme.of(context).textTheme.headline6),
                         noBidsText: Strings().noBidFound,
-                        trailingIcon: Icon(Icons.check_circle, color: Colors.green),
-                        onTrailingIconClick: (BidIn bid) async {
+                        onTap: (BidIn bid) async {
                           AbstractAccount? account;
                           if (0 < bid.speed.num) {
                             log('bid.speed.num=${bid.speed.num}');
