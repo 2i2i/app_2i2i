@@ -1,13 +1,15 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
-import '../constants/strings.dart';
+import 'package:app_2i2i/common/utils.dart';
 
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context, {bool rootNavigator = true}) {
+  static loader(bool isLoading, BuildContext context,
+      {bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -25,10 +27,12 @@ class CustomDialogs {
             alignment: Alignment.center,
             children: [
               Container(
-                  height: 90,
-                  width: 90,
-                  child: CircularProgressIndicator()),
-              Image.asset('assets/logo.png',width: 60,height: 60,)
+                  height: 90, width: 90, child: CircularProgressIndicator()),
+              Image.asset(
+                'assets/logo.png',
+                width: 60,
+                height: 60,
+              )
             ],
           ),
         ),
@@ -145,16 +149,23 @@ class CustomDialogs {
 
   static bidInInfoDialog(
       {required BuildContext context,
+      required UserModel user,
       required BidIn bidInModel,
       required BidInPrivate bidInPrivate,
       required VoidCallback? onTapTalk,
-      bool rootNavigator = true}) {
+      required AccountService accountService,
+      bool rootNavigator = true}) async {
     final int assetId = bidInModel.speed.assetId;
     final String assetIDString = assetId == 0 ? 'ALGO' : assetId.toString();
+
+    final maxDuration =
+        await bidInModel.estMaxDuration(bidInPrivate, accountService);
+    final maxDurationString = secondsToSensibleTimePeriod(maxDuration);
+
     AlertDialog ratingDialog = AlertDialog(
       backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
-      title: Text("${bidInPrivate}"),
+      title: Text("$bidInPrivate"),
       // contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       // actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
       actions: [
@@ -178,16 +189,40 @@ class CustomDialogs {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Speed: '),
-              Text('${bidInModel.speed.num}'),
+              Text('name: '),
+              Text(user.name),
             ],
           ),
           SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('budget/max: '),
-              Text('[$assetIDString/sec]'),
+              Text('comment: '),
+              Text(bidInPrivate.comment ?? ''),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('speed: '),
+              Text('${bidInModel.speed.num} [$assetIDString/sec]'),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('est. max duration: '),
+              Text('$maxDurationString'),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('warning: '),
+              Text('this might be a very short call'),
             ],
           ),
         ],

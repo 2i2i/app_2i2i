@@ -50,6 +50,7 @@ class AddBidPageViewModel {
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
     final speed = Speed(num: speedNum, assetId: speedAssetId);
+    final addrA = speed.num == 0 ? null : account?.address;
 
     // TODO clean separation into firestore_service and firestore_database
     final net = AlgorandNet.testnet;
@@ -66,7 +67,7 @@ class AddBidPageViewModel {
         .doc(bidId)
         .collection('private')
         .doc('main');
-    final bidInPrivate = BidInPrivate(A: uid, addrA: account?.address);
+    final bidInPrivate = BidInPrivate(A: uid, addrA: addrA);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
