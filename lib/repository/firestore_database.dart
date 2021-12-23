@@ -48,14 +48,34 @@ class FirestoreDatabase {
     log('setUser - done');
   }
 
+  //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, RatingModel rating) => _service
           .createData(
         path: FirestorePath.rating(uid),
-        data: rating.toMap(),
+        data: rating.toJson(),
       )
           .onError((error, stackTrace) {
         print(error);
       });
+
+  Stream<List<RatingModel?>> getUserRatings(String uid) {
+    return _service
+        .collectionStream(
+            path: FirestorePath.rating(uid),
+            builder: (data, documentId) {
+              try {
+                final user = RatingModel.fromJson(data!);
+                return user;
+              } catch (e) {
+                return null;
+              }
+            })
+        .handleError((value) {
+      log(value);
+    });
+  }
+
+  //</editor-fold>
 
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
         path: FirestorePath.userPrivate(uid),
@@ -160,6 +180,62 @@ class FirestoreDatabase {
     // });
   }
 
+  Stream<Room> roomStream({required String meetingId}) =>
+      _service.documentStream(
+        path: FirestorePath.room(meetingId),
+        builder: (data, documentId) => Room.fromMap(data, meetingId),
+      );
+
+  Stream<List<RTCIceCandidate>> iceCandidatesStream({
+    required String meetingId,
+    required String subCollectionName,
+  }) {
+    return _service.collectionAddedStream(
+      path: FirestorePath.iceCandidates(meetingId, subCollectionName),
+      builder: (data, documentId) {
+        return RTCIceCandidate(
+            data!['candidate'], data['sdpMid'], data['sdpMlineIndex']);
+      },
+    );
+  }
+
+  Stream<List<BidIn>> bidInsStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidIns(uid),
+      builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+    );
+  }
+
+  Stream<List<BidOut>> bidOutsStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidOuts(uid),
+      builder: (data, documentId) => BidOut.fromMap(data, documentId),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+    );
+  }
+
+  //<editor-fold desc="Meeting Module">
+  Stream<BidInPrivate?> getBidInPrivate({required String uid, required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidPrivate(uid, bidId),
+        builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
+      );
+
+  Stream<Meeting> meetingStream({required String id}) =>
+      _service.documentStream(
+          path: FirestorePath.meeting(id),
+          builder: (data, documentId) {
+            return Meeting.fromMap(data, documentId);
+          });
+
+  Future<void> setMeeting(Meeting meeting) => _service.setData(
+        path: FirestorePath.meeting(meeting.id),
+        data: meeting.toMap(),
+        merge: true,
+      );
+
   Stream<List<Meeting?>> meetingHistoryA(String uid) {
     return _service
         .collectionStream(
@@ -201,60 +277,5 @@ class FirestoreDatabase {
       log(value);
     });
   }
-
-  Stream<Room> roomStream({required String meetingId}) =>
-      _service.documentStream(
-        path: FirestorePath.room(meetingId),
-        builder: (data, documentId) => Room.fromMap(data, meetingId),
-      );
-
-  Stream<List<RTCIceCandidate>> iceCandidatesStream({
-    required String meetingId,
-    required String subCollectionName,
-  }) {
-    return _service.collectionAddedStream(
-      path: FirestorePath.iceCandidates(meetingId, subCollectionName),
-      builder: (data, documentId) {
-        return RTCIceCandidate(
-            data!['candidate'], data['sdpMid'], data['sdpMlineIndex']);
-      },
-    );
-  }
-
-  Stream<List<BidIn>> bidInsStream({required String uid}) {
-    return _service.collectionStream(
-      path: FirestorePath.bidIns(uid),
-      builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
-    );
-  }
-
-  Stream<List<BidOut>> bidOutsStream({required String uid}) {
-    return _service.collectionStream(
-      path: FirestorePath.bidOuts(uid),
-      builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
-    );
-  }
-
-  Stream<BidInPrivate?> getBidInPrivate({required String uid, required String bidId}) =>
-      _service.documentStream(
-        path: FirestorePath.bidPrivate(uid, bidId),
-        builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
-      );
-
-
-
-  Stream<Meeting> meetingStream({required String id}) =>
-      _service.documentStream(
-          path: FirestorePath.meeting(id),
-          builder: (data, documentId) {
-            return Meeting.fromMap(data, documentId);
-          });
-  Future<void> setMeeting(Meeting meeting) => _service.setData(
-        path: FirestorePath.meeting(meeting.id),
-        data: meeting.toMap(),
-        merge: true,
-      );
+//</editor-fold>
 }

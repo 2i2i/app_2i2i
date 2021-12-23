@@ -1,9 +1,13 @@
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
+import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RatingPage extends StatefulWidget {
+class RatingPage extends ConsumerStatefulWidget {
   final UserModel? userModel;
 
   const RatingPage({Key? key, this.userModel}) : super(key: key);
@@ -12,9 +16,13 @@ class RatingPage extends StatefulWidget {
   _RatingPageState createState() => _RatingPageState();
 }
 
-class _RatingPageState extends State<RatingPage> {
+class _RatingPageState extends ConsumerState<RatingPage> {
   @override
   Widget build(BuildContext context) {
+    final ratingList = ref.watch(ratingProvider);
+    if (ratingList == null) {
+      return WaitPage();
+    }
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -58,7 +66,8 @@ class _RatingPageState extends State<RatingPage> {
                       Text('${(widget.userModel?.rating ?? 0) * 5} out of 5',
                           style: Theme.of(context).textTheme.subtitle2),
                       SizedBox(width: 4),
-                      Text('(${(widget.userModel?.numRatings ?? 0)} reviews)',
+                      Text(
+                          '(${(/*widget.userModel?.numRatings*/ ratingList.ratingList.length)} reviews)',
                           style: Theme.of(context).textTheme.caption),
                     ],
                   ),
@@ -69,47 +78,50 @@ class _RatingPageState extends State<RatingPage> {
             Expanded(
               flex: 5,
               child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) => Card(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 12, left: 12, right: 2, top: 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CustomImageProfileView(text: "IMI"),
-                          title: Text("User Data $index"),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: RatingBar.builder(
-                              initialRating: 3,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              itemCount: 5,
-                              itemSize: 30,
-                              glowColor: Colors.white,
-                              unratedColor: Colors.grey.shade300,
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star_rounded,
-                                color: Colors.amber,
-                              ),
-                              onRatingUpdate: (rating) {
-                                print(rating);
-                              },
+                  itemCount: ratingList.ratingList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    RatingModel? ratingModel = ratingList.ratingList[index];
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 12, left: 12, right: 2, top: 8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CustomImageProfileView(text: "IMI"),
+                              title: Text("User Data $index"),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: RatingBar.builder(
+                                  initialRating: (ratingModel?.rating ?? 0) * 5,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  itemCount: 5,
+                                  itemSize: 30,
+                                  glowColor: Colors.white,
+                                  unratedColor: Colors.grey.shade300,
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star_rounded,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    print(rating);
+                                  },
+                                ),
+                              ) /*Text("shortBio\nshortBio")*/,
                             ),
-                          ) /*Text("shortBio\nshortBio")*/,
+                            Text(
+                              ratingModel?.comment ?? "",
+                              style: Theme.of(context).textTheme.overline,
+                            )
+                          ],
                         ),
-                        Text(
-                          'Good meeting with 2i2i Good meeting with 2i2i Good meeting with 2i2i Good meeting with 2i2i Good meeting with 2i2i Good meeting with 2i2i',
-                          style: Theme.of(context).textTheme.overline,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+                      ),
+                    );
+                  }),
             ),
           ],
         ),

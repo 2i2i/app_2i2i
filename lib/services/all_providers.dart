@@ -24,6 +24,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../pages/history/provider/history_view_model.dart';
+import '../pages/rating/provider/rating_model.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -351,4 +352,18 @@ final userModelChangerProvider = Provider((ref) {
   final uid = ref.watch(myUIDProvider);
   if (uid == null) return null;
   return UserModelChanger(database, uid);
+});
+
+//Rating Module
+final ratingListProvider =
+    StreamProvider.family<List<RatingModel?>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.getUserRatings(uid);
+});
+
+final ratingProvider = Provider((ref) {
+  final uid = ref.watch(myUIDProvider)!;
+  final ratingList = ref.watch(ratingListProvider(uid));
+  if (ratingList is AsyncLoading || ratingList is AsyncError) return null;
+  return RatingListModel(ratingList: ratingList.data?.value ?? []);
 });

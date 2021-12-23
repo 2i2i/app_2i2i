@@ -297,7 +297,7 @@ class _CallPageState extends ConsumerState<CallPage>
                               }
                               await signaling?.hangUp(_localRenderer);
                               widget.onHangPhone(
-                                  widget.user.id, widget.meeting.id);
+                                  widget.meeting.B, widget.meeting.id);
                             } catch (e) {
                               log(e.toString());
                             }
