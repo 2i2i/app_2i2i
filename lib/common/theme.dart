@@ -77,6 +77,7 @@ class AppTheme{
 
   Color scaffoldBackgroundColor = Color(0xFFF3F3F7);
   Color disableColor = Color(0xFF979592);
+  Color fillColor = Color(0xFF767680);
 
   ThemeData get mainTheme {
     return ThemeData(
@@ -108,10 +109,10 @@ class AppTheme{
             ),
             selectedItemColor: secondaryColor,
             unselectedItemColor: disableColor,
-            backgroundColor: primaryColor,
+            backgroundColor: primaryLightColor,
             selectedIconTheme: IconThemeData(color: Colors.white)),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(primary: primaryColor),
+          style: ElevatedButton.styleFrom(primary: secondaryColor),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: primaryLightColor,
@@ -120,17 +121,19 @@ class AppTheme{
           indicator: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: primaryColor),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(color: primaryDarkColor),
+          fillColor: fillColor.withOpacity(0.12),
+          iconColor: fillColor,
+          labelStyle: TextStyle(color: secondaryColor),
           enabledBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryColor),
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.transparent),
           ),
           focusedBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryColor),
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.transparent),
           ),
         ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryColor));
+        textSelectionTheme: TextSelectionThemeData(cursorColor: secondaryColor));
   }
 
   ThemeData get darkTheme {

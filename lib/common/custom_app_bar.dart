@@ -1,34 +1,46 @@
-// import 'package:app_2i2i/common/theme.dart';
-// import 'package:flutter/material.dart';
-//
-// class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
-//   final Widget? leading;
-//   final String? title;
-//   final bool hideLeading;
-//
-//   final List<Widget>? actions;
-//
-//   CustomAppbar(
-//       {this.leading, this.title, this.actions, this.hideLeading = false});
-//
-//   @override
-//   Size get preferredSize => Size.fromHeight(kToolbarHeight);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return AppBar(
-//       backgroundColor: AppTheme().lightGray,
-//       automaticallyImplyLeading: hideLeading,
-//       leading: hideLeading
-//           ? null
-//           : leading != null
-//               ? leading
-//               : BackButton(),
-//       centerTitle: true,
-//       actions: actions,
-//       title: title != null
-//           ? Text(title ?? "",style: Theme.of(context).textTheme.headline2)
-//           : Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
-//     );
-//   }
-// }
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import 'custom_profile_image_view.dart';
+
+class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final List<Widget>? actions;
+
+  CustomAppbar({this.actions});
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+        elevation: 0,
+        actions: [
+          TextProfileView(text: "Ravi",statusColor: Colors.green,),
+          SizedBox(width: 10,)
+        ],
+        toolbarHeight: kToolbarHeight + 50,
+        centerTitle: false,
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(
+                'assets/icons/appbar_icon.svg',
+                width: 55,
+                height: 50,
+              ),
+              SizedBox(width: 4),
+              Text("2i2i",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5!
+                      .copyWith(fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ));
+  }
+}

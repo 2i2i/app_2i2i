@@ -99,14 +99,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               .values
               .toList(),
         ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                  width: 0.5, color: Theme.of(context).disabledColor),
-            ),
-          ),
+        bottomNavigationBar: Card(
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: _tabSelectedIndex,

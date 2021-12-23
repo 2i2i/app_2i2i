@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 class StarWidget extends ProgressIndicator {
   final double width;
   final double height;
+  final Color startColor;
 
-  StarWidget({
+  StarWidget( {
     Key? key,
+    this.startColor = Colors.yellow,
     required this.width,
     required this.height,
     double value = 0.5,
@@ -35,7 +37,7 @@ class _StarWidgetState extends State<StarWidget> {
         child: CustomPaint(
           painter: _CustomPathPainter(
             path: shapePath(iconSize),
-            color: Theme.of(context).cardColor,
+            color: Colors.black,
           ),
           child: ClipPath(
             child: Container(

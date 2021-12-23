@@ -72,6 +72,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,
       themeMode: ThemeMode.light,
+
       theme: AppTheme().mainTheme,
       darkTheme: AppTheme().darkTheme,
     );

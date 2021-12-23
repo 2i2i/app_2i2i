@@ -36,6 +36,7 @@ class Strings {
   String account = 'Account';
   String profile = 'Profile';
   String settings = 'Settings';
+  String searchUserHint = 'Search user';
 
   // Jobs page
   String search = 'Search';
