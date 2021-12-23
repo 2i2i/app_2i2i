@@ -66,38 +66,55 @@ class AppTheme{
   Color black = Colors.black;
   Color white = Colors.white;
 
-  Color primaryColor = Color(0xFF9dc183);
-  Color primaryLightColor = Color(0xFFcff4b3);
-  Color primaryDarkColor = Color(0xFF6e9156);
+  Color primaryColor = Color(0xFFf3f3f7);
+  Color primaryLightColor = Color(0xFFffffff);
+  Color primaryDarkColor = Color(0xFFc0c0c4);
 
-  Color secondaryColor = Color(0xFF2e7d32);
-  Color secondaryDarkColor = Color(0xFF005005);
+  Color secondaryColor = Color(0xFF1c1c1e);
+  Color secondaryDarkColor = Color(0xFF000000);
   Color primaryTextColor = Color(0xFF000000);
   Color secondaryTextColor = Color(0xFFffffff);
 
+  Color scaffoldBackgroundColor = Color(0xFFF3F3F7);
+  Color disableColor = Color(0xFF979592);
+
   ThemeData get mainTheme {
     return ThemeData(
-      fontFamily: 'ShipporiAntique',
-      brightness: Brightness.light,
+        fontFamily: 'SofiaPro',
+        brightness: Brightness.light,
         primaryColor: primaryColor,
         primaryColorLight: primaryLightColor,
         primaryColorDark: primaryDarkColor,
+        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        disabledColor: disableColor,
         colorScheme: ColorScheme.light(
           secondary: secondaryColor,
         ),
-        textTheme: themeMode(),
         appBarTheme: appBarTheme(false),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(primary: Colors.black),
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            elevation: 0,
+            selectedLabelStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 10.0,
+              fontWeight: FontWeight.normal,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 10.0,
+              fontWeight: FontWeight.normal,
+            ),
+            selectedItemColor: secondaryColor,
+            unselectedItemColor: disableColor,
             backgroundColor: primaryColor,
             selectedIconTheme: IconThemeData(color: Colors.white)),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(primary: primaryColor),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: primaryColor,
+          backgroundColor: primaryLightColor,
         ),
         tabBarTheme: TabBarTheme(
           indicator: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: primaryColor),
@@ -120,11 +137,10 @@ class AppTheme{
     return ThemeData(
       brightness: Brightness.dark,
       appBarTheme: appBarTheme(false),
-      fontFamily: 'ShipporiAntique',
+      fontFamily: 'SofiaPro',
       primaryColor: primaryColor,
       primaryColorLight: primaryLightColor,
       primaryColorDark: primaryDarkColor,
-      textTheme: themeMode(),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(primary: Colors.white),
         ),
@@ -173,8 +189,14 @@ class AppTheme{
           fontSize: 18.0,
           fontWeight: FontWeight.w500,
         ),
-        headline2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal),
-        headline1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+        headline2: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.normal,
+        ),
+        headline1: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.w500,
+        ),
         subtitle2: TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.normal,
@@ -198,11 +220,12 @@ class AppTheme{
       );
 
   AppBarTheme appBarTheme(bool dark) => AppBarTheme(
+      elevation: 0,
       backgroundColor: primaryColor,
       titleTextStyle: TextStyle(
         fontSize: 20.0,
         color: dark ? white : lightGray,
-        fontFamily: 'ShipporiAntique',
+        fontFamily: 'SofiaPro',
         fontWeight: FontWeight.w500,
       ));
 

@@ -5,13 +5,15 @@ import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
-import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/username_bio_dialog.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../constants/strings.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -26,10 +28,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   static final List<TabItem> _tabItems = [
     TabItem(GlobalKey<NavigatorState>(), SearchPage()),
-    TabItem(GlobalKey<NavigatorState>(), MyUserPage()),
     TabItem(GlobalKey<NavigatorState>(), MyAccountPage()),
+    TabItem(GlobalKey<NavigatorState>(), MyUserPage()),
     TabItem(GlobalKey<NavigatorState>(), FAQPage()),
-    TabItem(GlobalKey<NavigatorState>(), QRCodePage()),
+    // TabItem(GlobalKey<NavigatorState>(), QRCodePage()),
   ];
 
 //if the user double-clicked on any tab, all tab's sub-page is removed
@@ -96,43 +98,60 @@ class _HomePageState extends ConsumerState<HomePage> {
               .toList(),
         ),
         bottomNavigationBar: Container(
-          color: Colors.transparent,
-          child: Card(
-            elevation: 6,
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              currentIndex: _tabSelectedIndex,
-              onTap: (i) => _onTap(i),
-              items: [
-                BottomNavigationBarItem(
-                  label: "",
-                  icon: Icon(Icons.search_rounded),
-                  tooltip: 'Search',
-                ),
-                BottomNavigationBarItem(
-                  label: "",
-                  icon: Icon(Icons.person_outlined),
-                  tooltip: 'Profile',
-                ),
-                BottomNavigationBarItem(
-                  label: "",
-                  icon: Icon(Icons.attach_money_rounded),
-                  tooltip: 'Account',
-                ),
-                BottomNavigationBarItem(
-                  label: "",
-                  icon: Icon(Icons.help_outline_rounded),
-                  tooltip: 'FAQ',
-                ),
-                BottomNavigationBarItem(
-                  label: "",
-                  icon: Icon(Icons.qr_code_2_rounded),
-                  tooltip: 'QR Code',
-                ),
-              ],
+          padding: EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                  width: 0.5, color: Theme.of(context).disabledColor),
             ),
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _tabSelectedIndex,
+            onTap: (i) => _onTap(i),
+            items: [
+              BottomNavigationBarItem(
+                label: Strings().home,
+                icon: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SvgPicture.asset(_tabSelectedIndex == 0
+                      ? 'assets/icons/house_fill.svg'
+                      : 'assets/icons/house.svg'),
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().account,
+                icon: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SvgPicture.asset(_tabSelectedIndex == 1
+                      ? 'assets/icons/account_fill.svg'
+                      : 'assets/icons/account.svg'),
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().profile,
+                icon: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SvgPicture.asset(_tabSelectedIndex == 2
+                      ? 'assets/icons/person_fill.svg'
+                      : 'assets/icons/person.svg'),
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().settings,
+                icon: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SvgPicture.asset(_tabSelectedIndex == 3
+                      ? 'assets/icons/setting_fill.svg'
+                      : 'assets/icons/setting.svg'),
+                ),
+              ),
+              // BottomNavigationBarItem(
+              //   label: "",
+              //   icon: Icon(Icons.qr_code_2_rounded),
+              //   tooltip: 'QR Code',
+              // ),
+            ],
           ),
         ),
       ),

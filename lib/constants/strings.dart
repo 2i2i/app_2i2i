@@ -32,6 +32,10 @@ class Strings {
 
   // Home page
   String homePage = 'Home Page';
+  String home = 'Home';
+  String account = 'Account';
+  String profile = 'Profile';
+  String settings = 'Settings';
 
   // Jobs page
   String search = 'Search';

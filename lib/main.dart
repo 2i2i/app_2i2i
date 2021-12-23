@@ -70,7 +70,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       home:AuthWidget(homePageBuilder: (_) => HomePage(),),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
-      themeMode: appSettingModel.currentThemeMode,
+      // themeMode: appSettingModel.currentThemeMode,
+      themeMode: ThemeMode.light,
       theme: AppTheme().mainTheme,
       darkTheme: AppTheme().darkTheme,
     );

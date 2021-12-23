@@ -107,7 +107,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
           ),
-          Divider(),
           Expanded(child: _buildContents(context, ref)),
         ],
       ),
