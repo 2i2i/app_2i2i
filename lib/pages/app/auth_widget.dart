@@ -16,6 +16,7 @@ class AuthWidget extends ConsumerWidget {
       if (user == null) {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
         if (!signUpViewModel.signUpInProcess) {
+
           Future.delayed(Duration.zero).then((value) {
             ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
           });

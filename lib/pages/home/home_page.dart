@@ -63,8 +63,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     var lockUser = ref.watch(lockedUserViewModelProvider);
-    bool loading =
-        lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
+    bool loading = lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
     log('----------\n\n loading $loading \n\n-----------');
     if (!loading) {
       log('----------\n\n lockUser?.meeting ${lockUser.meeting} \n\n-----------');
@@ -157,6 +156,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       database.addRating(
           otherUid,
           RatingModel(
+            userId: otherUid,
               rating: rating, comment: ratingFeedBack, meeting: meetingId));
     });
   }
