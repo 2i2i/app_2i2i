@@ -161,22 +161,18 @@ class Meeting extends Equatable {
 
 @immutable
 class RatingModel {
-  RatingModel({
-    required this.rating,
-    required this.comment,
-    required this.meeting,
-  });
-
   final double rating;
   final String? comment;
   final String meeting;
+
+  RatingModel({required this.rating, this.comment, required this.meeting});
 
   factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('RatingModel.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
-
+    
     final double rating = data['rating'];
     final String? comment = data['comment'];
     final String meeting = data['meeting'];

@@ -15,6 +15,7 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
@@ -125,11 +126,13 @@ class _CallPageState extends ConsumerState<CallPage>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     callScreenModel = ref.watch(callScreenProvider);
-    final userModel = ref.watch(userProvider(widget.meeting.A));
+    final myUid = widget.user.id == widget.meeting.A
+        ? widget.meeting.A
+        : widget.meeting.B;
+    final userModel = ref.watch(userProvider(myUid));
     if (userModel is AsyncLoading || userModel is AsyncError) {
       return Center(child: CircularProgressIndicator());
     }
@@ -148,10 +151,10 @@ class _CallPageState extends ConsumerState<CallPage>
                       renderer: _localRenderer,
                       userModel: userModel.data!.value)
                   : secondVideoView(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                renderer: _remoteRenderer,
-              ),
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      renderer: _remoteRenderer,
+                    ),
               Positioned(
                 top: 40,
                 left: 40,
@@ -291,16 +294,14 @@ class _CallPageState extends ConsumerState<CallPage>
                           iconColor: Colors.white,
                           backgroundColor: AppTheme().red,
                           onTap: () async {
-                            try {
-                              if (budgetTimer?.isActive ?? false) {
-                                budgetTimer?.cancel();
-                              }
-                              await signaling?.hangUp(_localRenderer);
-                              widget.onHangPhone(
-                                  widget.user.id, widget.meeting.id);
-                            } catch (e) {
-                              log(e.toString());
+                            if (budgetTimer?.isActive ?? false) {
+                              budgetTimer?.cancel();
                             }
+                            await signaling?.hangUp(_localRenderer);
+                            final otherUid = widget.user.id == widget.meeting.A
+                                ? widget.meeting.B
+                                : widget.meeting.A;
+                            widget.onHangPhone(otherUid, widget.meeting.id);
                           }),
                       CircleButton(
                           icon: callScreenModel?.isMuteEnable ?? false

@@ -99,6 +99,7 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: userNameEditController,
                 textInputAction: TextInputAction.next,
+                autofocus: true,
                 onChanged: (value) {
                   imageUrl = value;
                   setState(() {});

@@ -1,17 +1,18 @@
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
+import 'package:app_2i2i/pages/my_account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
 import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
-import 'package:app_2i2i/pages/search_page/ui/search_page.dart';
 import 'package:app_2i2i/pages/setup_user/ui/username_bio_dialog.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/pages/search/ui/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 7)).then((value) {
+    Future.delayed(Duration(seconds: 3)).then((value) {
       final uid = ref.watch(myUIDProvider)!;
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
