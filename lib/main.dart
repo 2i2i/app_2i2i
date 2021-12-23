@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/pages/app/auth_widget.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
+import 'package:app_2i2i/pages/sign_in/ui/sign_in_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +12,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
+import 'repository/firebase_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(/*options: DefaultFirebaseConfig.platformOptions*/);
 
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);

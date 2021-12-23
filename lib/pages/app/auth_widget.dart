@@ -1,13 +1,14 @@
 import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterfire_ui/auth.dart';
+
+import '../../services/all_providers.dart';
 
 class AuthWidget extends ConsumerWidget {
   AuthWidget({required this.homePageBuilder});
 
   final WidgetBuilder homePageBuilder;
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,12 +17,23 @@ class AuthWidget extends ConsumerWidget {
       if (user == null) {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
         if (!signUpViewModel.signUpInProcess) {
-          Future.delayed(Duration.zero).then((value) {
-            ref.read(setupUserViewModelProvider).createAuthAndStartAlgorand();
-          });
+          return SignInScreen(actions: [
+            AuthStateChangeAction<SignedIn>((context, userModel) {
+              Future.delayed(Duration.zero).then((value) {
+                ref.read(setupUserViewModelProvider).createAuthAndStartAlgoRand(firebaseUserId: userModel.user?.uid);
+              });
+            }),
+          ], providerConfigs: [
+            GoogleProviderConfiguration(
+              clientId: '...',
+            ),
+            TwitterProviderConfiguration(
+                apiKey: '...',
+                apiSecretKey: '...',
+                redirectUri: 'https://my-app.firebaseapp.com/__/auth/handler')
+          ]);
         }
         return WaitPage();
-        // return setupPageBuilder(context);
       }
 
       return homePageBuilder(context);

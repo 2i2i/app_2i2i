@@ -7,7 +7,7 @@ import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/rating/ui/rating_page.dart';
-import 'package:app_2i2i/pages/search_page/ui/widgtes/star_widget.dart';
+import 'package:app_2i2i/pages/search/ui/widgtes/star_widget.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
@@ -25,11 +25,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(myUIDProvider)!;
-    final user = ref.watch(userProvider(uid));
-    if (user is AsyncLoading || user is AsyncError) {
-      return WaitPage();
-    }
+
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
@@ -39,31 +35,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               context, AppSettingPage(), Routes.AppSetting),
           icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
         ),
-        actions: [
-          InkWell(
-            onTap: () => CustomNavigation.push(context,
-                RatingPage(userModel: user.data!.value), Routes.RATING),
-            child: (user.data!.value.rating ?? 0) > 0
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        StarWidget(
-                          value: (user.data!.value.rating ?? 0) * 5,
-                          height: 40,
-                          width: 25,
-                        ),
-                        SizedBox(height: 2),
-                        Text('${(user.data!.value.rating ?? 0) * 5}',
-                            style: Theme.of(context).textTheme.overline)
-                      ],
-                    ),
-                  )
-                : Container(),
-          ),
-        ],
       ),
       body: Column(
         children: [

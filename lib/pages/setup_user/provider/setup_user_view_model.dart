@@ -27,10 +27,8 @@ class SetupUserViewModel with ChangeNotifier {
   final AlgorandService algorand;
 
   bool signUpInProcess = false;
-  String message = '';
   bool bioSet = false;
   bool nameSet = false;
-  bool workDone = false;
   String? bio;
   String? uid;
   String? name;
@@ -51,34 +49,25 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   ////////
-  Future createAuthAndStartAlgorand() async {
+  Future createAuthAndStartAlgoRand({String? firebaseUserId}) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
-
-    log('SetupUserViewModel - createAuthAndStartAlgorand');
-
-    message = 'creating auth user';
     notifyListeners();
-    final userCredentialFuture = auth.signInAnonymously();
-    final setupAlgorandAccountFuture = setupAlgorandAccount();
 
-    final futureResults =
-        await Future.wait([userCredentialFuture, setupAlgorandAccountFuture]);
+    uid = firebaseUserId;
+    if (firebaseUserId == null) {
+      final userCredential = await auth.signInAnonymously();
+      uid = userCredential.user!.uid;
+    }
+    await setupAlgorandAccount();
+    signUpInProcess = false;
 
-    final userCredential = futureResults[0];
-    uid = userCredential.B!.uid;
-    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential isNewUser: ${userCredential.additionalUserInfo?.isNewUser}');
-    log('SetupUserViewModel - createAuthAndStartAlgorand - userCredential uid: ${userCredential.B?.uid}');
-
-    message = 'done';
-    workDone = true;
     notifyListeners();
   }
 
 
   Future updateBio() async {
     log('SetupUserViewModel - createDatabaseUser');
-    message = 'creating database user';
     notifyListeners();
     // log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
     final tags = UserModel.tagsFromBio(bio!);
@@ -90,7 +79,6 @@ class SetupUserViewModel with ChangeNotifier {
 
   // KEEP account in local scope
   Future setupAlgorandAccount() async {
-    message = 'creating algorand account';
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
     final account = await LocalAccount.create(
@@ -102,7 +90,6 @@ class SetupUserViewModel with ChangeNotifier {
 
     // TODO uncomment try
     // DEBUG - off for faster debugging
-    message = 'gifting your some (test) ALGOs and TESTCOINs';
     notifyListeners();
     // await algorand.giftALGO(account);
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
