@@ -1,6 +1,5 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
@@ -27,26 +26,6 @@ class SetupUserViewModel with ChangeNotifier {
   final AlgorandService algorand;
 
   bool signUpInProcess = false;
-  bool bioSet = false;
-  bool nameSet = false;
-  String? bio;
-  String? uid;
-  String? name;
-  String? deviceToken;
-
-  void setBio(String _bio) {
-    log('SetupUserViewModel - setBio');
-    bioSet = _bio.isNotEmpty;
-    bio = _bio;
-    notifyListeners();
-  }
-
-  void setName(String _name) {
-    log('SetupUserViewModel - setName');
-    nameSet = _name.isNotEmpty;
-    name = _name;
-    notifyListeners();
-  }
 
   ////////
   Future createAuthAndStartAlgoRand({String? firebaseUserId}) async {
@@ -54,27 +33,13 @@ class SetupUserViewModel with ChangeNotifier {
     signUpInProcess = true;
     notifyListeners();
 
-    uid = firebaseUserId;
     if (firebaseUserId == null) {
-      final userCredential = await auth.signInAnonymously();
-      uid = userCredential.user!.uid;
+      await auth.signInAnonymously();
     }
     await setupAlgorandAccount();
     signUpInProcess = false;
 
     notifyListeners();
-  }
-
-
-  Future updateBio() async {
-    log('SetupUserViewModel - createDatabaseUser');
-    notifyListeners();
-    // log('SetupUserViewModel - createDatabaseUser - notifyListeners - uid=$uid - name=$name - bio=$bio');
-    final tags = UserModel.tagsFromBio(bio!);
-    // log('SetupUserViewModel - createDatabaseUser - tags=$tags');
-    await database.updateUserNameAndBio(
-        uid!, name!, bio!, [name!, ...tags]);
-    // log('SetupUserViewModel - createDatabaseUser - UserModel');
   }
 
   // KEEP my_account in local scope

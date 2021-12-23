@@ -8,9 +8,9 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RatingPage extends ConsumerStatefulWidget {
-  final UserModel? userModel;
+  final UserModel userModel;
 
-  const RatingPage({Key? key, this.userModel}) : super(key: key);
+  const RatingPage({Key? key, required this.userModel}) : super(key: key);
 
   @override
   _RatingPageState createState() => _RatingPageState();
@@ -19,10 +19,14 @@ class RatingPage extends ConsumerStatefulWidget {
 class _RatingPageState extends ConsumerState<RatingPage> {
   @override
   Widget build(BuildContext context) {
-    final ratingList = ref.watch(ratingProvider);
-    if (ratingList == null) {
+    final ratingListAsyncValue =
+        ref.watch(ratingListProvider(widget.userModel.id));
+    if (ratingListAsyncValue is AsyncLoading ||
+        ratingListAsyncValue is AsyncError) {
       return WaitPage();
     }
+    final ratingList = ratingListAsyncValue.data!.value;
+
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -41,7 +45,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 20),
                     child: RatingBar.builder(
-                      initialRating: (widget.userModel?.rating ?? 0) * 5,
+                      initialRating: (widget.userModel.rating ?? 0) * 5,
                       minRating: 1,
                       direction: Axis.horizontal,
                       allowHalfRating: true,
@@ -63,11 +67,11 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('${(widget.userModel?.rating ?? 0) * 5} out of 5',
+                      Text('${(widget.userModel.rating ?? 0) * 5} out of 5',
                           style: Theme.of(context).textTheme.subtitle2),
                       SizedBox(width: 4),
                       Text(
-                          '(${(/*widget.userModel?.numRatings*/ ratingList.ratingList.length)} reviews)',
+                          '(${(/*widget.userModel?.numRatings*/ ratingList.length)} reviews)',
                           style: Theme.of(context).textTheme.caption),
                     ],
                   ),
@@ -78,9 +82,9 @@ class _RatingPageState extends ConsumerState<RatingPage> {
             Expanded(
               flex: 5,
               child: ListView.builder(
-                  itemCount: ratingList.ratingList.length,
+                  itemCount: ratingList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    RatingModel? ratingModel = ratingList.ratingList[index];
+                    RatingModel ratingModel = ratingList[index];
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.only(
@@ -96,7 +100,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                               subtitle: Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: RatingBar.builder(
-                                  initialRating: (ratingModel?.rating ?? 0) * 5,
+                                  initialRating: ratingModel.rating * 5,
                                   minRating: 1,
                                   direction: Axis.horizontal,
                                   itemCount: 5,
@@ -114,7 +118,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                               ) /*Text("shortBio\nshortBio")*/,
                             ),
                             Text(
-                              ratingModel?.comment ?? "",
+                              ratingModel.comment ?? "",
                               style: Theme.of(context).textTheme.overline,
                             )
                           ],

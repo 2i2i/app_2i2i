@@ -52,24 +52,18 @@ class FirestoreDatabase {
   Future<void> addRating(String uid, RatingModel rating) => _service
           .createData(
         path: FirestorePath.rating(uid),
-        data: rating.toJson(),
+        data: rating.toMap(),
       )
           .onError((error, stackTrace) {
         print(error);
       });
 
-  Stream<List<RatingModel?>> getUserRatings(String uid) {
+  Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
         .collectionStream(
             path: FirestorePath.rating(uid),
-            builder: (data, documentId) {
-              try {
-                final user = RatingModel.fromJson(data!);
-                return user;
-              } catch (e) {
-                return null;
-              }
-            })
+            builder: (data, documentId) =>
+                RatingModel.fromMap(data, documentId))
         .handleError((value) {
       log(value);
     });
@@ -203,7 +197,8 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidIns(uid),
       builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
@@ -217,7 +212,8 @@ class FirestoreDatabase {
   }
 
   //<editor-fold desc="Meeting Module">
-  Stream<BidInPrivate?> getBidInPrivate({required String uid, required String bidId}) =>
+  Stream<BidInPrivate?> getBidInPrivate(
+          {required String uid, required String bidId}) =>
       _service.documentStream(
         path: FirestorePath.bidPrivate(uid, bidId),
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
@@ -236,42 +232,14 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<List<Meeting?>> meetingHistoryA(String uid) {
+  Stream<List<Meeting?>> meetingHistoryA(String uid) => _meetingHistoryX(uid, 'A');
+  Stream<List<Meeting?>> meetingHistoryB(String uid) => _meetingHistoryX(uid, 'B');
+  Stream<List<Meeting?>> _meetingHistoryX(String uid, String field) {
     return _service
         .collectionStream(
       path: FirestorePath.meetings(),
-      builder: (data, documentId) {
-        try {
-          final user = Meeting.fromMap(data, documentId);
-          return user;
-        } catch (e) {
-          return null;
-        }
-      },
-      queryBuilder: (query) {
-        return query.where('A', isEqualTo: uid);
-      },
-    )
-        .handleError((value) {
-      log(value);
-    });
-  }
-
-  Stream<List<Meeting?>> meetingHistoryB(String uid) {
-    return _service
-        .collectionStream(
-      path: FirestorePath.meetings(),
-      builder: (data, documentId) {
-        try {
-          final user = Meeting.fromMap(data, documentId);
-          return user;
-        } catch (e) {
-          return null;
-        }
-      },
-      queryBuilder: (query) {
-        return query.where('B', isEqualTo: uid);
-      },
+      builder: (data, documentId) => Meeting.fromMap(data, documentId),
+      queryBuilder: (query) => query.where(field, isEqualTo: uid),
     )
         .handleError((value) {
       log(value);

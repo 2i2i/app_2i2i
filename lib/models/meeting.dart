@@ -161,35 +161,35 @@ class Meeting extends Equatable {
 
 @immutable
 class RatingModel {
-  double? rating;
-  String? comment;
-  String? meeting;
-  String? userId;
+  final double rating;
+  final String? comment;
+  final String meeting;
 
-  RatingModel({this.rating, this.comment, this.meeting, this.userId});
+  RatingModel({required this.rating, this.comment, required this.meeting});
 
-  RatingModel.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('rating') && json['rating'] != null) {
-      rating = json['rating'];
+  factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('RatingModel.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
     }
-    if (json.containsKey('comment') && json['comment'] != null) {
-      comment = json['comment'];
-    }
-    if (json.containsKey('meeting') && json['meeting'] != null) {
-      meeting = json['meeting'];
-    }
-    if (json.containsKey('userId') && json['userId'] != null) {
-      userId = json['userId'];
-    }
+    
+    final double rating = data['rating'];
+    final String? comment = data['comment'];
+    final String meeting = data['meeting'];
+
+    return RatingModel(
+      rating: rating,
+      comment: comment,
+      meeting: meeting,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['rating'] = this.rating;
-    data['comment'] = this.comment;
-    data['meeting'] = this.meeting;
-    data['userId'] = this.userId;
-    return data;
+  Map<String, dynamic> toMap() {
+    return {
+      'rating': rating,
+      'comment': comment,
+      'meeting': meeting,
+    };
   }
 }
 

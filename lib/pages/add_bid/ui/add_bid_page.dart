@@ -280,7 +280,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                   style: Theme.of(context).textTheme.subtitle1),
               Text(
                   account == null
-                      ? 'select my_account'
+                      ? 'select account'
                       : addBidPageViewModel.duration(
                           account!, speedNum, balance!),
                   style: Theme.of(context).textTheme.subtitle1),

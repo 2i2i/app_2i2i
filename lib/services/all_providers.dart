@@ -19,12 +19,10 @@ import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/pages/history/provider/history_view_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../pages/history/provider/history_view_model.dart';
-import '../pages/rating/provider/rating_model.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -356,14 +354,7 @@ final userModelChangerProvider = Provider((ref) {
 
 //Rating Module
 final ratingListProvider =
-    StreamProvider.family<List<RatingModel?>, String>((ref, uid) {
+    StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
-});
-
-final ratingProvider = Provider((ref) {
-  final uid = ref.watch(myUIDProvider)!;
-  final ratingList = ref.watch(ratingListProvider(uid));
-  if (ratingList is AsyncLoading || ratingList is AsyncError) return null;
-  return RatingListModel(ratingList: ratingList.data?.value ?? []);
 });

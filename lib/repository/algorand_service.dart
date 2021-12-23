@@ -82,9 +82,9 @@ class AlgorandService {
 
   Future<String> giftALGO(AbstractAccount account,
       {waitForConfirmation = true}) async {
-    log('AlgorandService - giftALGO - my_account=${account.address} - waitForConfirmation=$waitForConfirmation');
+    log('AlgorandService - giftALGO - account=${account.address} - waitForConfirmation=$waitForConfirmation');
     final giftALGO = functions.httpsCallable('giftALGO');
-    final result = await giftALGO({'my_account': account.address});
+    final result = await giftALGO({'account': account.address});
     log('AlgorandService - giftALGO - result=$result');
     final String txId = result.data;
     if (waitForConfirmation)
@@ -95,9 +95,9 @@ class AlgorandService {
 
   Future<String> giftASA(AbstractAccount account,
       {waitForConfirmation = true}) async {
-    log('AlgorandService - giftASA - my_account=${account.address} - waitForConfirmation=$waitForConfirmation');
+    log('AlgorandService - giftASA - account=${account.address} - waitForConfirmation=$waitForConfirmation');
     final giftASA = functions.httpsCallable('giftASA');
-    final result = await giftASA({'my_account': account.address});
+    final result = await giftASA({'account': account.address});
     log('AlgorandService - giftASA - result=$result');
     final String txId = result.data;
     if (waitForConfirmation)
@@ -145,7 +145,7 @@ class AlgorandService {
       waitForConfirmation = true}) async {
     log('lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
 
-    log('lockALGO - my_account=${account.address}');
+    log('lockALGO - account=${account.address}');
 
     final params =
         await algorandLib.client[net]!.getSuggestedTransactionParams();
@@ -233,7 +233,7 @@ class AlgorandService {
       required AlgorandNet net,
       waitForConfirmation = true}) async {
     log('lockASA - B=$B - speed=$speed - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
-    log('lockASA - my_account=${account.address}');
+    log('lockASA - account=${account.address}');
 
     // calc LOCK_ASA_TOTAL_FEE depending on whether SYSTEM is opted-in to ASA or not
     final systemOptedIn = await accountService.isOptedInToASA(

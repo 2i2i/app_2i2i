@@ -110,7 +110,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             children: [
               SpeedDial(
                 icon: Icons.add,
-                tooltip: 'Add my_account',
+                tooltip: 'Add account',
                 children: [
                   SpeedDialChild(
                     child: Icon(Icons.smartphone),

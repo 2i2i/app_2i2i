@@ -40,7 +40,7 @@ Users can opt-in the system into any Algorand coin, without incurring losses to 
         description: '''
 Implemented a Machine Learning system written in julia to evaluate individual (retail) credit risk given for micro financing.
 The system combined all available data, including:
-• Financial history taken from the users bank my_account (given user consent).
+• Financial history taken from the users bank account (given user consent).
 • Behavioral data from the web app
 • Other credit risk models
 

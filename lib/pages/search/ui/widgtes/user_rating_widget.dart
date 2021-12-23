@@ -1,11 +1,10 @@
 import 'package:app_2i2i/pages/search/ui/widgtes/star_widget.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/pages/rating/ui/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../common/custom_navigation.dart';
-import '../../../../routes/app_routes.dart';
-import '../../../../services/all_providers.dart';
-import '../../../rating/ui/rating_page.dart';
 
 class UserRatingWidget extends ConsumerStatefulWidget {
   const UserRatingWidget({Key? key}) : super(key: key);
