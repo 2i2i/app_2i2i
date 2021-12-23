@@ -14,7 +14,7 @@ import 'constants/strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(/*options: DefaultFirebaseConfig.platformOptions*/);
 
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);

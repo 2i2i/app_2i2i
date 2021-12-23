@@ -5,7 +5,7 @@ import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/app_settings/ui/provider/app_setting_model.dart';
 import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
@@ -19,11 +19,10 @@ import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/logging.dart';
+import 'package:app_2i2i/pages/history/provider/history_view_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../pages/history/provider/history_view_model.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -351,4 +350,11 @@ final userModelChangerProvider = Provider((ref) {
   final uid = ref.watch(myUIDProvider);
   if (uid == null) return null;
   return UserModelChanger(database, uid);
+});
+
+//Rating Module
+final ratingListProvider =
+    StreamProvider.family<List<RatingModel>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.getUserRatings(uid);
 });
