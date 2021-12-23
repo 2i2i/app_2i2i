@@ -13,22 +13,21 @@ class UserBidInsList extends ConsumerWidget {
     required this.uid,
     required this.titleWidget,
     required this.noBidsText,
-    // required this.onTap,
-    this.trailingIcon,
-    this.onTrailingIconClick,
+    required this.onTap,
   });
 
   final String uid;
   final Widget titleWidget;
   final String noBidsText;
 
-  // final void Function(Bid bid) onTap;
-  final Icon? trailingIcon;
-  final void Function(BidIn bid)? onTrailingIconClick;
+  final void Function(BidIn bid) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log('UserBidInsList - build - uid=$uid');
+
+    final accountService = ref.watch(accountServiceProvider);
+
     return StreamBuilder(
         stream: FirestoreDatabase().bidInsStream(uid: uid),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -45,20 +44,26 @@ class UserBidInsList extends ConsumerWidget {
                 itemBuilder: (_, ix) {
                   BidIn bid = snapshot.data[ix];
 
-                  final bidInPrivate = ref.watch(getBidInPrivate(bid.id));
-                  if (bidInPrivate is AsyncLoading ||
-                      bidInPrivate is AsyncError) {
+                  // TODO make the status based on user a separate Widget, which can load independently
+                  final bidInPrivateAsyncValue =
+                      ref.watch(getBidInPrivate(bid.id)); 
+                  if (bidInPrivateAsyncValue is AsyncLoading ||
+                      bidInPrivateAsyncValue is AsyncError) {
                     return Center(child: CircularProgressIndicator());
                   }
+                  final bidInPrivate = bidInPrivateAsyncValue.data!.value!;
 
-                  final user = ref.watch(userProvider(bidInPrivate.data!.value!.A));
-                  if (user is AsyncLoading || user is AsyncError) {
+                  final userAsyncValue =
+                      ref.watch(userProvider(bidInPrivate.A));
+                  if (userAsyncValue is AsyncLoading ||
+                      userAsyncValue is AsyncError) {
                     return Center(child: CircularProgressIndicator());
                   }
+                  final user = userAsyncValue.data!.value;
+
                   var statusColor = AppTheme().green;
-                  if (user.data!.value.status == 'OFFLINE')
-                    statusColor = AppTheme().gray;
-                  if (user.data!.value.locked) statusColor = AppTheme().red;
+                  if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
+                  if (user.locked) statusColor = AppTheme().red;
 
                   final String num = bid.speed.num.toString();
                   final int assetId = bid.speed.assetId;
@@ -71,21 +76,20 @@ class UserBidInsList extends ConsumerWidget {
                   return InkResponse(
                     onTap: () => CustomDialogs.bidInInfoDialog(
                         context: context,
+                        user: user,
                         bidInModel: bid,
-                        bidInPrivate: bidInPrivate.data!.value!,
-                        onTapTalk: () => onTrailingIconClick!(bid)),
+                        bidInPrivate: bidInPrivate,
+                        onTapTalk: () => onTap(bid),
+                        accountService: accountService,
+                        ),
                     child: Card(
                         color: color,
                         child: ListTile(
-                          leading: IconButton(icon: Icon(Icons.circle, color: statusColor),onPressed: null,),
-                          trailing: IconButton(
-                              onPressed: () =>
-                                  onTrailingIconClick!(bid),
-                              icon: trailingIcon!),
-                          title: Text('$num'),
-                          subtitle: Text('[$assetIDString/sec]'),
-                          // tileColor: color,
-                          // onTap: () => onTap(bid),
+                          leading: IconButton(
+                            icon: Icon(Icons.circle, color: statusColor),
+                            onPressed: null,
+                          ),
+                          title: Text('$num [$assetIDString/sec]'),
                         )),
                   );
                 });

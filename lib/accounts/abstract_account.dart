@@ -28,6 +28,23 @@ class AccountService {
     return (await findAccount(mainAccountAddress!))!;
   }
 
+  Future<AssetHolding> getALGOBalance(
+      {required String address, required AlgorandNet net}) async {
+    final balance = await algorandLib.client[net]!.getBalance(address);
+    return AssetHolding(
+        amount: balance, assetId: 0, creator: '', isFrozen: false);
+  }
+
+  Future<AssetHolding?> getBalance(
+      {required String address,
+      required int assetId,
+      required AlgorandNet net}) async {
+    final balances = await getAssetHoldings(address: address, net: net);
+    return balances
+        .where((b) => b.assetId == assetId)
+        .first; // better to use .only, but not implemented in dart
+  }
+
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
     final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
@@ -101,7 +118,7 @@ class AccountService {
     return [...localAccounts, ...walletConnectAccounts];
   }
 
-  Future<Balance> extractBalance(
+  Future<Balance> _extractBalance(
       List<Balance> balances, int assetId, AlgorandNet net) async {
     for (final balance in balances) {
       if (balance.assetHolding.assetId == assetId && balance.net == net)
@@ -115,7 +132,7 @@ class AccountService {
       required AbstractAccount account,
       required AlgorandNet net}) async {
     final balances = account.balances;
-    final balance = await extractBalance(balances, assetId, net);
+    final balance = await _extractBalance(balances, assetId, net);
 
     final feesForApp = assetId == 0 ? AlgorandService.LOCK_ALGO_FEE : 0;
 

@@ -14,8 +14,7 @@ class ProfileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if ((imageFile?.path ?? "").isNotEmpty) {
       return Image.network(imageFile!.path, fit: BoxFit.cover);
-    } else if (imageUrlString.contains('http') ||
-        imageUrlString.contains('https')) {
+    } else if (imageUrlString.contains('http')) {
       return Image.network(imageFile!.path, fit: BoxFit.cover);
     } else if (imageUrlString.isNotEmpty) {
       return CustomImageProfileView(
