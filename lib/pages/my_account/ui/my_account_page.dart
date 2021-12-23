@@ -1,9 +1,9 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
-import 'package:app_2i2i/pages/account/provider/my_account_page_view_model.dart';
-import 'package:app_2i2i/pages/account/ui/widgets/qr_image_widget.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/my_account/ui/widgets/qr_image_widget.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/foundation.dart';
@@ -76,6 +76,11 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("My Account"),
+          actions: [
+            IconButton(
+                onPressed: () async => myAccountPageViewModel.updateAccounts(),
+                icon: Icon(Icons.refresh))
+          ],
         ),
         body: Stack(
           fit: StackFit.expand,
@@ -105,7 +110,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             children: [
               SpeedDial(
                 icon: Icons.add,
-                tooltip: 'Add account',
+                tooltip: 'Add my_account',
                 children: [
                   SpeedDialChild(
                     child: Icon(Icons.smartphone),

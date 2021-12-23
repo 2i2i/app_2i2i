@@ -17,7 +17,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   bool isLoading = true;
   List<AbstractAccount>? accounts;
 
-  initMethod() async {
+  Future<void> initMethod() async {
     algorandLib = await ref!.watch(algorandLibProvider);
     storage = await ref!.watch(storageProvider);
     accountService = await ref!.watch(accountServiceProvider);
@@ -26,7 +26,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future addLocalAccount() async {
+  Future<void> addLocalAccount() async {
     await LocalAccount.create(
         accountService: accountService!,
         algorandLib: algorandLib!,
@@ -34,7 +34,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     await updateAccounts();
   }
 
-  Future updateAccounts() async {
+  Future<void> updateAccounts() async {
     accounts = await accountService!.getAllAccounts();
     notifyListeners();
   }

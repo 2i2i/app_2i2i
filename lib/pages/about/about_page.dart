@@ -73,7 +73,7 @@ class AboutPage extends StatelessWidget {
           paragraph(context, 'Security', [
             '• Algorand is arguably the safest blockchain (e.g. fork-free, post quantum crypto).',
             '• 2i2i creates an Algorand accounts for you and keeps them locally (non-custodial).',
-            '• The account private keys are stored encrypted and in private storage (WebCrypto, Keychain).',
+            '• The my_account private keys are stored encrypted and in private storage (WebCrypto, Keychain).',
             '• In the future, 2i2i will allow the use of other wallets (WalletConnect).',
           ]),
           paragraph(context, 'Vision', [

@@ -17,21 +17,43 @@ class AuthWidget extends ConsumerWidget {
       if (user == null) {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
         if (!signUpViewModel.signUpInProcess) {
-          return SignInScreen(actions: [
-            AuthStateChangeAction<SignedIn>((context, userModel) {
-              Future.delayed(Duration.zero).then((value) {
-                ref.read(setupUserViewModelProvider).createAuthAndStartAlgoRand(firebaseUserId: userModel.user?.uid);
-              });
-            }),
-          ], providerConfigs: [
-            GoogleProviderConfiguration(
-              clientId: '...',
+          return SignInScreen(
+            showAuthActionSwitch: false,
+            actions: [
+              AuthStateChangeAction<SignedIn>(
+                (context, userModel) {
+                  Future.delayed(Duration.zero).then(
+                    (value) {
+                      ref
+                          .read(setupUserViewModelProvider)
+                          .createAuthAndStartAlgoRand(
+                              firebaseUserId: userModel.user?.uid);
+                    },
+                  );
+                },
+              ),
+            ],
+            providerConfigs: [
+              GoogleProviderConfiguration(
+                clientId: '...',
+              ),
+              TwitterProviderConfiguration(
+                  apiKey: '...',
+                  apiSecretKey: '...',
+                  redirectUri: 'https://my-app.firebaseapp.com/__/auth/handler')
+            ],
+            footerBuilder: (context, action) => Container(
+              margin: EdgeInsets.only(top: 4),
+              height: kTextTabBarHeight,
+              child: ElevatedButton.icon(
+                onPressed: () async => ref
+                    .read(setupUserViewModelProvider)
+                    .createAuthAndStartAlgoRand(),
+                icon: Icon(Icons.login),
+                label: Text('Sign in as Guest'),
+              ),
             ),
-            TwitterProviderConfiguration(
-                apiKey: '...',
-                apiSecretKey: '...',
-                redirectUri: 'https://my-app.firebaseapp.com/__/auth/handler')
-          ]);
+          );
         }
         return WaitPage();
       }

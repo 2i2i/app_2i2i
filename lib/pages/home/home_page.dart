@@ -1,7 +1,7 @@
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/account/ui/my_account_page.dart';
+import 'package:app_2i2i/pages/my_account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';

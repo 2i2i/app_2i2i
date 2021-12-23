@@ -4,6 +4,7 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterfire_ui/auth.dart';
 
 import 'widgets/mode_widgets.dart';
 
@@ -137,6 +138,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
             ),
             Divider(),
             SizedBox(height: 8),
+            SignOutButton(),
           ],
         ),
       ),

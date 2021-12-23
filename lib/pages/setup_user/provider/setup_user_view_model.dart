@@ -77,7 +77,7 @@ class SetupUserViewModel with ChangeNotifier {
     // log('SetupUserViewModel - createDatabaseUser - UserModel');
   }
 
-  // KEEP account in local scope
+  // KEEP my_account in local scope
   Future setupAlgorandAccount() async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
@@ -86,18 +86,18 @@ class SetupUserViewModel with ChangeNotifier {
         storage: storage,
         accountService: accountService);
     await accountService.setMainAcccount(account.address);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - account=${account.address}');
+    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account=${account.address}');
 
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    // await algorand.giftALGO(account);
+    // await algorand.giftALGO(my_account);
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-    // final optInToASAFuture = account.optInToASA(
+    // final optInToASAFuture = my_account.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
     //     net: AlgorandNet.testnet);
     // final optInStateTxId = await optInToASAFuture
-    //     .then((value) => algorand.giftASA(account, waitForConfirmation: false));
+    //     .then((value) => algorand.giftASA(my_account, waitForConfirmation: false));
     // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
     // await algorand.waitForConfirmation(
     //     txId: optInStateTxId, net: AlgorandNet.testnet);

@@ -49,9 +49,9 @@ class _FAQPageState extends State<FAQPage> {
     User B in turn will have a live video call with user A.
     *speed*s are measured in coins/sec.
     '''),
-    FAQData(title: 'Is my Algorand account safe?', description: '''
-    We create an Algorand account for you when you create your user.
-    This account is local to your device. We have no access to it.
+    FAQData(title: 'Is my Algorand my_account safe?', description: '''
+    We create an Algorand my_account for you when you create your user.
+    This my_account is local to your device. We have no access to it.
     It is encrypted on your device using amongst the highest standards of cryptography: WebCrypto or Keychains.
     '''),
     FAQData(title: 'Can I use other wallets?', description: '''
@@ -62,7 +62,7 @@ class _FAQPageState extends State<FAQPage> {
     '''),
     FAQData(title: 'How does the Algorand system work?', description: '''
     2i2i never gets the users coins. User As coins are locked in a smart contract during the call.
-    When the call ends, the smart contract divides the coins amongst user A, user B and the 2i2i fee account.
+    When the call ends, the smart contract divides the coins amongst user A, user B and the 2i2i fee my_account.
     Unused coins are sent back to user A. The fee is 10% and is used to further improve the system.
     '''),
     FAQData(title: 'Can I use fiat?', description: '''
@@ -96,7 +96,7 @@ class _FAQPageState extends State<FAQPage> {
     '''),
     FAQData(title: 'Which data of mine do you collect?', description: '''
     Only your basic data for running the app, like your bio, friends list.
-    We do not know about your Algorand account. It is local on your device.
+    We do not know about your Algorand my_account. It is local on your device.
     We do not see anything of your calls.
     '''),
     FAQData(title: 'Why Algorand?', description: '''
@@ -113,7 +113,7 @@ class _FAQPageState extends State<FAQPage> {
     Keywords are used to seach for users.
     '''),
     FAQData(title: 'Does 2i2i have access to the escrow?', description: '''
-    2i2i created the escrow account (a smart contract) and currently has access to it.
+    2i2i created the escrow my_account (a smart contract) and currently has access to it.
     This means, 2i2i can modify the smart contract and extract funds from the escrow.
     The plan is to remove that access.
     We are keeping access for now until all edge cases are resolved. Until then, we
