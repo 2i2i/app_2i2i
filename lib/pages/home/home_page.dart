@@ -1,21 +1,19 @@
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/my_account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/faq/faq_page.dart';
 import 'package:app_2i2i/pages/locked_user/ui/locked_user_page.dart';
+import 'package:app_2i2i/pages/my_account/ui/my_account_page.dart';
 import 'package:app_2i2i/pages/my_user/ui/my_user_page.dart';
-import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
-import 'package:app_2i2i/pages/setup_user/ui/username_bio_dialog.dart';
+import 'package:app_2i2i/pages/search/ui/search_page.dart';
+import 'package:app_2i2i/pages/setup_account/ui/setup_account.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/pages/search/ui/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/strings.dart';
-
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -55,7 +53,16 @@ class _HomePageState extends ConsumerState<HomePage> {
         if (myUser.name.isEmpty) {
           showDialog(
             context: context,
-            builder: (context) => SetupBio(user: myUser),
+            builder: (context) => WillPopScope(
+                onWillPop: () {
+                  return Future.value(true);
+                },
+                child: AlertDialog(
+                  content: SetupBio(
+                    isFromDialog: true,
+                  ),
+                  backgroundColor: Theme.of(context).primaryColor,
+                )),
             barrierDismissible: false,
           );
         }
@@ -100,53 +107,59 @@ class _HomePageState extends ConsumerState<HomePage> {
               .toList(),
         ),
         bottomNavigationBar: Card(
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _tabSelectedIndex,
-            onTap: (i) => _onTap(i),
-            items: [
-              BottomNavigationBarItem(
-                label: Strings().home,
-                icon: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: SvgPicture.asset(_tabSelectedIndex == 0
-                      ? 'assets/icons/house_fill.svg'
-                      : 'assets/icons/house.svg'),
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _tabSelectedIndex,
+              onTap: (i) => _onTap(i),
+              items: [
+                BottomNavigationBarItem(
+                  label: Strings().home,
+                  icon: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset(_tabSelectedIndex == 0
+                        ? 'assets/icons/house_fill.svg'
+                        : 'assets/icons/house.svg'),
+                  ),
                 ),
-              ),
-              BottomNavigationBarItem(
-                label: Strings().account,
-                icon: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: SvgPicture.asset(_tabSelectedIndex == 1
-                      ? 'assets/icons/account_fill.svg'
-                      : 'assets/icons/account.svg'),
+                BottomNavigationBarItem(
+                  label: Strings().account,
+                  icon: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset(
+                      _tabSelectedIndex == 1
+                          ? 'assets/icons/account_fill.svg'
+                          : 'assets/icons/account.svg',
+                    ),
+                  ),
                 ),
-              ),
-              BottomNavigationBarItem(
-                label: Strings().profile,
-                icon: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: SvgPicture.asset(_tabSelectedIndex == 2
-                      ? 'assets/icons/person_fill.svg'
-                      : 'assets/icons/person.svg'),
+                BottomNavigationBarItem(
+                  label: Strings().profile,
+                  icon: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset(_tabSelectedIndex == 2
+                        ? 'assets/icons/person_fill.svg'
+                        : 'assets/icons/person.svg'),
+                  ),
                 ),
-              ),
-              BottomNavigationBarItem(
-                label: Strings().settings,
-                icon: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: SvgPicture.asset(_tabSelectedIndex == 3
-                      ? 'assets/icons/setting_fill.svg'
-                      : 'assets/icons/setting.svg'),
+                BottomNavigationBarItem(
+                  label: Strings().settings,
+                  icon: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset(_tabSelectedIndex == 3
+                        ? 'assets/icons/setting_fill.svg'
+                        : 'assets/icons/setting.svg'),
+                  ),
                 ),
-              ),
-              // BottomNavigationBarItem(
-              //   label: "",
-              //   icon: Icon(Icons.qr_code_2_rounded),
-              //   tooltip: 'QR Code',
-              // ),
-            ],
+                // BottomNavigationBarItem(
+                //   label: "",
+                //   icon: Icon(Icons.qr_code_2_rounded),
+                //   tooltip: 'QR Code',
+                // ),
+              ],
+            ),
           ),
         ),
       ),

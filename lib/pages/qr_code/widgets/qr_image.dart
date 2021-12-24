@@ -45,11 +45,11 @@ class QrWidget extends ConsumerWidget {
               version: QrVersions.auto,
               eyeStyle: QrEyeStyle(
                 eyeShape: QrEyeShape.circle,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               dataModuleStyle: QrDataModuleStyle(
                 dataModuleShape: QrDataModuleShape.circle,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               embeddedImage: snapshot.data,
               embeddedImageStyle:

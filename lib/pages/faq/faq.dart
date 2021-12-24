@@ -24,7 +24,9 @@ class FAQ extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color bg = index %2 ==0?Theme.of(context).primaryColor.withOpacity(0.5):Theme.of(context).primaryColor.withOpacity(0.2);
+    Color bg = index % 2 == 0
+        ? Theme.of(context).colorScheme.secondary.withOpacity(0.5)
+        : Theme.of(context).colorScheme.secondary.withOpacity(0.2);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
         child: ExpansionTileCard(
@@ -33,7 +35,7 @@ class FAQ extends StatelessWidget {
           leading: Icon(Icons.label_important),
           title: Text(data.title),
           baseColor: bg,
-          expandedTextColor: Theme.of(context).primaryColor,
+          expandedTextColor: Theme.of(context).colorScheme.secondary,
           children: <Widget>[
             Divider(
               thickness: 1.0,

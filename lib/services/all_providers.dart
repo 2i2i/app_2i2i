@@ -12,7 +12,6 @@ import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart'
 import 'package:app_2i2i/pages/locked_user/ui/lock_watch_widget.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
-import 'package:app_2i2i/pages/setup_user/provider/setup_user_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
 import 'package:app_2i2i/pages/web_rtc/provider/call_screen_provider.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
@@ -23,6 +22,8 @@ import 'package:app_2i2i/pages/history/provider/history_view_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../pages/setup_account/provider/setup_user_view_model.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);

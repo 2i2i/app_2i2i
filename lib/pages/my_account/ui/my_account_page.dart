@@ -12,6 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../common/custom_app_bar.dart';
+import '../../../constants/strings.dart';
 import 'widgets/account_info.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
@@ -74,14 +76,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("My Account"),
-          actions: [
-            IconButton(
-                onPressed: () async => myAccountPageViewModel.updateAccounts(),
-                icon: Icon(Icons.refresh))
-          ],
-        ),
+        appBar: CustomAppbar(),
         body: Stack(
           fit: StackFit.expand,
           children: [
@@ -91,7 +86,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ),
             ListView.builder(
               itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 4),
               itemBuilder: (BuildContext context, int index) {
                 return AccountInfo(
                   key: ObjectKey(
@@ -102,32 +97,46 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             )
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+       /* floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              // Add your onPressed code here!
+            },
+            label: Text(Strings().newCardTitle,style: Theme.of(context).textTheme.subtitle1!.copyWith(
+              color: Theme.of(context).primaryColorLight
+            ),),
+            icon: Icon(Icons.add,color: Theme.of(context).primaryColorLight),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+          ),
+        ),*/
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: SpeedDial(
+            iconTheme: IconThemeData(
+              color: Theme.of(context).primaryColorLight
+            ),
+            label: Text(Strings().newCardTitle,style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                color: Theme.of(context).primaryColorLight
+            ),),
+            icon: Icons.add,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             children: [
-              SpeedDial(
-                icon: Icons.add,
-                tooltip: 'Add account',
-                children: [
-                  SpeedDialChild(
-                    child: Icon(Icons.smartphone),
-                    onTap: () async {
-                      CustomDialogs.loader(true, context);
-                      await myAccountPageViewModel.addLocalAccount();
-                      CustomDialogs.loader(false, context, rootNavigator: true);
-                    },
-                  ),
-                  SpeedDialChild(
-                    child: Image.asset('walletconnect-circle-white.png'),
-                    onTap: () async {
-                      await _createSession(myAccountPageViewModel,
-                          myAccountPageViewModel.accountService!);
-                    },
-                  ),
-                ],
+              SpeedDialChild(
+                child: Icon(Icons.smartphone),
+                onTap: () async {
+                  CustomDialogs.loader(true, context);
+                  await myAccountPageViewModel.addLocalAccount();
+                  CustomDialogs.loader(false, context, rootNavigator: true);
+                },
+              ),
+              SpeedDialChild(
+                child: Image.asset('walletconnect-circle-white.png'),
+                onTap: () async {
+                  await _createSession(myAccountPageViewModel,
+                      myAccountPageViewModel.accountService!);
+                },
               ),
             ],
           ),

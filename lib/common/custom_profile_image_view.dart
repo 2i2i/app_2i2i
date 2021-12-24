@@ -31,61 +31,75 @@ class TextProfileView extends StatelessWidget {
   final String text;
   final double radius;
   final Color? statusColor;
+  final GestureTapCallback? onTap;
 
   const TextProfileView(
       {Key? key,
       required this.text,
       this.radius = kToolbarHeight,
-      this.statusColor})
+      this.statusColor, this.onTap})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Container(
-          width: radius,
-          height: radius,
-          child: Stack(
-            children: [
-              Card(
-                elevation: 6,
-                shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Center(
-                  child: Text(
-                    "${text.toString().isNotEmpty ? text : "X"}"
-                        .substring(0, 1)
-                        .toUpperCase(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5!
-                        .copyWith(fontWeight: FontWeight.w600),
+    return InkResponse(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: radius,
+            height: radius,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    offset: Offset(2, 4),
+                    blurRadius: 8,
+                    color: Color.fromRGBO(
+                        0, 0, 0, 0.12) // changes position of shadow
+                    ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Card(
+                  elevation: 6,
+                  shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "${text.toString().isNotEmpty ? text : "X"}"
+                          .substring(0, 1)
+                          .toUpperCase(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5!
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 1,
-                right: 1,
-                child: Container(
-                  width: 15,
-                  height: 15,
-                  child: Material(
-                    color: statusColor,
-                    shape: CircleBorder(
-                        side: BorderSide(color: Colors.white, width: 3)),
-                    // child: Icon(Icons.check, color: Colors.white,),
+                Positioned(
+                  bottom: 1,
+                  right: 1,
+                  child: Container(
+                    width: 15,
+                    height: 15,
+                    child: Material(
+                      color: statusColor,
+                      shape: CircleBorder(
+                          side: BorderSide(color: Colors.white, width: 3)),
+                      // child: Icon(Icons.check, color: Colors.white,),
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

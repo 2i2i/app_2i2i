@@ -1,19 +1,19 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
-import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../common/custom_app_bar.dart';
+import '../../../common/custom_navigation.dart';
 import '../../../constants/strings.dart';
+import '../../../routes/app_routes.dart';
+import '../../user_bid/ui/user_page.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -27,36 +27,30 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: CustomAppbar(
-        /*actions: [
-          UserRatingWidget(),
-        ],*/
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            TextField(
+      appBar: CustomAppbar(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: TextField(
               decoration: InputDecoration(
                 hintText: Strings().searchUserHint,
                 filled: true,
                 contentPadding:
-                EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                prefixIcon: Icon(Icons.search),
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                prefixIcon: Icon(Icons.search_rounded),
                 suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref
-                    .watch(searchFilterProvider)
-                    .state =
-                value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider).state =
+                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
-            SizedBox(height: 10),
-            Expanded(child: _buildContents(context, ref)),
-          ],
-        ),
+          ),
+          SizedBox(height: 20),
+          Expanded(child: _buildContents(context, ref)),
+        ],
       ),
     );
   }
@@ -72,6 +66,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         // log(H + '_SearchPageState - _buildContents - snapshot=$snapshot');
         if (snapshot.hasData) {
           return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
               itemCount: snapshot.data.length,
               itemBuilder: (_, ix) {
                 // log(H + 'Search - _buildContents - ix=$ix');
@@ -83,6 +78,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 final name = user.name;
                 final bio = user.bio;
+                final rating = user.rating.toString();
                 /*  final shortBioStart = bio.indexOf(RegExp(r'\s')) + 1;
                 int aPoint = shortBioStart + 10;
                 int bPoint = bio.length;
@@ -95,91 +91,111 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 return Visibility(
                   visible: user.id != mainUserID,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextProfileView(
-                        text: name,
-                        statusColor: /*statusColor*/ Colors.green,
-                        radius: kToolbarHeight + 6,
-                      ),
-                      SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Theme(
-                              data: ThemeData(
-                                  hoverColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent
-                              ),
-                              child: ListTile(
+                  child: InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    onTap: () => CustomNavigation.push(
+                        context, UserPage(uid: user.id), Routes.USER),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextProfileView(
+                          text: name,
+                          statusColor: statusColor,
+                          radius: kToolbarHeight + 6,
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Theme(
+                                data: ThemeData(
+                                    hoverColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent),
+                                child: ListTile(
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 4, horizontal: 0),
                                   title: Padding(
                                     padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     child: Text(
                                       name,
-                                      style:
-                                      TextStyle(fontWeight: FontWeight.w600),
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle1!
+                                          .copyWith(
+                                              fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   subtitle: Text(
                                     bio,
                                     maxLines: 2,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).disabledColor,
+                                    ),
                                   ),
                                   trailing: Container(
                                     height: kToolbarHeight,
                                     width: kToolbarHeight,
                                     child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center,
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Expanded(
-                                          flex: 2,
+                                        Flexible(
                                           child: IconButton(
-                                              iconSize: 20,
+                                              padding: EdgeInsets.zero,
                                               onPressed: null,
-                                              icon: Icon(
-                                                  Icons.favorite_border)),
+                                              icon: Icon(Icons
+                                                  .favorite_border_rounded)),
                                         ),
-                                        Expanded(
-                                          child: Row(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(user.rating.toString(),
-                                                  style: Theme
-                                                      .of(context)
-                                                      .textTheme
-                                                      .bodyText1),
-                                              SizedBox(width: 4),
-                                              SvgPicture.asset(
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              rating,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .disabledColor),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(4),
+                                              child: SvgPicture.asset(
                                                 'assets/icons/rating_star.svg',
-                                                width: 12,
-                                                height: 12,
-                                              )
-                                            ],
-                                          ),
+                                                width: 14,
+                                                height: 14,
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
-                                  onTap: () =>
-                                      CustomNavigation.push(context,
-                                          UserPage(uid: user.id), Routes.USER)),
-                            ),
-                            Divider()
-                          ],
+                                ),
+                              ),
+                              Divider()
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               });

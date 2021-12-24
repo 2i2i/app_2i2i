@@ -1,6 +1,9 @@
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../pages/setup_account/ui/setup_account.dart';
+import '../routes/app_routes.dart';
 import 'custom_profile_image_view.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -16,8 +19,14 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
         elevation: 0,
         actions: [
-          TextProfileView(text: "Ravi",statusColor: Colors.green,),
-          SizedBox(width: 10,)
+          TextProfileView(
+            text: "Ravi",
+            statusColor: Colors.green,
+            onTap: () => CustomNavigation.push(context, SetupBio(), Routes.SETUP_ACCOUNT),
+          ),
+          SizedBox(
+            width: 10,
+          )
         ],
         toolbarHeight: kToolbarHeight + 50,
         centerTitle: false,
