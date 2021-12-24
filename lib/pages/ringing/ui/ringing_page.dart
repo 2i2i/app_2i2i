@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:app_2i2i/common/utils.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -18,15 +20,16 @@ class RingingPage extends ConsumerStatefulWidget {
   final Meeting meeting;
 
   @override
-  RingingPageState createState() => RingingPageState(meeting: meeting);
+  RingingPageState createState() => RingingPageState();
 }
 
 class RingingPageState extends ConsumerState<RingingPage> {
   bool isClicked = false;
 
-  RingingPageState({Key? key, required this.meeting});
+  RingingPageState({Key? key});
 
-  final Meeting meeting;
+  RingingPageViewModel? ringingPageViewModel;
+
   Timer? timer;
   final player = AudioPlayer();
 
@@ -42,9 +45,25 @@ class RingingPageState extends ConsumerState<RingingPage> {
     finish();
   }
 
+  // TODO does this work? does the timer stay when changing to MeetingStatus.TXN_SENT? that would be wrong
+  void setTimer() {
+    if (widget.meeting.status == MeetingStatus.INIT) {
+      timer = Timer(Duration(seconds: 30), () async {
+        final finishFuture = finish();
+        final endMeetingFuture = ringingPageViewModel!.endMeeting('TIMER');
+        await Future.wait([finishFuture, endMeetingFuture]);
+      });
+    }
+    else if (widget.meeting.status == MeetingStatus.ACCEPT) {
+      timer = Timer(Duration(seconds: 60), () async {
+        final finishFuture = finish();
+        final endMeetingFuture = ringingPageViewModel!.endMeeting('TIMER');
+        await Future.wait([finishFuture, endMeetingFuture]);
+      });
+    }
+  }
+
   Future<void> start() async {
-    timer =
-        Timer(Duration(seconds: 30), () => cancelMeeting(reason: 'NO_PICKUP'));
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
     if (!player.playing) {
@@ -54,31 +73,66 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   Future<void> finish() async {
     if (timer?.isActive ?? false) {
-      timer!.cancel();
+      timer?.cancel();
     }
+    timer = null;
+
     if (player.playing) {
       await player.stop();
     }
     await player.dispose();
-    timer = null;
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
-  Future cancelMeeting({String? reason}) async {
-    final finishFuture = finish();
-    final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
-    final args = {'meetingId': meeting.id};
-    if (reason != null) args['reason'] = reason;
-    final endMeetingFuture = endMeeting(args);
-    await Future.wait([finishFuture, endMeetingFuture]);
+  String comment(RingingPageViewModel ringingPageViewModel) =>
+      ringingPageViewModel.amA()
+          ? commentAsA(ringingPageViewModel)
+          : commentAsB(ringingPageViewModel);
+  String commentAsA(RingingPageViewModel ringingPageViewModel) {
+    switch (widget.meeting.status) {
+      case MeetingStatus.INIT:
+        return '1/5 - Pick up for ${shortString(ringingPageViewModel.otherUser.name)}';
+      case MeetingStatus.ACCEPT:
+        return '2/5 - Creating blockchain transaction';
+      case MeetingStatus.TXN_CREATED:
+        return '3/5 - Please confirm the blockchain transaction on your wallet';
+      case MeetingStatus.TXN_SENT:
+        return '4/5 - Sent the transaction to the blockchain';
+      case MeetingStatus.TXN_CONFIRMED:
+        return '5/5 - Your' 's coins are locked in the smart contract';
+      default:
+        throw Exception(
+            'commentAsA - should never be here - meeting.status=${widget.meeting.status}');
+    }
+  }
+
+  String commentAsB(RingingPageViewModel ringingPageViewModel) {
+    switch (widget.meeting.status) {
+      case MeetingStatus.INIT:
+        return '1/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to pick up';
+      case MeetingStatus.ACCEPT:
+        return '2/5 - Creating blockchain transaction';
+      case MeetingStatus.TXN_CREATED:
+        return '3/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to confirm the blockchain transaction';
+      case MeetingStatus.TXN_SENT:
+        return '4/5 - Sent the transaction to the blockchain';
+      case MeetingStatus.TXN_CONFIRMED:
+        return '5/5 - ${shortString(ringingPageViewModel.otherUser.name)}'
+            's coins are locked in the smart contract';
+      default:
+        throw Exception(
+            'commentAsB - should never be here - meeting.status=${widget.meeting.status}');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     log(F + 'RingingPage - build');
-    final ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
-    if (ringingPageViewModel == null) return WaitPage();
+    final _ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
+    if (_ringingPageViewModel == null) return WaitPage();
+    ringingPageViewModel = _ringingPageViewModel;
+
     log(F + 'RingingPage - scaffold');
     return Scaffold(
       appBar: AppBar(
@@ -145,16 +199,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Connecting with',
+                      comment(ringingPageViewModel!),
                       style: Theme.of(context).textTheme.caption,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                       ringingPageViewModel.otherUser.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -164,23 +210,34 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        FloatingActionButton(
-                          child: Icon(Icons.call_end, color: Colors.white),
-                          backgroundColor: Color.fromARGB(255, 239, 102, 84),
-                          onPressed: () async {
-                            final finishFuture = finish();
-                            final cancelMeetingFuture = ringingPageViewModel.cancelMeeting();
-                            await Future.wait([finishFuture, cancelMeetingFuture]);
-                          },
+                    Visibility(
+                      visible:
+                          !isClicked && ringingPageViewModel!.meeting.isInit(),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 150),
+                        child: Column(
+                          children: [
+                            FloatingActionButton(
+                              child: Icon(Icons.call_end, color: Colors.white),
+                              backgroundColor:
+                                  Color.fromARGB(255, 239, 102, 84),
+                              onPressed: () async {
+                                final finishFuture = finish();
+                                final cancelMeetingFuture =
+                                    ringingPageViewModel!.endMeeting(
+                                        ringingPageViewModel!.amA() ? 'A' : 'B');
+                                await Future.wait(
+                                    [finishFuture, cancelMeetingFuture]);
+                              },
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                     Visibility(
                       visible: !isClicked &&
-                          ringingPageViewModel.amA() &&
-                          ringingPageViewModel.meeting.isInit(),
+                          ringingPageViewModel!.amA() &&
+                          ringingPageViewModel!.meeting.isInit(),
                       child: Padding(
                         padding: EdgeInsets.only(left: 150),
                         child: Column(
@@ -195,8 +252,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                     setState(() {});
                                   }
                                   final finishFuture = finish();
-                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                  await Future.wait([finishFuture, acceptMeetingFuture]);
+                                  final acceptMeetingFuture =
+                                      ringingPageViewModel!.acceptMeeting();
+                                  await Future.wait(
+                                      [finishFuture, acceptMeetingFuture]);
                                 },
                               ),
                             ),

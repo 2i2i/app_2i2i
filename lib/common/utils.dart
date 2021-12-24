@@ -1,3 +1,8 @@
+String shortString(String string, {int maxLength = 10}) {
+  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
+  return string;
+}
+
 int epochSecsNow() {
   DateTime n = DateTime.now().toUtc();
   var s = n.millisecondsSinceEpoch / 1000;

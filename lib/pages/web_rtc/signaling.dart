@@ -31,7 +31,7 @@ class Signaling {
       initAsA();
     } else {
       // B joins created currentRoom
-      roomRef = rooms.doc(meeting.currentRoom);
+      roomRef = rooms.doc(meeting.room);
 
       initAsB();
     }

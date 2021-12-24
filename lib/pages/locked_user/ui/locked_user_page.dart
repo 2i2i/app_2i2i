@@ -20,7 +20,6 @@ class LockedUserPage extends ConsumerStatefulWidget {
 }
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
-
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
@@ -28,25 +27,24 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       return WaitPage();
     }
 
-    final meetingStatus = lockedUserViewModel.meeting.currentStatus();
-    bool isInit = meetingStatus == MeetingValue.INIT;
-    bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
-
-    // bool isConfirmed = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA();
-    //A-Caller
-    bool isConfirmedAndA = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amA();
-    //B-Receiver
-    bool isConfirmedAndB = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amB();
-
-    bool isActive =  meetingStatus == MeetingValue.ACTIVE;
-    log(F+' isInit : $isInit -- isStarted : $isStarted -- isConfirmedAndA : $isConfirmedAndA -- isActive : $isActive --');
-    log(F+' meeting: ${lockedUserViewModel.meeting}, user: ${lockedUserViewModel.user},');
+    final meetingStatus = lockedUserViewModel.meeting.status;
+    
+    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED || meetingStatus == MeetingStatus.REMOTE_A_RECEIVED || meetingStatus == MeetingStatus.REMOTE_B_RECEIVED;
+    bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+                    lockedUserViewModel.amA()) || isActive;
+    bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
+                meetingStatus == MeetingStatus.ACCEPT ||
+                meetingStatus == MeetingStatus.TXN_CREATED ||
+                meetingStatus == MeetingStatus.TXN_SENT ||
+                (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+                    lockedUserViewModel.amB());
+    bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(
       fit: StackFit.expand,
       children: [
         Visibility(
-          visible: (isConfirmedAndA || isActive),
+          visible: showCallPage,
           child: CallPage(
               onHangPhone: (uid, meetingId) {
                 widget.onHangPhone!(uid, meetingId);
@@ -55,11 +53,10 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
               user: lockedUserViewModel.user),
         ),
         Visibility(
-            visible: (isInit || isStarted || isConfirmedAndB),
-            child: RingingPage(meeting: lockedUserViewModel.meeting)
-        ),
+            visible: showRingingPage,
+            child: RingingPage(meeting: lockedUserViewModel.meeting)),
         Visibility(
-          visible: !(isInit || isStarted || isConfirmedAndA || isConfirmedAndB || isActive),
+          visible: showWaitPage,
           child: WaitPage(),
         ),
       ],

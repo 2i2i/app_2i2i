@@ -13,7 +13,7 @@ class RingingPageViewModel {
       required this.meeting,
       required this.algorand,
       required this.functions}) {
-    if (meeting.currentStatus() == MeetingValue.LOCK_COINS_STARTED)
+    if (meeting.status == MeetingStatus.TXN_SENT)
       _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
           txns: meeting.txns, net: meeting.net);
   }
@@ -30,11 +30,9 @@ class RingingPageViewModel {
     return x;
   }
 
-  Future cancelMeeting({String? reason}) async {
-    log('RingingPageViewModel - cancelMeeting - meeting.id=${meeting.id} - reason=$reason');
+  Future endMeeting(String reason) async {
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
-    final args = {'meetingId': meeting.id};
-    if (reason != null) args['reason'] = reason + (amA() ? '_A' : '_B');
+    final args = {'meetingId': meeting.id, 'reason': reason};
     await endMeeting(args);
   }
 

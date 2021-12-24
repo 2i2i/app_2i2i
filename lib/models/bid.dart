@@ -5,14 +5,14 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class Speed {
-  const Speed({required this.num, required this.assetId});
+class Quantity {
+  const Quantity({required this.num, required this.assetId});
   final int num;
   final int assetId;
-  factory Speed.fromMap(Map<String, dynamic> data) {
+  factory Quantity.fromMap(Map<String, dynamic> data) {
     final int num = data['num'];
     final int assetId = data['assetId'];
-    return Speed(num: num, assetId: assetId);
+    return Quantity(num: num, assetId: assetId);
   }
   Map<String, dynamic> toMap() {
     return {
@@ -33,7 +33,7 @@ class BidOut extends Equatable {
 
   final String id;
   final String B;
-  final Speed speed;
+  final Quantity speed;
   final AlgorandNet net;
 
   @override
@@ -49,7 +49,7 @@ class BidOut extends Equatable {
     }
 
     final String B = data['B'];
-    final Speed speed = Speed.fromMap(data['speed']);
+    final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
 
@@ -80,7 +80,7 @@ class BidIn extends Equatable {
   });
 
   final String id;
-  final Speed speed;
+  final Quantity speed;
   final AlgorandNet net;
 
   @override
@@ -95,7 +95,7 @@ class BidIn extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
-    final Speed speed = Speed.fromMap(data['speed']);
+    final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
 
