@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.app_2i2i">
+    package="app.i2i2.test">
    <application
         android:label="app_2i2i"
         android:icon="@mipmap/ic_launcher">

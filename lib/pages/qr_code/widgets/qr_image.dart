@@ -32,14 +32,14 @@ class QrWidget extends ConsumerWidget {
         builder: (ctx, snapshot) {
           final size = imageSize != null ? imageSize : 280.0;
           if (!snapshot.hasData) {
-            return Container(width: size, height: size);
+            return Container(width: size.toDouble(), height: size.toDouble());
           }
 
           final logoHeight = logoSize != null ? logoSize : 60.0;
           final logoWidth = logoHeight * 1.4;
 
           return CustomPaint(
-            size: Size.square(size),
+            size: Size.square(size.toDouble()),
             painter: QrPainter(
               data: message,
               version: QrVersions.auto,
@@ -53,7 +53,7 @@ class QrWidget extends ConsumerWidget {
               ),
               embeddedImage: snapshot.data,
               embeddedImageStyle:
-                  QrEmbeddedImageStyle(size: Size(logoWidth, logoHeight)),
+                  QrEmbeddedImageStyle(size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
             ),
           );
         });

@@ -33,6 +33,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
+              autofocus: false,
               decoration: InputDecoration(
                 hintText: Strings().searchUserHint,
                 filled: true,

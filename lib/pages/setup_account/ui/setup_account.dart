@@ -43,11 +43,13 @@ class _SetupBioState extends ConsumerState<SetupBio> {
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
     if (widget.isFromDialog ?? false) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildMainWidget(context, myUserPageViewModel),
-        ],
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildMainWidget(context, myUserPageViewModel),
+          ],
+        ),
       );
     }
     return Scaffold(
