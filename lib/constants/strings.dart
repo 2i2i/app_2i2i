@@ -15,7 +15,7 @@ class Strings {
 
   // Generic strings
   String ok = 'OK';
-  String talk = 'TALK';
+  String talk = 'Talk';
   String cancel = 'Cancel';
 
   // Logout

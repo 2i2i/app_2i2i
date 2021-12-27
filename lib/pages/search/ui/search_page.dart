@@ -34,6 +34,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
               autofocus: false,
+
               decoration: InputDecoration(
                 hintText: Strings().searchUserHint,
                 filled: true,
@@ -44,7 +45,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider).state =
+                ref.watch(searchFilterProvider.state).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
@@ -57,7 +58,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(searchFilterProvider).state;
+    final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
     // log(H + '_SearchPageState - _buildContents - filter=$filter');
 

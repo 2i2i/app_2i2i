@@ -30,7 +30,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   @override
   Widget build(BuildContext context) {
     final addBidPageViewModel =
-        ref.watch(addBidPageViewModelProvider(uid)).state;
+        ref.watch(addBidPageViewModelProvider(uid).state).state;
     // final fireBaseMessaging = ref.watch(fireBaseMessagingProvider);
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();

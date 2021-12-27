@@ -130,8 +130,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     AbstractAccount? account;
                     if (0 < bid.speed.num) {
                       log('bid.speed.num=${bid.speed.num}');
-                      account =
-                          await _acceptBid(context, myUserPageViewModel, bid);
+                      account = await _acceptBid(context, myUserPageViewModel, bid);
                       if (account == null) return;
                     }
                     CustomDialogs.loader(true, context);

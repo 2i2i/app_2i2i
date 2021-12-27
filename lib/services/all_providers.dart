@@ -5,11 +5,12 @@ import 'package:app_2i2i/accounts/local_account.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/meeting.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/add_bid/provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/pages/app_settings/ui/provider/app_setting_model.dart';
+import 'package:app_2i2i/pages/history/provider/history_view_model.dart';
 import 'package:app_2i2i/pages/locked_user/provider/locked_user_view_model.dart';
 import 'package:app_2i2i/pages/locked_user/ui/lock_watch_widget.dart';
+import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
 import 'package:app_2i2i/pages/user_bid/provider/user_page_view_model.dart';
@@ -18,7 +19,6 @@ import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
 import 'package:app_2i2i/repository/secure_storage_service.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:app_2i2i/pages/history/provider/history_view_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,9 +53,7 @@ final myUIDProvider = Provider((ref) {
       data: (user) => user?.uid, loading: () => null, error: (_, __) => null);
 });
 final userProvider = StreamProvider.family<UserModel, String>((ref, uid) {
-  // log('userProvider');
   final database = ref.watch(databaseProvider);
-  // log('userProvider - database=$database');
   return database.userStream(uid: uid);
 });
 final userPrivateProvider =
@@ -64,6 +62,19 @@ final userPrivateProvider =
   final database = ref.watch(databaseProvider);
   // log('userPrivateProvider - database=$database');
   return database.userPrivateStream(uid: uid);
+});
+
+final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
+  final bidInPrivateAsyncValue = ref.watch(getBidInPrivate(bidId));
+  if (bidInPrivateAsyncValue is AsyncLoading ||
+      bidInPrivateAsyncValue is AsyncError) {
+    return null;
+  }
+  final user = ref.watch(userProvider(bidInPrivateAsyncValue.value!.A));
+  if (user is AsyncLoading || user is AsyncError) {
+    return null;
+  }
+  return user.asData!.value;
 });
 
 final userPageViewModelProvider =
@@ -87,9 +98,9 @@ final searchFilterProvider = StateProvider((ref) => const <String>[]);
 final searchUsersStreamProvider =
     StreamProvider.autoDispose<List<UserModel?>>((ref) {
   // log('usersStreamProvider');
-  final database = ref.watch(databaseProvider);
+      final database = ref.watch(databaseProvider);
   // log('usersStreamProvider - database=$database');
-  final filter = ref.watch(searchFilterProvider).state;
+  final filter = ref.watch(searchFilterProvider.state).state;
   return database.usersStream(tags: filter);
 });
 

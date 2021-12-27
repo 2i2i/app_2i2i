@@ -50,7 +50,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if (isLoaded) {
         final UserModel myUser = user.data!.value;
-        if (myUser.name.isNotEmpty) {
+        if (myUser.name.isEmpty) {
           showDialog(
             context: context,
             builder: (context) => WillPopScope(

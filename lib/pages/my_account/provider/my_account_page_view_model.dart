@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyAccountPageViewModel extends ChangeNotifier {
-  ProviderRefBase? ref;
+  var ref;
 
   MyAccountPageViewModel(this.ref);
 
@@ -18,11 +18,15 @@ class MyAccountPageViewModel extends ChangeNotifier {
   List<AbstractAccount>? accounts;
 
   Future<void> initMethod() async {
-    algorandLib = await ref!.watch(algorandLibProvider);
-    storage = await ref!.watch(storageProvider);
-    accountService = await ref!.watch(accountServiceProvider);
-    accounts = await accountService!.getAllAccounts();
-    isLoading = false;
+    try {
+      algorandLib = await ref!.watch(algorandLibProvider);
+      storage = await ref!.watch(storageProvider);
+      accountService = await ref!.watch(accountServiceProvider);
+      accounts = await accountService!.getAllAccounts();
+      isLoading = false;
+    } catch (e) {
+      print(e);
+    }
     notifyListeners();
   }
 
