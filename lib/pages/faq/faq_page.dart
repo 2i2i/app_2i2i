@@ -1,4 +1,5 @@
 // import 'package:app_2i2i/app/logging.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/pages/faq/faq.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +128,7 @@ class _FAQPageState extends State<FAQPage> {
     List<FAQ> faqList = [];
     for (int i = 0; i < faqDataList.length; i++) {
       Color backgroundColor = i % 2 == 0 ? Color.fromRGBO(223, 239, 223, 1) : Color.fromRGBO(197, 234, 197, 1);
+      // Color backgroundColor = i % 2 == 0 ? Theme.of(context).colorScheme.secondary : Color.fromRGBO(197, 234, 197, 1);
       FAQ faq = FAQ(
           data: faqDataList[i],
           backgroundColor: backgroundColor,
@@ -140,9 +142,7 @@ class _FAQPageState extends State<FAQPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('FAQ'),
-        ),
+        appBar: CustomAppbar(),
         body: Container(
           margin: const EdgeInsets.all(10),
           child: ListView(

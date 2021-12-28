@@ -15,7 +15,7 @@ class Strings {
 
   // Generic strings
   String ok = 'OK';
-  String talk = 'TALK';
+  String talk = 'Talk';
   String cancel = 'Cancel';
 
   // Logout
@@ -32,6 +32,11 @@ class Strings {
 
   // Home page
   String homePage = 'Home Page';
+  String home = 'Home';
+  String account = 'Account';
+  String profile = 'Profile';
+  String settings = 'Settings';
+  String searchUserHint = 'Search user';
 
   // Jobs page
   String search = 'Search';
@@ -43,15 +48,19 @@ class Strings {
   String bidsIn = 'Bids In';
   String bidsInPage = 'Bids In Page';
   String topAppBarTitle = '2i2i';
+  String newCardTitle = 'New Card';
 
   //SetUp User page
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
   String yourNameHint = 'My cool username';
   String writeYourBio = 'Write your bio';
   String writeYourName = 'Write your name';
-  String bioExample = 'e.g: I love #cooking and #design';
+  String bioExample = 'Ex: I like #cooking #basketball';
   String save = 'Save';
   String required = 'Required';
+  String setUpAccount = 'Setup Account';
+  String userName = 'Username';
+  String bio = 'Bio';
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';

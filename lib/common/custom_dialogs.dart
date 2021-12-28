@@ -1,11 +1,11 @@
-import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:app_2i2i/common/utils.dart';
+
+import 'package:app_2i2i/pages/user_bid/ui/widgets/bid_dialog_widget.dart';
 
 class CustomDialogs {
   static loader(bool isLoading, BuildContext context,
@@ -149,85 +149,10 @@ class CustomDialogs {
 
   static bidInInfoDialog(
       {required BuildContext context,
-      required UserModel user,
       required BidIn bidInModel,
-      required BidInPrivate bidInPrivate,
-      required VoidCallback? onTapTalk,
-      required AccountService accountService,
+      required UserModel userModel,
+      required GestureTapCallback? onTapTalk,
       bool rootNavigator = true}) async {
-    final int assetId = bidInModel.speed.assetId;
-    final String assetIDString = assetId == 0 ? 'ALGO' : assetId.toString();
-
-    final maxDuration =
-        await bidInModel.estMaxDuration(bidInPrivate, accountService);
-    final maxDurationString = secondsToSensibleTimePeriod(maxDuration);
-
-    AlertDialog ratingDialog = AlertDialog(
-      backgroundColor: Theme.of(context).cardColor,
-      elevation: 0,
-      title: Text("$bidInPrivate"),
-      // contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      // actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
-      actions: [
-        TextButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: rootNavigator).pop(),
-          child: Text(Strings().ok, style: Theme.of(context).textTheme.button),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context, rootNavigator: rootNavigator).pop();
-            onTapTalk!();
-          },
-          child:
-              Text(Strings().talk, style: Theme.of(context).textTheme.button),
-        ),
-      ],
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('name: '),
-              Text(user.name),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('comment: '),
-              Text(bidInPrivate.comment ?? ''),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('speed: '),
-              Text('${bidInModel.speed.num} [$assetIDString/sec]'),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('est. max duration: '),
-              Text('$maxDurationString'),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('warning: '),
-              Text('this might be a very short call'),
-            ],
-          ),
-        ],
-      ),
-    );
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -236,7 +161,10 @@ class CustomDialogs {
             onWillPop: () async {
               return false;
             },
-            child: ratingDialog);
+            child: BidDialogWidget(
+              bidInModel: bidInModel,
+              onTapTalk: onTapTalk,userModel: userModel,
+            ));
       },
     );
   }

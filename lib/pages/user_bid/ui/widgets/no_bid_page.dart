@@ -34,8 +34,7 @@ class NoBidPage extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
-                  .subtitle2!
-                  .copyWith(color: Theme.of(context).primaryColor)),
+                  .subtitle2!),
           SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -56,8 +55,7 @@ class NoBidPage extends ConsumerWidget {
                       Share.share('Your friend and invite for join 2i2i\n$message');
                     },
                     icon: Icon(
-                      Icons.share,
-                      color: Theme.of(context).primaryColor,
+                      Icons.share
                     )),
               )
             ],

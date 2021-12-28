@@ -1,17 +1,18 @@
 import 'dart:math';
 
-import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/app_settings/ui/app_settings_page.dart';
-import 'package:app_2i2i/pages/search/ui/widgtes/user_rating_widget.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
-import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -25,61 +26,30 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () => CustomNavigation.push(
-              context, AppSettingPage(), Routes.AppSetting),
-          icon: Icon(IconData(58751, fontFamily: 'MaterialIcons')),
-        ),
-        actions: [
-          UserRatingWidget(),
-        ],
-      ),
+      appBar: CustomAppbar(),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              cursorColor: Theme.of(context).primaryColor,
-              cursorHeight: 18,
+              autofocus: false,
+
               decoration: InputDecoration(
+                hintText: Strings().searchUserHint,
                 filled: true,
-                isDense: false,
-                // fillColor: Colors.grey.shade300,
-                // focusColor: Colors.grey.shade300,
-                hintText: 'Search user',
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).disabledColor, width: 1),
-                  borderRadius: BorderRadius.circular(3.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).disabledColor, width: 1),
-                  borderRadius: BorderRadius.circular(3.0),
-                ),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).disabledColor, width: 1),
-                  borderRadius: BorderRadius.circular(3.0),
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Theme.of(context).primaryColor,
-                ),
+                prefixIcon: Icon(Icons.search_rounded),
+                suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider).state =
+                ref.watch(searchFilterProvider.state).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
-          Divider(),
+          SizedBox(height: 20),
           Expanded(child: _buildContents(context, ref)),
         ],
       ),
@@ -87,7 +57,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(searchFilterProvider).state;
+    final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
     // log(H + '_SearchPageState - _buildContents - filter=$filter');
 
@@ -97,8 +67,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         // log(H + '_SearchPageState - _buildContents - snapshot=$snapshot');
         if (snapshot.hasData) {
           return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
               itemCount: snapshot.data.length,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (_, ix) {
                 // log(H + 'Search - _buildContents - ix=$ix');
                 if (snapshot.data[ix] == null) return Container();
@@ -109,11 +79,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 final name = user.name;
                 final bio = user.bio;
-                final shortBioStart = bio.indexOf(RegExp(r'\s')) + 1;
+                final rating = user.rating.toString();
+                /*  final shortBioStart = bio.indexOf(RegExp(r'\s')) + 1;
                 int aPoint = shortBioStart + 10;
                 int bPoint = bio.length;
                 final shortBioEnd = min(aPoint, bPoint);
-                final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
+                final shortBio = user.bio.substring(shortBioStart, shortBioEnd);*/
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
@@ -121,20 +92,111 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 return Visibility(
                   visible: user.id != mainUserID,
-                  child: Card(
-                    margin: EdgeInsets.all(4),
-                    elevation: 4,
-                    // decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.6)), borderRadius: BorderRadius.circular(10)),
-                    child: ListTile(
-                        leading: ratingWidget(user.rating, name),
-                        title: Text(name),
-                        subtitle: Text(shortBio),
-                        trailing: Icon(Icons.circle, color: statusColor),
-                        onTap: () => CustomNavigation.push(
-                            context,
-                            UserPage(uid: user.id),
-                            Routes
-                                .USER)), // UserPage.show(context, users[ix].id),
+                  child: InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    onTap: () => CustomNavigation.push(
+                        context, UserPage(uid: user.id), Routes.USER),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextProfileView(
+                          text: name,
+                          statusColor: statusColor,
+                          radius: kToolbarHeight + 6,
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Theme(
+                                data: ThemeData(
+                                    hoverColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 0),
+                                  title: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: Text(
+                                      name,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle1!
+                                          .copyWith(
+                                              fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    bio,
+                                    maxLines: 2,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).disabledColor,
+                                    ),
+                                  ),
+                                  trailing: Container(
+                                    height: kToolbarHeight,
+                                    width: kToolbarHeight,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Flexible(
+                                          child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              onPressed: null,
+                                              icon: Icon(Icons
+                                                  .favorite_border_rounded)),
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              rating,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .disabledColor),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(4),
+                                              child: SvgPicture.asset(
+                                                'assets/icons/rating_star.svg',
+                                                width: 14,
+                                                height: 14,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Divider()
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               });

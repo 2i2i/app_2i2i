@@ -96,7 +96,7 @@ class UserModel extends Equatable {
     final currentMeeting = data['currentMeeting'] as String?;
     final name = data['name'] as String;
     final bio = data['bio'] as String;
-    final rating = data['rating'] as double?;
+    final rating = double.parse(data['rating'].toString());
     final numRatings = data['numRatings'] as int;
     final heartbeat = data['heartbeat'] as int;
 
