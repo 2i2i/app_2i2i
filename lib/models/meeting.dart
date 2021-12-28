@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -21,6 +19,7 @@ enum MeetingStatus {
   ROOM_CREATED, // rtc room created
   REMOTE_A_RECEIVED, // A received remote stream of B
   REMOTE_B_RECEIVED, // B received remote stream of A
+  CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
   END_DISCONNECT_A, // A disconnected
   END_DISCONNECT_B, // B disconnected
   END_DISCONNECT_AB, // both disconnected
@@ -30,9 +29,9 @@ enum MeetingStatus {
 // INIT -> END_B
 // INIT -> ACCEPT -> TXN_CREATED -> END_TIMER
 // INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> END_A
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> END_B
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> END_TIMER
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_A
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED-> END_B
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_TIMER
 // always possible to get END_DISCONNECT_*
 
 @immutable
@@ -115,18 +114,9 @@ class Meeting extends Equatable {
   bool isInit() => status == MeetingStatus.INIT;
 
   int? activeTime() {
-    int? remoteAReceivedTS;
-    int? remoteBReceivedTS;
     for (final st in statusHistory) {
-      if (st.value == MeetingStatus.REMOTE_A_RECEIVED)
-        remoteAReceivedTS = st.ts;
-      else if (st.value == MeetingStatus.REMOTE_B_RECEIVED)
-        remoteBReceivedTS = st.ts;
+      if (st.value == MeetingStatus.CALL_STARTED) return st.ts;
     }
-
-    if (remoteAReceivedTS != null && remoteBReceivedTS != null)
-      return max(remoteAReceivedTS, remoteBReceivedTS);
-
     return null;
   }
 

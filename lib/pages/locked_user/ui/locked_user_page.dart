@@ -29,7 +29,7 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
 
     final meetingStatus = lockedUserViewModel.meeting.status;
     
-    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED || meetingStatus == MeetingStatus.REMOTE_A_RECEIVED || meetingStatus == MeetingStatus.REMOTE_B_RECEIVED;
+    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED || meetingStatus == MeetingStatus.CALL_STARTED;
     bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
                     lockedUserViewModel.amA()) || isActive;
     bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
