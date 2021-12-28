@@ -74,24 +74,18 @@ class _UserPageState extends ConsumerState<UserPage> {
             ? null
             : Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
                       isPresent
                           ? "Your already bid this user, First cancel bid"
                           : "Do you want to bid for ${B.name}",
+                      textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.caption),
                   SizedBox(height: 12),
                   Visibility(
                     visible: !isPresent,
                     child: ElevatedButton(
-                      /*style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              AppTheme().buttonBackground),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ))),*/
                       onPressed: () {
                         if (!isPresent) {
                           CustomNavigation.push(
@@ -102,10 +96,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                               Routes.BIDPAGE);
                         }
                       },
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text("ADD BID",textAlign: TextAlign.center,),
-                      ),
+                      child: Text('Add Bid'),
                     ),
                   )
                 ],

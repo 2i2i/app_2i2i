@@ -58,81 +58,131 @@ class AppTheme{
   );*/
 
   Color buttonBackground = Color.fromRGBO(208, 226, 105, 1);
-  Color green = Color.fromRGBO(80, 121, 66, 1);
-  Color red = Color.fromARGB(255, 239, 102, 84);
+  Color green = Color(0xFF34C759);
+  Color red = Color(0xFFFC8383);
   Color pink = Color.fromARGB(255, 244, 162, 163);
   Color gray = Color.fromRGBO(112, 112, 108, 1);
   Color lightGray = Color.fromRGBO(221, 221, 217, 1);
   Color black = Colors.black;
   Color white = Colors.white;
 
-  Color primaryColor = Color(0xFF9dc183);
-  Color primaryLightColor = Color(0xFFcff4b3);
-  Color primaryDarkColor = Color(0xFF6e9156);
+  Color primaryColor = Color(0xFFf3f3f7);
+  Color primaryLightColor = Color(0xFFffffff);
+  Color primaryDarkColor = Color(0xFFc0c0c4);
 
-  Color secondaryColor = Color(0xFF2e7d32);
-  Color secondaryDarkColor = Color(0xFF005005);
+  Color secondaryColor = Color(0xFF1c1c1e);
+  Color secondaryDarkColor = Color(0xFF000000);
   Color primaryTextColor = Color(0xFF000000);
   Color secondaryTextColor = Color(0xFFffffff);
+  Color cardDarkColor = Colors.grey.shade800;
+
+  Color scaffoldBackgroundColor = Color(0xFFF3F3F7);
+  Color disableColor = Color(0xFF979592);
+  Color fillColor = Color(0xFF767680);
 
   ThemeData get mainTheme {
     return ThemeData(
-      fontFamily: 'ShipporiAntique',
+      fontFamily: 'SofiaPro',
       brightness: Brightness.light,
-        primaryColor: primaryColor,
-        primaryColorLight: primaryLightColor,
-        primaryColorDark: primaryDarkColor,
-        colorScheme: ColorScheme.light(
-          secondary: secondaryColor,
-        ),
-        textTheme: themeMode(),
-        appBarTheme: appBarTheme(false),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(primary: Colors.black),
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: primaryColor,
-            selectedIconTheme: IconThemeData(color: Colors.white)),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(primary: primaryColor),
-        ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: primaryColor,
-        ),
-        tabBarTheme: TabBarTheme(
-          indicator: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: primaryColor),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(color: primaryDarkColor),
-          enabledBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryColor),
+      primaryColor: primaryColor,
+      primaryColorLight: primaryLightColor,
+      primaryColorDark: primaryDarkColor,
+      scaffoldBackgroundColor: primaryColor,
+      shadowColor: fillColor,
+      disabledColor: disableColor,
+      colorScheme: ColorScheme.light(
+        secondary: secondaryColor,
+      ),
+      appBarTheme: appBarTheme(false),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(primary: Colors.black),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          elevation: 0,
+          selectedLabelStyle: TextStyle(
+            fontFamily: 'SofiaPro',
+            fontSize: 10.0,
+            fontWeight: FontWeight.normal,
           ),
-          focusedBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryColor),
+          unselectedLabelStyle: TextStyle(
+            fontFamily: 'SofiaPro',
+            fontSize: 10.0,
+            fontWeight: FontWeight.normal,
           ),
-        ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryColor));
+          selectedItemColor: secondaryColor,
+          unselectedItemColor: disableColor,
+          backgroundColor: primaryLightColor,
+          selectedIconTheme: IconThemeData(color: Colors.white)),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+            primary: secondaryColor,
+            padding: EdgeInsets.all(24),
+            textStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 17.0,
+              fontWeight: FontWeight.w400,
+            )),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryLightColor,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: primaryColor,
+        unselectedLabelColor: secondaryColor,
+        indicator: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0), color: secondaryColor),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: fillColor.withOpacity(0.12),
+        iconColor: fillColor,
+        labelStyle: TextStyle(color: secondaryColor),
+        border: OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        errorBorder: OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        focusedErrorBorder: OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        enabledBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        focusedBorder: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+      ),
+      textSelectionTheme: TextSelectionThemeData(cursorColor: secondaryColor),
+    );
   }
 
   ThemeData get darkTheme {
     return ThemeData(
-      brightness: Brightness.dark,
-      appBarTheme: appBarTheme(false),
-      fontFamily: 'ShipporiAntique',
-      primaryColor: primaryColor,
-      primaryColorLight: primaryLightColor,
-      primaryColorDark: primaryDarkColor,
-      textTheme: themeMode(),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(primary: Colors.white),
+        brightness: Brightness.dark,
+        appBarTheme: appBarTheme(true),
+        fontFamily: 'SofiaPro',
+        primaryColor: primaryColor,
+        primaryColorLight: secondaryDarkColor,
+        primaryColorDark: secondaryTextColor,
+        scaffoldBackgroundColor: secondaryColor,
+        iconTheme: IconThemeData(color: primaryColor),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.white),
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: primaryColor,
-            selectedIconTheme: IconThemeData(color: Colors.black)),
+            selectedItemColor: primaryColor,
+            unselectedItemColor: disableColor,
+            backgroundColor: Colors.grey[800],
+            selectedIconTheme: IconThemeData(color: primaryColor)),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(primary: primaryColor),
+          style: ElevatedButton.styleFrom(
+              primary: cardDarkColor,
+              padding: EdgeInsets.all(24),
+              textStyle: TextStyle(
+                fontFamily: 'SofiaPro',
+                fontSize: 17.0,
+                fontWeight: FontWeight.w600,
+              )),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: primaryLightColor,
@@ -152,57 +202,19 @@ class AppTheme{
             borderSide: BorderSide(color: primaryLightColor),
           ),
         ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor)
-    );
+        textSelectionTheme:
+            TextSelectionThemeData(cursorColor: primaryLightColor),
+        colorScheme: ColorScheme.dark(secondary: primaryColor));
   }
 
-  TextTheme themeMode() => TextTheme(
-        headline6: TextStyle(
-          fontSize: 32.0,
-          fontWeight: FontWeight.w600,
-        ),
-        headline5: TextStyle(
-          fontSize: 24.0,
-          fontWeight: FontWeight.w500,
-        ),
-        headline4: TextStyle(
-          fontSize: 20.0,
-          fontWeight: FontWeight.w500,
-        ),
-        headline3: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.w500,
-        ),
-        headline2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal),
-        headline1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
-        subtitle2: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.normal,
-        ),
-        subtitle1: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.w500,
-        ),
-        bodyText2: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.w500,
-        ),
-        bodyText1: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.normal,
-        ),
-        caption: TextStyle(
-          fontSize: 12.0,
-          fontWeight: FontWeight.normal,
-        ),
-      );
-
   AppBarTheme appBarTheme(bool dark) => AppBarTheme(
-      backgroundColor: primaryColor,
+      elevation: 0,
+      backgroundColor: !dark ? primaryColor : secondaryColor,
+      iconTheme: IconThemeData(color: dark ? white : primaryTextColor),
       titleTextStyle: TextStyle(
         fontSize: 20.0,
         color: dark ? white : lightGray,
-        fontFamily: 'ShipporiAntique',
+        fontFamily: 'SofiaPro',
         fontWeight: FontWeight.w500,
       ));
 

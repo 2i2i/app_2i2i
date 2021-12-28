@@ -30,7 +30,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
   @override
   Widget build(BuildContext context) {
     final addBidPageViewModel =
-        ref.watch(addBidPageViewModelProvider(uid)).state;
+        ref.watch(addBidPageViewModelProvider(uid).state).state;
     // final fireBaseMessaging = ref.watch(fireBaseMessagingProvider);
     if (addBidPageViewModel == null) return WaitPage();
     if (addBidPageViewModel.submitting) return WaitPage();
@@ -46,28 +46,18 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                /*style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      speedNum == 0
-                          ? AppTheme().buttonBackground
-                          : AppTheme().lightGray),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                  ),
-                ),*/
                 onPressed: speedNum == 0 && !addBidPageViewModel.submitting
                     ? () async {
                         await connectCall(
                             addBidPageViewModel: addBidPageViewModel);
                       }
                     : null,
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text("Free Call",
-                      style: Theme.of(context).textTheme.button),
-                  trailing: Icon(Icons.call, color: AppTheme().black),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Text("Free Call")),
+                    Icon(Icons.call),
+                  ],
                 ),
               ),
             ),
@@ -79,11 +69,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                     backgroundColor: MaterialStateProperty.all<Color>(
                         speedNum != 0
                             ? AppTheme().green
-                            : AppTheme().green.withOpacity(0.5) ),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ))),
+                            : AppTheme().green.withOpacity(0.5))),
                 onPressed: speedNum != 0 && !addBidPageViewModel.submitting
                     ? () async {
                         final budget = balance!.assetHolding.amount;
@@ -106,12 +92,13 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         }
                       }
                     : null,
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text("Bid Call",
-                      style: Theme.of(context).textTheme.button),
-                  trailing: Icon(Icons.monetization_on_outlined,
-                      color: AppTheme().white),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Text("Bid Call")),
+                    Icon(Icons.monetization_on_outlined,
+                        color: AppTheme().white),
+                  ],
                 ),
               ),
             ),
@@ -129,6 +116,8 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                 FilteringTextInputFormatter.digitsOnly
               ],
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Theme.of(context).primaryColorLight,
                 hintText: 'How many coin/sec? (in base units, e.g. microAlgo)',
                 border: OutlineInputBorder(),
                 label:

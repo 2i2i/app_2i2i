@@ -1,14 +1,13 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
-import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/pages/history/history_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_user/provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/pages/setup_user/ui/username_bio_dialog.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bid_ins_list.dart';
 import 'package:app_2i2i/pages/user_bid/ui/user_bid_outs_list.dart';
 import 'package:app_2i2i/repository/algorand_service.dart';
@@ -50,9 +49,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     return myUserPageViewModel == null
         ? WaitPage()
         : Scaffold(
-            appBar: AppBar(
-              title: Text(myUserPageViewModel.user.name),
-            ),
+      appBar: CustomAppbar(),
             body: _buildContents(context, ref, myUserPageViewModel,
                 userPrivateAsyncValue, myUserPageViewModel.user),
           );
@@ -68,139 +65,107 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     if (userPrivateAsyncValue is AsyncLoading) return Container();
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       child: Column(
         children: [
-          Card(
-            elevation: 4,
-            child: ListTile(
-              leading: CustomImageProfileView(
-                text: myUserPageViewModel.user.name,
-                radius: MediaQuery.of(context).size.height * 0.07,
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.edit_rounded),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => SetupBio(
-                      user: myUserPageViewModel.user,
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(
+                      25.0,
                     ),
-                    barrierDismissible: false,
-                  );
-                },
-              ),
-              title: Text(myUserPageViewModel.user.name),
-              subtitle: Text(myUserPageViewModel.user.bio),
-            ),
-          ),
-          Divider(),
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(
-                            25.0,
-                          ),
-                        ),
-                        child: TabBar(
-                          controller: _tabController,
-                          tabs: [
-                            Tab(
-                              text: Strings().bidIn,
-                            ),
-                            Tab(
-                              text: Strings().bidOut,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Tooltip(
-                      message: "History",
-                      child: InkResponse(
-                        onTap: () => CustomNavigation.push(
-                            context, HistoryPage(uid: user.id), Routes.HISTORY),
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          margin: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(
-                              25.0,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.history_edu_rounded,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(color: Colors.transparent),
-                Expanded(
-                  child: TabBarView(
+                  ),
+                  child: TabBar(
                     controller: _tabController,
-                    children: [
-                      UserBidInsList(
-                        uid: user.id,
-                        titleWidget: Text('Bids In',
-                            style: Theme.of(context).textTheme.headline6),
-                        noBidsText: Strings().noBidFound,
-                        onTap: (BidIn bid) async {
-                          AbstractAccount? account;
-                          if (0 < bid.speed.num) {
-                            log('bid.speed.num=${bid.speed.num}');
-                            account = await _acceptBid(
-                                context, myUserPageViewModel, bid);
-                            if (account == null) return;
-                          }
-                          CustomDialogs.loader(true, context);
-                          await myUserPageViewModel.acceptBid(bid, account);
-                          CustomDialogs.loader(false, context);
-                        },
+                    tabs: [
+                      Tab(
+                        text: Strings().bidIn,
                       ),
-                      userPrivateAsyncValue.when(
-                          data: (UserModelPrivate userPrivate) {
-                        return UserBidOutsList(
-                          uid: user.id,
-                          titleWidget: Text('Bids Out',
-                              style: Theme.of(context).textTheme.headline6),
-                          noBidsText: Strings().noBidFound,
-                          trailingIcon: Icon(
-                            Icons.cancel,
-                            color: Color.fromRGBO(104, 160, 242, 1),
-                          ),
-                          onTrailingIconClick: (BidOut bidOut) async {
-                            CustomDialogs.loader(true, context);
-                            await myUserPageViewModel.cancelBid(bidId: bidOut.id, B: bidOut.B);
-                            CustomDialogs.loader(false, context);
-                          },
-                        );
-                      }, loading: () {
-                        log('MyUserPage - _buildContents - loading');
-                        return const CircularProgressIndicator();
-                      }, error: (_, __) {
-                        log('MyUserPage - _buildContents - error');
-                        return const Center(child: Text('error'));
-                      }),
+                      Tab(
+                        text: Strings().bidOut,
+                      ),
                     ],
                   ),
                 ),
+              ),
+              Tooltip(
+                message: "History",
+                child: InkResponse(
+                  onTap: () => CustomNavigation.push(
+                      context, HistoryPage(uid: user.id), Routes.HISTORY),
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    margin: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(
+                        25.0,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.history_edu_rounded,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Divider(color: Colors.transparent),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                UserBidInsList(
+                  uid: user.id,
+                  titleWidget: Text('Bids In',
+                      style: Theme.of(context).textTheme.headline6),
+                  noBidsText: Strings().noBidFound,
+                  onTap: (BidIn bid) async {
+                    AbstractAccount? account;
+                    if (0 < bid.speed.num) {
+                      log('bid.speed.num=${bid.speed.num}');
+                      account = await _acceptBid(context, myUserPageViewModel, bid);
+                      if (account == null) return;
+                    }
+                    CustomDialogs.loader(true, context);
+                    await myUserPageViewModel.acceptBid(bid, account);
+                    CustomDialogs.loader(false, context);
+                  },
+                ),
+                userPrivateAsyncValue.when(
+                    data: (UserModelPrivate userPrivate) {
+                  return UserBidOutsList(
+                    uid: user.id,
+                    titleWidget: Text('Bids Out',
+                        style: Theme.of(context).textTheme.headline6),
+                    noBidsText: Strings().noBidFound,
+                    trailingIcon: Icon(
+                      Icons.cancel,
+                      color: Color.fromRGBO(104, 160, 242, 1),
+                    ),
+                    onTrailingIconClick: (BidOut bidOut) async {
+                      CustomDialogs.loader(true, context);
+                      await myUserPageViewModel.cancelBid(
+                          bidId: bidOut.id, B: bidOut.B);
+                      CustomDialogs.loader(false, context);
+                    },
+                  );
+                }, loading: () {
+                  log('MyUserPage - _buildContents - loading');
+                  return const CircularProgressIndicator();
+                }, error: (_, __) {
+                  log('MyUserPage - _buildContents - error');
+                  return const Center(child: Text('error'));
+                }),
               ],
             ),
-          ))
+          ),
         ],
       ),
     );

@@ -1,10 +1,11 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   AccountInfo({Key? key, required this.account}) : super(key: key);
@@ -48,186 +49,151 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         ? 'ALGO'
         : balanceModel.assetHolding.assetId.toString();
 
-    return Card(
-      elevation: 4,
+    return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+              offset: Offset(2, 4),
+              blurRadius: 8,
+              color: Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
+              ),
+        ],
       ),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        decoration: new BoxDecoration(
-            gradient: new LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Theme.of(context).primaryColorDark,
-                Theme.of(context).primaryColor,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(15.0)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              title: Row(
-                children: [
-                  Text(
-                    'Algorand',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5!
-                        .copyWith(color: Theme.of(context).cardColor),
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    assetName,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            title: Row(
+              children: [
+                Text(
+                  'Algorand',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5!
+                      .copyWith(fontWeight: FontWeight.w600),
+                ),
+                SizedBox(width: 6),
+                Text(assetName,
                     style: Theme.of(context)
                         .textTheme
                         .subtitle2!
-                        .copyWith(color: Theme.of(context).cardColor),
-                  ),
-                ],
-              ),
-              leading: Container(
-                height: 40,
-                width: 40,
-                child: Center(
-                    child: Text(
-                  "X".substring(0, 1).toUpperCase(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle1!
-                      .copyWith(color: AppTheme().black),
-                )),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color.fromRGBO(214, 219, 134, 1),
-                ),
-              ),
-              trailing: Text(
-                "$amount",
-                style: Theme.of(context)
-                    .textTheme
-                    .headline5!
-                    .copyWith(color: Theme.of(context).cardColor, shadows: [
-                  Shadow(
-                    offset: Offset(2.0, 2.0),
-                    blurRadius: 1.9,
-                    color: Theme.of(context).iconTheme.color!,
-                  ),
-                ]),
-              ),
+                        .copyWith(color: Theme.of(context).disabledColor)),
+              ],
             ),
-            ListTile(
-              tileColor: Theme.of(context).cardColor,
-              title: Row(
-                children: [
-                  Icon(
-                    Icons.account_balance_rounded,
-                    size: 18,
-                    color: Theme.of(context).cardColor,
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    "Local Account",
+            leading: Image.asset(
+              'assets/algo_logo.png',
+              width: 40,
+              height: 40,
+              fit: BoxFit.fill,
+            ),
+            trailing: Text(
+              "$amount",
+              style: Theme.of(context).textTheme.headline4!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+          SizedBox(height: 8),
+          ListTile(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/wc_logo.png',
+                  height: 20,
+                  fit: BoxFit.fill,
+                ),
+                SizedBox(height: 8),
+                Text(widget.account.address,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText2!
-                        .copyWith(color: Theme.of(context).cardColor),
-                  ),
-                ],
-              ),
+                        .caption!
+                        .copyWith(fontWeight: FontWeight.w600)),
+              ],
             ),
-            ListTile(
-              title: Text(widget.account.address,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(color: Theme.of(context).cardColor)),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Visibility(
-                      child: InkResponse(
-                        onTap: () => _showPrivateKey(
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // InkResponse(
+                //   onTap: () async {
+                //     final asaId = await _optInToASA(context);
+                //     if (asaId == null) return;
+                //     CustomDialogs.loader(true, context);
+                //     await widget.account
+                //         .optInToASA(assetId: asaId, net: AlgorandNet.testnet);
+                //     CustomDialogs.loader(false, context);
+                //   },
+                //   child: Card(
+                //     margin: EdgeInsets.symmetric(horizontal: 4),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(6.0),
+                //     ),
+                //     elevation: 4,
+                //     shadowColor: Theme.of(context).primaryColor,
+                //     child: Container(
+                //       height: 40,
+                //       width: 40,
+                //       decoration: BoxDecoration(
+                //           color: Theme.of(context).cardColor,
+                //           borderRadius: BorderRadius.circular(6)),
+                //       child: Icon(
+                //         Icons.add_circle_outline,
+                //         size: 20,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/copy.svg',
+                      width: 20,
+                      height: 20,
+                    ),
+                    onPressed: () {
+                      Clipboard.setData(
+                          ClipboardData(text: widget.account.address));
+                      showToast('Copied to Clipboard',
+                          context: context,
+                          animation: StyledToastAnimation.slideFromTop,
+                          reverseAnimation: StyledToastAnimation.slideToTop,
+                          position: StyledToastPosition.top,
+                          startOffset: Offset(0.0, -3.0),
+                          reverseEndOffset: Offset(0.0, -3.0),
+                          duration: Duration(seconds: 4),
+                          animDuration: Duration(seconds: 1),
+                          curve: Curves.elasticOut,
+                          reverseCurve: Curves.fastOutSlowIn);
+                    },
+                  ),
+                ),
+                Visibility(
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      child: IconButton(
+                        icon: SvgPicture.asset(
+                          'assets/icons/key.svg',
+                          width: 20,
+                          height: 20,
+                        ),
+                        onPressed: () => _showPrivateKey(
                             context, widget.account as LocalAccount),
-                        child: Card(
-                          elevation: 4,
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6.0),
-                          ),
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(6)),
-                            child: Icon(
-                              Icons.vpn_key,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                      visible: widget.account is LocalAccount),
-                  // InkResponse(
-                  //   onTap: () async {
-                  //     final asaId = await _optInToASA(context);
-                  //     if (asaId == null) return;
-                  //     CustomDialogs.loader(true, context);
-                  //     await widget.account
-                  //         .optInToASA(assetId: asaId, net: AlgorandNet.testnet);
-                  //     CustomDialogs.loader(false, context);
-                  //   },
-                  //   child: Card(
-                  //     margin: EdgeInsets.symmetric(horizontal: 4),
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(6.0),
-                  //     ),
-                  //     elevation: 4,
-                  //     shadowColor: Theme.of(context).primaryColor,
-                  //     child: Container(
-                  //       height: 40,
-                  //       width: 40,
-                  //       decoration: BoxDecoration(
-                  //           color: Theme.of(context).cardColor,
-                  //           borderRadius: BorderRadius.circular(6)),
-                  //       child: Icon(
-                  //         Icons.add_circle_outline,
-                  //         size: 20,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  InkResponse(
-                    onTap: () => Clipboard.setData(
-                        ClipboardData(text: widget.account.address)),
-                    child: Card(
-                      elevation: 4,
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(6)),
-                        child: Icon(
-                          Icons.copy,
-                          size: 20,
-                        ),
                       ),
                     ),
-                  )
-                ],
-              ),
+                    visible: widget.account is LocalAccount),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
