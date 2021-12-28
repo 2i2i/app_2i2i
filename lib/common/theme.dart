@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme{
@@ -68,17 +69,18 @@ class AppTheme{
 
   Color primaryColor = Color(0xFFf3f3f7);
   Color primaryLightColor = Color(0xFFffffff);
-  Color primaryDarkColor = Color(0xFFc0c0c4);
+  Color primaryDarkColor = Color(0x90000000);
 
-  Color secondaryColor = Color(0xFF1c1c1e);
-  Color secondaryDarkColor = Color(0xFF000000);
+  Color secondaryColor = Color(0xFF23d67d);
+  Color shaDowColor = Color(0xFFDCF9EB);
+  Color secondaryDarkColor = Color(0xFF00a350);
+
   Color primaryTextColor = Color(0xFF000000);
   Color secondaryTextColor = Color(0xFFffffff);
-  Color cardDarkColor = Colors.grey.shade800;
 
-  Color scaffoldBackgroundColor = Color(0xFFF3F3F7);
+  Color cardDarkColor = Colors.grey.shade800;
   Color disableColor = Color(0xFF979592);
-  Color fillColor = Color(0xFF767680);
+  Color fillColor = Color(0xFFC1C1D7);
 
   ThemeData get mainTheme {
     return ThemeData(
@@ -90,12 +92,15 @@ class AppTheme{
       scaffoldBackgroundColor: primaryColor,
       shadowColor: fillColor,
       disabledColor: disableColor,
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       colorScheme: ColorScheme.light(
         secondary: secondaryColor,
       ),
       appBarTheme: appBarTheme(false),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(primary: Colors.black),
+        style: TextButton.styleFrom(primary: primaryTextColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 0,
@@ -113,10 +118,11 @@ class AppTheme{
           unselectedItemColor: disableColor,
           backgroundColor: primaryLightColor,
           selectedIconTheme: IconThemeData(color: Colors.white)),
+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
             primary: secondaryColor,
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(kIsWeb?22:14),
             textStyle: TextStyle(
               fontFamily: 'SofiaPro',
               fontSize: 17.0,
@@ -128,7 +134,7 @@ class AppTheme{
       ),
       tabBarTheme: TabBarTheme(
         labelColor: primaryColor,
-        unselectedLabelColor: secondaryColor,
+        unselectedLabelColor: primaryTextColor,
         indicator: BoxDecoration(
             borderRadius: BorderRadius.circular(25.0), color: secondaryColor),
       ),
@@ -161,10 +167,10 @@ class AppTheme{
         brightness: Brightness.dark,
         appBarTheme: appBarTheme(true),
         fontFamily: 'SofiaPro',
-        primaryColor: primaryColor,
+        primaryColor: primaryDarkColor,
         primaryColorLight: secondaryDarkColor,
         primaryColorDark: secondaryTextColor,
-        scaffoldBackgroundColor: secondaryColor,
+        scaffoldBackgroundColor: primaryDarkColor,
         iconTheme: IconThemeData(color: primaryColor),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(primary: Colors.white),
@@ -209,7 +215,7 @@ class AppTheme{
 
   AppBarTheme appBarTheme(bool dark) => AppBarTheme(
       elevation: 0,
-      backgroundColor: !dark ? primaryColor : secondaryColor,
+      backgroundColor: !dark ? primaryColor : primaryDarkColor,
       iconTheme: IconThemeData(color: dark ? white : primaryTextColor),
       titleTextStyle: TextStyle(
         fontSize: 20.0,

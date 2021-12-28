@@ -17,6 +17,7 @@ class QRCodePage extends ConsumerWidget {
     final message = 'https://test.2i2i.app/user/$uid';
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('QR Code'),
       ),
@@ -29,7 +30,7 @@ class QRCodePage extends ConsumerWidget {
             QrWidget(
               message: message,
               logoSize: 60,
-              imageSize: 280,
+              imageSize: 180,
             ),
             SizedBox(
               height: 10,
@@ -52,7 +53,6 @@ class QRCodePage extends ConsumerWidget {
                       icon: Icon(
                         Icons.copy,
                         size: 20,
-                        color: Theme.of(context).primaryColor,
                       ),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: message));

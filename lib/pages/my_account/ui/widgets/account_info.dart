@@ -94,7 +94,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               "$amount",
               style: Theme.of(context).textTheme.headline4!.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.secondary),
+                  color: Theme.of(context).tabBarTheme.unselectedLabelColor),
             ),
           ),
           SizedBox(height: 8),

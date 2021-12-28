@@ -4,7 +4,7 @@ class WaitPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.withOpacity(0.85),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.85),
       body: Center(
         child: Container(
           height: 110,

@@ -45,6 +45,9 @@ class TextProfileView extends StatelessWidget {
     return Container(
       child: InkWell(
         onTap: onTap,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -56,7 +59,7 @@ class TextProfileView extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                       offset: Offset(2, 4),
-                      blurRadius: 8,
+                      blurRadius: 12,
                       color: Color.fromRGBO(
                           0, 0, 0, 0.12) // changes position of shadow
                       ),
@@ -68,7 +71,7 @@ class TextProfileView extends StatelessWidget {
                     elevation: 6,
                     shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(14.0),
                     ),
                     child: Center(
                       child: Text(
@@ -77,7 +80,7 @@ class TextProfileView extends StatelessWidget {
                             .toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
-                            .headline5!
+                            .headline6!
                             .copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
