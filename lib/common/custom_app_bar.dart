@@ -3,8 +3,8 @@ import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../pages/setup_account/ui/setup_account.dart';
-import '../routes/app_routes.dart';
+import 'package:app_2i2i/pages/setup_account/ui/setup_account.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'alert_widget.dart';
 import 'custom_profile_image_view.dart';
 

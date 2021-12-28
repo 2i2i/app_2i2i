@@ -8,12 +8,11 @@ import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../common/custom_app_bar.dart';
-import '../../../common/custom_navigation.dart';
-import '../../../constants/strings.dart';
-import '../../../routes/app_routes.dart';
-import '../../user_bid/ui/user_page.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
 
