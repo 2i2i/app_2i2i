@@ -1,12 +1,11 @@
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/models/bid.dart';
+import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/user_bid/ui/widgets/bid_duration_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../../constants/strings.dart';
-import '../../../../models/bid.dart';
-import '../../../../models/user.dart';
-import 'bid_duration_widget.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
   final BidIn bidInModel;

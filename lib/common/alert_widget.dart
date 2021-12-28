@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../pages/user_bid/ui/widgets/bid_alert_widget.dart';
+import 'package:app_2i2i/pages/user_bid/ui/widgets/bid_alert_widget.dart';
 
 class AlertWidget {
   static showBidAlert(BuildContext context) {

@@ -8,10 +8,9 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
 import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../common/custom_profile_image_view.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({required this.uid});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/theme.dart';
+import 'package:app_2i2i/common/theme.dart';
 
 class BidDurationWidget extends StatelessWidget {
   final String speed;

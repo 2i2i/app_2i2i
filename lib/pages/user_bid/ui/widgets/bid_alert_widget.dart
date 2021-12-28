@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../common/custom_navigation.dart';
-import '../../../../common/custom_profile_image_view.dart';
-import '../../../../routes/app_routes.dart';
-import '../../../setup_account/ui/setup_account.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
+import 'package:app_2i2i/pages/setup_account/ui/setup_account.dart';
 import 'bid_duration_widget.dart';
 
 class BidAlertWidget extends StatefulWidget {

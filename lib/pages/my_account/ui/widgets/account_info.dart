@@ -7,8 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../common/theme.dart';
-
 class AccountInfo extends ConsumerStatefulWidget {
   AccountInfo({Key? key, required this.account}) : super(key: key);
 
