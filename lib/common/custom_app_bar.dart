@@ -2,8 +2,8 @@ import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../pages/setup_account/ui/setup_account.dart';
-import '../routes/app_routes.dart';
+import 'package:app_2i2i/pages/setup_account/ui/setup_account.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'custom_profile_image_view.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {

@@ -11,10 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../common/custom_app_bar.dart';
-import '../../../constants/strings.dart';
-import 'widgets/account_info.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/pages/my_account/ui/widgets/account_info.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
   const MyAccountPage({Key? key}) : super(key: key);

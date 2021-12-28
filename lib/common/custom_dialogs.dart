@@ -2,11 +2,10 @@ import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/bid.dart';
 import 'package:app_2i2i/models/user.dart';
 import 'package:app_2i2i/services/logging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import '../pages/user_bid/ui/widgets/bid_dialog_widgte.dart';
+import 'package:app_2i2i/pages/user_bid/ui/widgets/bid_dialog_widget.dart';
 
 class CustomDialogs {
   static loader(bool isLoading, BuildContext context,

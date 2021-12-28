@@ -7,8 +7,8 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../common/custom_profile_image_view.dart';
-import '../../../common/theme.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
+import 'package:app_2i2i/common/theme.dart';
 
 class UserBidInsList extends ConsumerWidget {
   UserBidInsList({
