@@ -1,5 +1,4 @@
 import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../constants/strings.dart';
 import '../../../../models/bid.dart';
 import '../../../../models/user.dart';
-import '../../../../services/all_providers.dart';
+import 'bid_duration_widget.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
   final BidIn bidInModel;
@@ -31,7 +30,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).primaryColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(14.0))),
@@ -88,162 +87,127 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
           ],
         ),
       ],
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Text(
-                  widget.userModel!.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6!
-                      .copyWith(fontWeight: FontWeight.w800),
-                )),
-                SizedBox(height: 6),
-                Expanded(
-                    child: Container(
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColorLight,
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(2, 4),
-                            blurRadius: 8,
-                            color: Color.fromRGBO(
-                                0, 0, 0, 0.12) // changes position of shadow
-                            ),
-                      ],
-                      borderRadius: BorderRadius.circular(72)),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Text('${widget.bidInModel.speed.num}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: AppTheme().green)),
-                      ),
-                      Expanded(
-                          child: Text(
-                              '${widget.bidInModel.speed.assetId == 0 ? 'ALGO' : widget.bidInModel.speed.assetId}/sec',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2!
-                                  .copyWith(
-                                    fontWeight: FontWeight.w400,
-                                  ))),
-                      SizedBox(width: 6),
-                      Image.asset(
-                        'assets/algo_logo.png',
-                        width: 35,
-                        height: 35,
-                      )
-                    ],
-                  ),
-                ))
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: TextFormField(
-              autofocus: false,
-              readOnly: true,
-              textAlign: TextAlign.center,
-              initialValue: '\"${widget.userModel!.bio}\"',
-              decoration: InputDecoration(
-                filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      content: Container(
+        width: MediaQuery.of(context).size.height*0.39,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Text(
+                    widget.userModel!.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w800),
+                  )),
+                  SizedBox(width: 6),
+                  Expanded(
+                      child: BidDurationWidget(
+                    duration: '${widget.bidInModel.speed.assetId == 0 ? 'ALGO' : widget.bidInModel.speed.assetId}/sec',
+                    speed: widget.bidInModel.speed.num.toString(),
+                  ))
+                ],
               ),
             ),
-          ),
-          ListTile(
-            leading: IconButton(
-              onPressed: null,
-              icon: SvgPicture.asset('assets/icons/timer.svg'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: TextFormField(
+                autofocus: false,
+                readOnly: true,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                initialValue: '\"${widget.userModel!.bio}\"',
+                decoration: InputDecoration(
+                  filled: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                ),
+              ),
             ),
-            title: Text('Estimate max duration',
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                    color: Theme.of(context).disabledColor,
-                    fontWeight: FontWeight.normal)),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('1 min',
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle1!
-                      .copyWith(fontWeight: FontWeight.w400)),
+            ListTile(
+              leading: IconButton(
+                onPressed: null,
+                icon: SvgPicture.asset('assets/icons/timer.svg'),
+              ),
+              title: Text('Estimate max duration',
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: Theme.of(context).disabledColor,
+                      fontWeight: FontWeight.normal)),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text('1 min',
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1!
+                        .copyWith(fontWeight: FontWeight.w400)),
+              ),
             ),
-          ),
-          ListTile(
-            leading: IconButton(
-              onPressed: null,
-              icon: SvgPicture.asset('assets/icons/warning.svg'),
+            ListTile(
+              leading: IconButton(
+                onPressed: null,
+                icon: SvgPicture.asset('assets/icons/warning.svg'),
+              ),
+              title: Text('Warning',
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: Theme.of(context).disabledColor,
+                      fontWeight: FontWeight.normal)),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text('This can be very short',
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1!
+                        .copyWith(fontWeight: FontWeight.w400)),
+              ),
             ),
-            title: Text('Warning',
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                    color: Theme.of(context).disabledColor,
-                    fontWeight: FontWeight.normal)),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('This can be very short',
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle1!
-                      .copyWith(fontWeight: FontWeight.w400)),
-            ),
-          ),
 /*          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('name: '),
-              Text(user.name),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('comment: '),
-              Text(bidInPrivate.comment ?? ''),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('speed: '),
-              Text('${bidInModel.speed.num} [$assetIDString/sec]'),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('est. max duration: '),
-              Text('$maxDurationString'),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('warning: '),
-              Text('this might be a very short call'),
-            ],
-          ),*/
-        ],
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('name: '),
+                Text(user.name),
+              ],
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('comment: '),
+                Text(bidInPrivate.comment ?? ''),
+              ],
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('speed: '),
+                Text('${bidInModel.speed.num} [$assetIDString/sec]'),
+              ],
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('est. max duration: '),
+                Text('$maxDurationString'),
+              ],
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('warning: '),
+                Text('this might be a very short call'),
+              ],
+            ),*/
+          ],
+        ),
       ),
     );
   }

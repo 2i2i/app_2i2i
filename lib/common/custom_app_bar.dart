@@ -1,9 +1,11 @@
 import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/pages/qr_code/qr_code_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../pages/setup_account/ui/setup_account.dart';
 import '../routes/app_routes.dart';
+import 'alert_widget.dart';
 import 'custom_profile_image_view.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -19,9 +21,35 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
         elevation: 0,
         actions: [
+          InkWell(
+            onTap: () => CustomNavigation.push(context, QRCodePage(), Routes.QRPAGE),
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: SvgPicture.asset(
+                'assets/icons/scan.svg',
+                width: 22,
+                height: 22,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              AlertWidget.showBidAlert(context);
+            },
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: SvgPicture.asset(
+                'assets/icons/star.svg',
+                width: 22,
+                height: 22,
+              ),
+            ),
+          ),
+          SizedBox(width: 4),
           TextProfileView(
             text: "Ravi",
             statusColor: Colors.green,
+            radius: kToolbarHeight+4,
             onTap: () => CustomNavigation.push(context, SetupBio(), Routes.SETUP_ACCOUNT),
           ),
           SizedBox(
@@ -32,23 +60,11 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
         centerTitle: false,
         title: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/appbar_icon.svg',
-                width: 55,
-                height: 50,
-              ),
-              SizedBox(width: 4),
-              Text("2i2i",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5!
-                      .copyWith(fontWeight: FontWeight.bold)),
-            ],
+          child: SvgPicture.asset(
+            'assets/icons/appbar_icon.svg',
+            width: 55,
+            height: 50,
+            color: Theme.of(context).iconTheme.color,
           ),
         ));
   }
