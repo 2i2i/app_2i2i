@@ -30,9 +30,9 @@ class RingingPageViewModel {
     return x;
   }
 
-  Future endMeeting(String reason) async {
+  Future endMeeting(MeetingStatus reason) async {
     final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
-    final args = {'meetingId': meeting.id, 'reason': reason};
+    final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
     await endMeeting(args);
   }
 
@@ -40,22 +40,29 @@ class RingingPageViewModel {
     try {
       log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
-      MeetingTxns txns = MeetingTxns();
+      // ACCEPT
+      final HttpsCallable advanceMeeting =
+          functions.httpsCallable('advanceMeeting');
+      await advanceMeeting({
+        'reason': MeetingStatus.ACCEPTED.toStringEnum(),
+        'meetingId': meeting.id
+      });
 
+      MeetingTxns txns = MeetingTxns();
       if (meeting.speed.num != 0) {
         try {
-          txns = await algorand.lockCoins(meeting: meeting, waitForConfirmation: false);
+          txns = await algorand.lockCoins(meeting: meeting);
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
-          final HttpsCallable meetingTxnFailed = functions.httpsCallable('meetingTxnFailed');
-          await meetingTxnFailed({'meetingId': meeting.id});
-          print(meetingTxnFailed);
+          final HttpsCallable endMeeting =
+              functions.httpsCallable('endMeeting');
+          await endMeeting({
+            'meetingId': meeting.id,
+            'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
+          });
           return;
         }
       }
-
-      // update meeting
-      await _updateMeetingAsLockCoinsStarted(txns);
 
       await _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
           txns: txns, net: meeting.net);
@@ -64,24 +71,9 @@ class RingingPageViewModel {
     }
   }
 
-  Future _updateMeetingAsLockCoinsStarted(MeetingTxns txns) async {
-    log('RingingPageViewModel - _updateMeetingAsLockCoinsStarted - txns=$txns');
-
-    final data = {'meetingId': meeting.id, 'txns': txns.toMap()};
-    final HttpsCallable meetingLockCoinsStarted =
-        functions.httpsCallable('meetingLockCoinsStarted');
-    await meetingLockCoinsStarted(data);
-  }
-
   Future _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
       {required MeetingTxns txns, required AlgorandNet net}) async {
-    // wait for transaction to confirm
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - txns=$txns');
-    // int budget = 0;
-
-    final meetingLockCoinsConfirmedData = <String, dynamic>{
-      'meetingId': meeting.id
-    };
 
     if (txns.group != null) {
       await algorand.waitForConfirmation(txId: txns.group!, net: net);
@@ -97,14 +89,14 @@ class RingingPageViewModel {
               AlgorandService.LOCK_ALGO_FEE
           : txnResponse.transaction.assetTransferTransaction!.amount;
     }
-    meetingLockCoinsConfirmedData['budget'] = budget;
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
 
-    // update meeting
-    // message = 'updating meeting';
-    // notifyListeners();
-    final HttpsCallable meetingLockCoinsConfirmed =
-        functions.httpsCallable('meetingLockCoinsConfirmed');
-    await meetingLockCoinsConfirmed(meetingLockCoinsConfirmedData);
+    final HttpsCallable advanceMeeting =
+        functions.httpsCallable('advanceMeeting');
+    await advanceMeeting({
+      'reason': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
+      'budet': budget,
+      'meetingId': meeting.id
+    });
   }
 }

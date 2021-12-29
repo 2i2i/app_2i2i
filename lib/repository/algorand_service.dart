@@ -113,36 +113,36 @@ class AlgorandService {
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
-  Future<MeetingTxns> lockCoins(
-      {required Meeting meeting, waitForConfirmation = true}) async {
+  Future<MeetingTxns> lockCoins({required Meeting meeting}) async {
     log('lock - meeting.speed.assetId=${meeting.speed.assetId}');
     final account = await accountService.findAccount(meeting.addrA!);
 
     if (meeting.speed.assetId == 0) {
       return _lockALGO(
+        meetingId: meeting.id,
         B: meeting.addrB!,
         speed: meeting.speed.num,
         account: account!,
         net: meeting.net,
-        waitForConfirmation: waitForConfirmation,
       );
     }
     return _lockASA(
+      meetingId: meeting.id,
       B: meeting.addrB!,
       speed: meeting.speed.num,
       assetId: meeting.speed.assetId,
       account: account!,
       net: meeting.net,
-      waitForConfirmation: waitForConfirmation,
     );
   }
 
-  Future<MeetingTxns> _lockALGO(
-      {required String B,
-      required int speed,
-      required AbstractAccount account,
-      required AlgorandNet net,
-      waitForConfirmation = true}) async {
+  Future<MeetingTxns> _lockALGO({
+    required String meetingId,
+    required String B,
+    required int speed,
+    required AbstractAccount account,
+    required AlgorandNet net,
+  }) async {
     log('lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
 
     log('lockALGO - account=${account.address}');
@@ -192,17 +192,20 @@ class AlgorandService {
     AtomicTransfer.group(txns);
     log('lockALGO - grouped');
 
+    // TXN_CREATED
+    final HttpsCallable advanceMeeting =
+        functions.httpsCallable('advanceMeeting');
+    await advanceMeeting({'reason': MeetingStatus.TXN_CREATED.toStringEnum(), 'meetingId': meetingId});
+
+    // TXN_SIGNED
     // TODO in parallel
     final signedTxnsBytes = await account.sign(txns);
+    await advanceMeeting({'reason': MeetingStatus.TXN_SIGNED.toStringEnum(), 'meetingId': meetingId});
 
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       log('lockALGO - txId=$txId');
-
-      if (waitForConfirmation)
-        await algorandLib.client[net]!.waitForConfirmation(txId);
-      log('lockALGO - done');
 
       // tx ids
       final txnsIds = MeetingTxns(
@@ -211,6 +214,12 @@ class AlgorandService {
         state: stateTxn.id,
       );
       if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+
+      await advanceMeeting({
+        'reason': MeetingStatus.TXN_SENT.toStringEnum(),
+        'txns': txnsIds,
+        'meetingId': meetingId
+      });
 
       return txnsIds;
     } on AlgorandException catch (ex) {
@@ -225,13 +234,14 @@ class AlgorandService {
     }
   }
 
-  Future<MeetingTxns> _lockASA(
-      {required String B,
-      required int speed,
-      required int assetId,
-      required AbstractAccount account,
-      required AlgorandNet net,
-      waitForConfirmation = true}) async {
+  Future<MeetingTxns> _lockASA({
+    required String meetingId,
+    required String B,
+    required int speed,
+    required int assetId,
+    required AbstractAccount account,
+    required AlgorandNet net,
+  }) async {
     log('lockASA - B=$B - speed=$speed - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
     log('lockASA - account=${account.address}');
 
@@ -306,15 +316,18 @@ class AlgorandService {
     AtomicTransfer.group(txns);
     log('lockASA - grouped');
 
+    // TXN_CREATED
+    final HttpsCallable advanceMeeting =
+        functions.httpsCallable('advanceMeeting');
+    await advanceMeeting({'reason': MeetingStatus.TXN_CREATED.toStringEnum(), 'meetingId': meetingId});
+
     final signedTxnsBytes = await account.sign(txns);
+    await advanceMeeting({'reason': MeetingStatus.TXN_SIGNED.toStringEnum(), 'meetingId': meetingId});
 
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       log('lockASA - txId=$txId');
-      if (waitForConfirmation)
-        await algorandLib.client[net]!.waitForConfirmation(txId);
-      log('lockASA - done');
 
       // opt in CREATOR
       if (!systemOptedIn) {
@@ -333,6 +346,12 @@ class AlgorandService {
         lockASA: lockASATxn.id,
       );
       if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+
+      await advanceMeeting({
+        'reason': MeetingStatus.TXN_SENT.toStringEnum(),
+        'txns': txnsIds,
+        'meetingId': meetingId
+      });
 
       return txnsIds;
     } on AlgorandException catch (ex) {

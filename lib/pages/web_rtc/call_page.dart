@@ -56,7 +56,7 @@ class _CallPageState extends ConsumerState<CallPage>
     final duration = getDuration(maxDuration);
     budgetTimer = Timer(Duration(seconds: duration), () {
       progressTimer?.cancel();
-      signaling?.hangUp(_localRenderer, reason: 'BUDGET');
+      signaling?.hangUp(_localRenderer, reason: MeetingStatus.END_TIMER);
     });
 
     progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {

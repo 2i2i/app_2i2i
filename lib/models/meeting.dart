@@ -11,11 +11,12 @@ enum MeetingStatus {
   END_TIMER,
   END_A, // A hangs up
   END_B, // B hangs up
-  ACCEPT, // A accepts meeting after B accepts bid
+  ACCEPTED, // A accepts meeting after B accepts bid
   TXN_CREATED, // A created txn
+  TXN_SIGNED, // A created txn
   TXN_SENT, // A confirmed txn
-  END_TXN_FAILED, // txn failed
   TXN_CONFIRMED, // algorand confirmed txn
+  END_TXN_FAILED, // txn failed
   ROOM_CREATED, // rtc room created
   REMOTE_A_RECEIVED, // A received remote stream of B
   REMOTE_B_RECEIVED, // B received remote stream of A
@@ -29,10 +30,16 @@ enum MeetingStatus {
 // INIT -> END_B
 // INIT -> ACCEPT -> TXN_CREATED -> END_TIMER
 // INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_A
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED-> END_B
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_TIMER
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_A
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED-> END_B
+// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_TIMER
 // always possible to get END_DISCONNECT_*
+extension ParseToString on MeetingStatus {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+}
+
 
 @immutable
 class MeetingStatusWithTS {

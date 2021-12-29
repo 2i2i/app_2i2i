@@ -50,14 +50,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (widget.meeting.status == MeetingStatus.INIT) {
       timer = Timer(Duration(seconds: 30), () async {
         final finishFuture = finish();
-        final endMeetingFuture = ringingPageViewModel!.endMeeting('TIMER');
+        final endMeetingFuture =
+            ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
         await Future.wait([finishFuture, endMeetingFuture]);
       });
-    }
-    else if (widget.meeting.status == MeetingStatus.ACCEPT) {
+    } else if (widget.meeting.status == MeetingStatus.ACCEPTED) {
       timer = Timer(Duration(seconds: 60), () async {
         final finishFuture = finish();
-        final endMeetingFuture = ringingPageViewModel!.endMeeting('TIMER');
+        final endMeetingFuture =
+            ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
         await Future.wait([finishFuture, endMeetingFuture]);
       });
     }
@@ -93,14 +94,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
     switch (widget.meeting.status) {
       case MeetingStatus.INIT:
         return '1/5 - Pick up for ${shortString(ringingPageViewModel.otherUser.name)}';
-      case MeetingStatus.ACCEPT:
+      case MeetingStatus.ACCEPTED:
         return '2/5 - Creating blockchain transaction';
       case MeetingStatus.TXN_CREATED:
         return '3/5 - Please confirm the blockchain transaction on your wallet';
+      case MeetingStatus.TXN_SIGNED:
+        return '3/5 - Transaction signed. Sending to the blockchain';
       case MeetingStatus.TXN_SENT:
         return '4/5 - Sent the transaction to the blockchain';
       case MeetingStatus.TXN_CONFIRMED:
-        return '5/5 - Your' 's coins are locked in the smart contract';
+        return '5/5 - Your coins are locked in the smart contract';
       default:
         throw Exception(
             'commentAsA - should never be here - meeting.status=${widget.meeting.status}');
@@ -111,10 +114,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
     switch (widget.meeting.status) {
       case MeetingStatus.INIT:
         return '1/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to pick up';
-      case MeetingStatus.ACCEPT:
+      case MeetingStatus.ACCEPTED:
         return '2/5 - Creating blockchain transaction';
       case MeetingStatus.TXN_CREATED:
         return '3/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to confirm the blockchain transaction';
+      case MeetingStatus.TXN_SIGNED:
+        return '3/5 - ${shortString(ringingPageViewModel.otherUser.name)} has signed the transaction. Sending to the network';
       case MeetingStatus.TXN_SENT:
         return '4/5 - Sent the transaction to the blockchain';
       case MeetingStatus.TXN_CONFIRMED:
@@ -225,7 +230,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 final finishFuture = finish();
                                 final cancelMeetingFuture =
                                     ringingPageViewModel!.endMeeting(
-                                        ringingPageViewModel!.amA() ? 'A' : 'B');
+                                        ringingPageViewModel!.amA()
+                                            ? MeetingStatus.END_A
+                                            : MeetingStatus.END_B);
                                 await Future.wait(
                                     [finishFuture, cancelMeetingFuture]);
                               },

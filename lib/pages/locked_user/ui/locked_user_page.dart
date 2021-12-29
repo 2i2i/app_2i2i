@@ -3,7 +3,6 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
 import 'package:app_2i2i/pages/web_rtc/call_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,8 +32,9 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
     bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
                     lockedUserViewModel.amA()) || isActive;
     bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
-                meetingStatus == MeetingStatus.ACCEPT ||
+                meetingStatus == MeetingStatus.ACCEPTED ||
                 meetingStatus == MeetingStatus.TXN_CREATED ||
+                meetingStatus == MeetingStatus.TXN_SIGNED ||
                 meetingStatus == MeetingStatus.TXN_SENT ||
                 (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
                     lockedUserViewModel.amB());

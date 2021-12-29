@@ -253,7 +253,7 @@ class Signaling {
 
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
+  Future<void> hangUp(RTCVideoRenderer localVideo, {MeetingStatus? reason}) async {
     try {
       log(G + 'Signaling - hangUp - ${meeting.id}');
 
@@ -261,7 +261,7 @@ class Signaling {
       final args = {
         'meetingId': meeting.id,
       };
-      if (reason != null) args['reason'] = reason;
+      if (reason != null) args['reason'] = reason.toStringEnum();
       await endMeeting(args);
 
       log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
