@@ -258,8 +258,6 @@ class Signaling {
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
     try {
-      log(G + 'Signaling - hangUp - ${meeting.id}');
-
       final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
       final args = {
         'meetingId': meeting.id,
@@ -267,43 +265,30 @@ class Signaling {
       if (reason != null) args['reason'] = reason;
       await endMeeting(args);
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      //Close Local A
       if (localVideo.srcObject != null) {
         List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-        tracks.forEach((track) {
-          track.stop();
-        });
+        localVideo.srcObject!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
         localVideo.srcObject = null;
         await localVideo.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - local track.stop');
-
+      //Close Remote B
       if (remoteStream != null) {
-        remoteStream!.getTracks().forEach((track) => track.stop());
+        List<MediaStreamTrack> tracks = remoteStream!.getTracks();
+        remoteStream!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
+        await remoteStream!.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - remote track.stop');
+      if (peerConnection != null) {
+        peerConnection!.close();
+      }
 
-      if (peerConnection != null) peerConnection!.close();
-      log(G + 'Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
-
-      // if (roomId != null) {
-      // final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-      // iceCandidatesB.docs.forEach((document) => document.reference.delete());
-
-      // final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-      // iceCandidatesA.docs.forEach((document) => document.reference.delete());
-
-      // await roomRef.delete();
-      // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
-      // }
-
-      // localStream.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
       remoteVideo.srcObject = null;
-      remoteStream?.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
+      localVideo.srcObject = null;
+
     } catch (e) {
       log(e.toString());
     }

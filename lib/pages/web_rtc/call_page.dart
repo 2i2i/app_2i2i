@@ -103,11 +103,7 @@ class _CallPageState extends ConsumerState<CallPage>
     if (duration <= 60) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
-        // Future.delayed(Duration.zero).then((value) {
-        // if (mounted) {
         setState(() {});
-        // }
-        // });
       }
     }
   }
