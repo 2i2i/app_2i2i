@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/pages/app/auth_widget.dart';
-import 'package:app_2i2i/pages/home/home_page.dart';
-import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'constants/strings.dart';
+import 'infrastructure/commons/strings.dart';
+import 'infrastructure/providers/all_providers.dart';
+import 'ui/screens/app/auth_widget.dart';
+import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
