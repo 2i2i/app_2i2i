@@ -82,6 +82,9 @@ class AppTheme{
   Color disableColor = Color(0xFF979592);
   Color fillColor = Color(0xFFC1C1D7);
 
+  Color warningColor = Color(0xFFFEEBEB);
+  Color redColor = Color(0xFFF92A2A);
+
   ThemeData get mainTheme {
     return ThemeData(
       fontFamily: 'SofiaPro',

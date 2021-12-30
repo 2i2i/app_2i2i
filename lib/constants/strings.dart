@@ -17,6 +17,7 @@ class Strings {
   String ok = 'OK';
   String talk = 'Talk';
   String cancel = 'Cancel';
+  String copyMessage = 'Copied to Clipboard';
 
   // Logout
   String logout = 'Logout';
@@ -34,6 +35,7 @@ class Strings {
   String homePage = 'Home Page';
   String home = 'Home';
   String account = 'Account';
+  String doneIHaveCopied = 'Done, I have copied';
   String profile = 'Profile';
   String settings = 'Settings';
   String searchUserHint = 'Search user';

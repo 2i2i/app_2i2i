@@ -22,7 +22,7 @@ class HomePage extends ConsumerStatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage>{
   var _tabSelectedIndex = 0;
   var _tabPopStack = false;
 
@@ -177,6 +177,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               rating: rating, comment: ratingFeedBack, meeting: meetingId));
     });
   }
+
 }
 
 class TabItem {

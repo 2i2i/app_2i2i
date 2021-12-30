@@ -242,15 +242,18 @@ class Signaling {
   }
 
   Future<void> openUserMedia() async {
-    log(G + 'Signaling - openUserMedia - ${meeting.id}');
+    try {
+      log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-    final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
-    cameras = await Helper.cameras;
-    localVideo.srcObject = stream;
-    localStream = stream;
+      final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
+      cameras = await Helper.cameras;
+      localVideo.srcObject = stream;
+      localStream = stream;
 
-    remoteVideo.srcObject = await createLocalMediaStream('key');
-
+      remoteVideo.srcObject = await createLocalMediaStream('key');
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
@@ -270,6 +273,8 @@ class Signaling {
         tracks.forEach((track) {
           track.stop();
         });
+        localVideo.srcObject = null;
+        await localVideo.dispose();
       }
 
       log(G + 'Signaling - hangUp - ${meeting.id} - local track.stop');
@@ -294,9 +299,9 @@ class Signaling {
       // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
       // }
 
-
       // localStream.dispose();
       log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
+      remoteVideo.srcObject = null;
       remoteStream?.dispose();
       log(G + 'Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
     } catch (e) {

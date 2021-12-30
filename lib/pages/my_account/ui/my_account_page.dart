@@ -1,8 +1,11 @@
 import 'package:app_2i2i/accounts/abstract_account.dart';
 import 'package:app_2i2i/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
 import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/my_account/ui/widgets/account_info.dart';
 import 'package:app_2i2i/pages/my_account/ui/widgets/qr_image_widget.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:app_2i2i/services/logging.dart';
@@ -11,9 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:app_2i2i/common/custom_app_bar.dart';
-import 'package:app_2i2i/constants/strings.dart';
-import 'package:app_2i2i/pages/my_account/ui/widgets/account_info.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
   const MyAccountPage({Key? key}) : super(key: key);
@@ -64,16 +64,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    Future.delayed(Duration(seconds: 2)).then((value) {
       ref.read(myAccountPageViewModelProvider).initMethod();
     });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-
     return Scaffold(
         appBar: CustomAppbar(),
         body: Stack(
@@ -97,19 +96,6 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-       /* floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              // Add your onPressed code here!
-            },
-            label: Text(Strings().newCardTitle,style: Theme.of(context).textTheme.subtitle1!.copyWith(
-              color: Theme.of(context).primaryColorLight
-            ),),
-            icon: Icon(Icons.add,color: Theme.of(context).primaryColorLight),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-          ),
-        ),*/
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SpeedDial(

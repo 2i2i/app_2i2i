@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.i2i2.test">
+
+    <uses-permission android:name="android.permission.CAMERA" />
    <application
         android:label="app_2i2i"
         android:icon="@mipmap/ic_launcher">

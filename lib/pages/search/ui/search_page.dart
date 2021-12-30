@@ -34,10 +34,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: TextField(
               autofocus: false,
               decoration: InputDecoration(
-                hintText: Strings().searchUserHint,
-                filled: true,
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                hintText: Strings().searchUserHint, filled: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
                 suffixIcon: Icon(Icons.mic),
               ),

@@ -15,14 +15,11 @@ class OtherBidInList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-        return Expanded(child: _bidsListView(ref, context));
+        return _bidsListView(ref, context);
   }
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
-    final myId = ref.read(myUIDProvider);
-    if (myId == null) {
-      return Container();
-    }
+    final myId = ref.read(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
     if (userPrivateAsyncValue is AsyncLoading) {
       return Container();
@@ -33,6 +30,7 @@ class OtherBidInList extends ConsumerWidget {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+                shrinkWrap: true,
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, ix) {
                   BidIn bidIn = snapshot.data[ix];
