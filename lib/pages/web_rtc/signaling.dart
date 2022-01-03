@@ -53,10 +53,13 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    final meetingRoomCreated =
-        FirebaseFunctions.instance.httpsCallable('meetingRoomCreated');
-    await meetingRoomCreated(
-        {'meetingId': meeting.id, 'currentRoom': roomRef.id});
+    final advanceMeeting =
+        FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+    await advanceMeeting({
+      'meetingId': meeting.id,
+      'room': roomRef.id,
+      'reason': MeetingStatus.ROOM_CREATED.toStringEnum()
+    });
   }
 
   final Meeting meeting;
@@ -216,12 +219,12 @@ class Signaling {
       await peerConnection!.setLocalDescription(answer);
       // if (answer != null) {
 
-        Map<String, dynamic> roomWithAnswer = {
-          'answer': {'type': answer.type, 'sdp': answer.sdp}
-        };
+      Map<String, dynamic> roomWithAnswer = {
+        'answer': {'type': answer.type, 'sdp': answer.sdp}
+      };
 
-        await roomRef.update(roomWithAnswer);
-        // Finished creating SDP answer
+      await roomRef.update(roomWithAnswer);
+      // Finished creating SDP answer
       // }
 
       // Listening for remote ICE candidates below
@@ -244,27 +247,29 @@ class Signaling {
   Future<void> openUserMedia() async {
     log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-    final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
+    final stream = await navigator.mediaDevices
+        .getUserMedia({'video': true, 'audio': true});
     cameras = await Helper.cameras;
     localVideo.srcObject = stream;
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
-
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo, {MeetingStatus? reason}) async {
+  Future<void> hangUp(RTCVideoRenderer localVideo,
+      {MeetingStatus? reason}) async {
     try {
       log(G + 'Signaling - hangUp - ${meeting.id}');
 
-      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
+      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeetingNew');
       final args = {
         'meetingId': meeting.id,
       };
       if (reason != null) args['reason'] = reason.toStringEnum();
       await endMeeting(args);
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      log(G +
+          'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
       if (localVideo.srcObject != null) {
         List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
         tracks.forEach((track) {
@@ -293,7 +298,6 @@ class Signaling {
       // await roomRef.delete();
       // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
       // }
-
 
       // localStream.dispose();
       log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
