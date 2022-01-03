@@ -69,7 +69,7 @@ class _CallPageState extends ConsumerState<CallPage>
 
   int getDuration(int maxDuration) {
     int duration = maxDuration;
-    final activeTime = widget.meeting.activeTime();
+    final activeTime = widget.meeting.start;
     if (activeTime != null) {
       final maxEndTime = activeTime + maxDuration;
       duration = max(maxEndTime - epochSecsNow(), 0);

@@ -8,19 +8,19 @@ enum MeetingStatus {
   INIT,
   // check that enough time passed
   // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after REMOTE_A/B_RECEIVED
-  END_TIMER,
-  END_A, // A hangs up
-  END_B, // B hangs up
   ACCEPTED, // A accepts meeting after B accepts bid
   TXN_CREATED, // A created txn
   TXN_SIGNED, // A created txn
   TXN_SENT, // A confirmed txn
   TXN_CONFIRMED, // algorand confirmed txn
-  END_TXN_FAILED, // txn failed
   ROOM_CREATED, // rtc room created
-  REMOTE_A_RECEIVED, // A received remote stream of B
-  REMOTE_B_RECEIVED, // B received remote stream of A
+  A_RECEIVED_REMOTE, // A received remote stream of B
+  B_RECEIVED_REMOTE, // B received remote stream of A
   CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
+  END_TXN_FAILED, // txn failed
+  END_TIMER,
+  END_A, // A hangs up
+  END_B, // B hangs up
   END_DISCONNECT_A, // A disconnected
   END_DISCONNECT_B, // B disconnected
   END_DISCONNECT_AB, // both disconnected
@@ -28,11 +28,11 @@ enum MeetingStatus {
 // INIT -> END_TIMER
 // INIT -> END_A
 // INIT -> END_B
-// INIT -> ACCEPT -> TXN_CREATED -> END_TIMER
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_A
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED-> END_B
-// INIT -> ACCEPT -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_TIMER
+// INIT -> ACCEPTED -> TXN_CREATED -> END_TIMER
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_A
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED-> END_B
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> REMOTE_A_RECEIVED -> REMOTE_B_RECEIVED -> CALL_STARTED -> END_TIMER
 // always possible to get END_DISCONNECT_*
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
@@ -64,6 +64,7 @@ class Meeting extends Equatable {
     required this.addrA,
     required this.addrB,
     required this.budget,
+    required this.start,
     required this.duration,
     required this.txns,
     required this.status,
@@ -87,6 +88,7 @@ class Meeting extends Equatable {
   final String? addrB; // set if 0 < speed
 
   final int? budget; // [coins]; 0 for speed == 0
+  final int? start; // MeetingStatus.CALL_STARTED ts
   final int? duration; // realised duration of the call
 
   // null in free call
@@ -120,13 +122,6 @@ class Meeting extends Equatable {
 
   bool isInit() => status == MeetingStatus.INIT;
 
-  int? activeTime() {
-    for (final st in statusHistory) {
-      if (st.value == MeetingStatus.CALL_STARTED) return st.ts;
-    }
-    return null;
-  }
-
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('Meeting.fromMap - data == null');
@@ -142,6 +137,7 @@ class Meeting extends Equatable {
     final String? addrB = data['addrB'];
 
     final int? budget = data['budget'];
+    final int? start = data['start'];
     final int? duration = data['duration'];
 
     final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
@@ -176,6 +172,7 @@ class Meeting extends Equatable {
       addrA: addrA,
       addrB: addrB,
       budget: budget,
+      start: start,
       duration: duration,
       txns: txns,
       status: status,
@@ -199,6 +196,7 @@ class Meeting extends Equatable {
       'addrA': addrA,
       'addrB': addrB,
       'budget': budget,
+      'start': start,
       'duration': duration,
       'txns': txns.toMap(),
       'status': status,

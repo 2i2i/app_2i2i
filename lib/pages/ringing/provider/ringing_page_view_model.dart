@@ -31,7 +31,7 @@ class RingingPageViewModel {
   }
 
   Future endMeeting(MeetingStatus reason) async {
-    final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
+    final HttpsCallable endMeeting = functions.httpsCallable('endMeetingNew');
     final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
     await endMeeting(args);
   }
@@ -44,7 +44,7 @@ class RingingPageViewModel {
       final HttpsCallable advanceMeeting =
           functions.httpsCallable('advanceMeeting');
       await advanceMeeting({
-        'reason': MeetingStatus.ACCEPTED.toStringEnum(),
+        'reason': meeting.speed.num != 0 ? MeetingStatus.ACCEPTED.toStringEnum() : 'ACCEPTED_FREE_CALL',
         'meetingId': meeting.id
       });
 
@@ -55,7 +55,7 @@ class RingingPageViewModel {
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
           final HttpsCallable endMeeting =
-              functions.httpsCallable('endMeeting');
+              functions.httpsCallable('endMeetingNew');
           await endMeeting({
             'meetingId': meeting.id,
             'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
@@ -95,7 +95,7 @@ class RingingPageViewModel {
         functions.httpsCallable('advanceMeeting');
     await advanceMeeting({
       'reason': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
-      'budet': budget,
+      'budget': budget,
       'meetingId': meeting.id
     });
   }
