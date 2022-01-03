@@ -85,7 +85,7 @@ final userPageViewModelProvider =
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return UserPageViewModel(functions: functions, user: user.data!.value);
+  return UserPageViewModel(functions: functions, user: user.asData!.value);
 });
 
 final usersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((ref) {
@@ -191,7 +191,7 @@ final myUserPageViewModelProvider = Provider((ref) {
   return MyUserPageViewModel(
       database: database,
       functions: functions,
-      user: user.data!.value,
+      user: user.asData!.value,
       accountService: accountService,
       userModelChanger: userModelChanger);
 });
@@ -209,7 +209,7 @@ final myUserLockedProvider = Provider((ref) {
     return false;
   }
   // log('myUserLockedProvider - 2');
-  final UserModel myUser = user.data!.value;
+  final UserModel myUser = user.asData!.value;
   // log('myUserLockedProvider - myUser=$myUser');
   if (!myUser.locked) {
     isUserLocked.changeValue(false);
@@ -250,14 +250,14 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
     log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
-    if (user.data!.value.currentMeeting == null) return null;
-    final String currentMeeting = user.data!.value.currentMeeting!;
+    if (user.asData!.value.currentMeeting == null) return null;
+    final String currentMeeting = user.asData!.value.currentMeeting!;
     log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
     final meeting = ref.watch(meetingProvider(currentMeeting));
     log('lockedUserViewModelProvider - meeting=$meeting');
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
     return LockedUserViewModel(
-        user: user.data!.value, meeting: meeting.data!.value);
+        user: user.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -273,18 +273,18 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   if (user is AsyncLoading || user is AsyncError) return null;
 
   // log('ringingPageViewModelProvider - user.data=${user.data}');
-  // log('ringingPageViewModelProvider - user.data!.value=${user.data!.value}');
-  // log('ringingPageViewModelProvider - user.data!.value.currentMeeting=${user.data!.value.currentMeeting}');
-  if (user.data!.value.currentMeeting == null) return null;
-  final String currentMeeting = user.data!.value.currentMeeting!;
+  // log('ringingPageViewModelProvider - user.asData!.value=${user.asData!.value}');
+  // log('ringingPageViewModelProvider - user.asData!.value.currentMeeting=${user.asData!.value.currentMeeting}');
+  if (user.asData!.value.currentMeeting == null) return null;
+  final String currentMeeting = user.asData!.value.currentMeeting!;
   // log('ringingPageViewModelProvider - currentMeeting=$currentMeeting');
   final meeting = ref.watch(meetingProvider(currentMeeting));
   // log('ringingPageViewModelProvider - meeting=$meeting');
 
   if (meeting is AsyncLoading || meeting is AsyncError) return null;
 
-  final amA = meeting.data!.value.A == user.data!.value.id;
-  final otherUserId = amA ? meeting.data!.value.B : meeting.data!.value.A;
+  final amA = meeting.asData!.value.A == user.asData!.value.id;
+  final otherUserId = amA ? meeting.asData!.value.B : meeting.asData!.value.A;
   final otherUser = ref.watch(userProvider(otherUserId));
   if (otherUser is AsyncLoading || otherUser is AsyncError) return null;
 
@@ -292,11 +292,11 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   // log('lockedUserViewModelProvider - functions=$functions');
 
   return RingingPageViewModel(
-      user: user.data!.value,
-      otherUser: otherUser.data!.value,
+      user: user.asData!.value,
+      otherUser: otherUser.asData!.value,
       algorand: algorand,
       functions: functions,
-      meeting: meeting.data!.value);
+      meeting: meeting.asData!.value);
 });
 
 final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
@@ -311,8 +311,8 @@ final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
     return null;
 
   var list = [
-    ...meetingHistoryAList.data!.value,
-    ...meetingHistoryBList.data!.value
+    ...meetingHistoryAList.asData!.value,
+    ...meetingHistoryBList.asData!.value
   ];
   return HistoryViewModel(meetingList: list);
 });
@@ -343,9 +343,9 @@ final addBidPageViewModelProvider =
       database: database,
       functions: functions,
       algorand: algorand,
-      accounts: accounts.data!.value,
+      accounts: accounts.asData!.value,
       accountService: accountService,
-      B: user.data!.value);
+      B: user.asData!.value);
 });
 
 final accountsProvider = FutureProvider((ref) {

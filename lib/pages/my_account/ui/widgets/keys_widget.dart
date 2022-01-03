@@ -132,19 +132,14 @@ class KeysWidget extends StatelessWidget {
                                   .copyWith(
                                       color:
                                           Theme.of(context).disabledColor))));
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(snapshot.data[index],
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText1),
-                  );
+
                 }),
               ),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   Clipboard.setData(
-                      ClipboardData(text: snapshot.data.join(' ')));
+                      ClipboardData(text: snapshot.data.join(', ')));
                   CustomDialogs.showToastMessage(
                       context, Strings().copyMessage);
                   Future.delayed(Duration(seconds: 1))

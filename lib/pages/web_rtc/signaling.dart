@@ -322,8 +322,4 @@ class Signaling {
       remoteStream = stream;
     };
   }
-
-  bool checkVideoView() {
-    return remoteStream!.getVideoTracks().first.enabled;
-  }
 }

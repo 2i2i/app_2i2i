@@ -1,16 +1,19 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-import 'package:app_2i2i/common/custom_navigation.dart';
+import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
 import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/add_bid/ui/add_bid_page.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
-import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../common/alert_widget.dart';
+import 'widgets/create_bid_widget.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({required this.uid});
@@ -24,6 +27,26 @@ class UserPage extends ConsumerStatefulWidget {
 class _UserPageState extends ConsumerState<UserPage> {
 
   late UserModel B;
+
+  ui.Image? _image;
+
+  @override
+  void initState() {
+    _loadImage();
+    super.initState();
+  }
+
+  _loadImage() async {
+    ByteData bd = await rootBundle.load("assets/line.png");
+
+    final Uint8List bytes = Uint8List.view(bd.buffer);
+
+    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
+
+    final ui.Image image = (await codec.getNextFrame()).image;
+
+    setState(() => _image = image);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +78,18 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
       floatingActionButton: InkResponse(
+        onTap: () => AlertWidget.showBidAlert(
+            context,
+            CreateBidWidget(
+              image: _image!,
+            )),
+        /*
         onTap: () => CustomNavigation.push(
             context,
             AddBidPage(
               uid: B.id,
             ),
-            Routes.BIDPAGE),
+            Routes.BIDPAGE),*/
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
@@ -74,7 +103,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                   color: Theme.of(context)
                       .colorScheme
                       .secondary // changes position of shadow
-                  ),
+              ),
             ],
           ),
           child: Icon(

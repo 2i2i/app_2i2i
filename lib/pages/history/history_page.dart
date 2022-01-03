@@ -46,8 +46,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                   }
                   return Card(
                     child: ListTile(
-                      leading: getCallTypeIcon(user.data!.value),
-                      title: Text(user.data!.value.name),
+                      leading: getCallTypeIcon(user.asData!.value),
+                      title: Text(user.asData!.value.name),
                     ),
                   );
                 },

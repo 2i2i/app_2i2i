@@ -147,7 +147,7 @@ class _CallPageState extends ConsumerState<CallPage>
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       renderer: _localRenderer,
-                      userModel: userModel.data!.value)
+                      userModel: userModel.asData!.value)
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -165,7 +165,7 @@ class _CallPageState extends ConsumerState<CallPage>
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                              userModel: userModel.data!.value)
+                              userModel: userModel.asData!.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,

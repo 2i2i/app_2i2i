@@ -5,8 +5,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context,
-      {bool rootNavigator = true}) {
+  static loader(bool isLoading, BuildContext context, {bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,

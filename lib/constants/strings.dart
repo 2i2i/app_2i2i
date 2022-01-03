@@ -52,6 +52,13 @@ class Strings {
   String topAppBarTitle = '2i2i';
   String newCardTitle = 'New Card';
 
+  //User Info page
+  String createABid = 'Create a bid';
+  String algoSec = 'Algo/sec';
+  String bidAmount = 'Bid Amount';
+  String note = 'Note(Optional)';
+  String bidNote = 'Say something awesome';
+
   //SetUp User page
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
   String yourNameHint = 'My cool username';

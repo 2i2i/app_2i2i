@@ -12,7 +12,6 @@ import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../common/alert_widget.dart';
 import 'package:app_2i2i/constants/strings.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -49,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage>{
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if (isLoaded) {
-        final UserModel myUser = user.data!.value;
+        final UserModel myUser = user.asData!.value;
         if (myUser.name.isEmpty) {
           showDialog(
             context: context,

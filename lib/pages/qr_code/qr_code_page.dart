@@ -5,8 +5,6 @@ import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-
 import '../../constants/strings.dart';
 
 class QRCodePage extends ConsumerWidget {

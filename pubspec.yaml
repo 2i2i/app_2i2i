@@ -49,6 +49,7 @@ dependencies:
   share_plus: ^3.0.4
   flutterfire_ui: ^0.3.0
   image_picker: ^0.8.4+4
+  carousel_slider: ^4.0.0
   flutter_svg: ^1.0.0
 
 

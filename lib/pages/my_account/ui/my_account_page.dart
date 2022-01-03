@@ -87,8 +87,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               padding: EdgeInsets.symmetric(horizontal: 20,vertical: 4),
               itemBuilder: (BuildContext context, int index) {
                 return AccountInfo(
-                  key: ObjectKey(
-                      myAccountPageViewModel.accounts![index].address),
+                  key: ObjectKey(myAccountPageViewModel.accounts![index].address),
                   account: myAccountPageViewModel.accounts![index],
                 );
               },

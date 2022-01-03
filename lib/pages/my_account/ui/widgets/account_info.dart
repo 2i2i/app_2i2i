@@ -95,6 +95,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 ),
                 SizedBox(height: 8),
                 Text(widget.account.address,
+                    maxLines: 2,
                     style: Theme.of(context)
                         .textTheme
                         .caption!
@@ -144,8 +145,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       height: 20,
                     ),
                     onPressed: () {
-                      Clipboard.setData(
-                          ClipboardData(text: widget.account.address));
+                      Clipboard.setData(ClipboardData(text: widget.account.address));
                       showToast('Copied to Clipboard',
                           context: context,
                           animation: StyledToastAnimation.slideFromTop,

@@ -1,4 +1,3 @@
-import 'package:app_2i2i/common/alert_widget.dart';
 import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
@@ -24,7 +23,8 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               RectangleBox(
-                onTap: () => AlertWidget.showBidAlert(context),
+                // onTap: () => AlertWidget.showBidAlert(context, BidAlertWidget()),
+                // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
                 radius: 46,
                 icon: SvgPicture.asset(
                   'assets/icons/star.svg',
