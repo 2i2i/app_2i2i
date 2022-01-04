@@ -12,6 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
+import 'pages/hip/hip_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +71,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home:AuthWidget(homePageBuilder: (_) => HomePage(),),
+      // home:HipPage(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,
