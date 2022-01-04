@@ -223,42 +223,42 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             ));
   }
 
-  Future<int?> _optInToASA(BuildContext context) async {
-    final TextEditingController asaId = TextEditingController(text: '');
-    return showDialog<int>(
-        context: context,
-        builder: (BuildContext context) => SimpleDialog(
-              title: const Text('Enter ASA ID'),
-              children: <Widget>[
-                Container(
-                    padding: const EdgeInsets.only(
-                        top: 5, left: 20, right: 20, bottom: 10),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'ASA ID',
-                        border: OutlineInputBorder(),
-                        label: Text('ASA ID'),
-                      ),
-                      minLines: 1,
-                      maxLines: 1,
-                      controller: asaId,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ], // Only numbers can be entered
-                    )),
-                Container(
-                    padding: const EdgeInsets.only(
-                        top: 10, left: 50, right: 50, bottom: 10),
-                    child: ElevatedButton(
-                        // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-                        child: Text('Opt In'),
-                        onPressed: () => Navigator.pop(
-                            context,
-                            asaId.text.isEmpty
-                                ? null
-                                : int.parse(asaId.text)))),
-              ],
-            ));
-  }
+  // Future<int?> _optInToASA(BuildContext context) async {
+  //   final TextEditingController asaId = TextEditingController(text: '');
+  //   return showDialog<int>(
+  //       context: context,
+  //       builder: (BuildContext context) => SimpleDialog(
+  //             title: const Text('Enter ASA ID'),
+  //             children: <Widget>[
+  //               Container(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 5, left: 20, right: 20, bottom: 10),
+  //                   child: TextField(
+  //                     decoration: InputDecoration(
+  //                       hintText: 'ASA ID',
+  //                       border: OutlineInputBorder(),
+  //                       label: Text('ASA ID'),
+  //                     ),
+  //                     minLines: 1,
+  //                     maxLines: 1,
+  //                     controller: asaId,
+  //                     keyboardType: TextInputType.number,
+  //                     inputFormatters: <TextInputFormatter>[
+  //                       FilteringTextInputFormatter.digitsOnly
+  //                     ], // Only numbers can be entered
+  //                   )),
+  //               Container(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 10, left: 50, right: 50, bottom: 10),
+  //                   child: ElevatedButton(
+  //                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
+  //                       child: Text('Opt In'),
+  //                       onPressed: () => Navigator.pop(
+  //                           context,
+  //                           asaId.text.isEmpty
+  //                               ? null
+  //                               : int.parse(asaId.text)))),
+  //             ],
+  //           ));
+  // }
 }

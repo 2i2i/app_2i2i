@@ -34,6 +34,8 @@ class CallPage extends ConsumerStatefulWidget {
 
 class _CallPageState extends ConsumerState<CallPage>
     with TickerProviderStateMixin {
+  late bool amA;
+
   Signaling? signaling;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -84,7 +86,7 @@ class _CallPageState extends ConsumerState<CallPage>
     final maxDuration = widget.meeting.maxDuration()!;
     final duration = getDuration(maxDuration);
     log(F + ' ====== $duration');
-    if (duration <= 60) {
+    if (duration <= 100) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
         // Future.delayed(Duration.zero).then((value) {
@@ -103,9 +105,11 @@ class _CallPageState extends ConsumerState<CallPage>
 
     _initBudgetTimer();
 
+    amA = widget.meeting.A == widget.user.id;
+
     signaling = Signaling(
         meeting: widget.meeting,
-        amA: widget.meeting.A == widget.user.id,
+        amA: amA,
         localVideo: _localRenderer,
         remoteVideo: _remoteRenderer);
     signaling!.onAddRemoteStream = ((stream) {
@@ -129,9 +133,7 @@ class _CallPageState extends ConsumerState<CallPage>
   @override
   Widget build(BuildContext context) {
     callScreenModel = ref.watch(callScreenProvider);
-    final myUid = widget.user.id == widget.meeting.A
-        ? widget.meeting.A
-        : widget.meeting.B;
+    final myUid = amA ? widget.meeting.A : widget.meeting.B;
     final userModel = ref.watch(userProvider(myUid));
     if (userModel is AsyncLoading || userModel is AsyncError) {
       return Center(child: CircularProgressIndicator());
@@ -149,7 +151,7 @@ class _CallPageState extends ConsumerState<CallPage>
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       renderer: _localRenderer,
-                      userModel: userModel.data!.value)
+                      userModel: userModel.value)
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -167,7 +169,7 @@ class _CallPageState extends ConsumerState<CallPage>
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                              userModel: userModel.data!.value)
+                              userModel: userModel.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -297,8 +299,11 @@ class _CallPageState extends ConsumerState<CallPage>
                             if (budgetTimer?.isActive ?? false) {
                               budgetTimer?.cancel();
                             }
-                            await signaling?.hangUp(_localRenderer);
-                            final otherUid = widget.user.id == widget.meeting.A
+                            final reason =
+                                amA ? MeetingStatus.END_A : MeetingStatus.END_B;
+                            await signaling?.hangUp(_localRenderer,
+                                reason: reason);
+                            final otherUid = amA
                                 ? widget.meeting.B
                                 : widget.meeting.A;
                             widget.onHangPhone(otherUid, widget.meeting.id);

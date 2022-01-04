@@ -48,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if (isLoaded) {
-        final UserModel myUser = user.data!.value;
+        final UserModel myUser = user.value!;
         if (myUser.name.isEmpty) {
           showDialog(
             context: context,

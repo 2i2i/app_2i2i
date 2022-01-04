@@ -21,7 +21,7 @@ class MyUserPageViewModel {
   final AccountService accountService;
 
   Future acceptBid(BidIn bidIn, AbstractAccount? account) async {
-    final HttpsCallable acceptBid = functions.httpsCallable('acceptBid');
+    final HttpsCallable acceptBid = functions.httpsCallable('acceptBidNew');
     // TODO only get algorandAddress if bid.speed.num != 0
     await acceptBid({
       'addrB': account?.address,

@@ -27,17 +27,21 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
     }
 
     final meetingStatus = lockedUserViewModel.meeting.status;
-    
-    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED || meetingStatus == MeetingStatus.CALL_STARTED;
+
+    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED ||
+        meetingStatus == MeetingStatus.A_RECEIVED_REMOTE ||
+        meetingStatus == MeetingStatus.B_RECEIVED_REMOTE ||
+        meetingStatus == MeetingStatus.CALL_STARTED;
     bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
-                    lockedUserViewModel.amA()) || isActive;
+            lockedUserViewModel.amA()) ||
+        isActive;
     bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
-                meetingStatus == MeetingStatus.ACCEPTED ||
-                meetingStatus == MeetingStatus.TXN_CREATED ||
-                meetingStatus == MeetingStatus.TXN_SIGNED ||
-                meetingStatus == MeetingStatus.TXN_SENT ||
-                (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
-                    lockedUserViewModel.amB());
+        meetingStatus == MeetingStatus.ACCEPTED ||
+        meetingStatus == MeetingStatus.TXN_CREATED ||
+        meetingStatus == MeetingStatus.TXN_SIGNED ||
+        meetingStatus == MeetingStatus.TXN_SENT ||
+        (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+            lockedUserViewModel.amB());
     bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(

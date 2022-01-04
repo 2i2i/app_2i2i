@@ -53,7 +53,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/logo.png', height: 30, fit: BoxFit.contain),
-        actions: (authStateChanges.data!.value!.uid != B.id)
+        actions: (authStateChanges.value!.uid != B.id)
             ? [
                 IconButton(
                     onPressed: () {}, // TODO
@@ -70,7 +70,7 @@ class _UserPageState extends ConsumerState<UserPage> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: authStateChanges.data!.value!.uid == B.id
+        child: authStateChanges.value!.uid == B.id
             ? null
             : Column(
                 mainAxisSize: MainAxisSize.min,

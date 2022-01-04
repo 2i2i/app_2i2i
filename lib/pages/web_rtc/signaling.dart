@@ -126,11 +126,22 @@ class Signaling {
 
     peerConnection?.onTrack = (RTCTrackEvent event) {
       log(G + 'Got remote track: event.streams.length=${event.streams.length}');
-      for (int i = 0; i < event.streams.length; i++) {}
+      // for (int i = 0; i < event.streams.length; i++) {}
 
       event.streams[0].getTracks().forEach((track) {
         log(G + 'Add a track to the remoteStream $track');
         remoteStream?.addTrack(track);
+      });
+
+      final advanceMeeting =
+          FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+      final newStatus = amA
+          ? MeetingStatus.A_RECEIVED_REMOTE
+          : MeetingStatus.B_RECEIVED_REMOTE;
+      log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+      advanceMeeting({
+        'meetingId': meeting.id,
+        'reason': newStatus.toStringEnum(),
       });
     };
 
@@ -203,6 +214,17 @@ class Signaling {
           log(G + 'Add a track to the remoteStream: $track');
           remoteStream?.addTrack(track);
         });
+
+        final advanceMeeting =
+            FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+        final newStatus = amA
+            ? MeetingStatus.A_RECEIVED_REMOTE
+            : MeetingStatus.B_RECEIVED_REMOTE;
+        log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+        advanceMeeting({
+          'meetingId': meeting.id,
+          'reason': newStatus.toStringEnum(),
+        });
       };
 
       // Code for creating SDP answer below
@@ -257,15 +279,16 @@ class Signaling {
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo,
-      {MeetingStatus? reason}) async {
+      {required MeetingStatus reason}) async {
     try {
       log(G + 'Signaling - hangUp - ${meeting.id}');
 
-      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeetingNew');
+      final endMeeting =
+          FirebaseFunctions.instance.httpsCallable('endMeetingNew');
       final args = {
         'meetingId': meeting.id,
+        'reason': reason.toStringEnum(),
       };
-      if (reason != null) args['reason'] = reason.toStringEnum();
       await endMeeting(args);
 
       log(G +
