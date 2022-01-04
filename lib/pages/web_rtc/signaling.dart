@@ -284,7 +284,7 @@ class Signaling {
       log(G + 'Signaling - hangUp - ${meeting.id}');
 
       final endMeeting =
-          FirebaseFunctions.instance.httpsCallable('endMeetingNew');
+          FirebaseFunctions.instance.httpsCallable('endMeeting');
       final args = {
         'meetingId': meeting.id,
         'reason': reason.toStringEnum(),

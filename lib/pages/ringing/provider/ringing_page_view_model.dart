@@ -31,7 +31,7 @@ class RingingPageViewModel {
   }
 
   Future endMeeting(MeetingStatus reason) async {
-    final HttpsCallable endMeeting = functions.httpsCallable('endMeetingNew');
+    final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
     final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
     await endMeeting(args);
   }
@@ -55,7 +55,7 @@ class RingingPageViewModel {
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
           final HttpsCallable endMeeting =
-              functions.httpsCallable('endMeetingNew');
+              functions.httpsCallable('endMeeting');
           await endMeeting({
             'meetingId': meeting.id,
             'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
