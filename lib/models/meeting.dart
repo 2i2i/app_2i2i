@@ -5,9 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 enum MeetingStatus {
-  INIT,
+  INIT, // B accepts bid
   // check that enough time passed
-  // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after REMOTE_A/B_RECEIVED
+  // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after A/B_RECEIVED_REMOTE
   ACCEPTED, // A accepts meeting after B accepts bid
   TXN_CREATED, // A created txn
   TXN_SIGNED, // A created txn
@@ -65,6 +65,7 @@ class Meeting extends Equatable {
     required this.addrB,
     required this.budget,
     required this.start,
+    required this.end,
     required this.duration,
     required this.txns,
     required this.status,
@@ -89,6 +90,7 @@ class Meeting extends Equatable {
 
   final int? budget; // [coins]; 0 for speed == 0
   final int? start; // MeetingStatus.CALL_STARTED ts
+  final int? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
 
   // null in free call
@@ -120,8 +122,6 @@ class Meeting extends Equatable {
     return (budget! / speed.num).floor();
   }
 
-  bool isInit() => status == MeetingStatus.INIT;
-
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('Meeting.fromMap - data == null');
@@ -138,6 +138,7 @@ class Meeting extends Equatable {
 
     final int? budget = data['budget'];
     final int? start = data['start'];
+    final int? end = data['end'];
     final int? duration = data['duration'];
 
     final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
@@ -173,6 +174,7 @@ class Meeting extends Equatable {
       addrB: addrB,
       budget: budget,
       start: start,
+      end: end,
       duration: duration,
       txns: txns,
       status: status,
@@ -197,6 +199,7 @@ class Meeting extends Equatable {
       'addrB': addrB,
       'budget': budget,
       'start': start,
+      'end': end,
       'duration': duration,
       'txns': txns.toMap(),
       'status': status,

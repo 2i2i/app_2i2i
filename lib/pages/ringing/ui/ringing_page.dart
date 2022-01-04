@@ -217,7 +217,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   children: [
                     Visibility(
                       visible:
-                          !isClicked && ringingPageViewModel!.meeting.isInit(),
+                          !isClicked && ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
                       child: Padding(
                         padding: EdgeInsets.only(left: 150),
                         child: Column(
@@ -244,7 +244,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     Visibility(
                       visible: !isClicked &&
                           ringingPageViewModel!.amA() &&
-                          ringingPageViewModel!.meeting.isInit(),
+                          ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
                       child: Padding(
                         padding: EdgeInsets.only(left: 150),
                         child: Column(
