@@ -1,5 +1,3 @@
-
-
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
@@ -177,6 +175,8 @@ class UserModel extends Equatable {
   String toString() {
     return 'UserModel{id: $id, status: $status, locked: $locked, currentMeeting: $currentMeeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
+
+  bool isInMeeting() => currentMeeting != null;
 }
 
 class UserModelPrivate {

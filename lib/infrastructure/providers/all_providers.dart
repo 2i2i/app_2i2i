@@ -25,7 +25,6 @@ import 'setup_account_provider/setup_user_view_model.dart';
 import 'user_bid_provider/user_page_view_model.dart';
 import 'web_rtc_provider/call_screen_provider.dart';
 
-
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
@@ -71,7 +70,8 @@ final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
       bidInPrivateAsyncValue is AsyncError) {
     return null;
   }
-  final user = ref.watch(userProvider(bidInPrivateAsyncValue.value!.A));
+  final uid = bidInPrivateAsyncValue.value!.A;
+  final user = ref.watch(userProvider(uid));
   if (user is AsyncLoading || user is AsyncError) {
     return null;
   }
@@ -99,7 +99,7 @@ final searchFilterProvider = StateProvider((ref) => const <String>[]);
 final searchUsersStreamProvider =
     StreamProvider.autoDispose<List<UserModel?>>((ref) {
   // log('usersStreamProvider');
-      final database = ref.watch(databaseProvider);
+  final database = ref.watch(databaseProvider);
   // log('usersStreamProvider - database=$database');
   final filter = ref.watch(searchFilterProvider.state).state;
   return database.usersStream(tags: filter);
@@ -149,7 +149,8 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   return AppSettingModel(storage: storage);
 });
 
-final callScreenProvider = ChangeNotifierProvider<CallScreenModel>((ref)=>CallScreenModel());
+final callScreenProvider =
+    ChangeNotifierProvider<CallScreenModel>((ref) => CallScreenModel());
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
@@ -227,7 +228,8 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final topMeetingProvider = StreamProvider.family<List<Meeting?>, String>((ref, id) {
+final topMeetingProvider =
+    StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.topMeetingStream();
 });
@@ -238,15 +240,17 @@ final meetingHistoryA =
   return database.meetingHistoryA(id);
 });
 
-final meetingHistoryB = StreamProvider.family<List<Meeting?>, String>((ref, id) {
+final meetingHistoryB =
+    StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(id);
 });
 
-final getBidInPrivate = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+final getBidInPrivate =
+    StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
-  return database.getBidInPrivate(uid: uid,bidId: bidIn);
+  return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
@@ -307,12 +311,10 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
 final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
   final uid = ref.watch(myUIDProvider)!;
-  final meetingHistoryAList =
-      ref.watch(meetingHistoryA(uid));
+  final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
-  final meetingHistoryBList =
-      ref.watch(meetingHistoryB(uid));
+  final meetingHistoryBList = ref.watch(meetingHistoryB(uid));
   if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
     return null;
 

@@ -145,17 +145,17 @@ class Meeting extends Equatable {
     final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
 
     final MeetingStatus status = MeetingStatus.values
-        .firstWhere((e) => e.toString().endsWith(data['status']));
+        .firstWhere((e) => e.toStringEnum() == data['status']);
     final List<MeetingStatusWithTS> statusHistory =
         List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
       final value = MeetingStatus.values
-          .firstWhere((e) => e.toString().endsWith(item['value']));
+          .firstWhere((e) => e.toStringEnum() == item['value']);
       final ts = item['ts'] as int;
       return MeetingStatusWithTS(value: value, ts: ts);
     }));
 
     final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
+        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final Quantity speed = Quantity.fromMap(data['speed']);
     final String bid = data['bid'];
     final String? room = data['room'];
@@ -203,9 +203,9 @@ class Meeting extends Equatable {
       'end': end,
       'duration': duration,
       'txns': txns.toMap(),
-      'status': status,
+      'status': status.toStringEnum(),
       'statusHistory': statusHistory,
-      'net': net.toString(),
+      'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'bid': bid,
       'room': room,
