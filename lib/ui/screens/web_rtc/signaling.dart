@@ -30,7 +30,7 @@ class Signaling {
       initAsA();
     } else {
       // B joins created currentRoom
-      roomRef = rooms.doc(meeting.currentRoom);
+      roomRef = rooms.doc(meeting.room);
 
       initAsB();
     }
@@ -52,10 +52,13 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    final meetingRoomCreated =
-        FirebaseFunctions.instance.httpsCallable('meetingRoomCreated');
-    await meetingRoomCreated(
-        {'meetingId': meeting.id, 'currentRoom': roomRef.id});
+    final advanceMeeting =
+        FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+    await advanceMeeting({
+      'meetingId': meeting.id,
+      'room': roomRef.id,
+      'reason': MeetingStatus.ROOM_CREATED.toStringEnum()
+    });
   }
 
   final Meeting meeting;
@@ -122,11 +125,22 @@ class Signaling {
 
     peerConnection?.onTrack = (RTCTrackEvent event) {
       log(G + 'Got remote track: event.streams.length=${event.streams.length}');
-      for (int i = 0; i < event.streams.length; i++) {}
+      // for (int i = 0; i < event.streams.length; i++) {}
 
       event.streams[0].getTracks().forEach((track) {
         log(G + 'Add a track to the remoteStream $track');
         remoteStream?.addTrack(track);
+      });
+
+      final advanceMeeting =
+          FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+      final newStatus = amA
+          ? MeetingStatus.A_RECEIVED_REMOTE
+          : MeetingStatus.B_RECEIVED_REMOTE;
+      log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+      advanceMeeting({
+        'meetingId': meeting.id,
+        'reason': newStatus.toStringEnum(),
       });
     };
 
@@ -199,6 +213,17 @@ class Signaling {
           log(G + 'Add a track to the remoteStream: $track');
           remoteStream?.addTrack(track);
         });
+
+        final advanceMeeting =
+            FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+        final newStatus = amA
+            ? MeetingStatus.A_RECEIVED_REMOTE
+            : MeetingStatus.B_RECEIVED_REMOTE;
+        log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+        advanceMeeting({
+          'meetingId': meeting.id,
+          'reason': newStatus.toStringEnum(),
+        });
       };
 
       // Code for creating SDP answer below
@@ -215,12 +240,12 @@ class Signaling {
       await peerConnection!.setLocalDescription(answer);
       // if (answer != null) {
 
-        Map<String, dynamic> roomWithAnswer = {
-          'answer': {'type': answer.type, 'sdp': answer.sdp}
-        };
+      Map<String, dynamic> roomWithAnswer = {
+        'answer': {'type': answer.type, 'sdp': answer.sdp}
+      };
 
-        await roomRef.update(roomWithAnswer);
-        // Finished creating SDP answer
+      await roomRef.update(roomWithAnswer);
+      // Finished creating SDP answer
       // }
 
       // Listening for remote ICE candidates below
@@ -241,63 +266,54 @@ class Signaling {
   }
 
   Future<void> openUserMedia() async {
-    log(G + 'Signaling - openUserMedia - ${meeting.id}');
+    try {
+      log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-    final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
-    cameras = await Helper.cameras;
-    localVideo.srcObject = stream;
-    localStream = stream;
+      final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
+      cameras = await Helper.cameras;
+      localVideo.srcObject = stream;
+      localStream = stream;
 
-    remoteVideo.srcObject = await createLocalMediaStream('key');
-
+      remoteVideo.srcObject = await createLocalMediaStream('key');
+    } catch (e) {
+      print(e);
+    }
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
+  Future<void> hangUp(RTCVideoRenderer localVideo,
+      {required MeetingStatus reason}) async {
     try {
       log(G + 'Signaling - hangUp - ${meeting.id}');
-
       final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
       final args = {
         'meetingId': meeting.id,
+        'reason': reason.toStringEnum(),
       };
-      if (reason != null) args['reason'] = reason;
       await endMeeting(args);
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      //Close Local A
       if (localVideo.srcObject != null) {
         List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-        tracks.forEach((track) {
-          track.stop();
-        });
+        localVideo.srcObject!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
+        localVideo.srcObject = null;
+        await localVideo.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - local track.stop');
-
+      //Close Remote B
       if (remoteStream != null) {
-        remoteStream!.getTracks().forEach((track) => track.stop());
+        List<MediaStreamTrack> tracks = remoteStream!.getTracks();
+        remoteStream!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
+        await remoteStream!.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - remote track.stop');
+      if (peerConnection != null) {
+        peerConnection!.close();
+      }
 
-      if (peerConnection != null) peerConnection!.close();
-      log(G + 'Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
-
-      // if (roomId != null) {
-      // final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-      // iceCandidatesB.docs.forEach((document) => document.reference.delete());
-
-      // final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-      // iceCandidatesA.docs.forEach((document) => document.reference.delete());
-
-      // await roomRef.delete();
-      // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
-      // }
-
-
-      // localStream.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
-      remoteStream?.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
+      remoteVideo.srcObject = null;
+      localVideo.srcObject = null;
     } catch (e) {
       log(e.toString());
     }
@@ -330,9 +346,5 @@ class Signaling {
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
-  }
-
-  bool checkVideoView() {
-    return remoteStream!.getVideoTracks().first.enabled;
   }
 }

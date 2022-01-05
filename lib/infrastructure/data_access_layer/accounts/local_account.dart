@@ -128,17 +128,14 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future _createAndStoreAccount() async {
-    final Account account = await algorandLib.client[AlgorandNet.mainnet]!
-        .createAccount(); // use mainnet bc it does not matter
+    final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
     address = account.publicAddress;
     await _storeAccount(account);
   }
 
   Future _storeAccount(Account account) async {
-    final List<int> privateKeyBytes =
-        await account.keyPair.extractPrivateKeyBytes();
+    final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
     final String privateKey = base64Encode(privateKeyBytes);
-
     // set
     _numAccount = await accountService.getNumLocalAccounts();
     final storageAccountKey = 'account_$_numAccount';

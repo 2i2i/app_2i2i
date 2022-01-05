@@ -14,6 +14,7 @@ import '../my_account/my_account_page.dart';
 import '../my_user/my_user_page.dart';
 import '../search/search_page.dart';
 import '../setup_account/setup_account.dart';
+import 'package:app_2i2i/constants/strings.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class HomePage extends ConsumerStatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage>{
   var _tabSelectedIndex = 0;
   var _tabPopStack = false;
 
@@ -177,6 +178,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               rating: rating, comment: ratingFeedBack, meeting: meetingId));
     });
   }
+
 }
 
 class TabItem {

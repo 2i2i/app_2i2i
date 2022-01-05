@@ -5,23 +5,47 @@ import 'package:meta/meta.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
-enum MeetingValue {
-  INIT,
-  LOCK_COINS_STARTED,
-  LOCK_COINS_CONFIRMED,
-  ACTIVE,
-  END_A,
-  END_B,
-  END_SYSTEM,
-  END_BUDGET,
-  END_NO_PICKUP,
-  SETTLED,
+enum MeetingStatus {
+  INIT, // B accepts bid
+  // check that enough time passed
+  // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after A/B_RECEIVED_REMOTE
+  ACCEPTED, // A accepts meeting after B accepts bid
+  TXN_CREATED, // A created txn
+  TXN_SIGNED, // A created txn
+  TXN_SENT, // A confirmed txn
+  TXN_CONFIRMED, // algorand confirmed txn
+  ROOM_CREATED, // rtc room created
+  A_RECEIVED_REMOTE, // A received remote stream of B
+  B_RECEIVED_REMOTE, // B received remote stream of A
+  CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
+  END_TXN_FAILED, // txn failed
+  END_TIMER,
+  END_A, // A hangs up
+  END_B, // B hangs up
+  END_DISCONNECT_A, // A disconnected
+  END_DISCONNECT_B, // B disconnected
+  END_DISCONNECT_AB, // both disconnected
+}
+// INIT -> END_TIMER
+// INIT -> END_A
+// INIT -> END_B
+// INIT -> ACCEPTED -> TXN_CREATED -> END_TIMER
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_A
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED-> END_B
+// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_TIMER
+// always possible to get END_DISCONNECT_*
+extension ParseToString on MeetingStatus {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
 }
 
+
 @immutable
-class MeetingStatus {
-  const MeetingStatus({required this.value, required this.ts});
-  final MeetingValue value;
+class MeetingStatusWithTS {
+  const MeetingStatusWithTS({required this.value, required this.ts});
+  final MeetingStatus value;
   final int ts;
 
   @override
@@ -34,32 +58,55 @@ class MeetingStatus {
 class Meeting extends Equatable {
   Meeting({
     required this.id,
+    required this.isActive,
+    required this.isSettled,
     required this.A,
     required this.B,
-    required this.speed,
-    required this.budget,
-    required this.net,
-    required this.txns,
     required this.addrA,
     required this.addrB,
+    required this.budget,
+    required this.start,
+    required this.end,
+    required this.duration,
+    required this.txns,
     required this.status,
-    required this.currentRoom,
+    required this.statusHistory,
+    required this.net,
+    required this.speed,
+    required this.bid,
+    required this.room,
+    required this.coinFlowsA,
+    required this.coinFlowsB,
   });
 
   final String id;
+
+  final bool isActive; // status is not END_*
+  final bool isSettled; // after END
+
   final String A;
   final String B;
-  final Speed speed;
-  final int? budget;
-  final AlgorandNet net;
+  final String? addrA; // set if 0 < speed
+  final String? addrB; // set if 0 < speed
+
+  final int? budget; // [coins]; 0 for speed == 0
+  final int? start; // MeetingStatus.CALL_STARTED ts
+  final int? end; // MeetingStatus.END_* ts
+  final int? duration; // realised duration of the call
 
   // null in free call
   final MeetingTxns txns;
-  final String? addrA;
-  final String? addrB;
 
-  final List<MeetingStatus> status;
-  final String? currentRoom;
+  final MeetingStatus status;
+  final List<MeetingStatusWithTS> statusHistory;
+
+  final AlgorandNet net;
+  final Quantity speed;
+  final String bid;
+  final String? room;
+
+  final List<Quantity> coinFlowsA;
+  final List<Quantity> coinFlowsB;
 
   @override
   List<Object> get props => [id];
@@ -67,41 +114,13 @@ class Meeting extends Equatable {
   @override
   bool get stringify => true;
 
+  bool amA(String uid) => uid == A;
+  bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
-
-  bool isDone() {
-    final st = status.last.value;
-    return st == MeetingValue.END_A ||
-        st == MeetingValue.END_B ||
-        st == MeetingValue.END_SYSTEM;
-  }
 
   int? maxDuration() {
     if (budget == null) return null;
     return (budget! / speed.num).floor();
-  }
-
-  bool isInit() {
-    final st = status.last.value;
-    return st == MeetingValue.INIT;
-  }
-
-  MeetingValue currentStatus() {
-    return status.last.value;
-  }
-
-  int? activeTime() {
-    for (final st in status) {
-      if (st.value == MeetingValue.ACTIVE) return st.ts;
-    }
-    return null;
-  }
-
-  int? initTime() {
-    for (final st in status) {
-      if (st.value == MeetingValue.INIT) return st.ts;
-    }
-    return null;
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -110,52 +129,88 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
+    final bool isActive = data['isActive'] as bool;
+    final bool isSettled = data['isSettled'] as bool;
+
     final String A = data['A'];
     final String B = data['B'];
-    final Speed speed = Speed.fromMap(data['speed']);
-    final int? budget = data['budget'];
-    final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
-    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
-    final List<MeetingStatus> status =
-        List<MeetingStatus>.from(data['status'].map((item) {
-      final value = MeetingValue.values
+
+    final int? budget = data['budget'];
+    final int? start = data['start'];
+    final int? end = data['end'];
+    final int? duration = data['duration'];
+
+    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
+
+    final MeetingStatus status = MeetingStatus.values
+        .firstWhere((e) => e.toString().endsWith(data['status']));
+    final List<MeetingStatusWithTS> statusHistory =
+        List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
+      final value = MeetingStatus.values
           .firstWhere((e) => e.toString().endsWith(item['value']));
       final ts = item['ts'] as int;
-      return MeetingStatus(value: value, ts: ts);
+      return MeetingStatusWithTS(value: value, ts: ts);
     }));
-    final String? currentRoom = data['currentRoom'];
+
+    final AlgorandNet net =
+        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
+    final Quantity speed = Quantity.fromMap(data['speed']);
+    final String bid = data['bid'];
+    final String? room = data['room'];
+
+    final List<Quantity> coinFlowsA = List<Quantity>.from(
+        data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
+    final List<Quantity> coinFlowsB = List<Quantity>.from(
+        data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
     return Meeting(
       id: documentId,
+      isActive: isActive,
+      isSettled: isSettled,
       A: A,
       B: B,
-      speed: speed,
-      budget: budget,
-      net: net,
-      txns: txns,
       addrA: addrA,
       addrB: addrB,
+      budget: budget,
+      start: start,
+      end: end,
+      duration: duration,
+      txns: txns,
       status: status,
-      currentRoom: currentRoom,
+      statusHistory: statusHistory,
+      net: net,
+      speed: speed,
+      bid: bid,
+      room: room,
+      coinFlowsA: coinFlowsA,
+      coinFlowsB: coinFlowsB,
     );
   }
 
   Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
+      'isActive': isActive,
+      'isSettled': isSettled,
       'A': A,
       'B': B,
-      'speed': speed.toMap(),
-      'budget': budget,
-      'net': net.toString(),
-      'txns': txns.toMap(),
       'addrA': addrA,
       'addrB': addrB,
+      'budget': budget,
+      'start': start,
+      'end': end,
+      'duration': duration,
+      'txns': txns.toMap(),
       'status': status,
-      'currentRoom': currentRoom,
+      'statusHistory': statusHistory,
+      'net': net.toString(),
+      'speed': speed.toMap(),
+      'bid': bid,
+      'room': room,
+      'coinFlowsA': coinFlowsA,
+      'coinFlowsB': coinFlowsB,
     };
   }
 }
@@ -173,7 +228,7 @@ class RatingModel {
       log('RatingModel.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
-    
+
     final double rating = data['rating'];
     final String? comment = data['comment'];
     final String meeting = data['meeting'];

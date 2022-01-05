@@ -1,3 +1,7 @@
+import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/local_account.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/services/logging.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +13,8 @@ import '../../../../infrastructure/data_access_layer/accounts/abstract_account.d
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 
+import 'keys_widget.dart';
+
 class AccountInfo extends ConsumerStatefulWidget {
   AccountInfo({Key? key, required this.account}) : super(key: key);
 
@@ -19,37 +25,19 @@ class AccountInfo extends ConsumerStatefulWidget {
 }
 
 class _AccountInfoState extends ConsumerState<AccountInfo> {
-  Widget balancesList(List<Balance> balances) {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: balances.length,
-        itemBuilder: (_, ix) {
-          final assetId = balances[ix].assetHolding.assetId;
-          final assetName = assetId == 0
-            ? 'ALGO'
-            : balances[ix].assetHolding.assetId.toString();
-        final assetAmount = balances[ix].assetHolding.amount;
-        final net = balances[ix].net;
-        return Container(
-          // margin: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-          // color: Color.fromRGBO(197, 234, 197, 1),
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          child: ListTile(
-            title: Text('$assetName - $assetAmount - $net'),
-          ),
-        );
-      },
-    );
-  }
+  List<String> keyList = [];
 
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount;
-    String assetName = assetId == 0
-        ? 'ALGO'
-        : balanceModel.assetHolding.assetId.toString();
+    String assetName =
+        assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -112,6 +100,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 ),
                 SizedBox(height: 8),
                 Text(widget.account.address,
+                    maxLines: 2,
                     style: Theme.of(context)
                         .textTheme
                         .caption!
@@ -161,8 +150,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       height: 20,
                     ),
                     onPressed: () {
-                      Clipboard.setData(
-                          ClipboardData(text: widget.account.address));
+                      Clipboard.setData(ClipboardData(text: widget.account.address));
                       showToast('Copied to Clipboard',
                           context: context,
                           animation: StyledToastAnimation.slideFromTop,
@@ -182,14 +170,15 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       height: 40,
                       width: 40,
                       child: IconButton(
-                        icon: SvgPicture.asset(
-                          'assets/icons/key.svg',
-                          width: 20,
-                          height: 20,
-                        ),
-                        onPressed: () => _showPrivateKey(
-                            context, widget.account as LocalAccount),
-                      ),
+                          icon: SvgPicture.asset(
+                            'assets/icons/key.svg',
+                            width: 20,
+                            height: 20,
+                          ),
+                          onPressed: () => CustomDialogs.infoDialog(
+                              context: context, child: KeysWidget(account: widget.account as LocalAccount))
+                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                          ),
                     ),
                     visible: widget.account is LocalAccount),
               ],
@@ -197,6 +186,29 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget balancesList(List<Balance> balances) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: balances.length,
+      itemBuilder: (_, ix) {
+        final assetId = balances[ix].assetHolding.assetId;
+        final assetName = assetId == 0
+            ? 'ALGO'
+            : balances[ix].assetHolding.assetId.toString();
+        final assetAmount = balances[ix].assetHolding.amount;
+        final net = balances[ix].net;
+        return Container(
+          // margin: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+          // color: Color.fromRGBO(197, 234, 197, 1),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          child: ListTile(
+            title: Text('$assetName - $assetAmount - $net'),
+          ),
+        );
+      },
     );
   }
 
@@ -225,42 +237,42 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             ));
   }
 
-  Future<int?> _optInToASA(BuildContext context) async {
-    final TextEditingController asaId = TextEditingController(text: '');
-    return showDialog<int>(
-        context: context,
-        builder: (BuildContext context) => SimpleDialog(
-              title: const Text('Enter ASA ID'),
-              children: <Widget>[
-                Container(
-                    padding: const EdgeInsets.only(
-                        top: 5, left: 20, right: 20, bottom: 10),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'ASA ID',
-                        border: OutlineInputBorder(),
-                        label: Text('ASA ID'),
-                      ),
-                      minLines: 1,
-                      maxLines: 1,
-                      controller: asaId,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ], // Only numbers can be entered
-                    )),
-                Container(
-                    padding: const EdgeInsets.only(
-                        top: 10, left: 50, right: 50, bottom: 10),
-                    child: ElevatedButton(
-                        // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-                        child: Text('Opt In'),
-                        onPressed: () => Navigator.pop(
-                            context,
-                            asaId.text.isEmpty
-                                ? null
-                                : int.parse(asaId.text)))),
-              ],
-            ));
-  }
+  // Future<int?> _optInToASA(BuildContext context) async {
+  //   final TextEditingController asaId = TextEditingController(text: '');
+  //   return showDialog<int>(
+  //       context: context,
+  //       builder: (BuildContext context) => SimpleDialog(
+  //             title: const Text('Enter ASA ID'),
+  //             children: <Widget>[
+  //               Container(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 5, left: 20, right: 20, bottom: 10),
+  //                   child: TextField(
+  //                     decoration: InputDecoration(
+  //                       hintText: 'ASA ID',
+  //                       border: OutlineInputBorder(),
+  //                       label: Text('ASA ID'),
+  //                     ),
+  //                     minLines: 1,
+  //                     maxLines: 1,
+  //                     controller: asaId,
+  //                     keyboardType: TextInputType.number,
+  //                     inputFormatters: <TextInputFormatter>[
+  //                       FilteringTextInputFormatter.digitsOnly
+  //                     ], // Only numbers can be entered
+  //                   )),
+  //               Container(
+  //                   padding: const EdgeInsets.only(
+  //                       top: 10, left: 50, right: 50, bottom: 10),
+  //                   child: ElevatedButton(
+  //                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
+  //                       child: Text('Opt In'),
+  //                       onPressed: () => Navigator.pop(
+  //                           context,
+  //                           asaId.text.isEmpty
+  //                               ? null
+  //                               : int.parse(asaId.text)))),
+  //             ],
+  //           ));
+  // }
 }

@@ -12,6 +12,8 @@ import '../../../infrastructure/models/bid_model.dart';
 import 'widgets/no_bid_page.dart';
 
 
+import 'widgets/bid_dialog_widget.dart';
+
 class UserBidInsList extends ConsumerWidget {
   UserBidInsList({
     required this.uid,
@@ -54,11 +56,12 @@ class UserBidInsList extends ConsumerWidget {
                   if (userModel.locked) statusColor = AppTheme().red;
 
                   return InkResponse(
-                    onTap: () => CustomDialogs.bidInInfoDialog(
+                    onTap: () => CustomDialogs.infoDialog(
                       context: context,
-                      userModel: userModel,
-                      bidInModel: bid,
-                      onTapTalk: () => onTap(bid),
+                      child: BidDialogWidget(
+                        bidInModel: bid,
+                        onTapTalk: () => onTap(bid),userModel: userModel,
+                      )
                     ),
                     child: Card(
                         child: Row(

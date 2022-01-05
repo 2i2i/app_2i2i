@@ -11,8 +11,9 @@ class CustomAlertWidget {
       ),
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       backgroundColor: Theme.of(context).primaryColor,
-      builder: (BuildContext context) => BidAlertWidget(),
+      builder: (BuildContext context) => child,
     );
   }
 }

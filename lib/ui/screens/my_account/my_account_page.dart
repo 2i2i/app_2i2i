@@ -1,5 +1,16 @@
 
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/accounts/abstract_account.dart';
+import 'package:app_2i2i/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_dialogs.dart';
+import 'package:app_2i2i/constants/strings.dart';
+import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/pages/my_account/provider/my_account_page_view_model.dart';
+import 'package:app_2i2i/pages/my_account/ui/widgets/account_info.dart';
+import 'package:app_2i2i/pages/my_account/ui/widgets/qr_image_widget.dart';
+import 'package:app_2i2i/services/all_providers.dart';
+import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,16 +77,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    Future.delayed(Duration(seconds: 2)).then((value) {
       ref.read(myAccountPageViewModelProvider).initMethod();
     });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-
     return Scaffold(
         appBar: CustomAppbar(),
         body: Stack(
@@ -90,8 +100,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               padding: EdgeInsets.symmetric(horizontal: 20,vertical: 4),
               itemBuilder: (BuildContext context, int index) {
                 return AccountInfo(
-                  key: ObjectKey(
-                      myAccountPageViewModel.accounts![index].address),
+                  key: ObjectKey(myAccountPageViewModel.accounts![index].address),
                   account: myAccountPageViewModel.accounts![index],
                 );
               },

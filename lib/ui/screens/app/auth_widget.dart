@@ -1,6 +1,9 @@
+import 'package:app_2i2i/pages/home/wait_page.dart';
+import 'package:app_2i2i/services/all_providers.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutterfire_ui/auth.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
@@ -19,6 +22,12 @@ class AuthWidget extends ConsumerWidget {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
         if (!signUpViewModel.signUpInProcess) {
           return SignInScreen(
+            headerBuilder: (context, constraints, shrinkOffset) =>
+                SvgPicture.asset(
+              'assets/icons/appbar_icon.svg',
+              width: 55,
+              height: 65,
+            ),
             showAuthActionSwitch: false,
             actions: [
               AuthStateChangeAction<SignedIn>(

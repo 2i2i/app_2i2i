@@ -108,3 +108,36 @@ class TextProfileView extends StatelessWidget {
     );
   }
 }
+
+class RectangleBox extends StatelessWidget {
+  final Widget icon;
+  final double radius;
+  final GestureTapCallback? onTap;
+
+  const RectangleBox({Key? key, required this.icon,required this.radius, this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      onTap: onTap,
+      child: Container(
+        height: radius,
+        width: radius,
+        child: Center(child: icon),
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: Theme.of(context).primaryColorLight,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset(2, 4),
+                blurRadius: 10,
+                color: Color.fromRGBO(0, 0, 0, 0.12)
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
