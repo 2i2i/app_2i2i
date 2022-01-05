@@ -25,7 +25,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     with SingleTickerProviderStateMixin {
   double _value = 0;
 
-  final CarouselController _controller = CarouselController();
+  final controller = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -89,61 +89,41 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 hintText: Strings().bidNote,
               ),
               SizedBox(height: 10),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.2,
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight:MediaQuery.of(context).size.height * 0.2,
+                ),
+
                 child: myAccountPageViewModel.isLoading
                     ? Center(child: CupertinoActivityIndicator())
                     : Row(
                   children: [
                     IconButton(
-                        iconSize: 20,
-                        onPressed: () => _controller.previousPage(),
+                        iconSize: 10,
+                        onPressed: () => controller.previousPage(duration: Duration(milliseconds: 300),curve: Curves.decelerate),
                         icon: RotatedBox(
                             quarterTurns: 2,
                             child: SvgPicture.asset(
                                 'assets/icons/direction.svg'))),
                     Expanded(
-                      child: CarouselSlider(
-                        items: List.generate(
-                            myAccountPageViewModel.accounts!.length,
-                                (index) => Column(
-                              children: [
-                                AccountInfo(
-                                  key: ObjectKey(
-                                      myAccountPageViewModel
-                                          .accounts![index].address),
-                                  account: myAccountPageViewModel
-                                      .accounts![index],
-                                ),
-                              ],
-                            )),
-                        options: CarouselOptions(
-                            reverse: false,
-                            enableInfiniteScroll: false,
-                            enlargeCenterPage: true),
-                        carouselController: _controller,
-                      ) /*PageView.builder(
+                      child: PageView.builder(
                               controller: controller,
                               scrollDirection: Axis.horizontal,
                               itemCount:
                                   myAccountPageViewModel.accounts!.length,
                               itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AccountInfo(
-                                    key: ObjectKey(myAccountPageViewModel
-                                        .accounts![index].address),
-                                    account: myAccountPageViewModel
-                                        .accounts![index],
-                                  ),
+                                return AccountInfo(
+                                  key: ObjectKey(myAccountPageViewModel
+                                      .accounts![index].address),
+                                  account: myAccountPageViewModel
+                                      .accounts![index],
                                 );
                               },
-                            )*/
-                      ,
+                      ),
                     ),
                     IconButton(
-                        iconSize: 20,
-                        onPressed: () => _controller.nextPage(),
+                        iconSize: 10,
+                        onPressed: () => controller.nextPage(duration: Duration(milliseconds: 300),curve: Curves.decelerate),
                         icon: SvgPicture.asset(
                             'assets/icons/direction.svg')),
                   ],

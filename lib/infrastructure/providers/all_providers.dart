@@ -227,6 +227,11 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
+final topMeetingProvider = StreamProvider.family<List<Meeting?>, String>((ref, id) {
+  final database = ref.watch(databaseProvider);
+  return database.topMeetingStream();
+});
+
 final meetingHistoryA =
     StreamProvider.family<List<Meeting?>, String>((ref, id) {
   final database = ref.watch(databaseProvider);

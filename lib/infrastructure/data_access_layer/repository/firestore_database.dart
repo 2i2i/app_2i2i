@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -227,14 +228,28 @@ class FirestoreDatabase {
             return Meeting.fromMap(data, documentId);
           });
 
+  Stream<List<Meeting?>> topMeetingStream() => _service
+          .collectionStream(
+        path: FirestorePath.topMeetings(),
+        builder: (data, documentId) => Meeting.fromMap(data, documentId),
+      )
+          .handleError((onError) {
+        print(onError);
+        return [];
+      });
+
   Future<void> setMeeting(Meeting meeting) => _service.setData(
         path: FirestorePath.meeting(meeting.id),
         data: meeting.toMap(),
         merge: true,
       );
 
-  Stream<List<Meeting?>> meetingHistoryA(String uid) => _meetingHistoryX(uid, 'A');
-  Stream<List<Meeting?>> meetingHistoryB(String uid) => _meetingHistoryX(uid, 'B');
+  Stream<List<Meeting?>> meetingHistoryA(String uid) =>
+      _meetingHistoryX(uid, 'A');
+
+  Stream<List<Meeting?>> meetingHistoryB(String uid) =>
+      _meetingHistoryX(uid, 'B');
+
   Stream<List<Meeting?>> _meetingHistoryX(String uid, String field) {
     return _service
         .collectionStream(

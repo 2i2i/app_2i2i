@@ -32,12 +32,17 @@ class TextProfileView extends StatelessWidget {
   final double radius;
   final Color? statusColor;
   final VoidCallback? onTap;
+  final TextStyle? style;
+  final bool hideShadow;
 
   const TextProfileView(
       {Key? key,
       required this.text,
       this.radius = kToolbarHeight,
-      this.statusColor, this.onTap})
+      this.statusColor,
+      this.onTap,
+      this.style,
+      this.hideShadow = false})
       : super(key: key);
 
   @override
@@ -55,21 +60,24 @@ class TextProfileView extends StatelessWidget {
             Container(
               width: radius,
               height: radius,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      offset: Offset(2, 4),
-                      blurRadius: 12,
-                      color: Color.fromRGBO(
-                          0, 0, 0, 0.12) // changes position of shadow
-                      ),
-                ],
-              ),
+              decoration: !hideShadow
+                  ? BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            offset: Offset(2, 4),
+                            blurRadius: 12,
+                            color: Color.fromRGBO(
+                                0, 0, 0, 0.12) // changes position of shadow
+                            ),
+                      ],
+                    )
+                  : null,
               child: Stack(
                 children: [
                   Card(
                     elevation: 6,
-                    shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
+                    shadowColor:
+                        Theme.of(context).inputDecorationTheme.fillColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14.0),
                     ),
@@ -78,10 +86,11 @@ class TextProfileView extends StatelessWidget {
                         "${text.toString().isNotEmpty ? text : "X"}"
                             .substring(0, 1)
                             .toUpperCase(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6!
-                            .copyWith(fontWeight: FontWeight.w600),
+                        style: style ??
+                            Theme.of(context)
+                                .textTheme
+                                .headline6!
+                                .copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),

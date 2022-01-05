@@ -7,6 +7,7 @@ import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 
 import '../../infrastructure/commons/theme.dart';
 import '../../infrastructure/routes/app_routes.dart';
+import '../screens/hip/hip_page.dart';
 import '../screens/qr_code/qr_code_page.dart';
 import '../screens/setup_account/setup_account.dart';
 
@@ -40,7 +41,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                 width: 10,
               ),
               RectangleBox(
-                onTap: () => CustomNavigation.push(context, SetupBio(), Routes.SETUP_ACCOUNT),
+                onTap: () => CustomNavigation.push(context, HipPage(), Routes.HIPPAGE),
                 radius: 46,
                 icon: SvgPicture.asset(
                   'assets/icons/crown.svg',

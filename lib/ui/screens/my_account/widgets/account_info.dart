@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
-
 import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
@@ -49,138 +48,132 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            title: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  'Algorand',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5!
-                      .copyWith(fontWeight: FontWeight.w600),
-                ),
-                SizedBox(width: 6),
-                Text(assetName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2!
-                        .copyWith(color: Theme.of(context).disabledColor)),
-              ],
-            ),
-            leading: Image.asset(
-              'assets/algo_logo.png',
-              width: 40,
-              height: 40,
-              fit: BoxFit.fill,
-            ),
-            trailing: Text(
-              "$amount",
-              style: Theme.of(context).textTheme.headline4!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).tabBarTheme.unselectedLabelColor),
-            ),
-          ),
-          SizedBox(height: 8),
-          ListTile(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/wc_logo.png',
-                  height: 20,
-                  fit: BoxFit.fill,
-                ),
-                SizedBox(height: 8),
-                Text(widget.account.address,
-                    maxLines: 2,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(fontWeight: FontWeight.w600)),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // InkResponse(
-                //   onTap: () async {
-                //     final asaId = await _optInToASA(context);
-                //     if (asaId == null) return;
-                //     CustomDialogs.loader(true, context);
-                //     await widget.account
-                //         .optInToASA(assetId: asaId, net: AlgorandNet.testnet);
-                //     CustomDialogs.loader(false, context);
-                //   },
-                //   child: Card(
-                //     margin: EdgeInsets.symmetric(horizontal: 4),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(6.0),
-                //     ),
-                //     elevation: 4,
-                //     shadowColor: Theme.of(context).primaryColor,
-                //     child: Container(
-                //       height: 40,
-                //       width: 40,
-                //       decoration: BoxDecoration(
-                //           color: Theme.of(context).cardColor,
-                //           borderRadius: BorderRadius.circular(6)),
-                //       child: Icon(
-                //         Icons.add_circle_outline,
-                //         size: 20,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(
-                    icon: SvgPicture.asset(
-                      'assets/icons/copy.svg',
-                      width: 20,
-                      height: 20,
-                    ),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.account.address));
-                      showToast('Copied to Clipboard',
-                          context: context,
-                          animation: StyledToastAnimation.slideFromTop,
-                          reverseAnimation: StyledToastAnimation.slideToTop,
-                          position: StyledToastPosition.top,
-                          startOffset: Offset(0.0, -3.0),
-                          reverseEndOffset: Offset(0.0, -3.0),
-                          duration: Duration(seconds: 4),
-                          animDuration: Duration(seconds: 1),
-                          curve: Curves.elasticOut,
-                          reverseCurve: Curves.fastOutSlowIn);
-                    },
+                Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(width: 10),
+                      Image.asset(
+                        'assets/algo_logo.png',
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.fill,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Algorand',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontWeight: FontWeight.w600),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        assetName,
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle2!
+                            .copyWith(color: Theme.of(context).disabledColor),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                Visibility(
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      child: IconButton(
-                          icon: SvgPicture.asset(
-                            'assets/icons/key.svg',
-                            width: 20,
-                            height: 20,
-                          ),
-                          onPressed: () => CustomDialogs.infoDialog(
-                              context: context, child: KeysWidget(account: widget.account as LocalAccount))
-                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
-                          ),
-                    ),
-                    visible: widget.account is LocalAccount),
+                Text(
+                  "$amount",
+                  style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                )
               ],
             ),
-          ),
-        ],
+            SizedBox(height: 8),
+            Padding(
+              padding: EdgeInsets.only(left: 15),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/wc_logo.png',
+                          height: 20,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(height: 8),
+                        Text(widget.account.address,
+                            maxLines: 2,
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(fontWeight: FontWeight.w600),
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    child: IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/icons/copy.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: widget.account.address));
+                        showToast('Copied to Clipboard',
+                            context: context,
+                            animation: StyledToastAnimation.slideFromTop,
+                            reverseAnimation: StyledToastAnimation.slideToTop,
+                            position: StyledToastPosition.top,
+                            startOffset: Offset(0.0, -3.0),
+                            reverseEndOffset: Offset(0.0, -3.0),
+                            duration: Duration(seconds: 4),
+                            animDuration: Duration(seconds: 1),
+                            curve: Curves.elasticOut,
+                            reverseCurve: Curves.fastOutSlowIn);
+                      },
+                    ),
+                  ),
+                  Visibility(
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        child: IconButton(
+                            icon: SvgPicture.asset(
+                              'assets/icons/key.svg',
+                              width: 20,
+                              height: 20,
+                            ),
+                            onPressed: () => CustomDialogs.infoDialog(
+                                context: context, child: KeysWidget(account: widget.account as LocalAccount))
+                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                        ),
+                      ),
+                      visible: widget.account is LocalAccount),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -10,54 +10,6 @@ class AppTheme{
     return _singleton;
   }
 
-  static const MaterialColor primarySwatch = MaterialColor(
-    0xFF7263E2,
-    <int, Color>{
-      50: Color.fromRGBO(116, 117, 109, .1),
-      100: Color.fromRGBO(116, 117, 109, .2),
-      200: Color.fromRGBO(116, 117, 109, .3),
-      300: Color.fromRGBO(116, 117, 109, .4),
-      400: Color.fromRGBO(116, 117, 109, .5),
-      500: Color.fromRGBO(116, 117, 109, .6),
-      600: Color.fromRGBO(116, 117, 109, .7),
-      700: Color.fromRGBO(116, 117, 109, .8),
-      800: Color.fromRGBO(116, 117, 109, .9),
-      900: Color.fromRGBO(116, 117, 109, 1),
-    },
-  );
-
-  static const MaterialColor darkTextColor = MaterialColor(
-    0xFFFFFFFF,
-    const <int, Color>{
-      50: const Color(0xFFFFFFFF),
-      100: const Color(0xFFFFFFFF),
-      200: const Color(0xFFFFFFFF),
-      300: const Color(0xFFFFFFFF),
-      400: const Color(0xFFFFFFFF),
-      500: const Color(0xFFFFFFFF),
-      600: const Color(0xFFFFFFFF),
-      700: const Color(0xFFFFFFFF),
-      800: const Color(0xFFFFFFFF),
-      900: const Color(0xFFFFFFFF),
-    },
-  );
-
-  /*static const MaterialColor lightTextColor = MaterialColor(
-    0xFF000000,
-    const <int, Color>{
-      50: const Color(0xFF000000),
-      100: const Color(0xFF000000),
-      200: const Color(0xFF000000),
-      300: const Color(0xFF000000),
-      400: const Color(0xFF000000),
-      500: const Color(0xFF000000),
-      600: const Color(0xFF000000),
-      700: const Color(0xFF000000),
-      800: const Color(0xFF000000),
-      900: const Color(0xFF000000),
-    },
-  );*/
-
   Color buttonBackground = Color.fromRGBO(208, 226, 105, 1);
   Color green = Color(0xFF34C759);
   Color red = Color(0xFFFC8383);
@@ -80,6 +32,8 @@ class AppTheme{
 
   Color cardDarkColor = Colors.grey.shade800;
   Color disableColor = Color(0xFF979592);
+  Color tabColor = Color.fromRGBO(118, 118, 128, 0.12);
+  Color tabTextColor = Color.fromRGBO(153, 153, 153, 1);
   Color fillColor = Color(0xFFC1C1D7);
 
   Color thumbColor = Color(0xFFD2D2DF);
