@@ -12,7 +12,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
-import 'pages/hip/hip_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

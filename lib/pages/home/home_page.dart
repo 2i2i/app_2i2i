@@ -172,8 +172,9 @@ class _HomePageState extends ConsumerState<HomePage>{
       final database = ref.watch(databaseProvider);
       database.addRating(
           otherUid,
+          meetingId,
           RatingModel(
-              rating: rating, comment: ratingFeedBack, meeting: meetingId));
+              rating: rating, comment: ratingFeedBack));
     });
   }
 

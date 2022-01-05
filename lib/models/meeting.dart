@@ -218,9 +218,8 @@ class Meeting extends Equatable {
 class RatingModel {
   final double rating;
   final String? comment;
-  final String meeting;
 
-  RatingModel({required this.rating, this.comment, required this.meeting});
+  RatingModel({required this.rating, this.comment});
 
   factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -230,12 +229,10 @@ class RatingModel {
 
     final double rating = data['rating'];
     final String? comment = data['comment'];
-    final String meeting = data['meeting'];
 
     return RatingModel(
       rating: rating,
       comment: comment,
-      meeting: meeting,
     );
   }
 
@@ -243,7 +240,6 @@ class RatingModel {
     return {
       'rating': rating,
       'comment': comment,
-      'meeting': meeting,
     };
   }
 }

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../common/alert_widget.dart';
+import 'package:app_2i2i/common/alert_widget.dart';
 import 'widgets/create_bid_widget.dart';
 
 class UserPage extends ConsumerStatefulWidget {

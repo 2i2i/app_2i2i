@@ -49,9 +49,9 @@ class FirestoreDatabase {
   }
 
   //<editor-fold desc="Rating module">
-  Future<void> addRating(String uid, RatingModel rating) => _service
+  Future<void> addRating(String uid, String meetingId, RatingModel rating) => _service
           .createData(
-        path: FirestorePath.rating(uid),
+        path: FirestorePath.newRating(uid, meetingId),
         data: rating.toMap(),
       )
           .onError((error, stackTrace) {
@@ -61,7 +61,7 @@ class FirestoreDatabase {
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
         .collectionStream(
-            path: FirestorePath.rating(uid),
+            path: FirestorePath.ratings(uid),
             builder: (data, documentId) =>
                 RatingModel.fromMap(data, documentId))
         .handleError((value) {
