@@ -13,7 +13,8 @@ class FirestorePath {
   static String bidOuts(String uid) => 'users/$uid/bidOuts';
   static String bidPrivate(String uid, String bidId) => 'users/$uid/bidIns/$bidId/private/main';
 
-  static String rating(String uid) => 'users/$uid/ratings/';
+  static String ratings(String uid) => 'users/$uid/ratings/';
+  static String newRating(String uid, String meetingId) => 'users/$uid/ratings/$meetingId';
 
   // static String meetingMessages(String meetingId, String sourceUid, String targetUid) => 'meetings/$meetingId/$sourceUid->$targetUid';
   static String room(String meetingId) => 'meetings/$meetingId/rooms/main';
