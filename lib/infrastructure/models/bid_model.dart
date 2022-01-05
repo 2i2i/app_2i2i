@@ -53,7 +53,7 @@ class BidOut extends Equatable {
     final String B = data['B'];
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
+        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
 
     return BidOut(
       id: documentId,
@@ -67,7 +67,7 @@ class BidOut extends Equatable {
     return {
       'B': B,
       'speed': speed.toMap(),
-      'net': net.toString(),
+      'net': net.toStringEnum(),
       'active': true, // TODO should support false as well
     };
   }
@@ -99,7 +99,7 @@ class BidIn extends Equatable {
 
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toString() == data['net']);
+        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
 
     return BidIn(
       id: documentId,
@@ -111,7 +111,7 @@ class BidIn extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'speed': speed.toMap(),
-      'net': net.toString(),
+      'net': net.toStringEnum(),
       'active': true, // TODO should support false as well
     };
   }

@@ -9,6 +9,11 @@ import '../services/logging.dart';
 import 'secure_storage_service.dart';
 
 enum AlgorandNet { mainnet, testnet, betanet }
+extension ParseToString on AlgorandNet {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+}
 
 class AlgorandLib {
   static const Map<AlgorandNet, String> API_URL = {
