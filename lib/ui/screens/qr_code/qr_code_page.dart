@@ -1,14 +1,9 @@
-
-import 'package:app_2i2i/common/custom_dialogs.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../constants/strings.dart';
-
+import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../commons/custom_dialogs.dart';
 import '../home/wait_page.dart';
 import 'widgets/qr_image.dart';
 

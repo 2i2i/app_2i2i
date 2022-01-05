@@ -12,8 +12,6 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
-import 'constants/strings.dart';
-import 'pages/hip/hip_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

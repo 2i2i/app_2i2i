@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../screens/user_bid/widgets/bid_alert_widget.dart';
-
 class CustomAlertWidget {
-  static showBidAlert(BuildContext context) {
+  static showBidAlert(BuildContext context,Widget child) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(

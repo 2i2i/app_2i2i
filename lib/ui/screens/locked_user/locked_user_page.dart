@@ -1,13 +1,6 @@
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
-import 'package:app_2i2i/pages/web_rtc/call_page.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import '../ringing/ringing_page.dart';

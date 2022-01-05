@@ -1,28 +1,17 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
-import 'package:app_2i2i/common/custom_profile_image_view.dart';
-import 'package:app_2i2i/common/theme.dart';
-import 'package:app_2i2i/models/user.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/user_bid/ui/other_bid_list.dart';
-import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/routes/app_routes.dart';
-import '../add_bid/add_bid_page.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
-
-import '../../../common/alert_widget.dart';
 import 'widgets/create_bid_widget.dart';
 
 class UserPage extends ConsumerStatefulWidget {
@@ -88,7 +77,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => AlertWidget.showBidAlert(
+        onTap: () => CustomAlertWidget.showBidAlert(
             context,
             CreateBidWidget(
               image: _image!,

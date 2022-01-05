@@ -14,7 +14,6 @@ import '../my_account/my_account_page.dart';
 import '../my_user/my_user_page.dart';
 import '../search/search_page.dart';
 import '../setup_account/setup_account.dart';
-import 'package:app_2i2i/constants/strings.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);

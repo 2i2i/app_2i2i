@@ -1,12 +1,6 @@
-import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/constants/strings.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
 import '../../infrastructure/commons/strings.dart';
-import '../screens/user_bid/widgets/bid_dialog_widget.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 class CustomDialogs {

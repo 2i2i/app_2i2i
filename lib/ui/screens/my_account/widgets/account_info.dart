@@ -1,8 +1,3 @@
-import 'package:app_2i2i/accounts/abstract_account.dart';
-import 'package:app_2i2i/accounts/local_account.dart';
-import 'package:app_2i2i/common/custom_dialogs.dart';
-import 'package:app_2i2i/services/logging.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +8,7 @@ import '../../../../infrastructure/data_access_layer/accounts/abstract_account.d
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 
+import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {

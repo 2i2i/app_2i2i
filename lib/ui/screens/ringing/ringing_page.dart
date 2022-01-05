@@ -1,12 +1,4 @@
 import 'dart:async';
-
-import 'package:app_2i2i/common/utils.dart';
-import 'package:app_2i2i/models/meeting.dart';
-import 'package:app_2i2i/pages/home/wait_page.dart';
-import 'package:app_2i2i/pages/ringing/provider/ringing_page_view_model.dart';
-import 'package:app_2i2i/pages/ringing/ui/ripples_animation.dart';
-import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import '../home/wait_page.dart';
 import 'ripples_animation.dart';
 class RingingPage extends ConsumerStatefulWidget {
