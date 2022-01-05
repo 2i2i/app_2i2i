@@ -14,9 +14,9 @@ import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../user_bid/user_page.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -24,7 +24,6 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppbar(),
@@ -35,15 +34,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: TextField(
               autofocus: false,
               decoration: InputDecoration(
-                hintText: Strings().searchUserHint, filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                hintText: Strings().searchUserHint,
+                filled: true,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
                 suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim();
                 ref.watch(searchFilterProvider.state).state =
-                value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -57,6 +58,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
+    final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
+    final userModelChanger = ref.watch(userModelChangerProvider)!;
     // log(H + '_SearchPageState - _buildContents - filter=$filter');
 
     return StreamBuilder(
@@ -87,6 +90,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
                 if (user.locked) statusColor = AppTheme().red;
+
+                final isFriend = !(userPrivateAsyncValue is AsyncError) &&
+                    !(userPrivateAsyncValue is AsyncLoading) &&
+                    userPrivateAsyncValue.value != null &&
+                    userPrivateAsyncValue.value!.friends.contains(user.id);
 
                 return Visibility(
                   visible: user.id != mainUserID,
@@ -135,10 +143,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                     maxLines: 2,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).disabledColor,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w400,
+                                          color:
+                                              Theme.of(context).disabledColor,
+                                        ),
                                   ),
                                   trailing: Container(
                                     height: kToolbarHeight,
@@ -151,10 +163,20 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                       children: [
                                         Flexible(
                                           child: IconButton(
-                                              padding: EdgeInsets.zero,
-                                              onPressed: null,
-                                              icon: Icon(Icons
-                                                  .favorite_border_rounded)),
+                                            padding: EdgeInsets.zero,
+                                            onPressed: () => isFriend
+                                                ? userModelChanger
+                                                    .removeFriend(user.id)
+                                                : userModelChanger
+                                                    .addFriend(user.id),
+                                            icon: Icon(isFriend
+                                                ? Icons.favorite_rounded
+                                                : Icons
+                                                    .favorite_border_rounded),
+                                            color: isFriend
+                                                ? Colors.red
+                                                : Colors.grey,
+                                          ),
                                         ),
                                         Row(
                                           crossAxisAlignment:
@@ -224,4 +246,3 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 }
-
