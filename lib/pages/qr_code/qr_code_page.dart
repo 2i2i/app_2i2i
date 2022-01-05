@@ -1,10 +1,11 @@
+import 'package:app_2i2i/common/custom_dialogs.dart';
 import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/qr_code/widgets/qr_image.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import '../../constants/strings.dart';
 
 class QRCodePage extends ConsumerWidget {
   const QRCodePage({Key? key}) : super(key: key);
@@ -17,6 +18,7 @@ class QRCodePage extends ConsumerWidget {
     final message = 'https://test.2i2i.app/user/$uid';
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('QR Code'),
       ),
@@ -29,7 +31,7 @@ class QRCodePage extends ConsumerWidget {
             QrWidget(
               message: message,
               logoSize: 60,
-              imageSize: 280,
+              imageSize: 180,
             ),
             SizedBox(
               height: 10,
@@ -52,21 +54,10 @@ class QRCodePage extends ConsumerWidget {
                       icon: Icon(
                         Icons.copy,
                         size: 20,
-                        color: Theme.of(context).primaryColor,
                       ),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: message));
-                        showToast('Copied to Clipboard',
-                            context: context,
-                            animation: StyledToastAnimation.slideFromTop,
-                            reverseAnimation: StyledToastAnimation.slideToTop,
-                            position: StyledToastPosition.top,
-                            startOffset: Offset(0.0, -3.0),
-                            reverseEndOffset: Offset(0.0, -3.0),
-                            duration: Duration(seconds: 4),
-                            animDuration: Duration(seconds: 1),
-                            curve: Curves.elasticOut,
-                            reverseCurve: Curves.fastOutSlowIn);
+                        CustomDialogs.showToastMessage(context, Strings().copyMessage);
                       },
                     ),
                   ),

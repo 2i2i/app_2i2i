@@ -12,50 +12,15 @@ class OtherBidInList extends ConsumerWidget {
 
   final FirestoreDatabase database;
   final UserModel B;
-  // final void Function(BidIn bid)? onTrailingIconClick;
-  // final void Function(bool isPresent)? alreadyExists;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO add sorting
-    // if (user.bidsIn.isEmpty)
-    //   return Center(
-    //     child: Text('No bid for user',
-    //         style: Theme.of(context).textTheme.bodyText2),
-    //   );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-            padding: const EdgeInsets.only(top: 20, left: 25),
-            child: Row(
-              children: [
-                Text('OTHER BIDS FOR ',
-                    style: Theme.of(context).textTheme.subtitle2),
-                Text('${B.name}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2!
-                        .copyWith(color: Theme.of(context).primaryColor)),
-              ],
-            )),
-        Expanded(
-            child: Container(
-                padding: const EdgeInsets.only(
-                    top: 10, left: 20, right: 20, bottom: 10),
-                child: _bidsListView(ref, context))),
-      ],
-    );
+        return _bidsListView(ref, context);
   }
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
-    final myId = ref.read(myUIDProvider);
-    if (myId == null) {
-      return Container();
-    }
+    final myId = ref.read(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
-    // log('==========================\n ${userPrivateAsyncValue is AsyncLoading} ${userPrivateAsyncValue.data?.value.bidsOut.toString()} \n===============');
     if (userPrivateAsyncValue is AsyncLoading) {
       return Container();
     }
@@ -65,15 +30,10 @@ class OtherBidInList extends ConsumerWidget {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+                shrinkWrap: true,
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, ix) {
                   BidIn bidIn = snapshot.data[ix];
-                  // bool isItCurrentUserBid = userPrivateAsyncValue
-                  //     .data!.value.bidsOut
-                  //     .any((element) => element == bidIn.id);
-                  // if (isItCurrentUserBid) {
-                  //   alreadyExists!.call(true);
-                  // }
                   log('bid.speed.num');
                   final String num = bidIn.speed.num.toString();
                   final int assetId = bidIn.speed.assetId;
@@ -90,17 +50,6 @@ class OtherBidInList extends ConsumerWidget {
                         leading: Icon(Icons.circle, color: AppTheme().gray),
                         title: Text('$num'),
                         subtitle: Text('[$assetIDString/sec]'),
-                        // trailing: Visibility(
-                        //   visible: isItCurrentUserBid,
-                        //   child: Tooltip(
-                        //     message: "Cancel Bid",
-                        //     child: IconButton(
-                        //       icon: Icon(Icons.cancel_rounded,
-                        //           color: Color.fromRGBO(104, 160, 242, 1)),
-                        //       onPressed: () => onTrailingIconClick!(bidIn),
-                        //     ),
-                        //   ),
-                        // ),
                       ));
                 });
           }

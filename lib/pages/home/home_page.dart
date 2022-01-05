@@ -21,7 +21,7 @@ class HomePage extends ConsumerStatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage>{
   var _tabSelectedIndex = 0;
   var _tabPopStack = false;
 
@@ -75,16 +75,12 @@ class _HomePageState extends ConsumerState<HomePage> {
     var lockUser = ref.watch(lockedUserViewModelProvider);
     bool loading =
         lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
-    log('----------\n\n loading $loading \n\n-----------');
     if (!loading) {
-      log('----------\n\n lockUser?.meeting ${lockUser.meeting} \n\n-----------');
-      // if(lockUser.meeting is Meeting) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
           submitReview(uid, meetingId);
         },
       );
-      // }
     }
     if (isUserLocked.value) {
       return LockedUserPage(
@@ -103,7 +99,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               .map((index, value) => MapEntry(
                   index, _buildOffstageNavigator(_tabItems[index], index)))
               .values
-              .toList(),
+              .toList()
         ),
         bottomNavigationBar: Card(
           margin: EdgeInsets.zero,
@@ -116,41 +112,27 @@ class _HomePageState extends ConsumerState<HomePage> {
               items: [
                 BottomNavigationBarItem(
                   label: Strings().home,
-                  icon: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: SvgPicture.asset(_tabSelectedIndex == 0
-                        ? 'assets/icons/house_fill.svg'
-                        : 'assets/icons/house.svg'),
-                  ),
+                  activeIcon:
+                      selectedIcon('assets/icons/house.svg', isSelected: true),
+                  icon: selectedIcon('assets/icons/house.svg'),
                 ),
                 BottomNavigationBarItem(
                   label: Strings().account,
-                  icon: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: SvgPicture.asset(
-                      _tabSelectedIndex == 1
-                          ? 'assets/icons/account_fill.svg'
-                          : 'assets/icons/account.svg',
-                    ),
-                  ),
+                  activeIcon: selectedIcon('assets/icons/account.svg',
+                      isSelected: true),
+                  icon: selectedIcon('assets/icons/account.svg'),
                 ),
                 BottomNavigationBarItem(
                   label: Strings().profile,
-                  icon: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: SvgPicture.asset(_tabSelectedIndex == 2
-                        ? 'assets/icons/person_fill.svg'
-                        : 'assets/icons/person.svg'),
-                  ),
+                  activeIcon:
+                      selectedIcon('assets/icons/person.svg', isSelected: true),
+                  icon: selectedIcon('assets/icons/person.svg'),
                 ),
                 BottomNavigationBarItem(
                   label: Strings().settings,
-                  icon: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: SvgPicture.asset(_tabSelectedIndex == 3
-                        ? 'assets/icons/setting_fill.svg'
-                        : 'assets/icons/setting.svg'),
-                  ),
+                  activeIcon: selectedIcon('assets/icons/setting.svg',
+                      isSelected: true),
+                  icon: selectedIcon('assets/icons/setting.svg'),
                 ),
                 // BottomNavigationBarItem(
                 //   label: "",
@@ -162,6 +144,14 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget selectedIcon(String iconPath, {bool isSelected = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: SvgPicture.asset(iconPath,
+          color: isSelected ? Theme.of(context).colorScheme.secondary : null),
     );
   }
 
@@ -186,6 +176,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               rating: rating, comment: ratingFeedBack, meeting: meetingId));
     });
   }
+
 }
 
 class TabItem {

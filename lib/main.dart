@@ -5,12 +5,14 @@ import 'package:app_2i2i/pages/app/auth_widget.dart';
 import 'package:app_2i2i/pages/home/home_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'constants/strings.dart';
+import 'pages/hip/hip_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +69,9 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
+      scrollBehavior: AppScrollBehavior(),
       home:AuthWidget(homePageBuilder: (_) => HomePage(),),
+      // home:HipPage(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,
@@ -77,4 +81,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       darkTheme: AppTheme().darkTheme,
     );
   }
+}
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+  };
 }

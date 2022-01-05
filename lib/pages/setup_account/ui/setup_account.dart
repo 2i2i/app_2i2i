@@ -67,13 +67,14 @@ class _SetupBioState extends ConsumerState<SetupBio> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: kRadialReactionRadius),
             Text(
               Strings().setUpAccount,
               style: Theme.of(context).textTheme.headline4!.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.secondary),
+                  color: Theme.of(context).tabBarTheme.unselectedLabelColor),
             ),
-            SizedBox(height: kToolbarHeight),
+            SizedBox(height: kRadialReactionRadius+8),
             Text(Strings().userName,
                 style: Theme.of(context)
                     .textTheme

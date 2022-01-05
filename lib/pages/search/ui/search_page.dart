@@ -1,21 +1,20 @@
 import 'dart:math';
 
+import 'package:app_2i2i/common/custom_app_bar.dart';
+import 'package:app_2i2i/common/custom_navigation.dart';
 import 'package:app_2i2i/common/custom_profile_image_view.dart';
 import 'package:app_2i2i/common/theme.dart';
+import 'package:app_2i2i/constants/strings.dart';
 import 'package:app_2i2i/models/user.dart';
+import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 import 'package:app_2i2i/repository/firestore_database.dart';
+import 'package:app_2i2i/routes/app_routes.dart';
 import 'package:app_2i2i/services/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:app_2i2i/common/custom_app_bar.dart';
-import 'package:app_2i2i/common/custom_navigation.dart';
-import 'package:app_2i2i/constants/strings.dart';
-import 'package:app_2i2i/routes/app_routes.dart';
-import 'package:app_2i2i/pages/user_bid/ui/user_page.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -26,6 +25,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppbar(),
       body: Column(
         children: [
@@ -33,19 +33,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
               autofocus: false,
-
               decoration: InputDecoration(
-                hintText: Strings().searchUserHint,
-                filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                hintText: Strings().searchUserHint, filled: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
                 suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim();
                 ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -93,9 +90,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 return Visibility(
                   visible: user.id != mainUserID,
                   child: InkWell(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
                     onTap: () => CustomNavigation.push(
                         context, UserPage(uid: user.id), Routes.USER),
                     child: Row(

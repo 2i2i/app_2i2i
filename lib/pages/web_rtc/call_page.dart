@@ -50,7 +50,21 @@ class _CallPageState extends ConsumerState<CallPage>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _initBudgetTimer() {
+  Future<void> _initBudgetTimer() async {
+    await _localRenderer.initialize();
+    await _remoteRenderer.initialize();
+
+    signaling = Signaling(
+        meeting: widget.meeting,
+        amA: amA,
+        localVideo: _localRenderer,
+        remoteVideo: _remoteRenderer);
+    signaling!.onAddRemoteStream = ((stream) {
+      _remoteRenderer.srcObject = stream;
+      ref.read(callScreenProvider).getInitialValue(signaling!.localStream);
+      setState(() {});
+    });
+
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
 
@@ -67,6 +81,8 @@ class _CallPageState extends ConsumerState<CallPage>
       if (timer.tick >= maxDuration) progressTimer?.cancel();
       showCountDown(duration);
     });
+
+
   }
 
   int getDuration(int maxDuration) {
@@ -89,34 +105,16 @@ class _CallPageState extends ConsumerState<CallPage>
     if (duration <= 100) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
-        // Future.delayed(Duration.zero).then((value) {
-        // if (mounted) {
         setState(() {});
-        // }
-        // });
       }
     }
   }
 
   @override
   void initState() {
-    _localRenderer.initialize();
-    _remoteRenderer.initialize();
-
     _initBudgetTimer();
 
     amA = widget.meeting.A == widget.user.id;
-
-    signaling = Signaling(
-        meeting: widget.meeting,
-        amA: amA,
-        localVideo: _localRenderer,
-        remoteVideo: _remoteRenderer);
-    signaling!.onAddRemoteStream = ((stream) {
-      _remoteRenderer.srcObject = stream;
-      ref.read(callScreenProvider).getInitialValue(signaling!.localStream);
-      setState(() {});
-    });
 
     super.initState();
   }

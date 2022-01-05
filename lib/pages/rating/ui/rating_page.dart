@@ -25,6 +25,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
         ratingListAsyncValue is AsyncError) {
       return WaitPage();
     }
+
     final ratingList = ratingListAsyncValue.value!;
 
     return Scaffold(

@@ -7,10 +7,12 @@ class Routes {
   static const RATING = '/rating';
   static const MY_USER = '/my_user';
   static const SETUP_ACCOUNT = '/setup_account';
+  static const HIPPAGE = '/hip_page';
   static const BIDPAGE = '/user/:uid/addbidpage';
   static const IMI = '/imi';
   static const SOLLI = '/solli';
   static const ABOUT = '/about';
+  static const QRPAGE = '/qr_page';
   static const HISTORY = '/history';
   static const AppSetting = '/app_setting';
   static const CallPage = '/call_page';
