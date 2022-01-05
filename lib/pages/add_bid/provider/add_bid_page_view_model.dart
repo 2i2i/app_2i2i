@@ -49,7 +49,7 @@ class AddBidPageViewModel {
     final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
     log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
 
-    final speed = Speed(num: speedNum, assetId: speedAssetId);
+    final speed = Quantity(num: speedNum, assetId: speedAssetId);
     final addrA = speed.num == 0 ? null : account?.address;
 
     // TODO clean separation into firestore_service and firestore_database

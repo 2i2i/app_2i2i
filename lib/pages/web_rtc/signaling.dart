@@ -31,7 +31,7 @@ class Signaling {
       initAsA();
     } else {
       // B joins created currentRoom
-      roomRef = rooms.doc(meeting.currentRoom);
+      roomRef = rooms.doc(meeting.room);
 
       initAsB();
     }
@@ -53,10 +53,13 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    final meetingRoomCreated =
-        FirebaseFunctions.instance.httpsCallable('meetingRoomCreated');
-    await meetingRoomCreated(
-        {'meetingId': meeting.id, 'currentRoom': roomRef.id});
+    final advanceMeeting =
+        FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+    await advanceMeeting({
+      'meetingId': meeting.id,
+      'room': roomRef.id,
+      'reason': MeetingStatus.ROOM_CREATED.toStringEnum()
+    });
   }
 
   final Meeting meeting;
@@ -123,11 +126,22 @@ class Signaling {
 
     peerConnection?.onTrack = (RTCTrackEvent event) {
       log(G + 'Got remote track: event.streams.length=${event.streams.length}');
-      for (int i = 0; i < event.streams.length; i++) {}
+      // for (int i = 0; i < event.streams.length; i++) {}
 
       event.streams[0].getTracks().forEach((track) {
         log(G + 'Add a track to the remoteStream $track');
         remoteStream?.addTrack(track);
+      });
+
+      final advanceMeeting =
+          FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+      final newStatus = amA
+          ? MeetingStatus.A_RECEIVED_REMOTE
+          : MeetingStatus.B_RECEIVED_REMOTE;
+      log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+      advanceMeeting({
+        'meetingId': meeting.id,
+        'reason': newStatus.toStringEnum(),
       });
     };
 
@@ -200,6 +214,17 @@ class Signaling {
           log(G + 'Add a track to the remoteStream: $track');
           remoteStream?.addTrack(track);
         });
+
+        final advanceMeeting =
+            FirebaseFunctions.instance.httpsCallable('advanceMeeting');
+        final newStatus = amA
+            ? MeetingStatus.A_RECEIVED_REMOTE
+            : MeetingStatus.B_RECEIVED_REMOTE;
+        log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
+        advanceMeeting({
+          'meetingId': meeting.id,
+          'reason': newStatus.toStringEnum(),
+        });
       };
 
       // Code for creating SDP answer below
@@ -216,12 +241,12 @@ class Signaling {
       await peerConnection!.setLocalDescription(answer);
       // if (answer != null) {
 
-        Map<String, dynamic> roomWithAnswer = {
-          'answer': {'type': answer.type, 'sdp': answer.sdp}
-        };
+      Map<String, dynamic> roomWithAnswer = {
+        'answer': {'type': answer.type, 'sdp': answer.sdp}
+      };
 
-        await roomRef.update(roomWithAnswer);
-        // Finished creating SDP answer
+      await roomRef.update(roomWithAnswer);
+      // Finished creating SDP answer
       // }
 
       // Listening for remote ICE candidates below
@@ -256,13 +281,15 @@ class Signaling {
     }
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
+  Future<void> hangUp(RTCVideoRenderer localVideo,
+      {required MeetingStatus reason}) async {
     try {
+      log(G + 'Signaling - hangUp - ${meeting.id}');
       final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
       final args = {
         'meetingId': meeting.id,
+        'reason': reason.toStringEnum(),
       };
-      if (reason != null) args['reason'] = reason;
       await endMeeting(args);
 
       //Close Local A
@@ -288,7 +315,6 @@ class Signaling {
 
       remoteVideo.srcObject = null;
       localVideo.srcObject = null;
-
     } catch (e) {
       log(e.toString());
     }

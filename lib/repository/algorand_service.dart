@@ -113,36 +113,37 @@ class AlgorandService {
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
-  Future<MeetingTxns> lockCoins(
-      {required Meeting meeting, waitForConfirmation = true}) async {
+  Future<MeetingTxns> lockCoins({required Meeting meeting}) async {
     log('lock - meeting.speed.assetId=${meeting.speed.assetId}');
     final account = await accountService.findAccount(meeting.addrA!);
 
     if (meeting.speed.assetId == 0) {
       return _lockALGO(
+        meetingId: meeting.id,
         B: meeting.addrB!,
         speed: meeting.speed.num,
         account: account!,
         net: meeting.net,
-        waitForConfirmation: waitForConfirmation,
       );
     }
-    return _lockASA(
-      B: meeting.addrB!,
-      speed: meeting.speed.num,
-      assetId: meeting.speed.assetId,
-      account: account!,
-      net: meeting.net,
-      waitForConfirmation: waitForConfirmation,
-    );
+    throw Exception('no ASA for now');
+    // return _lockASA(
+    //   meetingId: meeting.id,
+    //   B: meeting.addrB!,
+    //   speed: meeting.speed.num,
+    //   assetId: meeting.speed.assetId,
+    //   account: account!,
+    //   net: meeting.net,
+    // );
   }
 
-  Future<MeetingTxns> _lockALGO(
-      {required String B,
-      required int speed,
-      required AbstractAccount account,
-      required AlgorandNet net,
-      waitForConfirmation = true}) async {
+  Future<MeetingTxns> _lockALGO({
+    required String meetingId,
+    required String B,
+    required int speed,
+    required AbstractAccount account,
+    required AlgorandNet net,
+  }) async {
     log('lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
 
     log('lockALGO - account=${account.address}');
@@ -192,17 +193,26 @@ class AlgorandService {
     AtomicTransfer.group(txns);
     log('lockALGO - grouped');
 
-    // TODO in parallel
+    // TXN_CREATED
+    final HttpsCallable advanceMeeting =
+        functions.httpsCallable('advanceMeeting');
+    await advanceMeeting({
+      'reason': MeetingStatus.TXN_CREATED.toStringEnum(),
+      'meetingId': meetingId
+    });
+
+    // TXN_SIGNED
+    // TODO in parallel - together with previous
     final signedTxnsBytes = await account.sign(txns);
+    await advanceMeeting({
+      'reason': MeetingStatus.TXN_SIGNED.toStringEnum(),
+      'meetingId': meetingId
+    });
 
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
       log('lockALGO - txId=$txId');
-
-      if (waitForConfirmation)
-        await algorandLib.client[net]!.waitForConfirmation(txId);
-      log('lockALGO - done');
 
       // tx ids
       final txnsIds = MeetingTxns(
@@ -210,7 +220,16 @@ class AlgorandService {
         lockALGO: lockTxn.id,
         state: stateTxn.id,
       );
+      log('lockALGO - txnsIds=$txnsIds - optedIntoSystem=$optedIntoSystem');
       if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+      log('lockALGO - txnsIds=$txnsIds');
+
+      await advanceMeeting({
+        'reason': MeetingStatus.TXN_SENT.toStringEnum(),
+        'txns': txnsIds.toMap(),
+        'meetingId': meetingId
+      });
+      log('lockALGO - TXN_SENT');
 
       return txnsIds;
     } on AlgorandException catch (ex) {
@@ -225,127 +244,137 @@ class AlgorandService {
     }
   }
 
-  Future<MeetingTxns> _lockASA(
-      {required String B,
-      required int speed,
-      required int assetId,
-      required AbstractAccount account,
-      required AlgorandNet net,
-      waitForConfirmation = true}) async {
-    log('lockASA - B=$B - speed=$speed - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
-    log('lockASA - account=${account.address}');
+  // Future<MeetingTxns> _lockASA({
+  //   required String meetingId,
+  //   required String B,
+  //   required int speed,
+  //   required int assetId,
+  //   required AbstractAccount account,
+  //   required AlgorandNet net,
+  // }) async {
+  //   log('lockASA - B=$B - speed=$speed - assetId=$assetId - waitForConfirmation=$waitForConfirmation');
+  //   log('lockASA - account=${account.address}');
 
-    // calc LOCK_ASA_TOTAL_FEE depending on whether SYSTEM is opted-in to ASA or not
-    final systemOptedIn = await accountService.isOptedInToASA(
-        address: SYSTEM_ACCOUNT[net]!, assetId: assetId, net: net);
-    log('lockASA - systemOptedIn=$systemOptedIn');
-    final lockAsaTotalFee =
-        LOCK_ASA_FEE + (systemOptedIn ? 0 : OPT_IN_SYSTEM_TO_ASA_FEE);
-    log('lockASA - lockAsaTotalFee=$lockAsaTotalFee');
+  //   // calc LOCK_ASA_TOTAL_FEE depending on whether SYSTEM is opted-in to ASA or not
+  //   final systemOptedIn = await accountService.isOptedInToASA(
+  //       address: SYSTEM_ACCOUNT[net]!, assetId: assetId, net: net);
+  //   log('lockASA - systemOptedIn=$systemOptedIn');
+  //   final lockAsaTotalFee =
+  //       LOCK_ASA_FEE + (systemOptedIn ? 0 : OPT_IN_SYSTEM_TO_ASA_FEE);
+  //   log('lockASA - lockAsaTotalFee=$lockAsaTotalFee');
 
-    final params =
-        await algorandLib.client[net]!.getSuggestedTransactionParams();
-    log('lockASA - params=$params');
+  //   final params =
+  //       await algorandLib.client[net]!.getSuggestedTransactionParams();
+  //   log('lockASA - params=$params');
 
-    final List<RawTransaction> txns = [];
+  //   final List<RawTransaction> txns = [];
 
-    final optedIntoSystem =
-        await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
-    if (!optedIntoSystem) {
-      final optInTxn = await (ApplicationOptInTransactionBuilder()
-            ..sender = Address.fromAlgorandAddress(address: account.address)
-            ..applicationId = SYSTEM_ID[net]!
-            ..suggestedParams = params)
-          .build();
-      txns.add(optInTxn);
-    }
+  //   final optedIntoSystem =
+  //       await account.isOptedInToDApp(dAppId: SYSTEM_ID[net]!, net: net);
+  //   if (!optedIntoSystem) {
+  //     final optInTxn = await (ApplicationOptInTransactionBuilder()
+  //           ..sender = Address.fromAlgorandAddress(address: account.address)
+  //           ..applicationId = SYSTEM_ID[net]!
+  //           ..suggestedParams = params)
+  //         .build();
+  //     txns.add(optInTxn);
+  //   }
 
-    final lockALGOTxn = await (PaymentTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..receiver =
-              Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-          ..amount = lockAsaTotalFee
-          ..suggestedParams = params)
-        .build();
-    // log('lockASA - lockALGOTxn=$lockALGOTxn');
-    txns.add(lockALGOTxn);
+  //   final lockALGOTxn = await (PaymentTransactionBuilder()
+  //         ..sender = Address.fromAlgorandAddress(address: account.address)
+  //         ..receiver =
+  //             Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+  //         ..amount = lockAsaTotalFee
+  //         ..suggestedParams = params)
+  //       .build();
+  //   // log('lockASA - lockALGOTxn=$lockALGOTxn');
+  //   txns.add(lockALGOTxn);
 
-    final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
-    log('lockASA - arguments=$arguments');
-    final stateTxn = await (ApplicationCallTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..applicationId = SYSTEM_ID[net]!
-          ..arguments = arguments
-          ..accounts = [
-            Address.fromAlgorandAddress(address: B),
-            Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!),
-            Address.fromAlgorandAddress(address: CREATOR[net]!)
-          ]
-          ..foreignAssets = [assetId]
-          ..flatFee = 3000
-          ..suggestedParams = params)
-        .build();
-    // log('lockASA - stateTxn=$stateTxn');
-    txns.add(stateTxn);
+  //   final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
+  //   log('lockASA - arguments=$arguments');
+  //   final stateTxn = await (ApplicationCallTransactionBuilder()
+  //         ..sender = Address.fromAlgorandAddress(address: account.address)
+  //         ..applicationId = SYSTEM_ID[net]!
+  //         ..arguments = arguments
+  //         ..accounts = [
+  //           Address.fromAlgorandAddress(address: B),
+  //           Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!),
+  //           Address.fromAlgorandAddress(address: CREATOR[net]!)
+  //         ]
+  //         ..foreignAssets = [assetId]
+  //         ..flatFee = 3000
+  //         ..suggestedParams = params)
+  //       .build();
+  //   // log('lockASA - stateTxn=$stateTxn');
+  //   txns.add(stateTxn);
 
-    int budget = await accountService.calcBudget(
-        assetId: assetId, account: account, net: net);
+  //   int budget = await accountService.calcBudget(
+  //       assetId: assetId, account: account, net: net);
 
-    final lockASATxn = await (AssetTransferTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..assetId = assetId
-          ..amount = budget
-          ..receiver =
-              Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-          ..suggestedParams = params)
-        .build();
-    // log('lockASA - lockASATxn=$lockASATxn');
-    txns.add(lockASATxn);
+  //   final lockASATxn = await (AssetTransferTransactionBuilder()
+  //         ..sender = Address.fromAlgorandAddress(address: account.address)
+  //         ..assetId = assetId
+  //         ..amount = budget
+  //         ..receiver =
+  //             Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+  //         ..suggestedParams = params)
+  //       .build();
+  //   // log('lockASA - lockASATxn=$lockASATxn');
+  //   txns.add(lockASATxn);
 
-    // TODO in parallel
-    AtomicTransfer.group(txns);
-    log('lockASA - grouped');
+  //   // TODO in parallel
+  //   AtomicTransfer.group(txns);
+  //   log('lockASA - grouped');
 
-    final signedTxnsBytes = await account.sign(txns);
+  //   // TXN_CREATED
+  //   final HttpsCallable advanceMeeting =
+  //       functions.httpsCallable('advanceMeeting');
+  //   await advanceMeeting({'reason': MeetingStatus.TXN_CREATED.toStringEnum(), 'meetingId': meetingId});
 
-    try {
-      final txId =
-          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      log('lockASA - txId=$txId');
-      if (waitForConfirmation)
-        await algorandLib.client[net]!.waitForConfirmation(txId);
-      log('lockASA - done');
+  //   final signedTxnsBytes = await account.sign(txns);
+  //   await advanceMeeting({'reason': MeetingStatus.TXN_SIGNED.toStringEnum(), 'meetingId': meetingId});
 
-      // opt in CREATOR
-      if (!systemOptedIn) {
-        final HttpsCallable optInToASA = functions.httpsCallable('optInToASA');
-        await optInToASA({
-          'txId': txId,
-          'assetId': assetId,
-        });
-      }
+  //   try {
+  //     final txId =
+  //         await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
+  //     log('lockASA - txId=$txId');
 
-      // tx ids
-      final txnsIds = MeetingTxns(
-        group: txId,
-        lockALGO: lockALGOTxn.id,
-        state: stateTxn.id,
-        lockASA: lockASATxn.id,
-      );
-      if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+  //     // opt in CREATOR
+  //     if (!systemOptedIn) {
+  //       final HttpsCallable optInToASA = functions.httpsCallable('optInToASA');
+  //       await optInToASA({
+  //         'txId': txId,
+  //         'assetId': assetId,
+  //       });
+  //     }
 
-      return txnsIds;
-    } on AlgorandException catch (ex) {
-      final cause = ex.cause;
-      if (cause is dio.DioError) {
-        log('AlgorandException ' + cause.response?.data['message']);
-      }
-      throw ex;
-    } on Exception catch (ex) {
-      log('Exception ' + ex.toString());
-      throw ex;
-    }
-  }
+  //     // tx ids
+  //     final txnsIds = MeetingTxns(
+  //       group: txId,
+  //       lockALGO: lockALGOTxn.id,
+  //       state: stateTxn.id,
+  //       lockASA: lockASATxn.id,
+  //     );
+  //     if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
+
+  //     await advanceMeeting({
+  //       'reason': MeetingStatus.TXN_SENT.toStringEnum(),
+  //       'txns': txnsIds.toMap(),
+  //       'meetingId': meetingId
+  //     });
+
+  //     return txnsIds;
+  //   } on AlgorandException catch (ex) {
+  //     final cause = ex.cause;
+  //     if (cause is dio.DioError) {
+  //       log('AlgorandException ' + cause.response?.data['message']);
+  //     }
+  //     throw ex;
+  //   } on Exception catch (ex) {
+  //     log('Exception ' + ex.toString());
+  //     throw ex;
+  //   }
+  // }
 
   Future<void> setNetworkMode(String? mode) async {
     await storage.write('network_mode', mode!);

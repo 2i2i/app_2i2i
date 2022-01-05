@@ -3,7 +3,6 @@ import 'package:app_2i2i/pages/home/wait_page.dart';
 import 'package:app_2i2i/pages/ringing/ui/ringing_page.dart';
 import 'package:app_2i2i/pages/web_rtc/call_page.dart';
 import 'package:app_2i2i/services/all_providers.dart';
-import 'package:app_2i2i/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +19,6 @@ class LockedUserPage extends ConsumerStatefulWidget {
 }
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
-
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
@@ -28,25 +26,29 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       return WaitPage();
     }
 
-    final meetingStatus = lockedUserViewModel.meeting.currentStatus();
-    bool isInit = meetingStatus == MeetingValue.INIT;
-    bool isStarted = meetingStatus == MeetingValue.LOCK_COINS_STARTED;
+    final meetingStatus = lockedUserViewModel.meeting.status;
 
-    // bool isConfirmed = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && !lockedUserViewModel.amA();
-    //A-Caller
-    bool isConfirmedAndA = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amA();
-    //B-Receiver
-    bool isConfirmedAndB = meetingStatus == MeetingValue.LOCK_COINS_CONFIRMED && lockedUserViewModel.amB();
-
-    bool isActive =  meetingStatus == MeetingValue.ACTIVE;
-    log(F+' isInit : $isInit -- isStarted : $isStarted -- isConfirmedAndA : $isConfirmedAndA -- isActive : $isActive --');
-    log(F+' meeting: ${lockedUserViewModel.meeting}, user: ${lockedUserViewModel.user},');
+    bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED ||
+        meetingStatus == MeetingStatus.A_RECEIVED_REMOTE ||
+        meetingStatus == MeetingStatus.B_RECEIVED_REMOTE ||
+        meetingStatus == MeetingStatus.CALL_STARTED;
+    bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+            lockedUserViewModel.amA()) ||
+        isActive;
+    bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
+        meetingStatus == MeetingStatus.ACCEPTED ||
+        meetingStatus == MeetingStatus.TXN_CREATED ||
+        meetingStatus == MeetingStatus.TXN_SIGNED ||
+        meetingStatus == MeetingStatus.TXN_SENT ||
+        (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+            lockedUserViewModel.amB());
+    bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(
       fit: StackFit.expand,
       children: [
         Visibility(
-          visible: (isConfirmedAndA || isActive),
+          visible: showCallPage,
           child: CallPage(
               onHangPhone: (uid, meetingId) {
                 widget.onHangPhone!(uid, meetingId);
@@ -55,11 +57,10 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
               user: lockedUserViewModel.user),
         ),
         Visibility(
-            visible: (isInit || isStarted || isConfirmedAndB),
-            child: RingingPage(meeting: lockedUserViewModel.meeting)
-        ),
+            visible: showRingingPage,
+            child: RingingPage(meeting: lockedUserViewModel.meeting)),
         Visibility(
-          visible: !(isInit || isStarted || isConfirmedAndA || isConfirmedAndB || isActive),
+          visible: showWaitPage,
           child: WaitPage(),
         ),
       ],
