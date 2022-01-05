@@ -37,57 +37,60 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
       insetPadding: EdgeInsets.zero,
       actionsPadding: EdgeInsets.zero,
       actions: [
-        Column(
-          children: [
-            SizedBox(height: 10, child: Divider()),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      alignment: Alignment.center,
-                      child: Text(Strings().ok,
-                          style: Theme.of(context).textTheme.subtitle2),
+        Container(
+          width: MediaQuery.of(context).size.height * 0.35,
+          child: Column(
+            children: [
+              SizedBox(height: 10, child: Divider()),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        alignment: Alignment.center,
+                        child: Text(Strings().ok,
+                            style: Theme.of(context).textTheme.subtitle2),
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  height: 22,
-                  color: Theme.of(context).disabledColor,
-                  width: 1,
-                ),
-                Expanded(
-                  child: InkWell(
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      Navigator.pop(context);
-                      widget.onTapTalk!();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      alignment: Alignment.center,
-                      child: Text(Strings().talk,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle2!
-                              .copyWith(color: AppTheme().green)),
+                  Container(
+                    height: 26,
+                    color: Theme.of(context).disabledColor,
+                    width: 1,
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () {
+                        Navigator.pop(context);
+                        widget.onTapTalk!();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        alignment: Alignment.center,
+                        child: Text(Strings().talk,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle2!
+                                .copyWith(color: AppTheme().green)),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ],
       content: Container(
-        width: MediaQuery.of(context).size.height*0.39,
+        width: MediaQuery.of(context).size.height*0.35,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -107,11 +110,10 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                         .copyWith(fontWeight: FontWeight.w800),
                   )),
                   SizedBox(width: 6),
-                  Expanded(
-                      child: BidDurationWidget(
+                  BidDurationWidget(
                     duration: '${widget.bidInModel.speed.assetId == 0 ? 'ALGO' : widget.bidInModel.speed.assetId}/sec',
                     speed: widget.bidInModel.speed.num.toString(),
-                  ))
+                  )
                 ],
               ),
             ),
@@ -121,7 +123,6 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 autofocus: false,
                 readOnly: true,
                 textAlign: TextAlign.center,
-                maxLines: 2,
                 initialValue: '\"${widget.userModel!.bio}\"',
                 decoration: InputDecoration(
                   filled: true,

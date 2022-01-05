@@ -30,9 +30,9 @@ class _SetupBioState extends ConsumerState<SetupBio> {
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
       if (isLoaded) {
-        userNameEditController.text = user.data!.value.name;
-        bioEditController.text = user.data!.value.bio;
-        imageUrl = user.data!.value.name;
+        userNameEditController.text = user.asData!.value.name;
+        bioEditController.text = user.asData!.value.bio;
+        imageUrl = user.asData!.value.name;
       }
     });
     super.initState();

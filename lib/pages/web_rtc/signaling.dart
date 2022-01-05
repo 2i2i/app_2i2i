@@ -242,21 +242,22 @@ class Signaling {
   }
 
   Future<void> openUserMedia() async {
-    log(G + 'Signaling - openUserMedia - ${meeting.id}');
+    try {
+      log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-    final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
-    cameras = await Helper.cameras;
-    localVideo.srcObject = stream;
-    localStream = stream;
+      final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
+      cameras = await Helper.cameras;
+      localVideo.srcObject = stream;
+      localStream = stream;
 
-    remoteVideo.srcObject = await createLocalMediaStream('key');
-
+      remoteVideo.srcObject = await createLocalMediaStream('key');
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo, {String? reason}) async {
     try {
-      log(G + 'Signaling - hangUp - ${meeting.id}');
-
       final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
       final args = {
         'meetingId': meeting.id,
@@ -264,41 +265,30 @@ class Signaling {
       if (reason != null) args['reason'] = reason;
       await endMeeting(args);
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - localVideo.srcObject=${localVideo.srcObject}');
+      //Close Local A
       if (localVideo.srcObject != null) {
         List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-        tracks.forEach((track) {
-          track.stop();
-        });
+        localVideo.srcObject!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
+        localVideo.srcObject = null;
+        await localVideo.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - local track.stop');
-
+      //Close Remote B
       if (remoteStream != null) {
-        remoteStream!.getTracks().forEach((track) => track.stop());
+        List<MediaStreamTrack> tracks = remoteStream!.getTracks();
+        remoteStream!.getVideoTracks()[0].stop();
+        // tracks.forEach((track) => track.stop());
+        await remoteStream!.dispose();
       }
 
-      log(G + 'Signaling - hangUp - ${meeting.id} - remote track.stop');
+      if (peerConnection != null) {
+        peerConnection!.close();
+      }
 
-      if (peerConnection != null) peerConnection!.close();
-      log(G + 'Signaling - hangUp - ${meeting.id} - peerConnection!.close()');
+      remoteVideo.srcObject = null;
+      localVideo.srcObject = null;
 
-      // if (roomId != null) {
-      // final iceCandidatesB = await roomRef.collection('iceCandidatesB').get();
-      // iceCandidatesB.docs.forEach((document) => document.reference.delete());
-
-      // final iceCandidatesA = await roomRef.collection('iceCandidatesA').get();
-      // iceCandidatesA.docs.forEach((document) => document.reference.delete());
-
-      // await roomRef.delete();
-      // log(G + 'Signaling - hangUp - ${meeting.id} - room deleted');
-      // }
-
-
-      // localStream.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - localStream.dispose');
-      remoteStream?.dispose();
-      log(G + 'Signaling - hangUp - ${meeting.id} - remoteStream?.dispose');
     } catch (e) {
       log(e.toString());
     }
@@ -331,9 +321,5 @@ class Signaling {
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
-  }
-
-  bool checkVideoView() {
-    return remoteStream!.getVideoTracks().first.enabled;
   }
 }
