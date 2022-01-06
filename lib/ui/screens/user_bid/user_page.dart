@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,12 +38,12 @@ class _UserPageState extends ConsumerState<UserPage> {
     int bPoint = user.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
     final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
-    var statusColor = AppTheme().green;
-    if (user.status == 'OFFLINE') {
-      statusColor = AppTheme().gray;
-    } else if (user.locked) {
-      statusColor = AppTheme().red;
-    }
+    // var statusColor = AppTheme().green;
+    // if (user.status == 'OFFLINE') {
+    //   statusColor = AppTheme().gray;
+    // } else if (user.locked) {
+    //   statusColor = AppTheme().red;
+    // }
 
     return Scaffold(
       appBar: AppBar(
