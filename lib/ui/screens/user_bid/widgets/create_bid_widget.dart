@@ -1,5 +1,10 @@
-import 'dart:ui' as ui;
+import 'dart:developer';
 
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
+import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/commons/slide_to_confirm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,9 +17,9 @@ import '../../../commons/custom_text_field.dart';
 import '../../my_account/widgets/account_info.dart';
 
 class CreateBidWidget extends ConsumerStatefulWidget {
-  final ui.Image image;
+  final String uid;
 
-  const CreateBidWidget({Key? key, required this.image}) : super(key: key);
+  const CreateBidWidget({Key? key, required this.uid}) : super(key: key);
 
   @override
   _CreateBidWidgetState createState() => _CreateBidWidgetState();
@@ -22,13 +27,21 @@ class CreateBidWidget extends ConsumerStatefulWidget {
 
 class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     with SingleTickerProviderStateMixin {
-  double _value = 0;
+  AbstractAccount? account;
+  int speedNum = 0;
+  String note = '';
 
   final controller = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    if(myAccountPageViewModel is AsyncLoading || myAccountPageViewModel is AsyncError){
+      return Center(child: CupertinoActivityIndicator());
+    }
+    if(myAccountPageViewModel.accounts?.isNotEmpty??false) {
+      account ??= myAccountPageViewModel.accounts!.first;
+    }
     return Container(
       width: double.infinity,
       child: Padding(
@@ -42,15 +55,16 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      flex: 2,
-                      child: Text(Strings().createABid,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6!
-                              .copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: Theme.of(context).disabledColor))),
+                    flex: 2,
+                    child: Text(
+                      Strings().createABid,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: Theme.of(context).disabledColor,
+                          ),
+                    ),
+                  ),
                   IconButton(
                     splashColor: Colors.transparent,
                     hoverColor: Colors.transparent,
@@ -63,126 +77,124 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
               ),
               Divider(thickness: 1),
               SizedBox(height: 8),
-              CustomTextField(
-                title: Strings().bidAmount,
-                hintText: "0",
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        '${Strings().algoSec}',
-                        style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                            color: Theme.of(context).shadowColor,
-                            fontWeight: FontWeight.normal),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: CustomTextField(
+                  title: Strings().bidAmount,
+                  hintText: "0",
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text(
+                          '${Strings().algoSec}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle2!
+                              .copyWith(
+                                  color: Theme.of(context).shadowColor,
+                                  fontWeight: FontWeight.normal),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 8)
-                  ],
+                      SizedBox(width: 8)
+                    ],
+                  ),
+                  onChanged: (String? val) {
+                    val ??= '';
+                    speedNum = (num.tryParse(val) ?? 0).toInt();
+                    if(mounted) {
+                      setState(() {});
+                    }
+                  },
                 ),
               ),
-              SizedBox(height: 10),
-              CustomTextField(
-                title: Strings().note,
-                hintText: Strings().bidNote,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: CustomTextField(
+                  title: Strings().note,
+                  hintText: Strings().bidNote,
+                  onChanged: (String? val) {
+                    val ??= '';
+                    note = val;
+                  },
+                ),
               ),
-              SizedBox(height: 10),
               Container(
                 constraints: BoxConstraints(
-                  maxHeight:MediaQuery.of(context).size.height * 0.2,
+                  minHeight: 150,
+                  maxHeight: 200,
                 ),
-
                 child: myAccountPageViewModel.isLoading
                     ? Center(child: CupertinoActivityIndicator())
                     : Row(
-                  children: [
-                    IconButton(
-                        iconSize: 10,
-                        onPressed: () => controller.previousPage(duration: Duration(milliseconds: 300),curve: Curves.decelerate),
-                        icon: RotatedBox(
-                            quarterTurns: 2,
-                            child: SvgPicture.asset(
-                                'assets/icons/direction.svg'))),
+                        children: [
+                          IconButton(
+                              iconSize: 10,
+                              onPressed: () => controller.previousPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.decelerate),
+                              icon: RotatedBox(
+                                  quarterTurns: 2,
+                                  child: SvgPicture.asset(
+                                      'assets/icons/direction.svg'))),
                     Expanded(
                       child: PageView.builder(
                               controller: controller,
                               scrollDirection: Axis.horizontal,
                               itemCount:
-                                  myAccountPageViewModel.accounts!.length,
+                                  myAccountPageViewModel.accounts?.length ?? 0,
                               itemBuilder: (_, index) {
                                 return AccountInfo(
                                   key: ObjectKey(myAccountPageViewModel
                                       .accounts![index].address),
-                                  account: myAccountPageViewModel
-                                      .accounts![index],
+                                  account:
+                                      myAccountPageViewModel.accounts![index],
                                 );
                               },
-                      ),
-                    ),
-                    IconButton(
-                        iconSize: 10,
-                        onPressed: () => controller.nextPage(duration: Duration(milliseconds: 300),curve: Curves.decelerate),
-                        icon: SvgPicture.asset(
-                            'assets/icons/direction.svg')),
-                  ],
+                              onPageChanged: (int val) {
+                                account = myAccountPageViewModel.accounts
+                                    ?.elementAt(val);
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 10,
+                            onPressed: () => controller.nextPage(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.decelerate,
+                            ),
+                            icon: SvgPicture.asset(
+                              'assets/icons/direction.svg',
+                            ),
+                          ),
+                        ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: SliderTheme(
-                  data: SliderThemeData(
-                      trackHeight: 40,
-                      activeTrackColor: AppTheme().thumbColor,
-                      thumbColor: Theme.of(context).primaryColor,
-                      valueIndicatorColor: AppTheme().thumbColor,
-                      activeTickMarkColor: AppTheme().thumbColor,
-                      disabledActiveTickMarkColor: AppTheme().thumbColor,
-                      disabledActiveTrackColor: AppTheme().thumbColor,
-                      disabledInactiveTickMarkColor: AppTheme().thumbColor,
-                      disabledInactiveTrackColor: AppTheme().thumbColor,
-                      disabledThumbColor: AppTheme().thumbColor,
-                      overlayColor: Colors.transparent,
-                      inactiveTickMarkColor: AppTheme().thumbColor,
-                      inactiveTrackColor: AppTheme().thumbColor,
-                      overlappingShapeStrokeColor: AppTheme().thumbColor,
-                      trackShape: CustomTrack(mainContext: context, image: widget.image),
-                      overlayShape: RoundSliderOverlayShape(overlayRadius: 30),
-                      thumbShape: CustomSliderThumbRect(
-                          mainContext: context,
-                          thumbRadius: 20,
-                          thumbHeight: 55,
-                          max: 0,
-                          min: 10)),
-                  child: Container(
-                    width: double.infinity,
-                    child: Slider(
-                      value: _value,
-                      onChanged: (val) {
-                        _value = val;
-                        setState(() {});
-                      },
-                    ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: ConfirmationSlider(
+                  onConfirmation: () {
+                    onAddBid();
+                  },
+                  height: 50,
+                  width: getWidthForSlider(context),
+                  backgroundShape: BorderRadius.circular(12),
+                  backgroundColor: Color(0xffD2D2DF),
+                  thumbColor: isInsufficient(account)?Theme.of(context).errorColor:Theme.of(context).primaryColorDark,
+                  shadow: BoxShadow(
+                    blurRadius: 0,
+                    spreadRadius: 0,
                   ),
+                  text: getConfirmSliderText(),
+                  textStyle: isInsufficient(account)
+                      ? Theme.of(context)
+                          .textTheme
+                          .bodyText2
+                          ?.copyWith(color: Theme.of(context).errorColor)
+                      : null,
                 ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Cancel'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).shadowColor,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 6),
-                  Expanded(
-                      child:
-                      ElevatedButton(onPressed: () {}, child: Text('Create')))
-                ],
               ),
               SizedBox(height: 8),
             ],
@@ -191,193 +203,57 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
       ),
     );
   }
-}
 
-class CustomSliderThumbRect extends SliderComponentShape {
-  final double? thumbRadius;
-  final BuildContext mainContext;
-  final thumbHeight;
-  final int? min;
-  final int? max;
-
-  const CustomSliderThumbRect({
-    required this.mainContext,
-    this.thumbRadius,
-    this.thumbHeight,
-    this.min,
-    this.max,
-  });
-
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(thumbRadius!);
+  int getBalanceOfAccount(AbstractAccount? account) {
+    if (account?.balances.isNotEmpty ?? false) {
+      return account!.balances.first.assetHolding.amount;
+    }
+    return 0;
   }
 
-  @override
-  void paint(
-      PaintingContext context,
-      Offset center, {
-        Animation<double>? activationAnimation,
-        Animation<double>? enableAnimation,
-        bool? isDiscrete,
-        TextPainter? labelPainter,
-        RenderBox? parentBox,
-        SliderThemeData? sliderTheme,
-        TextDirection? textDirection,
-        double? value,
-        double? textScaleFactor,
-        Size? sizeWithOverflow,
-      }) {
-    final Canvas canvas = context.canvas;
-
-    final rRect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-          center: center, width: thumbHeight * 2, height: thumbHeight * 0.9),
-      Radius.circular(thumbRadius! * .4),
-    );
-
-    final paint = Paint()
-      ..color = AppTheme().primaryTextColor
-      ..style = PaintingStyle.fill;
-
-    TextSpan span1 = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1!.copyWith(
-            color: Theme.of(mainContext).primaryColor,
-            fontWeight: FontWeight.w800),
-        text: '${getValue(value!)} ');
-
-    TextSpan span2 = new TextSpan(
-        style: Theme.of(mainContext)
-            .textTheme
-            .overline!
-            .copyWith(color: Theme.of(mainContext).shadowColor),
-        text: '${Strings().algoSec}');
-
-    TextSpan span = new TextSpan(
-      children: [span1, span2],
-    );
-
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr);
-    tp.layout();
-    Offset textCenter =
-    Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
-
-    final Path shadowPath = Path()..addRRect(rRect);
-    canvas.drawRRect(rRect, paint);
-    canvas.drawShadow(shadowPath, Colors.grey.withAlpha(50), 4.0, false);
-    tp.paint(canvas, textCenter);
-  }
-
-  String getValue(double value) {
-    return (min! + (max! - min!) * value).round().toString();
-  }
-}
-
-class CustomTrack extends SliderTrackShape with BaseSliderTrackShape {
-  final double? thumbRadius;
-  final BuildContext mainContext;
-  final ui.Image image;
-  final thumbHeight;
-  final int? min;
-  final int? max;
-
-  const CustomTrack({
-    required this.mainContext,
-    this.thumbRadius,
-    required this.image,
-    this.thumbHeight,
-    this.min,
-    this.max,
-  });
-
-  @override
-  void paint(
-      PaintingContext context,
-      Offset offset, {
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required Animation<double> enableAnimation,
-        required TextDirection textDirection,
-        required Offset thumbCenter,
-        bool isDiscrete = false,
-        bool isEnabled = false,
-      }) {
-    assert(sliderTheme.disabledActiveTrackColor != null);
-    assert(sliderTheme.disabledInactiveTrackColor != null);
-    assert(sliderTheme.activeTrackColor != null);
-    assert(sliderTheme.inactiveTrackColor != null);
-    assert(sliderTheme.thumbShape != null);
-    if (sliderTheme.trackHeight! <= 0) {
+  onAddBid() async {
+    if(isInsufficient(account)){
       return;
     }
-
-    final ColorTween activeTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledActiveTrackColor,
-        end: sliderTheme.activeTrackColor);
-    final ColorTween inactiveTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledInactiveTrackColor,
-        end: sliderTheme.inactiveTrackColor);
-    final Paint activePaint = Paint()
-      ..color = activeTrackColorTween.evaluate(enableAnimation)!;
-    final Paint inactivePaint = Paint()
-      ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
-    final Paint leftTrackPaint;
-    final Paint rightTrackPaint;
-    switch (textDirection) {
-      case TextDirection.ltr:
-        leftTrackPaint = activePaint;
-        rightTrackPaint = inactivePaint;
-        break;
-      case TextDirection.rtl:
-        leftTrackPaint = inactivePaint;
-        rightTrackPaint = activePaint;
-        break;
+    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.uid).state).state;
+    if (addBidPageViewModel is AddBidPageViewModel) {
+      if(!addBidPageViewModel.submitting ) {
+        await connectCall(addBidPageViewModel: addBidPageViewModel);
+        Navigator.of(context).maybePop();
+      }
     }
+  }
 
-    final Rect trackRect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-      isEnabled: isEnabled,
-      isDiscrete: isDiscrete,
+  double getWidthForSlider(BuildContext context) {
+    double width = MediaQuery.of(context).size.width - 200;
+    if (width <= 250) {
+      return 250;
+    }
+    return width;
+  }
+
+  String getConfirmSliderText() {
+    if (account is AbstractAccount) {
+      if (isInsufficient(account)) {
+        return 'Insufficient balance';
+      }
+    }
+    return 'Swipe for bid';
+  }
+
+  isInsufficient(AbstractAccount? account) {
+    return getBalanceOfAccount(account) < speedNum;
+  }
+
+  Future connectCall({required AddBidPageViewModel addBidPageViewModel}) async {
+    CustomDialogs.loader(true, context);
+    var value = await addBidPageViewModel.addBid(
+      account: account,
+      balance: account?.balances.first,
+      speedNum: speedNum,
+      note: note,
     );
-
-    TextPainter tp = new TextPainter(
-        text: TextSpan(
-            text: "Swipe to bid",
-            style: Theme.of(mainContext).textTheme.caption),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    tp.layout();
-
-    final Rect leftTrackSegment = Rect.fromLTRB(
-        trackRect.left, trackRect.top, thumbCenter.dx, trackRect.bottom);
-    final RRect leftTrack =
-    RRect.fromRectAndRadius(leftTrackSegment, Radius.circular(8));
-    if (!leftTrackSegment.isEmpty)
-      context.canvas.drawRRect(leftTrack, leftTrackPaint);
-
-    final Rect rightTrackSegment = Rect.fromLTRB(
-        thumbCenter.dx, trackRect.top, trackRect.right, trackRect.bottom);
-    final RRect rightTrack =
-    RRect.fromRectAndRadius(rightTrackSegment, Radius.circular(8));
-    if (!rightTrackSegment.isEmpty)
-      context.canvas.drawRRect(rightTrack, rightTrackPaint);
-
-    tp.paint(
-        context.canvas,
-        Offset(trackRect.center.dx - (trackRect.bottom),
-            trackRect.center.dy - (trackRect.top * 0.5)));
-
-    context.canvas.drawImage(
-        image,
-        Offset(
-          trackRect.center.dx * 1.5,
-          trackRect.center.dy - (trackRect.top * 0.5),
-        ),
-        Paint());
+    log('$value');
+    CustomDialogs.loader(false, context);
   }
 }

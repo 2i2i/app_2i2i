@@ -35,6 +35,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
+      constraints: BoxConstraints(
+        minHeight: 200,
+      ),
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       decoration: BoxDecoration(
@@ -54,6 +57,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Row(
@@ -66,35 +71,41 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         fit: BoxFit.fill,
                       ),
                       SizedBox(width: 10),
-                      Text(
-                        'Algorand',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5!
-                            .copyWith(fontWeight: FontWeight.w600),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      Flexible(
+                        child: Text(
+                          'Algorand',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5!
+                              .copyWith(fontWeight: FontWeight.w600),
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(width: 6),
-                      Text(
-                        assetName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .subtitle2!
-                            .copyWith(color: Theme.of(context).disabledColor),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      Flexible(
+                        child: Text(
+                          assetName,
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle2!
+                              .copyWith(color: Theme.of(context).disabledColor),
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Text(
-                  "$amount",
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).tabBarTheme.unselectedLabelColor),
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
+                Flexible(
+                  child: Text(
+                    "$amount",
+                    style: Theme.of(context).textTheme.headline4!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 )
               ],
             ),

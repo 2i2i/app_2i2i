@@ -12,7 +12,14 @@ import 'firestore_path.dart';
 import 'firestore_service.dart';
 
 class FirestoreDatabase {
-  FirestoreDatabase();
+
+  FirestoreDatabase._internal();
+
+  static final FirestoreDatabase _singleton = FirestoreDatabase._internal();
+
+  factory FirestoreDatabase() {
+    return _singleton;
+  }
 
   final _service = FirestoreService.instance;
 

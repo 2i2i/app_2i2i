@@ -45,6 +45,7 @@ class AddBidPageViewModel {
     required AbstractAccount? account,
     required Balance? balance,
     required int speedNum,
+    String note = '',
   }) async {
     log('AddBidPageViewModel - addBid');
 
@@ -69,7 +70,7 @@ class AddBidPageViewModel {
         .doc(bidId)
         .collection('private')
         .doc('main');
-    final bidInPrivate = BidInPrivate(A: uid, addrA: addrA);
+    final bidInPrivate = BidInPrivate(A: uid, addrA: addrA,comment: note);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));

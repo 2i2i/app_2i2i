@@ -9,9 +9,7 @@ import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 
 class OtherBidInList extends ConsumerWidget {
-  OtherBidInList({required this.B, required this.database});
-
-  final FirestoreDatabase database;
+  OtherBidInList({required this.B});
   final UserModel B;
 
   @override

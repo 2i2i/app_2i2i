@@ -294,6 +294,5 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
       log('$value');
     });
     CustomDialogs.loader(false, context);
-    CustomNavigation.pop(context);
   }
 }

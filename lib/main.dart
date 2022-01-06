@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home:AuthWidget(homePageBuilder: (_) => HomePage(),),
+      // home:TestScreen(),
       // home: HipPage(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
