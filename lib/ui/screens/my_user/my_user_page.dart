@@ -129,14 +129,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                       style: Theme.of(context).textTheme.headline6),
                   noBidsText: Strings().noBidFound,
                   onTap: (BidIn bid) async {
-                    AbstractAccount? account;
-                    if (0 < bid.speed.num) {
-                      log('bid.speed.num=${bid.speed.num}');
-                      account = await _acceptBid(context, myUserPageViewModel, bid);
-                      if (account == null) return;
-                    }
                     CustomDialogs.loader(true, context);
-                    await myUserPageViewModel.acceptBid(bid, account);
+                    await myUserPageViewModel.acceptBid(bid);
                     CustomDialogs.loader(false, context);
                   },
                 ),
@@ -171,56 +165,5 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
         ],
       ),
     );
-  }
-
-  Future<AbstractAccount?> _acceptBid(BuildContext context,
-      MyUserPageViewModel myUserPageViewModel, BidIn bidIn) async {
-    final accounts = await myUserPageViewModel.accountService.getAllAccounts();
-    log('_acceptBid - accounts.length${accounts.length}');
-    final accountsBoolFutures = accounts
-        .map((a) => a.isOptedInToASA(
-            assetId: bidIn.speed.assetId, net: AlgorandNet.testnet))
-        .toList();
-    final accountsBool = await Future.wait(accountsBoolFutures);
-    log('_acceptBid - accountsBool=$accountsBool');
-
-    // if only option is good, return it
-    final numOptedInAccounts = accountsBool.where((a) => a).length;
-    if (numOptedInAccounts == 1) {
-      int firstOptedInAccountIndex = accountsBool.indexWhere((e) => e);
-      return accounts[firstOptedInAccountIndex];
-    }
-
-    return showDialog<AbstractAccount>(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Where to receive coins?'),
-            children: [
-              for (var i = 0; i < accounts.length; i++)
-                accountsBool[i]
-                    ? ListTile(
-                        title: Text(accounts[i].address.substring(0, 4)),
-                        onTap: () => Navigator.pop(context, accounts[i]),
-                      )
-                    : ListTile(
-                        title: Text(accounts[i].address.substring(0, 4)),
-                        enabled: false,
-                        trailing: IconButton(
-                            onPressed: () async {
-                              CustomDialogs.loader(true, context);
-                              log('about to optInToASA');
-                              await accounts[i].optInToASA(
-                                  assetId: bidIn.speed.assetId,
-                                  net: AlgorandNet.testnet);
-                              log('done optInToASA');
-                              CustomDialogs.loader(false, context);
-                              return Navigator.pop(context, accounts[i]);
-                            },
-                            icon: Icon(Icons.add_circle_outline)),
-                      ),
-            ],
-          );
-        });
   }
 }

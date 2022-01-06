@@ -1,4 +1,3 @@
-
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -22,11 +21,12 @@ class MyUserPageViewModel {
   final UserModelChanger userModelChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn, AbstractAccount? account) async {
+  Future acceptBid(BidIn bidIn) async {
+    final account = await accountService.getMainAccount();
     final HttpsCallable acceptBid = functions.httpsCallable('acceptBid');
     // TODO only get algorandAddress if bid.speed.num != 0
     await acceptBid({
-      'addrB': account?.address,
+      'addrB': account.address,
       'bid': bidIn.id,
     });
   }

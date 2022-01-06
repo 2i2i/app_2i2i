@@ -416,3 +416,17 @@ final estMaxDurationProvider =
 
   return null;
 });
+
+final isMainAccountEmptyProvider = FutureProvider((ref) async {
+  final accountService = ref.watch(accountServiceProvider);
+  final mainAccount = await accountService.getMainAccount();
+  for (final balance in mainAccount.balances) {
+    if (balance.assetHolding.assetId == 0) {
+      if (balance.assetHolding.amount == 0)
+        return true;
+      else
+        return false;
+    }
+  }
+  throw Exception('');
+});
