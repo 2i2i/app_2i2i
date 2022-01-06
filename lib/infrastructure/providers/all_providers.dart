@@ -1,5 +1,6 @@
 // TODO break up file into multiple files
 
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -246,6 +247,11 @@ final meetingHistoryB =
   return database.meetingHistoryB(id);
 });
 
+final bidInProvider = StreamProvider.family<BidIn?, String>((ref, bidIn) {
+  final uid = ref.watch(myUIDProvider)!;
+  final database = ref.watch(databaseProvider);
+  return database.getBidIn(uid: uid, bidId: bidIn);
+});
 final bidInPrivateProvider =
     StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
@@ -379,6 +385,35 @@ final ratingListProvider =
   return database.getUserRatings(uid);
 });
 
-final estMaxDurationProvider = Provider.family((ref, x) {
+final estMaxDurationProvider =
+    FutureProvider.family<double?, String>((ref, bidId) async {
+  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
+  final bidInAsyncValue = ref.watch(bidInProvider(bidId));
+  if (bidInAsyncValue is AsyncError || bidInAsyncValue is AsyncLoading)
+    return null;
+  final bidIn = bidInAsyncValue.value;
+  if (bidIn == null) return null;
 
+  final speed = bidIn.speed.num;
+  if (speed == 0) return double.infinity;
+
+  if (bidInPrivateAsyncValue is AsyncError ||
+      bidInPrivateAsyncValue is AsyncLoading) return null;
+  final bidInPrivate = bidInPrivateAsyncValue.value;
+  if (bidInPrivate == null) return null;
+
+  final addr = bidInPrivate.addrA!;
+  final assetId = bidIn.speed.assetId;
+
+  final accountService = ref.watch(accountServiceProvider);
+  final assetHoldings = await accountService.getAssetHoldings(
+      address: addr, net: AlgorandNet.testnet);
+
+  for (final assetHolding in assetHoldings) {
+    if (assetHolding.assetId == assetId) {
+      return (assetHolding.amount / speed).floorToDouble();
+    }
+  }
+
+  return null;
 });

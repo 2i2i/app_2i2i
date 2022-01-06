@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
   Widget build(BuildContext context) {
     final bidInPrivateAsyncValue =
         ref.watch(bidInPrivateProvider(widget.bidIn.id));
+    final estMaxDurationAsyncValue =
+        ref.watch(estMaxDurationProvider(widget.bidIn.id));
 
     return AlertDialog(
       backgroundColor: Theme.of(context).primaryColor,
@@ -130,7 +133,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 readOnly: true,
                 textAlign: TextAlign.center,
                 initialValue: bidInPrivateAsyncValue.when(
-                    data: (bidInPrivate) => '\"${bidInPrivate?.comment ?? ''}\"',
+                    data: (bidInPrivate) =>
+                        '\"${bidInPrivate?.comment ?? ''}\"',
                     error: (_, __) => '',
                     loading: () => ''),
                 decoration: InputDecoration(
@@ -151,7 +155,15 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                       fontWeight: FontWeight.normal)),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text('1 min',
+                child: Text(
+                    estMaxDurationAsyncValue.when(
+                        data: (double? estMaxDuration) {
+                          if (estMaxDuration == null) return '';
+                          final estMaxDurationInt = estMaxDuration.floor();
+                          return secondsToSensibleTimePeriod(estMaxDurationInt);
+                        },
+                        error: (_, __) => 'error',
+                        loading: () => ''),
                     style: Theme.of(context)
                         .textTheme
                         .subtitle1!
