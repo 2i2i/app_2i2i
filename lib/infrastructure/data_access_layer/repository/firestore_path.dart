@@ -11,6 +11,7 @@ class FirestorePath {
 
   static String bidIns(String uid) => 'users/$uid/bidIns';
   static String bidOuts(String uid) => 'users/$uid/bidOuts';
+  static String bidIn(String uid, String bidId) => 'users/$uid/bidIns/$bidId';
   static String bidPrivate(String uid, String bidId) => 'users/$uid/bidIns/$bidId/private/main';
 
   static String ratings(String uid) => 'users/$uid/ratings/';
