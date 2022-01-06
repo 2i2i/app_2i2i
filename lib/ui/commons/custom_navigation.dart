@@ -8,9 +8,7 @@ import '../screens/home/home_page.dart';
 import '../screens/locked_user/locked_user_page.dart';
 
 class CustomNavigation {
-  static pop(BuildContext context) {
-    Navigator.pop(context);
-  }
+
 
   static push(BuildContext context, Widget page, String pageName) {
     log('============\n\n $pageName \n\n============');

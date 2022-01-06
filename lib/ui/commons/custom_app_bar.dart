@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import '../../infrastructure/routes/app_routes.dart';
 import '../screens/hip/hip_page.dart';
+import '../screens/rating/rating_page.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
@@ -22,7 +23,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               RectangleBox(
-                // onTap: () => CustomAlertWidget.showBidAlert(context, RatingPage()),
+                onTap: () => CustomNavigation.push(context, RatingPage(),Routes.RATING),
                 // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
                 radius: 46,
                 icon: SvgPicture.asset(

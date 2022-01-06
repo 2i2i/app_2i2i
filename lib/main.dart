@@ -70,6 +70,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home:AuthWidget(homePageBuilder: (_) => HomePage(),),
+      // home:TestScreen(),
       // home: HipPage(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,

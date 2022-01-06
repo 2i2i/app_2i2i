@@ -1,13 +1,9 @@
 import 'dart:math';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-import 'package:app_2i2i/infrastructure/commons/theme.dart';
+
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
@@ -25,49 +21,29 @@ class UserPage extends ConsumerStatefulWidget {
 
 class _UserPageState extends ConsumerState<UserPage> {
 
-  late UserModel B;
-
-  ui.Image? _image;
-
-  @override
-  void initState() {
-    _loadImage();
-    super.initState();
-  }
-
-  _loadImage() async {
-    ByteData bd = await rootBundle.load("assets/line.png");
-
-    final Uint8List bytes = Uint8List.view(bd.buffer);
-
-    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
-
-    final ui.Image image = (await codec.getNextFrame()).image;
-
-    setState(() => _image = image);
-  }
 
   @override
   Widget build(BuildContext context) {
-    final authStateChanges = ref.watch(authStateChangesProvider);
-    if (authStateChanges is AsyncLoading) return WaitPage();
-
-    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
-    if (myUserPageViewModel == null) return WaitPage();
-
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
-    if (userPageViewModel == null) return WaitPage();
+    if (userPageViewModel == null ||
+        userPageViewModel is AsyncError ||
+        userPageViewModel is AsyncLoading) {
+      return WaitPage();
+    }
 
-    B = userPageViewModel.user;
+    var user = userPageViewModel.user;
 
-    final shortBioStart = B.bio.indexOf(RegExp(r'\s')) + 1;
+    final shortBioStart = user.bio.indexOf(RegExp(r'\s')) + 1;
     int aPoint = shortBioStart + 10;
-    int bPoint = B.bio.length;
+    int bPoint = user.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
-    final shortBio = B.bio.substring(shortBioStart, shortBioEnd);
-    var statusColor = AppTheme().green;
-    if (B.status == 'OFFLINE') statusColor = AppTheme().gray;
-    if (B.locked) statusColor = AppTheme().red;
+    final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
+    // var statusColor = AppTheme().green;
+    // if (user.status == 'OFFLINE') {
+    //   statusColor = AppTheme().gray;
+    // } else if (user.locked) {
+    //   statusColor = AppTheme().red;
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -77,18 +53,14 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomAlertWidget.showBidAlert(
+        onTap: () {
+          CustomAlertWidget.showBidAlert(
             context,
             CreateBidWidget(
-              image: _image!,
-            )),
-        /*
-        onTap: () => CustomNavigation.push(
-            context,
-            AddBidPage(
-              uid: B.id,
+              uid: user.id,
             ),
-            Routes.BIDPAGE),*/
+          );
+        },
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
@@ -126,18 +98,20 @@ class _UserPageState extends ConsumerState<UserPage> {
                 Expanded(
                   child: ListTile(
                     title: Text(
-                      B.name,
+                      user.name,
                       style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).disabledColor),
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).disabledColor,
+                          ),
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         shortBio.toString().trim(),
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontWeight: FontWeight.normal,
-                            color: Theme.of(context).disabledColor),
+                              fontWeight: FontWeight.normal,
+                              color: Theme.of(context).disabledColor,
+                            ),
                       ),
                     ),
                   ),
@@ -147,8 +121,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             Divider(),
             Expanded(
               child: OtherBidInList(
-                B: B,
-                database: myUserPageViewModel.database,
+                B: user,
               ),
             ),
           ],
@@ -179,9 +152,12 @@ class _UserPageState extends ConsumerState<UserPage> {
           height: 40,
           width: 40,
           child: Center(
-              child: Text("${name.toString().isNotEmpty ? name : "X"}"
+            child: Text(
+              "${name.toString().isNotEmpty ? name : "X"}"
                   .substring(0, 1)
-                  .toUpperCase())),
+                  .toUpperCase(),
+            ),
+          ),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color.fromRGBO(214, 219, 134, 1),

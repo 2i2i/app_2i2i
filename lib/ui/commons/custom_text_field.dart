@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   final String? hintText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
 
   const CustomTextField(
@@ -13,7 +14,7 @@ class CustomTextField extends StatelessWidget {
       this.hintText,
       this.prefixIcon,
       this.suffixIcon,
-      this.controller})
+      this.controller, this.onChanged})
       : super(key: key);
 
   @override
@@ -27,13 +28,14 @@ class CustomTextField extends StatelessWidget {
                 .caption!
                 .copyWith(color: Theme.of(context).shadowColor)),
         SizedBox(height: 4),
-        TextField(
+        TextFormField(
           controller: controller,
           autofocus: false,
           style: Theme.of(context)
               .textTheme
               .subtitle2!
               .copyWith(fontWeight: FontWeight.normal),
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,
             filled: true,

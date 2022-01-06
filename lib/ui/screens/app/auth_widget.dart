@@ -19,8 +19,7 @@ class AuthWidget extends ConsumerWidget {
         final signUpViewModel = ref.read(setupUserViewModelProvider);
         if (!signUpViewModel.signUpInProcess) {
           return SignInScreen(
-            headerBuilder: (context, constraints, shrinkOffset) =>
-                SvgPicture.asset(
+            headerBuilder: (context, constraints, shrinkOffset) => SvgPicture.asset(
               'assets/icons/appbar_icon.svg',
               width: 55,
               height: 65,

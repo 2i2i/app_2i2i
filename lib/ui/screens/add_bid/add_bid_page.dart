@@ -1,6 +1,5 @@
 
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -294,6 +293,5 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
       log('$value');
     });
     CustomDialogs.loader(false, context);
-    CustomNavigation.pop(context);
   }
 }
