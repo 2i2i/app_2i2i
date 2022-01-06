@@ -34,6 +34,8 @@ class TextProfileView extends StatelessWidget {
   final VoidCallback? onTap;
   final TextStyle? style;
   final bool hideShadow;
+  final bool isRating;
+  final bool hideStatus;
 
   const TextProfileView(
       {Key? key,
@@ -42,7 +44,9 @@ class TextProfileView extends StatelessWidget {
       this.statusColor,
       this.onTap,
       this.style,
-      this.hideShadow = false})
+      this.hideShadow = false,
+      this.isRating = false,
+      this.hideStatus = false})
       : super(key: key);
 
   @override
@@ -65,10 +69,10 @@ class TextProfileView extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                             offset: Offset(2, 4),
-                            blurRadius: 12,
+                            blurRadius: 14,
                             color: Color.fromRGBO(
-                                0, 0, 0, 0.12) // changes position of shadow
-                            ),
+                                0, 0, 0, 0.12)
+                        ),
                       ],
                     )
                   : null,
@@ -83,9 +87,11 @@ class TextProfileView extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "${text.toString().isNotEmpty ? text : "X"}"
-                            .substring(0, 1)
-                            .toUpperCase(),
+                        isRating
+                            ? "${text.toString().isNotEmpty ? text : "0"}"
+                            : "${text.toString().isNotEmpty ? text : "X"}"
+                                .substring(0, 1)
+                                .toUpperCase(),
                         style: style ??
                             Theme.of(context)
                                 .textTheme
@@ -94,20 +100,21 @@ class TextProfileView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 1,
-                    right: 1,
-                    child: Container(
-                      width: 15,
-                      height: 15,
-                      child: Material(
-                        color: statusColor,
-                        shape: CircleBorder(
-                            side: BorderSide(color: Colors.white, width: 3)),
-                        // child: Icon(Icons.check, color: Colors.white,),
+                  if (!hideStatus)
+                    Positioned(
+                      bottom: 1,
+                      right: 1,
+                      child: Container(
+                        width: 15,
+                        height: 15,
+                        child: Material(
+                          color: statusColor,
+                          shape: CircleBorder(
+                              side: BorderSide(color: Colors.white, width: 3)),
+                          // child: Icon(Icons.check, color: Colors.white,),
+                        ),
                       ),
-                    ),
-                  )
+                    )
                 ],
               ),
             ),
