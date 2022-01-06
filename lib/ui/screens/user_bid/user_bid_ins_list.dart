@@ -37,58 +37,37 @@ class UserBidInsList extends ConsumerWidget {
 
   final void Function(BidIn bid) onTap;
 
-  Stream<List<BidAndUser>> sortBidInStream(
-      WidgetRef ref, String uid, Future<List<BidIn>> bidInsFuture) async* {
-    final bidIns = await bidInsFuture;
-    var bidInsWithUser = bidIns.map((bid) {
-      final user = ref.watch(bidUserProvider(bid.id))!;
-      return BidAndUser(bid, user);
-    }).toList();
-
-    final myPrivateUserAsyncValue = ref.watch(userPrivateProvider(uid));
-
-    // filter out blocked users
+  int bidAndUserSort(BidAndUser b1, BidAndUser b2,
+      AsyncValue<UserModelPrivate> myPrivateUserAsyncValue) {
+    if (b1.user.status == 'ONLINE' && b2.user.status != 'ONLINE') return -1;
+    if (b1.user.status != 'ONLINE' && b2.user.status == 'ONLINE') return 1;
+    // both ONLINE xor OFFLINE
+    if (b1.user.isInMeeting() && !b2.user.isInMeeting()) return 1;
+    if (!b1.user.isInMeeting() && b2.user.isInMeeting()) return -1;
+    // both in meeting xor neither
     if (!(myPrivateUserAsyncValue is AsyncError) &&
         !(myPrivateUserAsyncValue is AsyncLoading)) {
-      final myPrivateUser = myPrivateUserAsyncValue.value!;
-      bidInsWithUser = bidInsWithUser
-          .where((bidAndUser) =>
-              !myPrivateUser.blocked.contains(bidAndUser.user.id))
-          .toList();
-    }
-
-    // sort
-    bidInsWithUser.sort((BidAndUser b1, BidAndUser b2) {
-      if (b1.user.status == 'ONLINE' && b2.user.status != 'ONLINE') return -1;
-      if (b1.user.status != 'ONLINE' && b2.user.status == 'ONLINE') return 1;
-      // both ONLINE xor OFFLINE
-      if (b1.user.isInMeeting() && !b2.user.isInMeeting()) return 1;
-      if (!b1.user.isInMeeting() && b2.user.isInMeeting()) return -1;
-      // both in meeting xor neither
-      if (!(myPrivateUserAsyncValue is AsyncError) &&
-          !(myPrivateUserAsyncValue is AsyncLoading)) {
-        final myPrivateUser = myPrivateUserAsyncValue.value!;
+      final myPrivateUser = myPrivateUserAsyncValue.value;
+      if (myPrivateUser != null) {
         if (myPrivateUser.friends.contains(b1.user.id) &&
             !myPrivateUser.friends.contains(b2.user.id)) return -1;
         if (!myPrivateUser.friends.contains(b1.user.id) &&
             myPrivateUser.friends.contains(b2.user.id)) return 1;
         // both friends xor not
       }
-      if (b1.bid.speed.num < b2.bid.speed.num) return 1;
-      if (b2.bid.speed.num < b1.bid.speed.num) return -1;
-      return -1;
-    });
-
-    yield bidInsWithUser;
+    }
+    if (b1.bid.speed.num < b2.bid.speed.num) return 1;
+    if (b2.bid.speed.num < b1.bid.speed.num) return -1;
+    return -1;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myPrivateUserAsyncValue = ref.watch(userPrivateProvider(uid));
+
     return StreamBuilder(
-        stream: sortBidInStream(
-            ref, uid, FirestoreDatabase().bidInsStream(uid: uid).first),
-        builder:
-            (BuildContext context, AsyncSnapshot<List<BidAndUser>> snapshot) {
+        stream: FirestoreDatabase().bidInsStream(uid: uid),
+        builder: (BuildContext context, AsyncSnapshot<List<BidIn>> snapshot) {
           log('UserBidInsList - build - uid=$uid - snapshot.hasData=${snapshot.hasData}');
           if (snapshot.hasData) {
             log('UserBidInsList - build - snapshot.data.length=${snapshot.data!.length}');
@@ -96,11 +75,31 @@ class UserBidInsList extends ConsumerWidget {
               return NoBidPage(noBidsText: noBidsText);
             }
 
+            final bidIns = snapshot.data!;
+            var bidInsWithUser = bidIns.map((bid) {
+              final user = ref.watch(bidUserProvider(bid.id))!;
+              return BidAndUser(bid, user);
+            }).toList();
+            // filter out blocked users
+            if (!(myPrivateUserAsyncValue is AsyncError) &&
+                !(myPrivateUserAsyncValue is AsyncLoading)) {
+              final myPrivateUser = myPrivateUserAsyncValue.value;
+              if (myPrivateUser != null) {
+                bidInsWithUser = bidInsWithUser
+                    .where((bidAndUser) =>
+                        !myPrivateUser.blocked.contains(bidAndUser.user.id))
+                    .toList();
+              }
+            }
+            // sort
+            bidInsWithUser.sort(
+                (b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
+
             return ListView.builder(
-                itemCount: snapshot.data!.length,
+                itemCount: bidInsWithUser.length,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 itemBuilder: (_, ix) {
-                  BidAndUser bidAndUser = snapshot.data![ix];
+                  BidAndUser bidAndUser = bidInsWithUser[ix];
                   BidIn bid = bidAndUser.bid;
                   UserModel userModel = bidAndUser.user;
 
