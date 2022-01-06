@@ -11,7 +11,6 @@ import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
 
-
 class FirestoreDatabase {
   FirestoreDatabase();
 
@@ -51,7 +50,8 @@ class FirestoreDatabase {
   }
 
   //<editor-fold desc="Rating module">
-  Future<void> addRating(String uid, String meetingId, RatingModel rating) => _service
+  Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
+      _service
           .createData(
         path: FirestorePath.newRating(uid, meetingId),
         data: rating.toMap(),
@@ -140,40 +140,15 @@ class FirestoreDatabase {
             UserModelPrivate.fromMap(data, documentId),
       );
 
-  Stream<List<UserModel?>> usersStream({List<String> tags = const <String>[]}) {
-    // log(H + 'FirestoreDatabase - usersStream - tags=$tags');
+  Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
+    log(I + 'usersStream - tags=$tags');
     return _service.collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) {
-        try {
-          final user = UserModel.fromMap(data, documentId);
-          // log(H + 'FirestoreDatabase - usersStream - user=$user');
-          return user;
-        } catch (e) {
-          return null;
-        }
-      },
-      queryBuilder: (query) {
-        if (tags.isEmpty) return query.orderBy('status', descending: true);
-        return query.where('tags', arrayContainsAny: tags).orderBy('status');
-      },
-      // sort: (UserModel? u1, UserModel? u2) {
-      //   if (u1 == null && u2 == null) return 1;
-      //   if (u1 == null && u2 != null) return 1;
-      //   if (u1 != null && u2 == null) return -1;
-      //   if (u1!.status == 'ONLINE' && u2!.status != 'ONLINE') return 1;
-      //   if (u1.status != 'ONLINE' && u2!.status == 'ONLINE') return -1;
-      //   if (u1.status != 'ONLINE' && u2!.status != 'ONLINE') {
-      //     if (u1.locked && !u2.locked) return 1;
-      //     if (!u1.locked && u2.locked) return -1;
-      //   }
-
-      //   return 1;
-      // },
+      builder: (data, documentId) => UserModel.fromMap(data, documentId),
+      queryBuilder: tags.isEmpty
+          ? null
+          : (query) => query.where('tags', arrayContainsAny: tags),
     );
-    //   .handleError((value) {
-    // log(value);
-    // });
   }
 
   Stream<Room> roomStream({required String meetingId}) =>
