@@ -5,7 +5,7 @@ import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../setup_account/setup_account.dart';
-import 'bid_duration_widget.dart';
+import 'bid_speed_widget.dart';
 
 class BidAlertWidget extends StatefulWidget {
   const BidAlertWidget({Key? key}) : super(key: key);
@@ -36,9 +36,9 @@ class _BidAlertWidgetState extends State<BidAlertWidget> {
                             color: Theme.of(context).disabledColor))),
                 Container(
                   width: kToolbarHeight * 2.48,
-                  child: BidDurationWidget(
+                  child: BidSpeedWidget(
                     speed: '5',
-                    duration: 'Algo/sec',
+                    unit: 'Algo/sec',
                   ),
                 ),
                 IconButton(

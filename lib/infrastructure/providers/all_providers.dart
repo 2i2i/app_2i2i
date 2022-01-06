@@ -65,7 +65,7 @@ final userPrivateProvider =
 });
 
 final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
-  final bidInPrivateAsyncValue = ref.watch(getBidInPrivate(bidId));
+  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
   if (bidInPrivateAsyncValue is AsyncLoading ||
       bidInPrivateAsyncValue is AsyncError) {
     return null;
@@ -246,7 +246,7 @@ final meetingHistoryB =
   return database.meetingHistoryB(id);
 });
 
-final getBidInPrivate =
+final bidInPrivateProvider =
     StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
@@ -377,4 +377,8 @@ final ratingListProvider =
     StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
+});
+
+final estMaxDurationProvider = Provider.family((ref, x) {
+
 });

@@ -112,7 +112,7 @@ class UserBidInsList extends ConsumerWidget {
                     onTap: () => CustomDialogs.infoDialog(
                         context: context,
                         child: BidDialogWidget(
-                          bidInModel: bid,
+                          bidIn: bid,
                           onTapTalk: () => onTap(bid),
                           userModel: userModel,
                         )),

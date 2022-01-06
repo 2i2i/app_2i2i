@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 
-class BidDurationWidget extends StatelessWidget {
+class BidSpeedWidget extends StatelessWidget {
   final String speed;
-  final String duration;
+  final String unit;
 
-  const BidDurationWidget(
-      {Key? key, required this.speed, required this.duration})
+  const BidSpeedWidget(
+      {Key? key, required this.speed, required this.unit})
       : super(key: key);
 
   @override
@@ -39,7 +39,7 @@ class BidDurationWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline6!.copyWith(
                         fontWeight: FontWeight.w800, color: AppTheme().green)),
               ),
-              Text('$duration',
+              Text('$unit',
                   style: Theme.of(context).textTheme.subtitle2!.copyWith(
                         fontWeight: FontWeight.w400,
                       )),
