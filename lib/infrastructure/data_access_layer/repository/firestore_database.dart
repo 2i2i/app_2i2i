@@ -188,7 +188,13 @@ class FirestoreDatabase {
     );
   }
 
-  //<editor-fold desc="Meeting Module">
+  //<editor-fold desc="Meeting Module">\
+  Stream<BidIn?> getBidIn(
+          {required String uid, required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidIn(uid, bidId),
+        builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      );
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(
