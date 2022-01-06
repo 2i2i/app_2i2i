@@ -1,15 +1,9 @@
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
-
-import '../../infrastructure/commons/theme.dart';
 import '../../infrastructure/routes/app_routes.dart';
 import '../screens/hip/hip_page.dart';
-import '../screens/qr_code/qr_code_page.dart';
-import '../screens/setup_account/setup_account.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;

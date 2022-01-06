@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
@@ -14,7 +15,6 @@ import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../user_bid/user_page.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   @override
@@ -55,28 +55,76 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
+  int usersSort(
+      UserModel u1,
+      UserModel u2,
+      AsyncValue<UserModelPrivate> userPrivateAsyncValue,
+      List<String> keywords) {
+    if (u1.status == 'ONLINE' && u2.status != 'ONLINE') return -1;
+    if (u1.status != 'ONLINE' && u2.status == 'ONLINE') return 1;
+    // both ONLINE xor OFFLINE
+    if (u1.isInMeeting() && !u2.isInMeeting()) return 1;
+    if (!u1.isInMeeting() && u2.isInMeeting()) return -1;
+    // both inMeeting xor not
+
+    if (!(userPrivateAsyncValue is AsyncError) &&
+        !(userPrivateAsyncValue is AsyncLoading)) {
+      final userPrivate = userPrivateAsyncValue.value;
+      if (userPrivate != null) {
+        if (userPrivate.friends.contains(u1.id) &&
+            !userPrivate.friends.contains(u2.id)) return -1;
+        if (!userPrivate.friends.contains(u1.id) &&
+            userPrivate.friends.contains(u2.id)) return 1;
+        if (userPrivate.blocked.contains(u1.id) &&
+            !userPrivate.blocked.contains(u2.id)) return 1;
+        if (!userPrivate.blocked.contains(u1.id) &&
+            userPrivate.blocked.contains(u2.id)) return -1;
+      }
+    }
+
+    if (keywords.isNotEmpty) {
+      final u1Tags = UserModel.tagsFromBio(u1.bio).toSet();
+      final u2Tags = UserModel.tagsFromBio(u2.bio).toSet();
+      final keywordsSet = keywords.toSet();
+      final u1Match = keywordsSet.intersection(u1Tags).length;
+      final u2Match = keywordsSet.intersection(u2Tags).length;
+      if (u2Match < u1Match) return -1;
+      if (u1Match < u2Match) return 1;
+    }
+
+    if (u1.rating != null && u2.rating == null) return -1;
+    if (u1.rating == null && u2.rating != null) return 1;
+    if (u1.rating == null && u2.rating == null) return -1;
+    if (u2.rating! < u1.rating!) return -1;
+    if (u1.rating! < u2.rating!) return 1;
+
+    return -1;
+  }
+
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
     final userModelChanger = ref.watch(userModelChangerProvider)!;
-    // log(H + '_SearchPageState - _buildContents - filter=$filter');
 
     return StreamBuilder(
       stream: FirestoreDatabase().usersStream(tags: filter),
-      builder: (BuildContext contextMain, AsyncSnapshot<dynamic> snapshot) {
-        // log(H + '_SearchPageState - _buildContents - snapshot=$snapshot');
+      builder:
+          (BuildContext contextMain, AsyncSnapshot<List<UserModel>> snapshot) {
         if (snapshot.hasData) {
+          log(I +
+              '_buildContents - snapshot.hasData - snapshot.data.length=${snapshot.data!.length}');
+
+          final users = snapshot.data!;
+          users.sort(
+              (u1, u2) => usersSort(u1, u2, userPrivateAsyncValue, filter));
+
           return ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              itemCount: snapshot.data.length,
+              itemCount: users.length,
               itemBuilder: (_, ix) {
-                // log(H + 'Search - _buildContents - ix=$ix');
-                if (snapshot.data[ix] == null) return Container();
-                final user = snapshot.data[ix]! as UserModel;
+                final user = users[ix];
                 if (user.name.isEmpty) return Container();
-                // log(H +
-                //     'Search - _buildContents - !user.name.isEmpty - user=$user');
 
                 final name = user.name;
                 final bio = user.bio;
@@ -89,7 +137,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                 var statusColor = AppTheme().green;
                 if (user.status == 'OFFLINE') statusColor = AppTheme().gray;
-                if (user.locked) statusColor = AppTheme().red;
+                if (user.isInMeeting()) statusColor = AppTheme().red;
 
                 final isFriend = !(userPrivateAsyncValue is AsyncError) &&
                     !(userPrivateAsyncValue is AsyncLoading) &&
