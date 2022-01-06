@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,15 +7,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
-import 'bid_duration_widget.dart';
+import 'bid_speed_widget.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
-  final BidIn bidInModel;
+  final BidIn bidIn;
   final GestureTapCallback? onTapTalk;
   final UserModel? userModel;
 
   const BidDialogWidget(
-      {Key? key, required this.bidInModel, this.userModel, this.onTapTalk})
+      {Key? key, required this.bidIn, this.userModel, this.onTapTalk})
       : super(key: key);
 
   @override
@@ -29,6 +30,9 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final bidInPrivateAsyncValue =
+        ref.watch(bidInPrivateProvider(widget.bidIn.id));
+
     return AlertDialog(
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 0,
@@ -54,7 +58,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         alignment: Alignment.center,
-                        child: Text(Strings().ok,
+                        child: Text(Strings().cancel,
                             style: Theme.of(context).textTheme.subtitle2),
                       ),
                     ),
@@ -91,7 +95,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
         ),
       ],
       content: Container(
-        width: MediaQuery.of(context).size.height*0.35,
+        width: MediaQuery.of(context).size.height * 0.35,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -111,9 +115,10 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                         .copyWith(fontWeight: FontWeight.w800),
                   )),
                   SizedBox(width: 6),
-                  BidDurationWidget(
-                    duration: '${widget.bidInModel.speed.assetId == 0 ? 'ALGO' : widget.bidInModel.speed.assetId}/sec',
-                    speed: widget.bidInModel.speed.num.toString(),
+                  BidSpeedWidget(
+                    speed: widget.bidIn.speed.num.toString(),
+                    unit:
+                        '${widget.bidIn.speed.assetId == 0 ? 'ALGO' : widget.bidIn.speed.assetId}/sec',
                   )
                 ],
               ),
@@ -124,7 +129,10 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 autofocus: false,
                 readOnly: true,
                 textAlign: TextAlign.center,
-                initialValue: '\"${widget.userModel!.bio}\"',
+                initialValue: bidInPrivateAsyncValue.when(
+                    data: (bidInPrivate) => '\"${bidInPrivate?.comment ?? ''}\"',
+                    error: (_, __) => '',
+                    loading: () => ''),
                 decoration: InputDecoration(
                   filled: true,
                   contentPadding:

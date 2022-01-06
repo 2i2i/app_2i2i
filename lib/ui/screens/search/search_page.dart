@@ -58,7 +58,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   int usersSort(
       UserModel u1,
       UserModel u2,
-      AsyncValue<UserModelPrivate> userPrivateAsyncValue,
       List<String> keywords) {
     if (u1.status == 'ONLINE' && u2.status != 'ONLINE') return -1;
     if (u1.status != 'ONLINE' && u2.status == 'ONLINE') return 1;
@@ -66,21 +65,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     if (u1.isInMeeting() && !u2.isInMeeting()) return 1;
     if (!u1.isInMeeting() && u2.isInMeeting()) return -1;
     // both inMeeting xor not
-
-    if (!(userPrivateAsyncValue is AsyncError) &&
-        !(userPrivateAsyncValue is AsyncLoading)) {
-      final userPrivate = userPrivateAsyncValue.value;
-      if (userPrivate != null) {
-        if (userPrivate.friends.contains(u1.id) &&
-            !userPrivate.friends.contains(u2.id)) return -1;
-        if (!userPrivate.friends.contains(u1.id) &&
-            userPrivate.friends.contains(u2.id)) return 1;
-        if (userPrivate.blocked.contains(u1.id) &&
-            !userPrivate.blocked.contains(u2.id)) return 1;
-        if (!userPrivate.blocked.contains(u1.id) &&
-            userPrivate.blocked.contains(u2.id)) return -1;
-      }
-    }
 
     if (keywords.isNotEmpty) {
       final u1Tags = UserModel.tagsFromBio(u1.bio).toSet();
@@ -116,8 +100,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               '_buildContents - snapshot.hasData - snapshot.data.length=${snapshot.data!.length}');
 
           final users = snapshot.data!;
-          users.sort(
-              (u1, u2) => usersSort(u1, u2, userPrivateAsyncValue, filter));
+          users.sort((u1, u2) => usersSort(
+              u1,
+              u2,
+              filter));
 
           return ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
