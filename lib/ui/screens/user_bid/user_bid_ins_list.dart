@@ -20,7 +20,7 @@ import 'widgets/bid_dialog_widget.dart';
 class BidAndUser {
   const BidAndUser(this.bid, this.user);
   final BidIn bid;
-  final UserModel user;
+  final UserModel? user;
 }
 
 class UserBidInsList extends ConsumerWidget {
@@ -39,20 +39,23 @@ class UserBidInsList extends ConsumerWidget {
 
   int bidAndUserSort(BidAndUser b1, BidAndUser b2,
       AsyncValue<UserModelPrivate> myPrivateUserAsyncValue) {
-    if (b1.user.status == 'ONLINE' && b2.user.status != 'ONLINE') return -1;
-    if (b1.user.status != 'ONLINE' && b2.user.status == 'ONLINE') return 1;
+    if (b1.user == null && b2.user != null) return 1;
+    if (b1.user != null && b2.user == null) return -1;
+    if (b1.user == null && b2.user == null) return -1;
+    if (b1.user!.status == 'ONLINE' && b2.user!.status != 'ONLINE') return -1;
+    if (b1.user!.status != 'ONLINE' && b2.user!.status == 'ONLINE') return 1;
     // both ONLINE xor OFFLINE
-    if (b1.user.isInMeeting() && !b2.user.isInMeeting()) return 1;
-    if (!b1.user.isInMeeting() && b2.user.isInMeeting()) return -1;
+    if (b1.user!.isInMeeting() && !b2.user!.isInMeeting()) return 1;
+    if (!b1.user!.isInMeeting() && b2.user!.isInMeeting()) return -1;
     // both in meeting xor neither
     if (!(myPrivateUserAsyncValue is AsyncError) &&
         !(myPrivateUserAsyncValue is AsyncLoading)) {
       final myPrivateUser = myPrivateUserAsyncValue.value;
       if (myPrivateUser != null) {
-        if (myPrivateUser.friends.contains(b1.user.id) &&
-            !myPrivateUser.friends.contains(b2.user.id)) return -1;
-        if (!myPrivateUser.friends.contains(b1.user.id) &&
-            myPrivateUser.friends.contains(b2.user.id)) return 1;
+        if (myPrivateUser.friends.contains(b1.user!.id) &&
+            !myPrivateUser.friends.contains(b2.user!.id)) return -1;
+        if (!myPrivateUser.friends.contains(b1.user!.id) &&
+            myPrivateUser.friends.contains(b2.user!.id)) return 1;
         // both friends xor not
       }
     }
@@ -76,11 +79,12 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             final bidIns = snapshot.data!;
+            // log(J + 'UserBidInsList - build - bidIns=$bidIns');
             var bidInsWithUser = bidIns.map((bid) {
+              // log(J + 'UserBidInsList - build - bid=$bid');
               final user = ref.watch(bidUserProvider(bid.id));
-              if(user != null) {
-                return BidAndUser(bid, user);
-              }
+              // log(J + 'UserBidInsList - build - user=$user');
+              return BidAndUser(bid, user);
             }).toList();
             // filter out blocked users
             if (!(myPrivateUserAsyncValue is AsyncError) &&
@@ -89,7 +93,8 @@ class UserBidInsList extends ConsumerWidget {
               if (myPrivateUser != null) {
                 bidInsWithUser = bidInsWithUser
                     .where((bidAndUser) =>
-                        !myPrivateUser.blocked.contains(bidAndUser?.user.id))
+                        bidAndUser.user != null &&
+                        !myPrivateUser.blocked.contains(bidAndUser?.user!.id))
                     .toList();
               }
             }
@@ -102,8 +107,10 @@ class UserBidInsList extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 itemBuilder: (_, ix) {
                   BidAndUser bidAndUser = bidInsWithUser[ix]!;
+                  if (bidAndUser.user == null) return Container();
+
                   BidIn bid = bidAndUser.bid;
-                  UserModel userModel = bidAndUser.user;
+                  UserModel userModel = bidAndUser.user!;
 
                   var statusColor = AppTheme().green;
                   if (userModel.status == 'OFFLINE')

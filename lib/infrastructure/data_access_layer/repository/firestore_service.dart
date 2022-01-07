@@ -4,7 +4,8 @@ class FirestoreService {
   FirestoreService._();
   static final instance = FirestoreService._();
 
-  String newDocId({required String path}) => FirebaseFirestore.instance.collection(path).doc().id;
+  String newDocId({required String path}) =>
+      FirebaseFirestore.instance.collection(path).doc().id;
 
   Future<void> createData({
     required String path,
@@ -22,7 +23,6 @@ class FirestoreService {
     bool merge = false,
   }) async {
     final reference = FirebaseFirestore.instance.doc(path);
-    print('$path: $data');
     await reference.set(data, SetOptions(merge: merge));
   }
 

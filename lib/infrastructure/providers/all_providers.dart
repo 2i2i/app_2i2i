@@ -65,13 +65,17 @@ final userPrivateProvider =
 });
 
 final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
+  // log(J + 'bidUserProvider - bidId=$bidId');
   final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
+  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
   if (bidInPrivateAsyncValue is AsyncLoading ||
       bidInPrivateAsyncValue is AsyncError) {
     return null;
   }
   final uid = bidInPrivateAsyncValue.value!.A;
+  // log(J + 'bidUserProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
+  // log(J + 'bidUserProvider - user=$user');
   if (user is AsyncLoading || user is AsyncError) {
     return null;
   }
@@ -228,10 +232,25 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final topMeetingProvider =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
-  final database = ref.watch(databaseProvider);
-  return database.topMeetingStream();
+final topSpeedsProvider = FutureProvider((ref) async {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  final HttpsCallable topSpeedMeetings =
+      functions.httpsCallable('topSpeedMeetings');
+  final topMeetingsData = await topSpeedMeetings();
+  final topMeetings = topMeetingsData.data as List;
+  return topMeetings
+      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
+      .toList();
+});
+final topDurationsProvider = FutureProvider((ref) async {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  final HttpsCallable topDurationMeetings =
+      functions.httpsCallable('topDurationMeetings');
+  final topMeetingsData = await topDurationMeetings();
+  final topMeetings = topMeetingsData.data as List;
+  return topMeetings
+      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
+      .toList();
 });
 
 final meetingHistoryA =
@@ -415,4 +434,18 @@ final estMaxDurationProvider =
   }
 
   return null;
+});
+
+final isMainAccountEmptyProvider = FutureProvider((ref) async {
+  final accountService = ref.watch(accountServiceProvider);
+  final mainAccount = await accountService.getMainAccount();
+  for (final balance in mainAccount.balances) {
+    if (balance.assetHolding.assetId == 0) {
+      if (balance.assetHolding.amount == 0)
+        return true;
+      else
+        return false;
+    }
+  }
+  throw Exception('');
 });

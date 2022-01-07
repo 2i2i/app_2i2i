@@ -35,6 +35,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
         ref.watch(bidInPrivateProvider(widget.bidIn.id));
     final estMaxDurationAsyncValue =
         ref.watch(estMaxDurationProvider(widget.bidIn.id));
+    final isMainAccountEmptyAsyncValue = ref.watch(isMainAccountEmptyProvider);
 
     return AlertDialog(
       backgroundColor: Theme.of(context).primaryColor,
@@ -158,8 +159,9 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 child: Text(
                     estMaxDurationAsyncValue.when(
                         data: (double? estMaxDuration) {
-                          if (estMaxDuration == null) return '';
-                          final estMaxDurationInt = estMaxDuration > 0 ? estMaxDuration.toInt() : 0;
+                          if (estMaxDuration == null ||
+                              estMaxDuration.isInfinite) return '';
+                          final estMaxDurationInt =  estMaxDuration.toInt() ;
                           return secondsToSensibleTimePeriod(estMaxDurationInt);
                         },
                         error: (_, __) => 'error',
@@ -170,24 +172,33 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                         .copyWith(fontWeight: FontWeight.w400)),
               ),
             ),
-            ListTile(
-              leading: IconButton(
-                onPressed: null,
-                icon: SvgPicture.asset('assets/icons/warning.svg'),
-              ),
-              title: Text('Warning',
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: Theme.of(context).disabledColor,
-                      fontWeight: FontWeight.normal)),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text('This can be very short',
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle1!
-                        .copyWith(fontWeight: FontWeight.w400)),
-              ),
-            ),
+            isMainAccountEmptyAsyncValue.when(
+                data: (bool? isMainAccountEmpty) {
+                  if (isMainAccountEmpty == null) return Container();
+                  if (!isMainAccountEmpty) return Container();
+                  if (100000 <= widget.bidIn.speed.num) return Container();
+                  return ListTile(
+                    leading: IconButton(
+                      onPressed: null,
+                      icon: SvgPicture.asset('assets/icons/warning.svg'),
+                    ),
+                    title: Text('Warning',
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: Theme.of(context).disabledColor,
+                            fontWeight: FontWeight.normal)),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                          'Your account is empty. If the call is too short, you cannot get your coins.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle1!
+                              .copyWith(fontWeight: FontWeight.w400)),
+                    ),
+                  );
+                },
+                error: (_, __) => Container(),
+                loading: () => Container()),
 /*          Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

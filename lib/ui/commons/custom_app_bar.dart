@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import '../../infrastructure/routes/app_routes.dart';
-import '../screens/hip/hip_page.dart';
+import '../screens/top/top_page.dart';
 import '../screens/rating/rating_page.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -36,7 +36,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                 width: 10,
               ),
               RectangleBox(
-                onTap: () => CustomNavigation.push(context, HipPage(), Routes.HIPPAGE),
+                onTap: () => CustomNavigation.push(context, TopPage(), Routes.TOPPAGE),
                 radius: 46,
                 icon: SvgPicture.asset(
                   'assets/icons/crown.svg',

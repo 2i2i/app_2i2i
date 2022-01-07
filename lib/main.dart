@@ -72,7 +72,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       scrollBehavior: AppScrollBehavior(),
       home: getView(),
       // home:TestScreen(),
-      // home: HipPage(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,

@@ -84,8 +84,6 @@ class _CallPageState extends ConsumerState<CallPage>
       if (timer.tick >= maxDuration) progressTimer?.cancel();
       showCountDown(duration);
     });
-
-
   }
 
   int getDuration(int maxDuration) {
@@ -123,11 +121,24 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   @override
-  void dispose() {
-    _localRenderer.dispose();
-    _remoteRenderer.dispose();
+  void dispose() async {
+    _localRenderer.srcObject?.getTracks().forEach((element) async {
+      await element.stop();
+    });
+    await _localRenderer.srcObject?.dispose();
+    _localRenderer.srcObject = null;
+    await _localRenderer.dispose();
+
+    _remoteRenderer.srcObject?.getTracks().forEach((element) async {
+      await element.stop();
+    });
+    await _remoteRenderer.srcObject?.dispose();
+    _remoteRenderer.srcObject = null;
+    await _remoteRenderer.dispose();
+
     budgetTimer?.cancel();
     progressTimer?.cancel();
+
     super.dispose();
   }
 
@@ -302,12 +313,11 @@ class _CallPageState extends ConsumerState<CallPage>
                             }
                             final reason =
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
-                            await signaling?.hangUp(_localRenderer,
-                                reason: reason);
-                            final otherUid = amA
-                                ? widget.meeting.B
-                                : widget.meeting.A;
+                            signaling?.hangUp(_localRenderer, reason: reason);
+                            final otherUid =
+                                amA ? widget.meeting.B : widget.meeting.A;
                             widget.onHangPhone(otherUid, widget.meeting.id);
+                            dispose();
                           }),
                       CircleButton(
                           icon: callScreenModel?.isMuteEnable ?? false
