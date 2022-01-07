@@ -1,6 +1,5 @@
 // TODO break up file into multiple files
 
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';

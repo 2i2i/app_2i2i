@@ -1,4 +1,3 @@
-import 'package:app_2i2i/ui/screens/user_bid/widgets/create_bid_widget.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmationSlider extends StatefulWidget {
