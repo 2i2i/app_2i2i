@@ -77,8 +77,10 @@ class UserBidInsList extends ConsumerWidget {
 
             final bidIns = snapshot.data!;
             var bidInsWithUser = bidIns.map((bid) {
-              final user = ref.watch(bidUserProvider(bid.id))!;
-              return BidAndUser(bid, user);
+              final user = ref.watch(bidUserProvider(bid.id));
+              if(user != null) {
+                return BidAndUser(bid, user);
+              }
             }).toList();
             // filter out blocked users
             if (!(myPrivateUserAsyncValue is AsyncError) &&
@@ -87,19 +89,19 @@ class UserBidInsList extends ConsumerWidget {
               if (myPrivateUser != null) {
                 bidInsWithUser = bidInsWithUser
                     .where((bidAndUser) =>
-                        !myPrivateUser.blocked.contains(bidAndUser.user.id))
+                        !myPrivateUser.blocked.contains(bidAndUser?.user.id))
                     .toList();
               }
             }
             // sort
-            bidInsWithUser.sort(
-                (b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
+            bidInsWithUser.removeWhere((element) => element == null);
+            bidInsWithUser.sort((b1, b2) => bidAndUserSort(b1!, b2!, myPrivateUserAsyncValue));
 
             return ListView.builder(
                 itemCount: bidInsWithUser.length,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 itemBuilder: (_, ix) {
-                  BidAndUser bidAndUser = bidInsWithUser[ix];
+                  BidAndUser bidAndUser = bidInsWithUser[ix]!;
                   BidIn bid = bidAndUser.bid;
                   UserModel userModel = bidAndUser.user;
 

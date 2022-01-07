@@ -58,10 +58,13 @@ class _CallPageState extends ConsumerState<CallPage>
         meeting: widget.meeting,
         amA: amA,
         localVideo: _localRenderer,
-        remoteVideo: _remoteRenderer);
+        remoteVideo: _remoteRenderer,
+    );
     signaling!.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
-      ref.read(callScreenProvider).getInitialValue(signaling!.localStream);
+      if(signaling?.localStream != null) {
+        ref.read(callScreenProvider).getInitialValue(signaling!.localStream!);
+      }
       setState(() {});
     });
 

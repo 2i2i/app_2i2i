@@ -81,7 +81,7 @@ class Signaling {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   RTCPeerConnection? peerConnection;
-  late MediaStream localStream;
+  MediaStream? localStream;
   MediaStream? remoteStream;
   StreamStateCallback? onAddRemoteStream;
 
@@ -96,9 +96,9 @@ class Signaling {
     registerPeerConnectionListeners();
 
     log(G + 'localStream=$localStream');
-    localStream.getTracks().forEach((track) {
+    localStream?.getTracks().forEach((track) {
       log(G + 'localStream?.getTracks().forEach');
-      peerConnection?.addTrack(track, localStream);
+      peerConnection?.addTrack(track, localStream!);
     });
 
     // Code for collecting ICE candidates below
@@ -195,8 +195,8 @@ class Signaling {
 
       registerPeerConnectionListeners();
 
-      localStream.getTracks().forEach((track) {
-        peerConnection?.addTrack(track, localStream);
+      localStream?.getTracks().forEach((track) {
+        peerConnection?.addTrack(track, localStream!);
       });
 
       // Code for collecting ICE candidates below

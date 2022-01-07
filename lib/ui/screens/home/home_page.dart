@@ -1,6 +1,7 @@
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,7 +49,7 @@ class _HomePageState extends ConsumerState<HomePage>{
       final uid = ref.watch(myUIDProvider)!;
       final user = ref.watch(userProvider(uid));
       bool isLoaded = !(user is AsyncLoading && user is AsyncError);
-      if (isLoaded) {
+      if (isLoaded && user.asData?.value is UserModel) {
         final UserModel myUser = user.asData!.value;
         if (myUser.name.isEmpty) {
           showDialog(

@@ -44,28 +44,31 @@ class CallScreenModel extends ChangeNotifier {
   muteCall(
       {required Signaling signaling, required RTCVideoRenderer localRenderer}) {
     localRenderer.muted = !isMuteEnable;
-    signaling.localStream.getAudioTracks().first.enabled = !isMuteEnable;
+    signaling.localStream?.getAudioTracks().first.enabled = !isMuteEnable;
     _isMuteEnable = !_isMuteEnable;
     notifyListeners();
   }
 
   disableVideo({required Signaling signaling}) {
-    signaling.localStream.getVideoTracks().first.enabled = !isVideoEnable;
+    signaling.localStream?.getVideoTracks().first.enabled = !isVideoEnable;
     _isVideoEnable = !isVideoEnable;
     notifyListeners();
   }
 
-  Future<void> cameraSwitch(
-      {required Signaling signaling, required BuildContext context}) async {
+  Future<void> cameraSwitch({required Signaling signaling, required BuildContext context}) async {
+    if(signaling.localStream == null){
+      return;
+    }
     _switchCamera = !switchCamera;
     int selectedIndex;
     List<MediaDeviceInfo> cameras = await Helper.cameras;
     if (cameras.isNotEmpty && cameras.length > 1) {
       selectedIndex = switchCamera ? 0 : 1;
       await Helper.switchCamera(
-          signaling.localStream.getVideoTracks()[selectedIndex],
+          signaling.localStream!.getVideoTracks()[selectedIndex],
           cameras[selectedIndex].deviceId,
-          signaling.localStream);
+          signaling.localStream,
+      );
     } else {
       showToast('No secondary camera found',
           context: context,

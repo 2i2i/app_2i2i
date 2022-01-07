@@ -90,8 +90,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
         child: SizedBox(
           width: 390,
           height: 844,
-          child: AuthWidget(
-            homePageBuilder: (_) => HomePage(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AuthWidget(
+              homePageBuilder: (_) => HomePage(),
+            ),
           ),
         ),
       );
@@ -101,6 +104,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     );
   }
 }
+
 class AppScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {

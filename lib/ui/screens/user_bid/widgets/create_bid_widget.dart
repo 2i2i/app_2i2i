@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/slide_to_confirm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
-import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom_text_field.dart';
 import '../../my_account/widgets/account_info.dart';
@@ -48,6 +46,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
@@ -171,9 +170,17 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                         ],
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+              child: ElevatedButton(
+                onPressed:isInsufficient(account)?null: () {
+                  onAddBid();
+                },
+                child: Text(getConfirmSliderText()),
+              ),
+            ),
+              /*Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ConfirmationSlider(
                   onConfirmation: () {
                     onAddBid();
@@ -195,7 +202,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                           ?.copyWith(color: Theme.of(context).errorColor)
                       : null,
                 ),
-              ),
+              ),*/
               SizedBox(height: 8),
             ],
           ),
@@ -238,7 +245,8 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
         return 'Insufficient balance';
       }
     }
-    return 'Swipe for bid';
+    // return 'Swipe for bid';
+    return 'Add bid';
   }
 
   isInsufficient(AbstractAccount? account) {
