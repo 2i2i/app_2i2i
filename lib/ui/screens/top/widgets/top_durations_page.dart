@@ -6,20 +6,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
-class HighestSpeedPage extends ConsumerStatefulWidget {
-  const HighestSpeedPage({Key? key}) : super(key: key);
+class TopDurationsPage extends ConsumerStatefulWidget {
+  const TopDurationsPage({Key? key}) : super(key: key);
 
   @override
-  _HighestSpeedPageState createState() => _HighestSpeedPageState();
+  _TopDurationsPageState createState() => _TopDurationsPageState();
 }
 
-class _HighestSpeedPageState extends ConsumerState<HighestSpeedPage> {
+class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
   @override
   Widget build(BuildContext context) {
-    final meeting = ref.watch(topMeetingProvider(""));
-    if (meeting is AsyncLoading || meeting is AsyncError) return WaitPage();
+    final topMeetingsAsyncValue = ref.watch(topDurationsProvider);
+    if (topMeetingsAsyncValue is AsyncLoading ||
+        topMeetingsAsyncValue is AsyncError) return WaitPage();
+    final topMeetings = topMeetingsAsyncValue.value!;
+
     return ListView.separated(
-      itemCount: 10,
+      itemCount: topMeetings.length,
       padding: EdgeInsets.symmetric(vertical: 8),
       itemBuilder: (BuildContext context, int index) => ListTile(
         title: Row(
@@ -39,7 +42,7 @@ class _HighestSpeedPageState extends ConsumerState<HighestSpeedPage> {
               child: Row(
                 children: [
                   TextProfileView(
-                      text: "name",
+                      text: topMeetings[index].name,
                       statusColor: Colors.green,
                       hideShadow: true,
                       radius: kToolbarHeight + 6,
@@ -47,14 +50,14 @@ class _HighestSpeedPageState extends ConsumerState<HighestSpeedPage> {
                           fontWeight: FontWeight.bold,
                           color: AppTheme().tabTextColor)),
                   SizedBox(width: 8),
-                  Text('Guy Hawkins'.toUpperCase(),
+                  Text(topMeetings[index].name,
                       style: Theme.of(context).textTheme.headline6!.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme().tabTextColor)),
                 ],
               ),
             ),
-            Text('${index * 100}'.toUpperCase(),
+            Text('${topMeetings[index].duration} sec',
                 style: Theme.of(context)
                     .textTheme
                     .headline5!
