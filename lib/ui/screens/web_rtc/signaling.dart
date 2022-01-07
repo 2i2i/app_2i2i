@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -269,7 +267,8 @@ class Signaling {
     try {
       log(G + 'Signaling - openUserMedia - ${meeting.id}');
 
-      final stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': true});
+      final stream = await navigator.mediaDevices
+          .getUserMedia({'video': true, 'audio': true});
       cameras = await Helper.cameras;
       localVideo.srcObject = stream;
       localStream = stream;
@@ -280,43 +279,16 @@ class Signaling {
     }
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo,
-      {required MeetingStatus reason}) async {
-    try {
-      log(G + 'Signaling - hangUp - ${meeting.id}');
-      final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
-      final args = {
-        'meetingId': meeting.id,
-        'reason': reason.toStringEnum(),
-      };
-      await endMeeting(args);
+  void hangUp(RTCVideoRenderer localVideo,
+      {required MeetingStatus reason}) {
+    peerConnection?.close();
 
-      //Close Local A
-      if (localVideo.srcObject != null) {
-        List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-        localVideo.srcObject!.getVideoTracks()[0].stop();
-        // tracks.forEach((track) => track.stop());
-        localVideo.srcObject = null;
-        await localVideo.dispose();
-      }
-
-      //Close Remote B
-      if (remoteStream != null) {
-        List<MediaStreamTrack> tracks = remoteStream!.getTracks();
-        remoteStream!.getVideoTracks()[0].stop();
-        // tracks.forEach((track) => track.stop());
-        await remoteStream!.dispose();
-      }
-
-      if (peerConnection != null) {
-        peerConnection!.close();
-      }
-
-      remoteVideo.srcObject = null;
-      localVideo.srcObject = null;
-    } catch (e) {
-      log(e.toString());
-    }
+    final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
+    final args = {
+      'meetingId': meeting.id,
+      'reason': reason.toStringEnum(),
+    };
+    endMeeting(args);
   }
 
   void registerPeerConnectionListeners() {
