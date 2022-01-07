@@ -5,10 +5,12 @@ class CustomAlertWidget {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
       ),
       context: context,
-      useRootNavigator: true,
+      useRootNavigator: false,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).primaryColor,
       builder: (BuildContext context) => child,
