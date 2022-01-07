@@ -2,17 +2,17 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'widgets/highest_speed_page.dart';
-import 'widgets/longest_speed_page.dart';
+import 'widgets/top_speeds_page.dart';
+import 'widgets/top_durations_page.dart';
 
-class HipPage extends StatefulWidget {
-  const HipPage({Key? key}) : super(key: key);
+class TopPage extends StatefulWidget {
+  const TopPage({Key? key}) : super(key: key);
 
   @override
-  _HipPageState createState() => _HipPageState();
+  _TopPageState createState() => _TopPageState();
 }
 
-class _HipPageState extends State<HipPage> with SingleTickerProviderStateMixin {
+class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
   TabController? controller;
 
   @override
@@ -37,7 +37,7 @@ class _HipPageState extends State<HipPage> with SingleTickerProviderStateMixin {
                   height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.height * 0.18,
                 ),
-                Text('Who’s Hip?'.toUpperCase(),
+                Text('Who’s Top?'.toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
                         .headline5!
@@ -59,12 +59,12 @@ class _HipPageState extends State<HipPage> with SingleTickerProviderStateMixin {
                     tabs: [
                       Container(
                           child: Tab(
-                            text: 'Highest Speed',
+                            text: 'Top Speeds',
                           ),
                           height: kRadialReactionRadius + 12),
                       Container(
                           child: Tab(
-                            text: 'Longest Speed',
+                            text: 'Top Durations',
                           ),
                           height: kRadialReactionRadius + 12),
                     ],
@@ -73,8 +73,8 @@ class _HipPageState extends State<HipPage> with SingleTickerProviderStateMixin {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      HighestSpeedPage(),
-                      LongestSpeedPage(),
+                      TopSpeedsPage(),
+                      TopDurationsPage(),
                     ],
                   ),
                 ),

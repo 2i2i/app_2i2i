@@ -26,6 +26,7 @@ enum MeetingStatus {
   END_DISCONNECT_B, // B disconnected
   END_DISCONNECT_AB, // both disconnected
 }
+
 // INIT -> END_TIMER
 // INIT -> END_A
 // INIT -> END_B
@@ -41,7 +42,6 @@ extension ParseToString on MeetingStatus {
   }
 }
 
-
 @immutable
 class MeetingStatusWithTS {
   const MeetingStatusWithTS({required this.value, required this.ts});
@@ -51,6 +51,47 @@ class MeetingStatusWithTS {
   @override
   String toString() {
     return 'MeetingStatus{value: $value, ts: $ts}';
+  }
+}
+
+@immutable
+class TopMeeting extends Equatable {
+  TopMeeting({
+    required this.id,
+    required this.B,
+    required this.name,
+    required this.start,
+    required this.duration,
+    required this.speed,
+  });
+
+  final String id;
+  final String B;
+  final String name;
+  final int start;
+  final int duration;
+  final Quantity speed;
+
+  @override
+  List<Object> get props => [id];
+
+  @override
+  bool get stringify => true;
+
+  factory TopMeeting.fromMap(Map<String, dynamic> data) {
+    final id = data['id'] as String;
+    final B = data['B'] as String;
+    final name = data['name'] as String;
+    final start = data['start'] as int;
+    final duration = data['duration'] as int;
+    final speed = Quantity.fromMap(data['speed']);
+    return TopMeeting(
+        id: id,
+        B: B,
+        name: name,
+        start: start,
+        duration: duration,
+        speed: speed);
   }
 }
 

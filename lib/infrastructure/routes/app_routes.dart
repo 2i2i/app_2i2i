@@ -7,7 +7,7 @@ class Routes {
   static const RATING = '/rating';
   static const MY_USER = '/my_user_provider';
   static const SETUP_ACCOUNT = '/setup_account_provider';
-  static const HIPPAGE = '/hip_page';
+  static const TOPPAGE = '/top_page';
   static const BIDPAGE = '/user/:uid/addbidpage';
   static const IMI = '/imi';
   static const SOLLI = '/solli';
