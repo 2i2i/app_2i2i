@@ -65,13 +65,17 @@ final userPrivateProvider =
 });
 
 final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
+  // log(J + 'bidUserProvider - bidId=$bidId');
   final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
+  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
   if (bidInPrivateAsyncValue is AsyncLoading ||
       bidInPrivateAsyncValue is AsyncError) {
     return null;
   }
   final uid = bidInPrivateAsyncValue.value!.A;
+  // log(J + 'bidUserProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
+  // log(J + 'bidUserProvider - user=$user');
   if (user is AsyncLoading || user is AsyncError) {
     return null;
   }

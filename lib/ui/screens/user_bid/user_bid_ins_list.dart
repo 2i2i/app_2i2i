@@ -76,8 +76,11 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             final bidIns = snapshot.data!;
+            // log(J + 'UserBidInsList - build - bidIns=$bidIns');
             var bidInsWithUser = bidIns.map((bid) {
+              // log(J + 'UserBidInsList - build - bid=$bid');
               final user = ref.watch(bidUserProvider(bid.id))!;
+              // log(J + 'UserBidInsList - build - user=$user');
               return BidAndUser(bid, user);
             }).toList();
             // filter out blocked users
