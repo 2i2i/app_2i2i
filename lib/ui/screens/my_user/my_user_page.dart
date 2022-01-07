@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
-import '../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
-import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/models/user_model.dart';

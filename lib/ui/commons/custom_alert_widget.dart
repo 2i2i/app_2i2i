@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomAlertWidget {
-  static showBidAlert(BuildContext context,Widget child) {
+  static showBidAlert(BuildContext context,Widget child,{bool isDismissible = true}) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -14,6 +14,7 @@ class CustomAlertWidget {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).primaryColor,
       builder: (BuildContext context) => child,
+      isDismissible: isDismissible,
     );
   }
 }

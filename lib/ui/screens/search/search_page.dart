@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
-import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,6 +24,41 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
+
+  @override
+  void initState() {
+    initMethod();
+    super.initState();
+  }
+
+  void initMethod() {
+    Future.delayed(Duration(seconds: 3)).then((value) {
+      final uid = ref.watch(myUIDProvider)!;
+      final user = ref.watch(userProvider(uid));
+      bool isLoaded = !(user is AsyncLoading && user is AsyncError);
+      if (isLoaded && user.asData?.value is UserModel) {
+        final UserModel myUser = user.asData!.value;
+        if (myUser.name.isEmpty) {
+          CustomAlertWidget.showBidAlert(
+            context,
+            WillPopScope(
+              onWillPop: () {
+                return Future.value(true);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SetupBio(
+                  isFromDialog: true,
+                ),
+              ),
+            ),
+            isDismissible: false,
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

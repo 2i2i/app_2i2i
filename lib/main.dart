@@ -77,8 +77,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       // themeMode: appSettingModel.currentThemeMode,
       themeMode: ThemeMode.light,
 
-      theme: AppTheme().mainTheme,
-      darkTheme: AppTheme().darkTheme,
+      theme: AppTheme().mainTheme(context),
+      darkTheme: AppTheme().darkTheme(context),
     );
   }
 
