@@ -37,7 +37,8 @@ class WalletConnectAccount extends AbstractAccount {
     for (int i = 0; i < connector.session.accounts.length; i++) {
       final account = WalletConnectAccount(
           accountService: accountService,
-          connector: connector);
+          connector: connector,
+      );
 
       account.address = connector.session.accounts[i];
       futures.add(account.updateBalances());

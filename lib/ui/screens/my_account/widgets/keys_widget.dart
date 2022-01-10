@@ -28,7 +28,6 @@ class KeysWidget extends StatelessWidget {
         margin: EdgeInsets.all(22),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-
           children: [
             SizedBox(height: 4),
             Text(
@@ -42,7 +41,7 @@ class KeysWidget extends StatelessWidget {
             RichText(
               text: TextSpan(
                   text:
-                  'Write down your recovery passphase(1-25 words). This is the',
+                      'Write down your recovery passphase(1-25 words). This is the',
                   style: Theme.of(context).textTheme.bodyText2!.copyWith(
                       fontWeight: FontWeight.normal,
                       color: Theme.of(context).disabledColor),
@@ -130,16 +129,15 @@ class KeysWidget extends StatelessWidget {
                                   .textTheme
                                   .subtitle2!
                                   .copyWith(
-                                  color:
-                                  Theme.of(context).disabledColor))));
-
+                                      color:
+                                          Theme.of(context).disabledColor))));
                 }),
               ),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   Clipboard.setData(
-                      ClipboardData(text: snapshot.data.join(', ')));
+                      ClipboardData(text: snapshot.data.join(' ')));
                   CustomDialogs.showToastMessage(
                       context, Strings().copyMessage);
                   Future.delayed(Duration(seconds: 1))

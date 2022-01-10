@@ -6,12 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
-import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
-  AccountInfo({Key? key, required this.account}) : super(key: key);
+  final bool? shrinkwrap;
+  AccountInfo(this.shrinkwrap, {Key? key, required this.account}) : super(key: key);
 
   final AbstractAccount account;
 
@@ -35,7 +35,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
-      constraints: BoxConstraints(
+      constraints: widget.shrinkwrap==true?null:BoxConstraints(
         minHeight: 200,
       ),
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -71,16 +71,14 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         fit: BoxFit.fill,
                       ),
                       SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          'Algorand',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5!
-                              .copyWith(fontWeight: FontWeight.w600),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Text(
+                        'Algorand',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontWeight: FontWeight.w600),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(width: 6),
                       Flexible(
@@ -97,15 +95,13 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ],
                   ),
                 ),
-                Flexible(
-                  child: Text(
-                    "$amount",
-                    style: Theme.of(context).textTheme.headline4!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).tabBarTheme.unselectedLabelColor),
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  "$amount",
+                  style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
                 )
               ],
             ),
@@ -210,31 +206,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         );
       },
     );
-  }
-
-  Future _showPrivateKey(BuildContext context, LocalAccount account) async {
-    final pk = await account.mnemonic();
-    log('_showPrivateKey - pk=$pk');
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text('private key'),
-              content: Table(
-                children: [
-                  for (var i = 1; i <= 13; i++)
-                    TableRow(children: [
-                      Text('$i ${pk[i - 1]}'),
-                      i < 13 ? Text('${i + 13} ${pk[i + 12]}') : Container(),
-                    ])
-                ],
-              ),
-              actions: [
-                IconButton(
-                    onPressed: () =>
-                        Clipboard.setData(ClipboardData(text: pk.join(' '))),
-                    icon: Icon(Icons.copy))
-              ],
-            ));
   }
 
   // Future<int?> _optInToASA(BuildContext context) async {

@@ -67,7 +67,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var appSettingModel = ref.watch(appSettingProvider);
+    // var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home: getView(),
@@ -100,6 +100,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
+      // homePageBuilder: (_) => TestScreen(),
     );
   }
 }

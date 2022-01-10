@@ -111,8 +111,7 @@ class AccountService {
     return Future.wait(futures);
   }
 
-  List<WalletConnectAccount> getAllWalletConnectAccounts() =>
-      WalletConnectAccount.getAllAccounts();
+  List<WalletConnectAccount> getAllWalletConnectAccounts() => WalletConnectAccount.getAllAccounts();
 
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();

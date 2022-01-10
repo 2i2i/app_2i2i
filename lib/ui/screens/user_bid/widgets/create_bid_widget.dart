@@ -4,7 +4,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_acco
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,13 +33,15 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    if(myAccountPageViewModel is AsyncLoading || myAccountPageViewModel is AsyncError){
+    if (myAccountPageViewModel is AsyncLoading ||
+        myAccountPageViewModel is AsyncError) {
       return WaitPage(true);
     }
-    final addBidPageViewModel = ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
+    final addBidPageViewModel =
+        ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel == null) return WaitPage(true);
     if (addBidPageViewModel.submitting) return WaitPage(true);
-    if(myAccountPageViewModel.accounts?.isNotEmpty??false) {
+    if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
       account ??= myAccountPageViewModel.accounts!.first;
     }
     return Container(
@@ -105,7 +106,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   onChanged: (String? val) {
                     val ??= '';
                     speedNum = (num.tryParse(val) ?? 0).toInt();
-                    if(mounted) {
+                    if (mounted) {
                       setState(() {});
                     }
                   },
@@ -126,21 +127,24 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 padding: const EdgeInsets.only(bottom: 10.0),
                 child: ListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+                      borderRadius: BorderRadius.circular(8)),
                   tileColor: Colors.white,
-                  leading: SvgPicture.asset('assets/icons/hour_glass.svg',height: 20,width: 20,),
+                  leading: SvgPicture.asset(
+                    'assets/icons/hour_glass.svg',
+                    height: 20,
+                    width: 20,
+                  ),
                   // leading: Container(color: Colors.grey,height: 30,width: 30,),
                   title: Text('Est. max duration'),
-                  trailing: Builder(
-                    builder: (context) {
-                      if(account != null && account!.balances.isNotEmpty) {
-                        return Text(addBidPageViewModel.duration(account!, speedNum, account!.balances.first),
-                        );
-                      }
-                      return Container();
+                  trailing: Builder(builder: (context) {
+                    if (account != null && account!.balances.isNotEmpty) {
+                      return Text(
+                        addBidPageViewModel.duration(
+                            account!, speedNum, account!.balances.first),
+                      );
                     }
-                  ),
+                    return Container();
+                  }),
                 ),
               ),
               Container(
@@ -148,64 +152,62 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   minHeight: 150,
                   maxHeight: 200,
                 ),
-                child: myAccountPageViewModel.isLoading
-                    ? Center(child: CupertinoActivityIndicator())
-                    : Row(
-                        children: [
-                          IconButton(
-                            iconSize: 10,
-                            onPressed: () => controller.previousPage(
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.decelerate),
-                            icon: RotatedBox(
-                              quarterTurns: 2,
-                              child: SvgPicture.asset(
-                                'assets/icons/direction.svg',
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: PageView.builder(
-                              controller: controller,
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  myAccountPageViewModel.accounts?.length ?? 0,
-                              itemBuilder: (_, index) {
-                                return AccountInfo(
-                                  key: ObjectKey(myAccountPageViewModel
-                                      .accounts![index].address),
-                                  account:
-                                      myAccountPageViewModel.accounts![index],
-                                );
-                              },
-                              onPageChanged: (int val) {
-                                account = myAccountPageViewModel.accounts
-                                    ?.elementAt(val);
-                              },
-                            ),
-                          ),
-                          IconButton(
-                            iconSize: 10,
-                            onPressed: () => controller.nextPage(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.decelerate,
-                            ),
-                            icon: SvgPicture.asset(
-                              'assets/icons/direction.svg',
-                            ),
-                          ),
-                        ],
+                child: PageView.builder(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                  itemBuilder: (_, index) {
+                    return AccountInfo(
+                      false,
+                      key: ObjectKey(
+                          myAccountPageViewModel.accounts![index].address),
+                      account: myAccountPageViewModel.accounts![index],
+                    );
+                  },
+                  onPageChanged: (int val) {
+                    account = myAccountPageViewModel.accounts?.elementAt(val);
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+                ),
+              ),
+              Visibility(
+                visible: (myAccountPageViewModel.accounts?.length ?? 0) > 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: null,
+                      icon: Icon(Icons.arrow_back_outlined),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Swipe Below Card Left or Right to change account',
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: null,
+                      icon: Icon(Icons.arrow_forward_outlined),
+                    ),
+                  ],
                 ),
               ),
               Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              child: ElevatedButton(
-                onPressed:isInsufficient(account)?null: () {
-                  onAddBid();
-                },
-                child: Text(getConfirmSliderText()),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                child: ElevatedButton(
+                  onPressed: isInsufficient(account)
+                      ? null
+                      : () {
+                          onAddBid();
+                        },
+                  child: Text(getConfirmSliderText()),
+                ),
               ),
-            ),
               /*Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ConfirmationSlider(
@@ -246,12 +248,13 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   }
 
   onAddBid() async {
-    if(isInsufficient(account)){
+    if (isInsufficient(account)) {
       return;
     }
-    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.uid).state).state;
+    final addBidPageViewModel =
+        ref.read(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
-      if(!addBidPageViewModel.submitting ) {
+      if (!addBidPageViewModel.submitting) {
         await connectCall(addBidPageViewModel: addBidPageViewModel);
         Navigator.of(context).maybePop();
       }

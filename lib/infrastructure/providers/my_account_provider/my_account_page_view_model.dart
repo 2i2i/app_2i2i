@@ -35,7 +35,18 @@ class MyAccountPageViewModel extends ChangeNotifier {
     await LocalAccount.create(
         accountService: accountService!,
         algorandLib: algorandLib!,
-        storage: storage!);
+        storage: storage!,
+    );
+    await updateAccounts();
+  }
+
+  Future recoverAccount(List<String> mnemonic) async {
+    await LocalAccount.fromMnemonic(
+      accountService: accountService!,
+      algorandLib: algorandLib!,
+      storage: storage!,
+      mnemonic: mnemonic,
+    );
     await updateAccounts();
   }
 
