@@ -43,7 +43,7 @@ class UserModel extends Equatable {
   UserModel({
     required this.id,
     this.status = 'ONLINE',
-    this.currentMeeting,
+    this.meeting,
     this.name = '',
     this.bio = '',
     this.rating,
@@ -55,7 +55,7 @@ class UserModel extends Equatable {
 
   final String id;
   final String status;
-  final String? currentMeeting;
+  final String? meeting;
   final String bio;
   final String name;
   late final List<String> _tags;
@@ -91,7 +91,7 @@ class UserModel extends Equatable {
     // log('UserModel.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final status = data['status'] as String;
-    final currentMeeting = data['currentMeeting'] as String?;
+    final meeting = data['meeting'] as String?;
     final name = data['name'] as String;
     final bio = data['bio'] as String;
     final rating = double.parse(data['rating'].toString());
@@ -101,7 +101,7 @@ class UserModel extends Equatable {
     return UserModel(
       id: documentId,
       status: status,
-      currentMeeting: currentMeeting,
+      meeting: meeting,
       name: name,
       bio: bio,
       rating: rating,
@@ -156,7 +156,7 @@ class UserModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'status': status,
-      'currentMeeting': currentMeeting,
+      'meeting': meeting,
       'bio': bio,
       'name': name,
       'tags': _tags,
@@ -168,10 +168,10 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, currentMeeting: $currentMeeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 
-  bool isInMeeting() => currentMeeting != null;
+  bool isInMeeting() => meeting != null;
 }
 
 class UserModelPrivate {

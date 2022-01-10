@@ -294,10 +294,10 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
     log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
-    if (user.asData!.value.currentMeeting == null) return null;
-    final String currentMeeting = user.asData!.value.currentMeeting!;
-    log('lockedUserViewModelProvider - currentMeeting=$currentMeeting');
-    final meeting = ref.watch(meetingProvider(currentMeeting));
+    if (user.asData!.value.meeting == null) return null;
+    final String userMeeting = user.asData!.value.meeting!;
+    log('lockedUserViewModelProvider - userMeeting=$userMeeting');
+    final meeting = ref.watch(meetingProvider(userMeeting));
     log('lockedUserViewModelProvider - meeting=$meeting');
     if (meeting is AsyncLoading || meeting is AsyncError) return null;
     return LockedUserViewModel(
@@ -318,11 +318,11 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
   // log('ringingPageViewModelProvider - user.data=${user.data}');
   // log('ringingPageViewModelProvider - user.asData!.value=${user.asData!.value}');
-  // log('ringingPageViewModelProvider - user.asData!.value.currentMeeting=${user.asData!.value.currentMeeting}');
-  if (user.asData!.value.currentMeeting == null) return null;
-  final String currentMeeting = user.asData!.value.currentMeeting!;
-  // log('ringingPageViewModelProvider - currentMeeting=$currentMeeting');
-  final meeting = ref.watch(meetingProvider(currentMeeting));
+  // log('ringingPageViewModelProvider - user.asData!.value.meeting=${user.asData!.value.meeting}');
+  if (user.asData!.value.meeting == null) return null;
+  final String userMeeting = user.asData!.value.meeting!;
+  // log('ringingPageViewModelProvider - userMeeting=$userMeeting');
+  final meeting = ref.watch(meetingProvider(userMeeting));
   // log('ringingPageViewModelProvider - meeting=$meeting');
 
   if (meeting is AsyncLoading || meeting is AsyncError) return null;
