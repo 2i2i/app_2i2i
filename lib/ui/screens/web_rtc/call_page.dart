@@ -320,18 +320,18 @@ class _CallPageState extends ConsumerState<CallPage>
                             dispose();
                           }),
                       CircleButton(
-                          icon: callScreenModel?.isMuteEnable ?? false
+                          icon: callScreenModel?.isAudioEnabled ?? false
                               ? Icons.mic_rounded
                               : Icons.mic_off_rounded,
-                          onTap: () => callScreenModel!.muteCall(
+                          onTap: () => callScreenModel!.muteAudio(
                               signaling: signaling!,
                               localRenderer: _localRenderer)),
                       CircleButton(
-                          icon: callScreenModel?.isVideoEnable ?? false
+                          icon: callScreenModel?.isVideoEnabled ?? false
                               ? Icons.videocam_rounded
                               : Icons.videocam_off_rounded,
                           onTap: () => callScreenModel!
-                              .disableVideo(signaling: signaling!)),
+                              .muteVideo(signaling: signaling!)),
                       CircleButton(
                           icon: Icons.cameraswitch_rounded,
                           onTap: () => callScreenModel!.cameraSwitch(

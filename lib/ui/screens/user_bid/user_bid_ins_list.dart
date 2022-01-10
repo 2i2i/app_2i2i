@@ -109,13 +109,13 @@ class UserBidInsList extends ConsumerWidget {
                   if (bidAndUser.user == null) return Container();
 
                   BidIn bid = bidAndUser.bid;
-                  UserModel? userModel = bidAndUser.user;
+                  UserModel userModel = bidAndUser.user!;
 
                   var statusColor = AppTheme().green;
-                  if (userModel?.status == 'OFFLINE') {
+                  if (userModel.status == 'OFFLINE') {
                     statusColor = AppTheme().gray;
                   }
-                  if (userModel?.locked??false) {
+                  if (userModel.isInMeeting()) {
                     statusColor = AppTheme().red;
                   }
 
@@ -134,13 +134,13 @@ class UserBidInsList extends ConsumerWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: TextProfileView(
                             radius: 50,
-                            text: "${userModel?.name??''}",
+                            text: userModel.name,
                             statusColor: statusColor,
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            '${userModel?.name??''} - ${bid.speed.num} ALGO/sec',
+                            '${userModel.name} - ${bid.speed.num} ALGO/sec',
                             style: Theme.of(context).textTheme.subtitle1,
                           ),
                         ),

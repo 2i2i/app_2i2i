@@ -413,8 +413,7 @@ final estMaxDurationProvider =
   if (bidIn == null) return null;
 
   final speed = bidIn.speed.num;
-  // if (speed == 0) return double.infinity;
-  if (speed == 0) return 1000;
+  if (speed == 0) return double.infinity;
 
   if (bidInPrivateAsyncValue is AsyncError || bidInPrivateAsyncValue is AsyncLoading) return null;
   final bidInPrivate = bidInPrivateAsyncValue.value;
