@@ -181,8 +181,7 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidIns(uid),
       builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
@@ -190,8 +189,7 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 

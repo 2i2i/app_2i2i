@@ -1,16 +1,21 @@
 
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
+import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
+import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../../infrastructure/commons/strings.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../history/history_page.dart';
 import '../home/wait_page.dart';
@@ -42,125 +47,226 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
 
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(myUIDProvider)!;
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
-
-    return myUserPageViewModel == null
-        ? WaitPage()
-        : Scaffold(
-      appBar: CustomAppbar(),
-            body: _buildContents(context, ref, myUserPageViewModel,
-                userPrivateAsyncValue, myUserPageViewModel.user),
-          );
-  }
-
-  Widget _buildContents(
-      BuildContext context,
-      WidgetRef ref,
-      MyUserPageViewModel? myUserPageViewModel,
-      AsyncValue<UserModelPrivate> userPrivateAsyncValue,
-      UserModel user) {
-    if (myUserPageViewModel == null) return Container();
-    if (userPrivateAsyncValue is AsyncLoading) return Container();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(
-                      25.0,
-                    ),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    tabs: [
-                      Tab(
-                        text: Strings().bidIn,
-                      ),
-                      Tab(
-                        text: Strings().bidOut,
-                      ),
-                    ],
-                  ),
+    if (myUserPageViewModel == null) return WaitPage();
+    UserModel myUser = myUserPageViewModel.user;
+    return Scaffold(
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              toolbarHeight: kToolbarHeight + 50,
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SvgPicture.asset(
+                  'assets/icons/appbar_icon.svg',
+                  fit: BoxFit.fill,
+                  width: 55,
+                  height: 65,
                 ),
               ),
-              Tooltip(
-                message: "History",
-                child: InkResponse(
-                  onTap: () => CustomNavigation.push(
-                      context, HistoryPage(uid: user.id), Routes.HISTORY),
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(
-                        25.0,
+              actions: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RectangleBox(
+                      onTap: () => CustomNavigation.push(context, RatingPage(),Routes.RATING),
+                      // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
+                      radius: 46,
+                      icon: SvgPicture.asset(
+                        'assets/icons/star.svg',
+                        width: 20,
+                        height: 20,
                       ),
                     ),
-                    child: Icon(
-                      Icons.history_edu_rounded,
-                      size: 20,
+                    SizedBox(
+                      width: 10,
                     ),
-                  ),
+                    RectangleBox(
+                      onTap: () => CustomNavigation.push(context, TopPage(), Routes.TOPPAGE),
+                      radius: 46,
+                      icon: SvgPicture.asset(
+                        'assets/icons/crown.svg',
+                        width: 16,
+                        height: 16,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    )
+                  ],
                 ),
+              ],
+              // collapsedHeight: kToolbarHeight + 50,
+              backgroundColor: Theme.of(context).cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                )
+              ),
+              pinned: true,
+              floating: true,
+              forceElevated: innerBoxIsScrolled,
+              elevation: 0,
+              bottom: PreferredSize(
+                preferredSize: Size(
+                  MediaQuery.of(context).size.width,
+                  154,
+                ),
+                child: Builder(
+                  builder: (context) {
+                    var statusColor = AppTheme().green;
+                    var userModel = myUserPageViewModel.user;
+                    if (userModel.status == 'OFFLINE') {
+                      statusColor = AppTheme().gray;
+                    }
+                    if (userModel.locked) {
+                      statusColor = AppTheme().red;
+                    }
+                    String firstNameChar = userModel.name;
+                    if(firstNameChar.length>0){
+                      firstNameChar = firstNameChar.substring(0,1);
+                    }
+                    return Container(
+                      margin: EdgeInsets.only(left: 16,right: 16,bottom: 10),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: SizedBox(
+                                height: 105,
+                                width: 105,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: Colors.white, width: 2,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                              Colors.black.withOpacity(0.08),
+                                              blurRadius: 20,
+                                              spreadRadius: 0.5,
+                                            )
+                                          ],
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        firstNameChar,
+                                        style:
+                                        Theme.of(context).textTheme.headline6,
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Container(
+                                        height: 30,
+                                        width: 30,
+                                        decoration: BoxDecoration(
+                                            color: statusColor,
+                                            borderRadius: BorderRadius.circular(20),
+                                            border: Border.all(
+                                                color: Colors.white, width: 2,
+                                            ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            title: Text(userModel.name,style: Theme.of(context).textTheme.headline5,),
+                            subtitle: Text(userModel.bio),
+                            dense: false,
+                            isThreeLine: true,
+                            minVerticalPadding: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TabBar(
+                                controller: _tabController,
+                                indicatorPadding: EdgeInsets.all(2),
+                                indicator: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                labelColor: Theme.of(context).colorScheme.secondary,
+                                tabs: [
+                                  Tab(
+                                    text: Strings().bidIn,
+                                  ),
+                                  Tab(
+                                    text: Strings().bidOut,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                ),
+              ),
+            ),
+          ];
+        },
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          child:TabBarView(
+            controller: _tabController,
+            children: [
+              UserBidInsList(
+                uid: myUserPageViewModel.user.id,
+                titleWidget: Text(
+                  'Bids In',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                noBidsText: Strings().noBidFound,
+                onTap: (BidIn bid) async {
+                  CustomDialogs.loader(true, context);
+                  await myUserPageViewModel.acceptBid(bid);
+                  CustomDialogs.loader(false, context);
+                },
+              ),
+              UserBidOutsList(
+                uid: myUserPageViewModel.user.id,
+                titleWidget: Text(
+                  'Bids Out',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                noBidsText: Strings().noBidFound,
+                trailingIcon: Icon(
+                  Icons.cancel,
+                  color: Color.fromRGBO(104, 160, 242, 1),
+                ),
+                onTrailingIconClick: (BidOut bidOut) async {
+                  CustomDialogs.loader(true, context);
+                  await myUserPageViewModel.cancelBid(
+                      bidId: bidOut.id, B: bidOut.B);
+                  CustomDialogs.loader(false, context);
+                },
               ),
             ],
           ),
-          Divider(color: Colors.transparent),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                UserBidInsList(
-                  uid: user.id,
-                  titleWidget: Text('Bids In',
-                      style: Theme.of(context).textTheme.headline6),
-                  noBidsText: Strings().noBidFound,
-                  onTap: (BidIn bid) async {
-                    CustomDialogs.loader(true, context);
-                    await myUserPageViewModel.acceptBid(bid);
-                    CustomDialogs.loader(false, context);
-                  },
-                ),
-                userPrivateAsyncValue.when(
-                    data: (UserModelPrivate userPrivate) {
-                  return UserBidOutsList(
-                    uid: user.id,
-                    titleWidget: Text('Bids Out',
-                        style: Theme.of(context).textTheme.headline6),
-                    noBidsText: Strings().noBidFound,
-                    trailingIcon: Icon(
-                      Icons.cancel,
-                      color: Color.fromRGBO(104, 160, 242, 1),
-                    ),
-                    onTrailingIconClick: (BidOut bidOut) async {
-                      CustomDialogs.loader(true, context);
-                      await myUserPageViewModel.cancelBid(
-                          bidId: bidOut.id, B: bidOut.B);
-                      CustomDialogs.loader(false, context);
-                    },
-                  );
-                }, loading: () {
-                  log('MyUserPage - _buildContents - loading');
-                  return const CircularProgressIndicator();
-                }, error: (_, __) {
-                  log('MyUserPage - _buildContents - error');
-                  return const Center(child: Text('error'));
-                }),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

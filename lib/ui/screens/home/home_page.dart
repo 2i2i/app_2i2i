@@ -1,6 +1,4 @@
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +13,6 @@ import '../locked_user/locked_user_page.dart';
 import '../my_account/my_account_page.dart';
 import '../my_user/my_user_page.dart';
 import '../search/search_page.dart';
-import '../setup_account/setup_account.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -50,8 +47,7 @@ class _HomePageState extends ConsumerState<HomePage>{
   @override
   Widget build(BuildContext context) {
     var lockUser = ref.watch(lockedUserViewModelProvider);
-    bool loading =
-        lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
+    bool loading = lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
     if (!loading) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
@@ -145,15 +141,18 @@ class _HomePageState extends ConsumerState<HomePage>{
   }
 
   submitReview(otherUid, meetingId) {
-    CustomDialogs.inAppRatingDialog(context,
-        onPressed: (double rating, String? ratingFeedBack) {
-      final database = ref.watch(databaseProvider);
-      database.addRating(
-          otherUid,
-          meetingId,
-          RatingModel(
-              rating: rating, comment: ratingFeedBack));
-    });
+    if(mounted) {
+      Future.delayed(Duration(milliseconds: 300)).then((value) {
+        CustomDialogs.inAppRatingDialog(
+          context,
+          onPressed: (double rating, String? ratingFeedBack) {
+            final database = ref.watch(databaseProvider);
+            database.addRating(otherUid, meetingId,
+                RatingModel(rating: rating, comment: ratingFeedBack));
+          },
+        );
+      });
+    }
   }
 
 }

@@ -8,8 +8,8 @@ import '../screens/rating/rating_page.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
-
-  CustomAppbar({this.actions});
+  final Color? backgroundColor;
+  CustomAppbar({this.actions, this.backgroundColor,});
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);
@@ -17,9 +17,11 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: backgroundColor,
         elevation: 0,
         actions: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               RectangleBox(
@@ -48,7 +50,8 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                 width: 10,
               )
             ],
-          ),],
+          ),
+        ],
         toolbarHeight: kToolbarHeight + 50,
         centerTitle: false,
         title: Padding(
@@ -59,6 +62,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
             width: 55,
             height: 65,
           ),
-        ));
+        ),
+    );
   }
 }
