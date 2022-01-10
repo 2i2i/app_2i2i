@@ -4,11 +4,8 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'widgets/bid_dialog_widget.dart';
@@ -88,16 +85,16 @@ class UserBidInsList extends ConsumerWidget {
         if (bidAndUser.user == null) return Container();
 
         BidIn bid = bidAndUser.bid;
-        UserModel? userModel = bidAndUser.user;
+        UserModel userModel = bidAndUser.user!;
 
         var statusColor = AppTheme().green;
-        if (userModel?.status == 'OFFLINE') {
+        if (userModel.status == 'OFFLINE') {
           statusColor = AppTheme().gray;
         }
-        if (userModel?.locked ?? false) {
+        if (userModel.isInMeeting()) {
           statusColor = AppTheme().red;
         }
-        String firstNameChar = userModel?.name??'';
+        String firstNameChar = userModel.name;
         if(firstNameChar.length>0){
           firstNameChar = firstNameChar.substring(0,1);
         }
@@ -156,8 +153,8 @@ class UserBidInsList extends ConsumerWidget {
               ),
             ),
           ),
-          title: Text(userModel?.name??''),
-          subtitle: Text(userModel?.bio??''),
+          title: Text(userModel.name),
+          subtitle: Text(userModel.bio),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

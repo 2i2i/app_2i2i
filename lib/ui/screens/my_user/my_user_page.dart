@@ -125,7 +125,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     if (userModel.status == 'OFFLINE') {
                       statusColor = AppTheme().gray;
                     }
-                    if (userModel.locked) {
+                    if (userModel.isInMeeting()) {
                       statusColor = AppTheme().red;
                     }
                     String firstNameChar = userModel.name;
