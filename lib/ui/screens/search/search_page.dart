@@ -11,8 +11,6 @@ import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/models/user_model.dart';
@@ -149,7 +147,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
               final name = user.name;
               final bio = user.bio;
-              final rating = user.rating.toString();
               /*  final shortBioStart = bio.indexOf(RegExp(r'\s')) + 1;
                 int aPoint = shortBioStart + 10;
                 int bPoint = bio.length;
