@@ -270,11 +270,21 @@ final bidInProvider = StreamProvider.family<BidIn?, String>((ref, bidIn) {
   final database = ref.watch(databaseProvider);
   return database.getBidIn(uid: uid, bidId: bidIn);
 });
-final bidInPrivateProvider =
-    StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+final bidInPrivateProvider = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
+});
+
+
+final getBidOutsProvider = StreamProvider.family<List<BidOut>,String>((ref,uid) {
+  final database = ref.watch(databaseProvider);
+  return database.bidOutsStream(uid: uid);
+});
+
+final getBidInsProvider = StreamProvider.family<List<BidIn>,String>((ref,uid) {
+  final database = ref.watch(databaseProvider);
+  return database.bidInsStream(uid: uid);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(

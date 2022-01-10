@@ -52,7 +52,7 @@ class CustomDialogs {
   }
 
   static inAppRatingDialog(BuildContext context,
-      {required Function onPressed, bool rootNavigator = true}) {
+      {required Function onPressed, bool rootNavigator = false}) {
     double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
@@ -129,6 +129,7 @@ class CustomDialogs {
       ),
     );
     showDialog(
+      useRootNavigator: rootNavigator,
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {

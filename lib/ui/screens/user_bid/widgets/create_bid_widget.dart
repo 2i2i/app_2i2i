@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,8 +35,11 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     if(myAccountPageViewModel is AsyncLoading || myAccountPageViewModel is AsyncError){
-      return Center(child: CupertinoActivityIndicator());
+      return WaitPage(true);
     }
+    final addBidPageViewModel = ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
+    if (addBidPageViewModel == null) return WaitPage(true);
+    if (addBidPageViewModel.submitting) return WaitPage(true);
     if(myAccountPageViewModel.accounts?.isNotEmpty??false) {
       account ??= myAccountPageViewModel.accounts!.first;
     }
@@ -118,6 +122,27 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                  tileColor: Colors.white,
+                  leading: SvgPicture.asset('assets/icons/hour_glass.svg',height: 20,width: 20,),
+                  // leading: Container(color: Colors.grey,height: 30,width: 30,),
+                  title: Text('Est. max duration'),
+                  trailing: Builder(
+                    builder: (context) {
+                      if(account != null && account!.balances.isNotEmpty) {
+                        return Text(addBidPageViewModel.duration(account!, speedNum, account!.balances.first),
+                        );
+                      }
+                      return Container();
+                    }
+                  ),
+                ),
+              ),
               Container(
                 constraints: BoxConstraints(
                   minHeight: 150,
@@ -169,7 +194,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                         ],
                 ),
               ),
-            Padding(
+              Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               child: ElevatedButton(
                 onPressed:isInsufficient(account)?null: () {

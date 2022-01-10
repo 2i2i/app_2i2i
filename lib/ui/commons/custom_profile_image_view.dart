@@ -51,75 +51,71 @@ class TextProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: InkWell(
-        onTap: onTap,
-        highlightColor: Colors.transparent,
-        splashColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              width: radius,
-              height: radius,
-              decoration: !hideShadow
-                  ? BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(2, 4),
-                            blurRadius: 14,
-                            color: Color.fromRGBO(
-                                0, 0, 0, 0.12)
-                        ),
-                      ],
-                    )
-                  : null,
-              child: Stack(
-                children: [
-                  Card(
-                    elevation: 6,
-                    shadowColor:
-                        Theme.of(context).inputDecorationTheme.fillColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.0),
-                    ),
-                    child: Center(
-                      child: Text(
-                        isRating
-                            ? "${text.toString().isNotEmpty ? text : "0"}"
-                            : "${text.toString().isNotEmpty ? text : "X"}"
-                                .substring(0, 1)
-                                .toUpperCase(),
-                        style: style ??
-                            Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(fontWeight: FontWeight.w600),
+    return InkWell(
+      onTap: onTap,
+      highlightColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: radius,
+            height: radius,
+            decoration: !hideShadow ? BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          offset: Offset(2, 4),
+                          blurRadius: 14,
+                          color: Color.fromRGBO(
+                              0, 0, 0, 0.12)
                       ),
+                    ],
+                  ) : null,
+            child: Stack(
+              children: [
+                Card(
+                  elevation: 6,
+                  shadowColor:
+                      Theme.of(context).inputDecorationTheme.fillColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      isRating
+                          ? "${text.toString().isNotEmpty ? text : "0"}"
+                          : "${text.toString().isNotEmpty ? text : "X"}"
+                              .substring(0, 1)
+                              .toUpperCase(),
+                      style: style ??
+                          Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(fontWeight: FontWeight.w600),
                     ),
                   ),
-                  if (!hideStatus)
-                    Positioned(
-                      bottom: 1,
-                      right: 1,
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Material(
-                          color: statusColor,
-                          shape: CircleBorder(
-                              side: BorderSide(color: Colors.white, width: 3)),
-                          // child: Icon(Icons.check, color: Colors.white,),
-                        ),
+                ),
+                if (!hideStatus)
+                  Positioned(
+                    bottom: 1,
+                    right: 1,
+                    child: Container(
+                      width: 15,
+                      height: 15,
+                      child: Material(
+                        color: statusColor,
+                        shape: CircleBorder(
+                            side: BorderSide(color: Colors.white, width: 3)),
+                        // child: Icon(Icons.check, color: Colors.white,),
                       ),
-                    )
-                ],
-              ),
+                    ),
+                  )
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
