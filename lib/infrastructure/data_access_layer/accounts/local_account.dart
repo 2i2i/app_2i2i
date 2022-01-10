@@ -29,22 +29,6 @@ class LocalAccount extends AbstractAccount {
     await account.updateBalances();
     return account;
   }
-  static Future<LocalAccount> recover({
-    required AlgorandLib algorandLib,
-    required SecureStorage storage,
-    required AccountService accountService,
-    required List<String> keys,
-  }) async {
-    log('LocalAccount.recover');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage,
-    );
-    await account.recoverAccount(keys);
-    await account.updateBalances();
-    return account;
-  }
 
   static Future<LocalAccount> fromNumAccount({
     required AlgorandLib algorandLib,
@@ -147,14 +131,6 @@ class LocalAccount extends AbstractAccount {
     final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
     address = account.publicAddress;
     await _storeAccount(account);
-  }
-
-  Future<AbstractAccount?> recoverAccount(List<String> keys) async{
-    final Account? account =  await accountService.recoverAccount(AlgorandNet.mainnet, keys);
-    if(account is Account) {
-      address = account.publicAddress;
-      await _storeAccount(account);
-    }
   }
 
   Future _storeAccount(Account account) async {

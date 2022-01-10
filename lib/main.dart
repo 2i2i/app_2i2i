@@ -13,7 +13,6 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
-import 'ui/test_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +67,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var appSettingModel = ref.watch(appSettingProvider);
+    // var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home: getView(),

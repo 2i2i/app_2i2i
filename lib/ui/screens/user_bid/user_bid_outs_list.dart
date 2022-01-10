@@ -5,10 +5,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/models/bid_model.dart';
-import 'widgets/no_bid_page.dart';
 
 class UserBidOutsList extends ConsumerWidget {
   UserBidOutsList({

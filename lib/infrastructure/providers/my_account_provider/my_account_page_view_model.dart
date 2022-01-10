@@ -40,12 +40,12 @@ class MyAccountPageViewModel extends ChangeNotifier {
     await updateAccounts();
   }
 
-  Future recoverAccount(List<String> keys) async {
-    await LocalAccount.recover(
+  Future recoverAccount(List<String> mnemonic) async {
+    await LocalAccount.fromMnemonic(
       accountService: accountService!,
       algorandLib: algorandLib!,
       storage: storage!,
-      keys: keys,
+      mnemonic: mnemonic,
     );
     await updateAccounts();
   }

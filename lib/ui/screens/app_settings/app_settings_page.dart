@@ -6,11 +6,9 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
 import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterfire_ui/auth.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/strings.dart';
@@ -22,8 +20,6 @@ class AppSettingPage extends ConsumerStatefulWidget {
 }
 
 class _AppSettingPageState extends ConsumerState<AppSettingPage> {
-  int _value = 1;
-
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
@@ -34,7 +30,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    var algorand = ref.watch(algorandProvider);
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
     final user = ref.watch(userProvider(uid));
@@ -318,9 +313,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
     if (itemIndex < 0) {
       itemIndex = 0;
     }
-    setState(() {
-      _value = itemIndex;
-    });
+    setState(() {});
   }
 
   String getThemeModeName(ThemeMode? currentThemeMode) {

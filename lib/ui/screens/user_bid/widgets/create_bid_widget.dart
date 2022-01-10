@@ -4,7 +4,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_acco
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,13 +33,15 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    if(myAccountPageViewModel is AsyncLoading || myAccountPageViewModel is AsyncError){
+    if (myAccountPageViewModel is AsyncLoading ||
+        myAccountPageViewModel is AsyncError) {
       return WaitPage(true);
     }
-    final addBidPageViewModel = ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
+    final addBidPageViewModel =
+        ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel == null) return WaitPage(true);
     if (addBidPageViewModel.submitting) return WaitPage(true);
-    if(myAccountPageViewModel.accounts?.isNotEmpty??false) {
+    if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
       account ??= myAccountPageViewModel.accounts!.first;
     }
     return Container(
@@ -105,7 +106,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   onChanged: (String? val) {
                     val ??= '';
                     speedNum = (num.tryParse(val) ?? 0).toInt();
-                    if(mounted) {
+                    if (mounted) {
                       setState(() {});
                     }
                   },
@@ -165,14 +166,14 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   },
                   onPageChanged: (int val) {
                     account = myAccountPageViewModel.accounts?.elementAt(val);
-                    if(mounted) {
+                    if (mounted) {
                       setState(() {});
                     }
                   },
                 ),
               ),
               Visibility(
-                visible: (myAccountPageViewModel.accounts?.length??0) > 1,
+                visible: (myAccountPageViewModel.accounts?.length ?? 0) > 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -195,16 +196,18 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   ],
                 ),
               ),
-
               Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              child: ElevatedButton(
-                onPressed:isInsufficient(account)?null: () {
-                  onAddBid();
-                },
-                child: Text(getConfirmSliderText()),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                child: ElevatedButton(
+                  onPressed: isInsufficient(account)
+                      ? null
+                      : () {
+                          onAddBid();
+                        },
+                  child: Text(getConfirmSliderText()),
+                ),
               ),
-            ),
               /*Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ConfirmationSlider(
@@ -245,12 +248,13 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   }
 
   onAddBid() async {
-    if(isInsufficient(account)){
+    if (isInsufficient(account)) {
       return;
     }
-    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.uid).state).state;
+    final addBidPageViewModel =
+        ref.read(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
-      if(!addBidPageViewModel.submitting ) {
+      if (!addBidPageViewModel.submitting) {
         await connectCall(addBidPageViewModel: addBidPageViewModel);
         Navigator.of(context).maybePop();
       }

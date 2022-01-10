@@ -1,6 +1,5 @@
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
@@ -8,17 +7,13 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/bid_model.dart';
-import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../history/history_page.dart';
 import '../home/wait_page.dart';
 import '../user_bid/user_bid_ins_list.dart';
 import '../user_bid/user_bid_outs_list.dart';
@@ -50,7 +45,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
   Widget build(BuildContext context) {
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
     if (myUserPageViewModel == null) return WaitPage();
-    UserModel myUser = myUserPageViewModel.user;
     return Scaffold(
       body: NestedScrollView(
         floatHeaderSlivers: true,

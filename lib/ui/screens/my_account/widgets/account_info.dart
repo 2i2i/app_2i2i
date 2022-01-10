@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
-import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
@@ -207,31 +206,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         );
       },
     );
-  }
-
-  Future _showPrivateKey(BuildContext context, LocalAccount account) async {
-    final pk = await account.mnemonic();
-    log('_showPrivateKey - pk=$pk');
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text('private key'),
-              content: Table(
-                children: [
-                  for (var i = 1; i <= 13; i++)
-                    TableRow(children: [
-                      Text('$i ${pk[i - 1]}'),
-                      i < 13 ? Text('${i + 13} ${pk[i + 12]}') : Container(),
-                    ])
-                ],
-              ),
-              actions: [
-                IconButton(
-                    onPressed: () =>
-                        Clipboard.setData(ClipboardData(text: pk.join(' '))),
-                    icon: Icon(Icons.copy))
-              ],
-            ));
   }
 
   // Future<int?> _optInToASA(BuildContext context) async {

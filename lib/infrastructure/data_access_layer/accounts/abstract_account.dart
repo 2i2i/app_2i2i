@@ -113,11 +113,6 @@ class AccountService {
 
   List<WalletConnectAccount> getAllWalletConnectAccounts() => WalletConnectAccount.getAllAccounts();
 
-  Future<Account?> recoverAccount(AlgorandNet net,List<String> keys) async{
-    final restoredAccount = await algorandLib.client[net]?.restoreAccount(keys);
-    return restoredAccount;
-  }
-
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
