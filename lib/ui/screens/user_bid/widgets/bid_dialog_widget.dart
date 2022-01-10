@@ -122,7 +122,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                   BidSpeedWidget(
                     speed: widget.bidIn.speed.num.toString(),
                     unit:
-                        '${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/sec',
+                        '${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s',
                   )
                 ],
               ),
@@ -220,7 +220,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('speed: '),
-                Text('${bidInModel.speed.num} [$assetIDString/sec]'),
+                Text('${bidInModel.speed.num} [$assetIDString/s]'),
               ],
             ),
             SizedBox(height: 4),

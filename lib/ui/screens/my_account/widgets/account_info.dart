@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +12,8 @@ import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
-  AccountInfo(this.shrinkwrap, {Key? key, required this.account}) : super(key: key);
+  AccountInfo(this.shrinkwrap, {Key? key, required this.account})
+      : super(key: key);
 
   final AbstractAccount account;
 
@@ -26,18 +28,21 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount;
     String assetName =
-        assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
+        assetId == 0 ? 'μALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
-      constraints: widget.shrinkwrap==true?null:BoxConstraints(
-        minHeight: 200,
-      ),
+      constraints: widget.shrinkwrap == true
+          ? null
+          : BoxConstraints(
+              minHeight: 200,
+            ),
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       decoration: BoxDecoration(
@@ -70,17 +75,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         height: 40,
                         fit: BoxFit.fill,
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        'Algorand',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5!
-                            .copyWith(fontWeight: FontWeight.w600),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(width: 6),
+                      SizedBox(width: 16),
                       Flexible(
                         child: Text(
                           assetName,
@@ -99,7 +94,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   "$amount",
                   style: Theme.of(context).textTheme.headline4!.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+                      color:
+                          Theme.of(context).tabBarTheme.unselectedLabelColor),
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                 )
@@ -115,22 +111,24 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Image.asset(
-                          'assets/wc_logo.png',
-                          height: 20,
-                          fit: BoxFit.fill,
-                        ),
+                        widget.account is WalletConnectAccount
+                            ? Image.asset(
+                                'assets/wc_logo.png',
+                                height: 20,
+                                fit: BoxFit.fill,
+                              )
+                            : Container(),
                         SizedBox(height: 8),
-                        Text(widget.account.address,
-                            maxLines: 2,
-                            style: Theme.of(context)
-                                .textTheme
-                                .caption!
-                                .copyWith(fontWeight: FontWeight.w600),
+                        Text(
+                          widget.account.address,
+                          maxLines: 2,
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption!
+                              .copyWith(fontWeight: FontWeight.w600),
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
-
                       ],
                     ),
                   ),
@@ -145,7 +143,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         height: 20,
                       ),
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: widget.account.address));
+                        Clipboard.setData(
+                            ClipboardData(text: widget.account.address));
                         showToast('Copied to Clipboard',
                             context: context,
                             animation: StyledToastAnimation.slideFromTop,
@@ -171,9 +170,11 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                               height: 20,
                             ),
                             onPressed: () => CustomDialogs.infoDialog(
-                                context: context, child: KeysWidget(account: widget.account as LocalAccount))
-                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
-                        ),
+                                context: context,
+                                child: KeysWidget(
+                                    account: widget.account as LocalAccount))
+                            // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                            ),
                       ),
                       visible: widget.account is LocalAccount),
                 ],

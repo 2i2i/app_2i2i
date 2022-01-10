@@ -48,7 +48,7 @@ class OtherBidInList extends ConsumerWidget {
                       child: ListTile(
                         leading: Icon(Icons.circle, color: AppTheme().gray),
                         title: Text('$num'),
-                        subtitle: Text('[$assetIDString/sec]'),
+                        subtitle: Text('[$assetIDString/s]'),
                       ));
                 });
           }

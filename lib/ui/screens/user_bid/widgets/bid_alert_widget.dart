@@ -38,7 +38,7 @@ class _BidAlertWidgetState extends State<BidAlertWidget> {
                   width: kToolbarHeight * 2.48,
                   child: BidSpeedWidget(
                     speed: '5',
-                    unit: 'μAlgo/sec',
+                    unit: 'μAlgo/s',
                   ),
                 ),
                 IconButton(

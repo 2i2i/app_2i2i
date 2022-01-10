@@ -29,32 +29,39 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   // wallet connect part
   String _displayUri = '';
 
-  Future _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+  Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
+      AccountService accountService) async {
+    log(J + '_createSession');
     final account = WalletConnectAccount.fromNewConnector(
-        accountService: accountService,
+      accountService: accountService,
     );
+    log(J +
+        '_createSession - account.connector.connected=${account.connector.connected}');
     // Create a new session
     if (!account.connector.connected) {
       final session = await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
-      log('_MyAccountPageState - _createSession - session=$session');
+      log(J + '_MyAccountPageState - _createSession - session=$session');
       await account.save();
       await myAccountPageViewModel.updateAccounts();
       _displayUri = '';
     } else {
-      log('_MyAccountPageState - _createSession - connector already connected');
+      log(J +
+          '_MyAccountPageState - _createSession - connector already connected');
     }
   }
 
+  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.android;
+
   Future _changeDisplayUri(String uri) async {
-    log('_changeDisplayUri - uri=$uri');
+    log(J + '_changeDisplayUri - uri=$uri');
     _displayUri = uri;
     if (mounted) {
       setState(() {});
     }
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
     if (isMobile) {
       await launch(uri);
     } else {
@@ -79,28 +86,27 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     return Scaffold(
-        appBar: CustomAppbar(),
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            Visibility(
-              visible: myAccountPageViewModel.isLoading,
-              child: WaitPage(),
-            ),
-            ListView.builder(
-              itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 4),
-              itemBuilder: (BuildContext context, int index) {
-                return AccountInfo(
-                  true,
-                  key: ObjectKey(
-                      myAccountPageViewModel.accounts![index].address),
-                  account: myAccountPageViewModel.accounts![index],
-                );
-              },
-            )
-          ],
-        ),
+      appBar: CustomAppbar(),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Visibility(
+            visible: myAccountPageViewModel.isLoading,
+            child: WaitPage(),
+          ),
+          ListView.builder(
+            itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            itemBuilder: (BuildContext context, int index) {
+              return AccountInfo(
+                true,
+                key: ObjectKey(myAccountPageViewModel.accounts![index].address),
+                account: myAccountPageViewModel.accounts![index],
+              );
+            },
+          )
+        ],
+      ),
       /*floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SpeedDial(
@@ -137,15 +143,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         },
         child: Icon(
           Icons.add,
-          color: Theme
-              .of(context)
-              .cardColor,
+          color: Theme.of(context).cardColor,
           size: 35,
         ),
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .secondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -164,8 +165,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ListTile(
               onTap: () async {
                 Navigator.of(context).maybePop();
-                final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-                await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+                final myAccountPageViewModel =
+                    ref.read(myAccountPageViewModelProvider);
+                await _createSession(myAccountPageViewModel,
+                    myAccountPageViewModel.accountService!);
               },
               leading: Container(
                 height: 50,
@@ -186,10 +189,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                   'assets/wallet_connect.png',
                   height: 30,
                   width: 30,
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .secondary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
               title: Text('Wallet account'),
@@ -201,11 +201,12 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               child: Divider(),
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.of(context).maybePop();
                 Future.delayed(Duration.zero).then(
                   (value) {
-                    CustomNavigation.push(context, RecoverAccountPage(), 'recover');
+                    CustomNavigation.push(
+                        context, RecoverAccountPage(), 'recover');
                   },
                 );
               },
@@ -228,15 +229,12 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                   'assets/icons/recover.svg',
                   height: 15,
                   width: 15,
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .secondary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
               title: Text('Recover with passphase'),
-              subtitle: Text(
-                  'I already have an account and I know my 25 phrases'),
+              subtitle:
+                  Text('I already have an account and I know my 25 phrases'),
               trailing: Icon(Icons.navigate_next),
             ),
             Padding(
@@ -244,11 +242,12 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               child: Divider(),
             ),
             ListTile(
-              onTap: ()async{
+              onTap: () async {
                 Navigator.of(context).maybePop();
                 CustomDialogs.loader(true, context);
                 try {
-                  final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+                  final myAccountPageViewModel =
+                      ref.read(myAccountPageViewModelProvider);
                   await myAccountPageViewModel.addLocalAccount();
                 } catch (e) {
                   print(e);
@@ -274,10 +273,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                   'assets/icons/wallet.svg',
                   height: 15,
                   width: 15,
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .secondary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
               title: Text('Add Local Account'),

@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
@@ -27,28 +28,10 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
       itemBuilder: (BuildContext context, int index) => ListTile(
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 14,
-              backgroundColor: AppTheme().tabColor,
-              child: Text(
-                '$index',
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: Theme.of(context).disabledColor),
-              ),
-            ),
             SizedBox(width: 8),
             Expanded(
               child: Row(
                 children: [
-                  TextProfileView(
-                      text: topMeetings[index].name,
-                      statusColor: Colors.green,
-                      hideShadow: true,
-                      radius: kToolbarHeight + 6,
-                      style: Theme.of(context).textTheme.headline5!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme().tabTextColor)),
                   SizedBox(width: 8),
                   Text(topMeetings[index].name,
                       style: Theme.of(context).textTheme.headline6!.copyWith(
@@ -57,7 +40,7 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
                 ],
               ),
             ),
-            Text('${topMeetings[index].duration} sec',
+            Text(secondsToSensibleTimePeriod(topMeetings[index].duration),
                 style: Theme.of(context)
                     .textTheme
                     .headline5!

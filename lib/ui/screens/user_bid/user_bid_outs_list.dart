@@ -114,7 +114,7 @@ class UserBidOutsList extends ConsumerWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(bid.speed.num.toString() + ' μAlgo/Sec'),
+                Text(bid.speed.num.toString() + ' μAlgo/s'),
                 SizedBox(width: 8),
                 GestureDetector(
                   onTap: (){
