@@ -1,12 +1,20 @@
-
+import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
+import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
+import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import 'widgets/mode_widgets.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
@@ -18,92 +26,252 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
 
   List<String> networkList = ["Main", "Test", "Both"];
 
-  int selectedRadio = 0;
-  int selectedRadioTile = 0;
-
   @override
   void initState() {
     getMode();
     super.initState();
   }
 
-  Future<void> getMode() async {
-    String? networkMode = await ref.read(algorandProvider).getNetworkMode();
-    int itemIndex = networkList.indexWhere((element) => element == networkMode);
-    if (itemIndex < 0) {
-      itemIndex = 0;
-    }
-    setState(() {
-      _value = itemIndex;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     var algorand = ref.watch(algorandProvider);
+    final uid = ref.watch(myUIDProvider);
+    if (uid == null) return WaitPage();
+    final user = ref.watch(userProvider(uid));
+    if (user is AsyncLoading || user is AsyncError) return WaitPage();
+    final message = 'https://test.2i2i.app/user/$uid';
     var appSettingModel = ref.watch(appSettingProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('App Settings'),
+        title: Text(
+          'Settings',
+        ),
+        centerTitle: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 15),
-            Text(Strings().themeMode,
-                style: Theme.of(context)
-                    .textTheme
-                    .subtitle1!
-                    .copyWith(fontWeight: FontWeight.bold)),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+            Text(
+              'QR code',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20.0),
+                child: Column(
+                  children: [
+                    Text(
+                      Strings().shareQr,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    QrWidget(
+                      message: message,
+                      logoSize: 60,
+                      imageSize: 180,
+                    ),
+                    SizedBox(height: 16),
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Color(0xffF3F3F7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.caption?.copyWith(
+                              decoration: TextDecoration.underline,
+                            ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Clipboard.setData(
+                                ClipboardData(
+                                  text: message,
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Copied Link!')),
+                              );
+                            },
+                            child: Text('Copy'),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Share.share(
+                                  'Your friend and invite for join 2i2i\n$message');
+                            },
+                            child: Text('Share'),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //profile
+            Text(
+              'Profile',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ModeWidgets(
-                      isDarkMode: false,
-                      isSelected: appSettingModel.currentThemeMode == ThemeMode.light,
-                      onTap: () {
-                        appSettingModel.setThemeMode("LIGHT");
-                      }),
-                  ModeWidgets(
-                    isDarkMode: true,
-                    isSelected: appSettingModel.currentThemeMode == ThemeMode.dark,
-                    onTap: () {
-                      appSettingModel.setThemeMode("DARK");
+                  ListTile(
+                    onTap: (){
+                      showProfile();
                     },
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          Strings().userName,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                        Text(
+                          user.value?.name ?? '',
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                      ],
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: (){
+                      showProfile();
+                    },
+                    title: Text(
+                      Strings().bio,
+                      style: Theme.of(context).textTheme.subtitle1,
+                      textAlign: TextAlign.start,
+                    ),
+                    trailing: Icon(Icons.navigate_next),
                   ),
                 ],
               ),
             ),
-            Divider(color: Colors.transparent),
-            ListTile(
-              title: Text('Automatic'),
-              trailing: Transform.scale(
-                  scale: 0.7,
-                  child: CupertinoSwitch(
-                    value: appSettingModel.isAutoModeEnable,
-                    onChanged: (value) async {
-                      String mode = await appSettingModel.getThemeMode()??"";
-                      appSettingModel.setThemeMode(value ? "AUTO" : mode);
-                    },
-                    activeColor: Theme.of(context).iconTheme.color,
-                    thumbColor: Theme.of(context).scaffoldBackgroundColor,
-                  )),
+            SizedBox(height: 20),
+
+
+            //theme
+            Text(
+              'Theme',
+              style: Theme.of(context).textTheme.subtitle1,
             ),
-            Divider(),
-            SizedBox(height: 8),
-            Text(Strings().selectNetworkMode,
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: ListTile(
+                onTap: () {
+                  CustomNavigation.push(
+                      context, ThemeModeScreen(), 'ThemeModeScreen');
+                },
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      getThemeModeName(appSettingModel.currentThemeMode),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    if (appSettingModel.currentThemeMode == ThemeMode.system)
+                      Text(
+                        'System Defaults',
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //others
+            Text(
+              'Others',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: ListTile(
+                title: Text(
+                  'Blocked accounts',
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //lgout
+            Text(
+              'Logout',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: ListTile(
+                onTap: (){
+                  FirebaseAuth.instance.signOut();
+                },
+                leading: Icon(
+                  Icons.logout,
+                  color: Theme.of(context).errorColor,
+                ),
+                title: Text(
+                  'Logout',
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle1
+                      ?.copyWith(color: Theme.of(context).errorColor),
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            /*Text(Strings().selectNetworkMode,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1!
                     .copyWith(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             Card(
-              elevation: 4,
+              elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: Theme(
@@ -137,16 +305,46 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
             ),
             Divider(),
             SizedBox(height: 8),
-            SignOutButton(),
+            SignOutButton(),*/
           ],
         ),
       ),
     );
   }
 
-  setSelectedRadioTile(int val) {
+  Future<void> getMode() async {
+    String? networkMode = await ref.read(algorandProvider).getNetworkMode();
+    int itemIndex = networkList.indexWhere((element) => element == networkMode);
+    if (itemIndex < 0) {
+      itemIndex = 0;
+    }
     setState(() {
-      selectedRadioTile = val;
+      _value = itemIndex;
     });
+  }
+
+  String getThemeModeName(ThemeMode? currentThemeMode) {
+    if (currentThemeMode == ThemeMode.dark) {
+      return 'Dark Mode';
+    }
+    return 'Light Mode';
+  }
+
+  void showProfile() {
+    CustomAlertWidget.showBidAlert(
+      context,
+      WillPopScope(
+        onWillPop: () {
+          return Future.value(true);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SetupBio(
+            isFromDialog: true,
+          ),
+        ),
+      ),
+      isDismissible: true,
+    );
   }
 }

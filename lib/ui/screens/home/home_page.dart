@@ -1,6 +1,8 @@
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,9 +30,10 @@ class _HomePageState extends ConsumerState<HomePage>{
 
   static final List<TabItem> _tabItems = [
     TabItem(GlobalKey<NavigatorState>(), SearchPage()),
-    TabItem(GlobalKey<NavigatorState>(), MyAccountPage()),
     TabItem(GlobalKey<NavigatorState>(), MyUserPage()),
+    TabItem(GlobalKey<NavigatorState>(), MyAccountPage()),
     TabItem(GlobalKey<NavigatorState>(), FAQPage()),
+    TabItem(GlobalKey<NavigatorState>(), AppSettingPage()),
     // TabItem(GlobalKey<NavigatorState>(), QRCodePage()),
   ];
 
@@ -42,34 +45,7 @@ class _HomePageState extends ConsumerState<HomePage>{
     });
   }
 
-  @override
-  void initState() {
-    Future.delayed(Duration(seconds: 3)).then((value) {
-      final uid = ref.watch(myUIDProvider)!;
-      final user = ref.watch(userProvider(uid));
-      bool isLoaded = !(user is AsyncLoading && user is AsyncError);
-      if (isLoaded) {
-        final UserModel myUser = user.asData!.value;
-        if (myUser.name.isEmpty) {
-          showDialog(
-            context: context,
-            builder: (context) => WillPopScope(
-                onWillPop: () {
-                  return Future.value(true);
-                },
-                child: AlertDialog(
-                  content: SetupBio(
-                    isFromDialog: true,
-                  ),
-                  backgroundColor: Theme.of(context).primaryColor,
-                )),
-            barrierDismissible: false,
-          );
-        }
-      }
-    });
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +66,7 @@ class _HomePageState extends ConsumerState<HomePage>{
         },
       );
     }
+
     return WillPopScope(
       onWillPop: () async =>
           !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
@@ -97,10 +74,9 @@ class _HomePageState extends ConsumerState<HomePage>{
         body: Stack(
           children: _tabItems
               .asMap()
-              .map((index, value) => MapEntry(
-                  index, _buildOffstageNavigator(_tabItems[index], index)))
+              .map((index, value) => MapEntry(index, _buildOffstageNavigator(_tabItems[index], index)))
               .values
-              .toList()
+              .toList(),
         ),
         bottomNavigationBar: Card(
           margin: EdgeInsets.zero,
@@ -118,16 +94,22 @@ class _HomePageState extends ConsumerState<HomePage>{
                   icon: selectedIcon('assets/icons/house.svg'),
                 ),
                 BottomNavigationBarItem(
+                  label: Strings().profile,
+                  activeIcon:
+                      selectedIcon('assets/icons/person.svg', isSelected: true),
+                  icon: selectedIcon('assets/icons/person.svg'),
+                ),
+                BottomNavigationBarItem(
                   label: Strings().account,
                   activeIcon: selectedIcon('assets/icons/account.svg',
                       isSelected: true),
                   icon: selectedIcon('assets/icons/account.svg'),
                 ),
                 BottomNavigationBarItem(
-                  label: Strings().profile,
+                  label: Strings().faq,
                   activeIcon:
-                      selectedIcon('assets/icons/person.svg', isSelected: true),
-                  icon: selectedIcon('assets/icons/person.svg'),
+                      selectedIcon('assets/icons/help.svg', isSelected: true),
+                  icon: selectedIcon('assets/icons/help.svg'),
                 ),
                 BottomNavigationBarItem(
                   label: Strings().settings,
@@ -135,11 +117,6 @@ class _HomePageState extends ConsumerState<HomePage>{
                       isSelected: true),
                   icon: selectedIcon('assets/icons/setting.svg'),
                 ),
-                // BottomNavigationBarItem(
-                //   label: "",
-                //   icon: Icon(Icons.qr_code_2_rounded),
-                //   tooltip: 'QR Code',
-                // ),
               ],
             ),
           ),

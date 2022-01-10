@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../infrastructure/data_access_layer/services/logging.dart';
@@ -29,7 +30,15 @@ class CustomNavigation {
     if (locked){
      return LockedUserPage();
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    if(kIsWeb) {
+      var pageRouteBuilder = PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => page,
+        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+      );
+      Navigator.push(context, pageRouteBuilder);
+    }else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    }
   }
 
   static pushReplacement(BuildContext context, Widget page, String pageName) {
@@ -50,12 +59,20 @@ class CustomNavigation {
     if (locked){
       return LockedUserPage();
     }
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => page));
+
+    if(kIsWeb) {
+      var pageRouteBuilder = PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => page,
+
+        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+      );
+      Navigator.pushReplacement(context, pageRouteBuilder);
+    } else{
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
+    }
   }
 
-  static pushAndRemoveUntil(
-      BuildContext context, Widget page, String pageName) {
+  static pushAndRemoveUntil(BuildContext context, Widget page, String pageName) {
     final locked = isUserLocked.value;
     final goingToLocked = pageName == Routes.LOCK;
 
@@ -73,9 +90,19 @@ class CustomNavigation {
     if (locked){
       return LockedUserPage();
     }
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => page),
-        (Route<dynamic> route) => false);
+
+    if(kIsWeb) {
+      var pageRouteBuilder = PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => page,
+
+        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+      );
+      Navigator.pushAndRemoveUntil(context, pageRouteBuilder, (Route<dynamic> route) => false);
+    }else {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => page),
+              (Route<dynamic> route) => false);
+    }
   }
 }

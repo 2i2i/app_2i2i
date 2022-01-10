@@ -211,62 +211,56 @@ class RingingPageState extends ConsumerState<RingingPage> {
               ),
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Visibility(
                       visible:
                           !isClicked && ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 150),
-                        child: Column(
-                          children: [
-                            FloatingActionButton(
-                              child: Icon(Icons.call_end, color: Colors.white),
-                              backgroundColor:
-                                  Color.fromARGB(255, 239, 102, 84),
-                              onPressed: () async {
-                                final finishFuture = finish();
-                                final cancelMeetingFuture =
-                                    ringingPageViewModel!.endMeeting(
-                                        ringingPageViewModel!.amA()
-                                            ? MeetingStatus.END_A
-                                            : MeetingStatus.END_B);
-                                await Future.wait(
-                                    [finishFuture, cancelMeetingFuture]);
-                              },
-                            ),
-                          ],
-                        ),
+                      child: Column(
+                        children: [
+                          FloatingActionButton(
+                            child: Icon(Icons.call_end, color: Colors.white),
+                            backgroundColor:
+                                Color.fromARGB(255, 239, 102, 84),
+                            onPressed: () async {
+                              final finishFuture = finish();
+                              final cancelMeetingFuture =
+                                  ringingPageViewModel!.endMeeting(
+                                      ringingPageViewModel!.amA()
+                                          ? MeetingStatus.END_A
+                                          : MeetingStatus.END_B);
+                              await Future.wait(
+                                  [finishFuture, cancelMeetingFuture]);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Visibility(
                       visible: !isClicked &&
                           ringingPageViewModel!.amA() &&
                           ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 150),
-                        child: Column(
-                          children: [
-                            Bounce(
-                              child: FloatingActionButton(
-                                child: Icon(Icons.call, color: Colors.white),
-                                backgroundColor: Colors.green,
-                                onPressed: () async {
-                                  isClicked = true;
-                                  if (mounted) {
-                                    setState(() {});
-                                  }
-                                  final finishFuture = finish();
-                                  final acceptMeetingFuture =
-                                      ringingPageViewModel!.acceptMeeting();
-                                  await Future.wait(
-                                      [finishFuture, acceptMeetingFuture]);
-                                },
-                              ),
+                      child: Column(
+                        children: [
+                          Bounce(
+                            child: FloatingActionButton(
+                              child: Icon(Icons.call, color: Colors.white),
+                              backgroundColor: Colors.green,
+                              onPressed: () async {
+                                isClicked = true;
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                                final finishFuture = finish();
+                                final acceptMeetingFuture =
+                                    ringingPageViewModel!.acceptMeeting();
+                                await Future.wait(
+                                    [finishFuture, acceptMeetingFuture]);
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     )
                   ],

@@ -5,6 +5,12 @@ class Strings {
 
   String aboutYouDesc = 'Fill below form to communicate with cool people';
 
+  String faq = 'FAQ';
+
+  String automatic = 'Automatic';
+
+  String shareQr = 'Share your QR code with others,\nso others can connect with you easily.';
+
   Strings._internal();
 
   factory Strings() {

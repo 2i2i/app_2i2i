@@ -99,8 +99,7 @@ class UserBidInsList extends ConsumerWidget {
               }
             }
             // sort
-            bidInsWithUser.sort(
-                (b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
+            bidInsWithUser.sort((b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
 
             return ListView.builder(
                 itemCount: bidInsWithUser.length,
@@ -108,14 +107,17 @@ class UserBidInsList extends ConsumerWidget {
                 itemBuilder: (_, ix) {
                   BidAndUser bidAndUser = bidInsWithUser[ix];
                   if (bidAndUser.user == null) return Container();
-                  
+
                   BidIn bid = bidAndUser.bid;
                   UserModel userModel = bidAndUser.user!;
 
                   var statusColor = AppTheme().green;
-                  if (userModel.status == 'OFFLINE')
+                  if (userModel.status == 'OFFLINE') {
                     statusColor = AppTheme().gray;
-                  if (userModel.locked) statusColor = AppTheme().red;
+                  }
+                  if (userModel.isInMeeting()) {
+                    statusColor = AppTheme().red;
+                  }
 
                   return InkResponse(
                     onTap: () => CustomDialogs.infoDialog(
@@ -132,7 +134,7 @@ class UserBidInsList extends ConsumerWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: TextProfileView(
                             radius: 50,
-                            text: "${userModel.name}",
+                            text: userModel.name,
                             statusColor: statusColor,
                           ),
                         ),

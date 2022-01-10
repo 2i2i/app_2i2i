@@ -160,8 +160,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                     estMaxDurationAsyncValue.when(
                         data: (double? estMaxDuration) {
                           if (estMaxDuration == null ||
-                              estMaxDuration.isInfinite) return '';
-                          final estMaxDurationInt = estMaxDuration.floor();
+                              estMaxDuration.isInfinite) return 'foreever';
+                          final estMaxDurationInt =  estMaxDuration.floor() ;
                           return secondsToSensibleTimePeriod(estMaxDurationInt);
                         },
                         error: (_, __) => 'error',

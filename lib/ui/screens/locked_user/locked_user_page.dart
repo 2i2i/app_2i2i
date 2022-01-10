@@ -51,7 +51,7 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
           visible: showCallPage,
           child: CallPage(
               onHangPhone: (uid, meetingId) {
-                widget.onHangPhone!(uid, meetingId);
+                widget.onHangPhone?.call(uid, meetingId);
               },
               meeting: lockedUserViewModel.meeting,
               user: lockedUserViewModel.user),

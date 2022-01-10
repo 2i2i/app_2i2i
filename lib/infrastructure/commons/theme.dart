@@ -41,7 +41,7 @@ class AppTheme{
   Color warningColor = Color(0xFFFEEBEB);
   Color redColor = Color(0xFFF92A2A);
 
-  ThemeData get mainTheme {
+  ThemeData mainTheme(BuildContext context) {
     return ThemeData(
       fontFamily: 'SofiaPro',
       brightness: Brightness.light,
@@ -57,7 +57,7 @@ class AppTheme{
       colorScheme: ColorScheme.light(
         secondary: secondaryColor,
       ),
-      appBarTheme: appBarTheme(false),
+      appBarTheme: appBarTheme(false,context),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(primary: primaryTextColor),
       ),
@@ -77,7 +77,6 @@ class AppTheme{
           unselectedItemColor: disableColor,
           backgroundColor: primaryLightColor,
           selectedIconTheme: IconThemeData(color: Colors.white)),
-
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
             primary: secondaryColor,
@@ -87,6 +86,21 @@ class AppTheme{
               fontSize: 17.0,
               fontWeight: FontWeight.w400,
             )),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          primary: secondaryColor,
+          padding: EdgeInsets.all(kIsWeb?22:14),
+          textStyle: TextStyle(
+            fontFamily: 'SofiaPro',
+            fontSize: 17.0,
+            fontWeight: FontWeight.w400,
+          ),
+          side:BorderSide(color: secondaryColor),
+          shape:RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
+          )
+        ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryLightColor,
@@ -118,14 +132,22 @@ class AppTheme{
             borderSide: BorderSide.none),
       ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: secondaryColor),
+      textTheme: TextTheme(
+        headline6: TextStyle(
+          color: Color(0xFF48484A),
+          fontSize: 34,
+          letterSpacing: 0.37,
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w600,
+        )
+      )
     );
   }
 
-  ThemeData get darkTheme {
+  ThemeData darkTheme(BuildContext context) {
     return ThemeData(
         brightness: Brightness.dark,
-        appBarTheme: appBarTheme(true),
-        fontFamily: 'SofiaPro',
+        appBarTheme: appBarTheme(true,context),
         primaryColor: primaryDarkColor,
         primaryColorLight: secondaryDarkColor,
         primaryColorDark: secondaryTextColor,
@@ -147,7 +169,19 @@ class AppTheme{
                 fontFamily: 'SofiaPro',
                 fontSize: 17.0,
                 fontWeight: FontWeight.w600,
-              )),
+              ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            primary: cardDarkColor,
+            padding: EdgeInsets.all(24),
+            textStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 17.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: primaryLightColor,
@@ -167,21 +201,33 @@ class AppTheme{
             borderSide: BorderSide(color: primaryLightColor),
           ),
         ),
-        textSelectionTheme:
-            TextSelectionThemeData(cursorColor: primaryLightColor),
-        colorScheme: ColorScheme.dark(secondary: primaryColor));
+        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor),
+        colorScheme: ColorScheme.dark(secondary: primaryColor),
+        fontFamily: 'SofiaPro',
+        textTheme: TextTheme(
+        headline6: TextStyle(
+          color: Color(0xff48484A),
+          fontSize: 34,
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.37,
+        ),
+      )
+    );
   }
 
-  AppBarTheme appBarTheme(bool dark) => AppBarTheme(
+  AppBarTheme appBarTheme(bool dark,BuildContext context) => AppBarTheme(
       elevation: 0,
       backgroundColor: !dark ? primaryColor : primaryDarkColor,
       iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
       titleTextStyle: TextStyle(
-        fontSize: 20.0,
-        color: dark ? white : lightGray,
-        fontFamily: 'SofiaPro',
-        fontWeight: FontWeight.w500,
-      ));
+        color: Color(0xff48484A),
+        fontSize: 34,
+        fontStyle: FontStyle.normal,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.37,
+      ),
+  );
 
 /*ThemeMode getThemeMode() {
     String _themeMode = GetStorage().read<String>('theme_mode') ?? '';

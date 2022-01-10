@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,18 +70,40 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
-      home:AuthWidget(homePageBuilder: (_) => HomePage(),),
+      home: getView(),
       // home:TestScreen(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,
       themeMode: ThemeMode.light,
 
-      theme: AppTheme().mainTheme,
-      darkTheme: AppTheme().darkTheme,
+      theme: AppTheme().mainTheme(context),
+      darkTheme: AppTheme().darkTheme(context),
+    );
+  }
+
+  Widget getView() {
+    if(kIsWeb) {
+      return FittedBox(
+        fit: BoxFit.scaleDown,
+        child: SizedBox(
+          width: 390,
+          height: 844,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AuthWidget(
+              homePageBuilder: (_) => HomePage(),
+            ),
+          ),
+        ),
+      );
+    }
+    return AuthWidget(
+      homePageBuilder: (_) => HomePage(),
     );
   }
 }
+
 class AppScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
