@@ -6,6 +6,7 @@ import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -66,6 +67,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   height: 65,
                 ),
               ),
+              centerTitle: false,
               actions: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,7 +101,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   ],
                 ),
               ],
-              // collapsedHeight: kToolbarHeight + 50,
+              collapsedHeight: kIsWeb?(kToolbarHeight + 50):null,
               backgroundColor: Theme.of(context).cardColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
