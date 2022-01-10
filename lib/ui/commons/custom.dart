@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Custom{
-  static getBoxDecoration(BuildContext context){
+  static getBoxDecoration(BuildContext context, {double radius = 10}) {
     return BoxDecoration(
       color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: Colors.black12,
-          spreadRadius: 0.2,
-          blurRadius: 4,
-        ),
+            offset: Offset(2, 4),
+            blurRadius: 8,
+            color: Colors.black12.withOpacity(0.1)
+            ),
       ],
     );
   }
