@@ -24,7 +24,6 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
-
   @override
   void initState() {
     initMethod();
@@ -80,7 +79,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state =
+                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -91,10 +91,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
-  int usersSort(
-      UserModel u1,
-      UserModel u2,
-      List<String> keywords) {
+  int usersSort(UserModel u1, UserModel u2, List<String> keywords) {
     if (u1.status == 'ONLINE' && u2.status != 'ONLINE') return -1;
     if (u1.status != 'ONLINE' && u2.status == 'ONLINE') return 1;
     // both ONLINE xor OFFLINE
@@ -168,13 +165,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               return Visibility(
                 visible: user.id != mainUserID,
                 child: Container(
-                  decoration: Custom.getBoxDecoration(context,radius: 12),
+                  decoration: Custom.getBoxDecoration(context, radius: 12),
                   child: GestureDetector(
-                    onTap:(){
-                      CustomNavigation.push(context, UserPage(uid: user.id), Routes.USER);
+                    onTap: () {
+                      CustomNavigation.push(
+                          context, UserPage(uid: user.id), Routes.USER);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 10),
                       child: Row(
                         children: [
                           SizedBox(
@@ -188,8 +187,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                   decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(8),
-                                      border:
-                                      Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.08),
@@ -200,7 +199,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                   alignment: Alignment.center,
                                   child: Text(
                                     firstNameChar,
-                                    style: Theme.of(context).textTheme.headline5,
+                                    style:
+                                        Theme.of(context).textTheme.headline5,
                                   ),
                                 ),
                                 Align(
@@ -211,8 +211,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                     decoration: BoxDecoration(
                                       color: statusColor,
                                       borderRadius: BorderRadius.circular(20),
-                                      border:
-                                      Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
                                     ),
                                   ),
                                 ),
@@ -231,7 +231,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                     Expanded(
                                       child: Text(
                                         name,
-                                        style: Theme.of(context).textTheme.subtitle1,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1,
                                         maxLines: 2,
                                         softWrap: false,
                                         overflow: TextOverflow.ellipsis,
@@ -258,7 +260,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                         ),
                                         SizedBox(width: 6),
                                         Text('${(user.rating ?? 0) * 5}',
-                                            style: Theme.of(context).textTheme.caption)
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .caption)
                                       ],
                                     ),
                                   ],
@@ -276,26 +280,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                             .textTheme
                                             .bodyText1!
                                             .copyWith(
-                                          fontWeight: FontWeight.w400,
-                                          color:
-                                          Theme.of(context).disabledColor,
-                                        ),
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .disabledColor,
+                                            ),
                                       ),
                                     ),
                                     IconButton(
                                       padding: EdgeInsets.zero,
                                       onPressed: () => isFriend
                                           ? userModelChanger
-                                          .removeFriend(user.id)
-                                          : userModelChanger
-                                          .addFriend(user.id),
+                                              .removeFriend(user.id)
+                                          : userModelChanger.addFriend(user.id),
                                       icon: Icon(isFriend
                                           ? Icons.favorite_rounded
-                                          : Icons
-                                          .favorite_border_rounded),
-                                      color: isFriend
-                                          ? Colors.red
-                                          : Colors.grey,
+                                          : Icons.favorite_border_rounded),
+                                      color:
+                                          isFriend ? Colors.red : Colors.grey,
                                     )
                                   ],
                                 ),
