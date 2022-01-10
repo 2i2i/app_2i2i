@@ -96,7 +96,7 @@ class UserBidInsList extends ConsumerWidget {
           statusColor = AppTheme().red;
         }
         String firstNameChar = userModel.name;
-        if(firstNameChar.length>0){
+        if(firstNameChar.isNotEmpty){
           firstNameChar = firstNameChar.substring(0,1);
         }
         return ListTile(

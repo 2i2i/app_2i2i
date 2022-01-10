@@ -43,16 +43,16 @@ class UserBidOutsList extends ConsumerWidget {
         final bUser = ref.watch(userProvider(bid.B));
 
         if(bUser.asData?.value is UserModel) {
-          var user = bUser.asData!.value;
+          final user = bUser.asData!.value;
           var statusColor = AppTheme().green;
           if (user.status == 'OFFLINE') {
             statusColor = AppTheme().gray;
           }
-          if (user.locked) {
+          if (user.isInMeeting()) {
             statusColor = AppTheme().red;
           }
           String firstNameChar = user.name;
-          if (firstNameChar.length > 0) {
+          if (firstNameChar.isNotEmpty) {
             firstNameChar = firstNameChar.substring(0, 1);
           }
           return ListTile(
