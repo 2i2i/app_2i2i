@@ -41,7 +41,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     // var statusColor = AppTheme().green;
     // if (user.status == 'OFFLINE') {
     //   statusColor = AppTheme().gray;
-    // } else if (user.locked) {
+    // } else if (user.isInMeeting()) {
     //   statusColor = AppTheme().red;
     // }
 

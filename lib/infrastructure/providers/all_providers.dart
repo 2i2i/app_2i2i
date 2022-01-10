@@ -217,7 +217,7 @@ final myUserLockedProvider = Provider((ref) {
   // log('myUserLockedProvider - 2');
   final UserModel myUser = user.asData!.value;
   // log('myUserLockedProvider - myUser=$myUser');
-  if (!myUser.locked) {
+  if (!myUser.isInMeeting()) {
     isUserLocked.changeValue(false);
     return false;
   }
