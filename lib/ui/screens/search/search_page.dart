@@ -172,136 +172,141 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 visible: user.id != mainUserID,
                 child: Container(
                   decoration: Custom.getBoxDecoration(context,radius: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 55,
-                          width: 55,
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border:
-                                    Border.all(color: Colors.white, width: 2),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
-                                        blurRadius: 20,
-                                        spreadRadius: 0.5,
-                                      )
-                                    ]),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  firstNameChar,
-                                  style: Theme.of(context).textTheme.headline5,
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomRight,
-                                child: Container(
-                                  height: 15,
-                                  width: 15,
+                  child: GestureDetector(
+                    onTap:(){
+                      CustomNavigation.push(context, UserPage(uid: user.id), Routes.USER);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            height: 55,
+                            width: 55,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 50,
                                   decoration: BoxDecoration(
-                                    color: statusColor,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border:
-                                    Border.all(color: Colors.white, width: 2),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border:
+                                      Border.all(color: Colors.white, width: 2),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.08),
+                                          blurRadius: 20,
+                                          spreadRadius: 0.5,
+                                        )
+                                      ]),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    firstNameChar,
+                                    style: Theme.of(context).textTheme.headline5,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      name,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                      maxLines: 2,
-                                      softWrap: false,
-                                      overflow: TextOverflow.ellipsis,
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    height: 15,
+                                    width: 15,
+                                    decoration: BoxDecoration(
+                                      color: statusColor,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border:
+                                      Border.all(color: Colors.white, width: 2),
                                     ),
                                   ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      RatingBar.builder(
-                                        initialRating: (user.rating ?? 0) * 5,
-                                        minRating: 1,
-                                        direction: Axis.horizontal,
-                                        itemCount: 5,
-                                        itemSize: 16,
-                                        glowColor: Colors.white,
-                                        unratedColor: Colors.grey.shade300,
-                                        itemBuilder: (context, _) => Icon(
-                                          Icons.star_rounded,
-                                          color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        name,
+                                        style: Theme.of(context).textTheme.subtitle1,
+                                        maxLines: 2,
+                                        softWrap: false,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        RatingBar.builder(
+                                          initialRating: (user.rating ?? 0) * 5,
+                                          minRating: 1,
+                                          direction: Axis.horizontal,
+                                          itemCount: 5,
+                                          itemSize: 16,
+                                          glowColor: Colors.white,
+                                          unratedColor: Colors.grey.shade300,
+                                          itemBuilder: (context, _) => Icon(
+                                            Icons.star_rounded,
+                                            color: Colors.grey,
+                                          ),
+                                          onRatingUpdate: (rating) {
+                                            print(rating);
+                                          },
                                         ),
-                                        onRatingUpdate: (rating) {
-                                          print(rating);
-                                        },
-                                      ),
-                                      SizedBox(width: 6),
-                                      Text('${(user.rating ?? 0) * 5}',
-                                          style: Theme.of(context).textTheme.caption)
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      bio,
-                                      maxLines: 2,
-                                      softWrap: false,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                        fontWeight: FontWeight.w400,
-                                        color:
-                                        Theme.of(context).disabledColor,
+                                        SizedBox(width: 6),
+                                        Text('${(user.rating ?? 0) * 5}',
+                                            style: Theme.of(context).textTheme.caption)
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        bio,
+                                        maxLines: 2,
+                                        softWrap: false,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .copyWith(
+                                          fontWeight: FontWeight.w400,
+                                          color:
+                                          Theme.of(context).disabledColor,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () => isFriend
-                                        ? userModelChanger
-                                        .removeFriend(user.id)
-                                        : userModelChanger
-                                        .addFriend(user.id),
-                                    icon: Icon(isFriend
-                                        ? Icons.favorite_rounded
-                                        : Icons
-                                        .favorite_border_rounded),
-                                    color: isFriend
-                                        ? Colors.red
-                                        : Colors.grey,
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () => isFriend
+                                          ? userModelChanger
+                                          .removeFriend(user.id)
+                                          : userModelChanger
+                                          .addFriend(user.id),
+                                      icon: Icon(isFriend
+                                          ? Icons.favorite_rounded
+                                          : Icons
+                                          .favorite_border_rounded),
+                                      color: isFriend
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
