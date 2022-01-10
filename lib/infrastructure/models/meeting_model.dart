@@ -22,9 +22,7 @@ enum MeetingStatus {
   END_TIMER,
   END_A, // A hangs up
   END_B, // B hangs up
-  END_DISCONNECT_A, // A disconnected
-  END_DISCONNECT_B, // B disconnected
-  END_DISCONNECT_AB, // both disconnected
+  END_DISCONNECT, // disconnected
 }
 
 // INIT -> END_TIMER
