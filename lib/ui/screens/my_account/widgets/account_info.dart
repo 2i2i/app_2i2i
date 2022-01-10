@@ -11,7 +11,8 @@ import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
-  AccountInfo({Key? key, required this.account}) : super(key: key);
+  final bool? shrinkwrap;
+  AccountInfo(this.shrinkwrap, {Key? key, required this.account}) : super(key: key);
 
   final AbstractAccount account;
 
@@ -35,7 +36,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
-      constraints: BoxConstraints(
+      constraints: widget.shrinkwrap==true?null:BoxConstraints(
         minHeight: 200,
       ),
       margin: EdgeInsets.symmetric(vertical: 10),

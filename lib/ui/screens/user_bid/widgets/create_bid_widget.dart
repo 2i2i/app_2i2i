@@ -169,6 +169,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                                   myAccountPageViewModel.accounts?.length ?? 0,
                               itemBuilder: (_, index) {
                                 return AccountInfo(
+                                  false,
                                   key: ObjectKey(myAccountPageViewModel
                                       .accounts![index].address),
                                   account:
