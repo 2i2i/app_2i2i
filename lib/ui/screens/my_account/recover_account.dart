@@ -54,7 +54,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                     var clipData =
                         await Clipboard.getData(Clipboard.kTextPlain);
                     if (clipData is ClipboardData) {
-                      List<String> lst = clipData.text.toString().split(',');
+                      List<String> lst = clipData.text.toString().split(' ');
                       for (int i = 0; i < lst.length; i++) {
                         listOfString.elementAt(i).text = lst[i];
                       }
@@ -236,7 +236,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
       await myAccountPageViewModel.recoverAccount(keys);
       Navigator.of(context).maybePop();
     } catch (e) {
-      print(e);
+      print(e.toString());
     }
     CustomDialogs.loader(false, context);
   }

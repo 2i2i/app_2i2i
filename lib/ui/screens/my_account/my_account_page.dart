@@ -1,7 +1,7 @@
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +14,7 @@ import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../home/wait_page.dart';
+import 'recover_account.dart';
 import 'widgets/account_info.dart';
 import 'widgets/qr_image_widget.dart';
 
@@ -202,7 +203,11 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ListTile(
               onTap: (){
                 Navigator.of(context).maybePop();
-                CustomNavigation.push(context, RecoverAccountPage(), 'recover');
+                Future.delayed(Duration.zero).then(
+                  (value) {
+                    CustomNavigation.push(context, RecoverAccountPage(), 'recover');
+                  },
+                );
               },
               leading: Container(
                 height: 50,
@@ -239,6 +244,17 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               child: Divider(),
             ),
             ListTile(
+              onTap: ()async{
+                Navigator.of(context).maybePop();
+                CustomDialogs.loader(true, context);
+                try {
+                  final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+                  await myAccountPageViewModel.addLocalAccount();
+                } catch (e) {
+                  print(e);
+                }
+                CustomDialogs.loader(false, context, rootNavigator: true);
+              },
               leading: Container(
                 height: 50,
                 width: 50,

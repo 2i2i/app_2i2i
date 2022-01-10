@@ -126,21 +126,24 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 padding: const EdgeInsets.only(bottom: 10.0),
                 child: ListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+                      borderRadius: BorderRadius.circular(8)),
                   tileColor: Colors.white,
-                  leading: SvgPicture.asset('assets/icons/hour_glass.svg',height: 20,width: 20,),
+                  leading: SvgPicture.asset(
+                    'assets/icons/hour_glass.svg',
+                    height: 20,
+                    width: 20,
+                  ),
                   // leading: Container(color: Colors.grey,height: 30,width: 30,),
                   title: Text('Est. max duration'),
-                  trailing: Builder(
-                    builder: (context) {
-                      if(account != null && account!.balances.isNotEmpty) {
-                        return Text(addBidPageViewModel.duration(account!, speedNum, account!.balances.first),
-                        );
-                      }
-                      return Container();
+                  trailing: Builder(builder: (context) {
+                    if (account != null && account!.balances.isNotEmpty) {
+                      return Text(
+                        addBidPageViewModel.duration(
+                            account!, speedNum, account!.balances.first),
+                      );
                     }
-                  ),
+                    return Container();
+                  }),
                 ),
               ),
               Container(
@@ -148,53 +151,51 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   minHeight: 150,
                   maxHeight: 200,
                 ),
-                child: myAccountPageViewModel.isLoading
-                    ? Center(child: CupertinoActivityIndicator())
-                    : Row(
-                        children: [
-                          IconButton(
-                              iconSize: 10,
-                              onPressed: () => controller.previousPage(
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.decelerate),
-                              icon: RotatedBox(
-                                  quarterTurns: 2,
-                                  child: SvgPicture.asset(
-                                      'assets/icons/direction.svg'))),
-                    Expanded(
-                      child: PageView.builder(
-                              controller: controller,
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  myAccountPageViewModel.accounts?.length ?? 0,
-                              itemBuilder: (_, index) {
-                                return AccountInfo(
-                                  false,
-                                  key: ObjectKey(myAccountPageViewModel
-                                      .accounts![index].address),
-                                  account:
-                                      myAccountPageViewModel.accounts![index],
-                                );
-                              },
-                              onPageChanged: (int val) {
-                                account = myAccountPageViewModel.accounts
-                                    ?.elementAt(val);
-                              },
-                            ),
-                          ),
-                          IconButton(
-                            iconSize: 10,
-                            onPressed: () => controller.nextPage(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.decelerate,
-                            ),
-                            icon: SvgPicture.asset(
-                              'assets/icons/direction.svg',
-                            ),
-                          ),
-                        ],
+                child: PageView.builder(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                  itemBuilder: (_, index) {
+                    return AccountInfo(
+                      false,
+                      key: ObjectKey(
+                          myAccountPageViewModel.accounts![index].address),
+                      account: myAccountPageViewModel.accounts![index],
+                    );
+                  },
+                  onPageChanged: (int val) {
+                    account = myAccountPageViewModel.accounts?.elementAt(val);
+                    if(mounted) {
+                      setState(() {});
+                    }
+                  },
                 ),
               ),
+              Visibility(
+                visible: (myAccountPageViewModel.accounts?.length??0) > 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: null,
+                      icon: Icon(Icons.arrow_back_outlined),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Swipe Below Card Left or Right to change account',
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: null,
+                      icon: Icon(Icons.arrow_forward_outlined),
+                    ),
+                  ],
+                ),
+              ),
+
               Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               child: ElevatedButton(

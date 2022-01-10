@@ -72,16 +72,14 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         fit: BoxFit.fill,
                       ),
                       SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          'Algorand',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5!
-                              .copyWith(fontWeight: FontWeight.w600),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Text(
+                        'Algorand',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontWeight: FontWeight.w600),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(width: 6),
                       Flexible(
@@ -98,15 +96,13 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ],
                   ),
                 ),
-                Flexible(
-                  child: Text(
-                    "$amount",
-                    style: Theme.of(context).textTheme.headline4!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).tabBarTheme.unselectedLabelColor),
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  "$amount",
+                  style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
                 )
               ],
             ),
