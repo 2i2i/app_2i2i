@@ -85,6 +85,7 @@ class UserBidInsList extends ConsumerWidget {
       },
       itemBuilder: (_, ix) {
         BidAndUser bidAndUser = bidInsWithUser[ix];
+
         if (bidAndUser.user == null) return Container();
 
         BidIn bid = bidAndUser.bid;
