@@ -192,7 +192,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       itemBuilder: (_, ix) {
         final assetId = balances[ix].assetHolding.assetId;
         final assetName = assetId == 0
-            ? 'ALGO'
+            ? 'μALGO'
             : balances[ix].assetHolding.assetId.toString();
         final assetAmount = balances[ix].assetHolding.amount;
         final net = balances[ix].net;

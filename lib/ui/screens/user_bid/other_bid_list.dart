@@ -38,7 +38,7 @@ class OtherBidInList extends ConsumerWidget {
                   final int assetId = bidIn.speed.assetId;
                   log('assetId');
                   final String assetIDString =
-                      assetId == 0 ? 'ALGO' : assetId.toString();
+                      assetId == 0 ? 'μALGO' : assetId.toString();
                   final color = ix % 2 == 0
                       ? Theme.of(context).primaryColor
                       : Theme.of(context).cardColor;

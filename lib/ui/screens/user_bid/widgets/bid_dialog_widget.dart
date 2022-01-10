@@ -122,7 +122,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                   BidSpeedWidget(
                     speed: widget.bidIn.speed.num.toString(),
                     unit:
-                        '${widget.bidIn.speed.assetId == 0 ? 'ALGO' : widget.bidIn.speed.assetId}/sec',
+                        '${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/sec',
                   )
                 ],
               ),
@@ -161,7 +161,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                         data: (double? estMaxDuration) {
                           if (estMaxDuration == null ||
                               estMaxDuration.isInfinite) return 'foreever';
-                          final estMaxDurationInt =  estMaxDuration.floor() ;
+                          final estMaxDurationInt = estMaxDuration.floor();
                           return secondsToSensibleTimePeriod(estMaxDurationInt);
                         },
                         error: (_, __) => 'error',
@@ -176,7 +176,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 data: (bool? isMainAccountEmpty) {
                   if (isMainAccountEmpty == null) return Container();
                   if (!isMainAccountEmpty) return Container();
-                  if (100000 <= widget.bidIn.speed.num) return Container();
+                  if (0 == widget.bidIn.speed.num ||
+                      100000 <= widget.bidIn.speed.num) return Container();
                   return ListTile(
                     leading: IconButton(
                       onPressed: null,

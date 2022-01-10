@@ -60,7 +60,7 @@ class Strings {
 
   //User Info page
   String createABid = 'Create a bid';
-  String algoSec = 'Algo/sec';
+  String algoSec = 'μAlgo/sec';
   String bidAmount = 'Bid Amount';
   String note = 'Note(Optional)';
   String bidNote = 'Say something awesome';

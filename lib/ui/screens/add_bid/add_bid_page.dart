@@ -235,7 +235,7 @@ class _AddBidPageState extends ConsumerState<AddBidPage> {
                         DropdownMenuItem<Balance>(
                           child: Text(
                               (account!.balances[i].assetHolding.assetId == 0
-                                      ? 'ALGO'
+                                      ? 'μALGO'
                                       : account!
                                           .balances[i].assetHolding.assetId
                                           .toString()) +

@@ -159,7 +159,7 @@ class UserBidInsList extends ConsumerWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(bid.speed.num.toString() + ' Algo/Sec'),
+              Text(bid.speed.num.toString() + ' μAlgo/Sec'),
               SizedBox(width: 8),
               Image.asset(
                 'assets/algo_logo.png',
