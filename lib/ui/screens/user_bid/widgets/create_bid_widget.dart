@@ -153,16 +153,19 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                     : Row(
                         children: [
                           IconButton(
-                              iconSize: 10,
-                              onPressed: () => controller.previousPage(
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.decelerate),
-                              icon: RotatedBox(
-                                  quarterTurns: 2,
-                                  child: SvgPicture.asset(
-                                      'assets/icons/direction.svg'))),
-                    Expanded(
-                      child: PageView.builder(
+                            iconSize: 10,
+                            onPressed: () => controller.previousPage(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.decelerate),
+                            icon: RotatedBox(
+                              quarterTurns: 2,
+                              child: SvgPicture.asset(
+                                'assets/icons/direction.svg',
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: PageView.builder(
                               controller: controller,
                               scrollDirection: Axis.horizontal,
                               itemCount:
