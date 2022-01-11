@@ -14,6 +14,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
+import 'ui/screens/block_and_friends/friends_list_page.dart';
 import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {

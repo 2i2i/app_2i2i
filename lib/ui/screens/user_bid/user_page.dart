@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
@@ -25,6 +26,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   @override
   Widget build(BuildContext context) {
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
+
     if (userPageViewModel == null ||
         userPageViewModel is AsyncError ||
         userPageViewModel is AsyncLoading) {
@@ -48,7 +50,13 @@ class _UserPageState extends ConsumerState<UserPage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_horiz_rounded)),
+          PopupMenuButton<int>(
+            onSelected: (item) => handleClick(item),
+            itemBuilder: (context) => [
+              PopupMenuItem<int>(value: 0, child: Text('Add To Favorite')),
+              PopupMenuItem<int>(value: 1, child: Text('Add To Block')),
+            ],
+          ),
           SizedBox(width: 6)
         ],
       ),
@@ -91,7 +99,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             Row(
               children: [
                 TextProfileView(
-                  text: "Ravi",
+                  text: user.name,
                   statusColor: Colors.green,
                   radius: 70,
                 ),
@@ -106,12 +114,40 @@ class _UserPageState extends ConsumerState<UserPage> {
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        shortBio.toString().trim(),
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(context).disabledColor,
-                            ),
+                      child: Column(
+                        children: [
+                          Text(
+                            shortBio.toString().trim(),
+                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RatingBar.builder(
+                                initialRating: (user.rating ?? 0) * 5,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                itemCount: 5,
+                                itemSize: 16,
+                                glowColor: Colors.white,
+                                unratedColor: Colors.grey.shade300,
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star_rounded,
+                                  color: Colors.grey,
+                                ),
+                                onRatingUpdate: (rating) {
+                                  print(rating);
+                                },
+                              ),
+                              SizedBox(width: 6),
+                              Text('${(user.rating ?? 0) * 5}',
+                                  style: Theme.of(context).textTheme.caption)
+                            ],
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -165,5 +201,17 @@ class _UserPageState extends ConsumerState<UserPage> {
         )
       ],
     );
+  }
+
+  void handleClick(int item) {
+    final userModelChanger = ref.watch(userModelChangerProvider)!;
+    switch (item) {
+      case 0:
+        userModelChanger.addFriend(widget.uid);
+        break;
+      case 1:
+        userModelChanger.addBlocked(widget.uid);
+        break;
+    }
   }
 }

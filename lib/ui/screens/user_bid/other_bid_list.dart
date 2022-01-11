@@ -18,13 +18,7 @@ class OtherBidInList extends ConsumerWidget {
   }
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
-    final myId = ref.read(myUIDProvider)!;
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
-    if (userPrivateAsyncValue is AsyncLoading) {
-      return Container();
-    }
-
-    return StreamBuilder(
+       return StreamBuilder(
         stream: FirestoreDatabase().bidInsStream(uid: B.id),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
