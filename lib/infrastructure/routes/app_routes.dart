@@ -16,5 +16,6 @@ class Routes {
   static const HISTORY = '/history_provider';
   static const AppSetting = '/app_setting';
   static const CallPage = '/call_page';
+  static const FRIENDS = '/friend_page';
 
 }
