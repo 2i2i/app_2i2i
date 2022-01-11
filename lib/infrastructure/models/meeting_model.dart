@@ -110,15 +110,18 @@ class MeetingChanger {
   Future endMeeting(Meeting meeting, MeetingStatus reason) async {
     final now = epochSecsNow();
     final statusHistory = MeetingStatusWithTS(value: reason, ts: now);
-    await database.endMeeting(meeting.id, {
+    log(J + 'endMeeting in changer');
+    final Map<String, dynamic> data = {
       'status': reason.toStringEnum(),
       'statusHistory': FieldValue.arrayUnion([statusHistory.toMap()]),
       'isActive': false,
       'end': now,
-      'duration': meeting.start == null ? null : now - meeting.start!,
-    });
+    };
+    if (meeting.start != null) data['duration'] = now - meeting.start!;
+    await database.endMeeting(meeting.id, data);
   }
 }
+
 @immutable
 class Meeting extends Equatable {
   Meeting({

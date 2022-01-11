@@ -14,6 +14,7 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import '../home/wait_page.dart';
 import 'ripples_animation.dart';
+
 class RingingPage extends ConsumerStatefulWidget {
   const RingingPage({Key? key, required this.meeting}) : super(key: key);
   final Meeting meeting;
@@ -46,24 +47,24 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   // TODO does this work? does the timer stay when changing to MeetingStatus.TXN_SENT? that would be wrong
   void setTimer() {
-    if (widget.meeting.status == MeetingStatus.INIT) {
-      timer = Timer(Duration(seconds: 30), () async {
-        final finishFuture = finish();
-        final endMeetingFuture =
-            ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
-        await Future.wait([finishFuture, endMeetingFuture]);
-      });
-    } else if (widget.meeting.status == MeetingStatus.ACCEPTED) {
-      timer = Timer(Duration(seconds: 60), () async {
-        final finishFuture = finish();
-        final endMeetingFuture =
-            ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
-        await Future.wait([finishFuture, endMeetingFuture]);
-      });
-    }
+    log(J + 'setTimer - widget.meeting.status=${widget.meeting.status}');
+
+    int? duration;
+    if (widget.meeting.status == MeetingStatus.INIT)
+      duration = 30;
+    else if (widget.meeting.status == MeetingStatus.ACCEPTED) duration = 60;
+    if (duration == null) return;
+
+    timer = Timer(Duration(seconds: duration), () async {
+      final finishFuture = finish();
+      final endMeetingFuture =
+          ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
+      await Future.wait([finishFuture, endMeetingFuture]);
+    });
   }
 
   Future<void> start() async {
+    setTimer();
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
     if (!player.playing) {
@@ -215,21 +216,20 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Visibility(
-                      visible:
-                          !isClicked && ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
+                      visible: !isClicked &&
+                          ringingPageViewModel!.meeting.status ==
+                              MeetingStatus.INIT,
                       child: Column(
                         children: [
                           FloatingActionButton(
                             child: Icon(Icons.call_end, color: Colors.white),
-                            backgroundColor:
-                                Color.fromARGB(255, 239, 102, 84),
+                            backgroundColor: Color.fromARGB(255, 239, 102, 84),
                             onPressed: () async {
                               final finishFuture = finish();
-                              final cancelMeetingFuture =
-                                  ringingPageViewModel!.endMeeting(
-                                      ringingPageViewModel!.amA()
-                                          ? MeetingStatus.END_A
-                                          : MeetingStatus.END_B);
+                              final cancelMeetingFuture = ringingPageViewModel!
+                                  .endMeeting(ringingPageViewModel!.amA()
+                                      ? MeetingStatus.END_A
+                                      : MeetingStatus.END_B);
                               await Future.wait(
                                   [finishFuture, cancelMeetingFuture]);
                             },
@@ -240,7 +240,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     Visibility(
                       visible: !isClicked &&
                           ringingPageViewModel!.amA() &&
-                          ringingPageViewModel!.meeting.status == MeetingStatus.INIT,
+                          ringingPageViewModel!.meeting.status ==
+                              MeetingStatus.INIT,
                       child: Column(
                         children: [
                           Bounce(

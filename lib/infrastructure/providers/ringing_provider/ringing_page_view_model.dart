@@ -32,12 +32,8 @@ class RingingPageViewModel {
     return x;
   }
 
-  Future endMeeting(MeetingStatus reason) async {
-    // final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
-    // final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
-    // await endMeeting(args);
-    return meetingChanger.endMeeting(meeting, reason);
-  }
+  Future endMeeting(MeetingStatus reason) =>
+      meetingChanger.endMeeting(meeting, reason);
 
   Future acceptMeeting() async {
     try {
