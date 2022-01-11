@@ -1,7 +1,9 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
@@ -45,6 +47,13 @@ class MeetingStatusWithTS {
   const MeetingStatusWithTS({required this.value, required this.ts});
   final MeetingStatus value;
   final int ts;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'value': value.toStringEnum(),
+      'ts': ts,
+    };
+  }
 
   @override
   String toString() {
@@ -93,6 +102,23 @@ class TopMeeting extends Equatable {
   }
 }
 
+class MeetingChanger {
+  MeetingChanger(this.database);
+
+  final FirestoreDatabase database;
+
+  Future endMeeting(Meeting meeting, MeetingStatus reason) async {
+    final now = epochSecsNow();
+    final statusHistory = MeetingStatusWithTS(value: reason, ts: now);
+    await database.endMeeting(meeting.id, {
+      'status': reason.toStringEnum(),
+      'statusHistory': FieldValue.arrayUnion([statusHistory.toMap()]),
+      'isActive': false,
+      'end': now,
+      'duration': meeting.start == null ? null : now - meeting.start!,
+    });
+  }
+}
 @immutable
 class Meeting extends Equatable {
   Meeting({

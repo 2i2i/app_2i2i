@@ -38,6 +38,13 @@ class FirestoreDatabase {
         merge: true,
       );
 
+  Future<void> endMeeting(String meetingId, Map<String, dynamic> data) =>
+      _service.setData(
+        path: FirestorePath.meeting(meetingId),
+        data: data,
+        merge: true,
+      );
+
   Future<void> updateUserNameAndBio(
           String uid, String name, String bio, List<String> tags) =>
       _service.setData(

@@ -12,12 +12,14 @@ class RingingPageViewModel {
       required this.otherUser,
       required this.meeting,
       required this.algorand,
-      required this.functions}) {
+      required this.functions,
+      required this.meetingChanger}) {
     if (meeting.status == MeetingStatus.TXN_SENT)
       _waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed(
           txns: meeting.txns, net: meeting.net);
   }
 
+  final MeetingChanger meetingChanger;
   final FirebaseFunctions functions;
   final AlgorandService algorand;
   final UserModel user;
@@ -31,9 +33,10 @@ class RingingPageViewModel {
   }
 
   Future endMeeting(MeetingStatus reason) async {
-    final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
-    final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
-    await endMeeting(args);
+    // final HttpsCallable endMeeting = functions.httpsCallable('endMeeting');
+    // final args = {'meetingId': meeting.id, 'reason': reason.toStringEnum()};
+    // await endMeeting(args);
+    return meetingChanger.endMeeting(meeting, reason);
   }
 
   Future acceptMeeting() async {
@@ -44,7 +47,9 @@ class RingingPageViewModel {
       final HttpsCallable advanceMeeting =
           functions.httpsCallable('advanceMeeting');
       await advanceMeeting({
-        'reason': meeting.speed.num != 0 ? MeetingStatus.ACCEPTED.toStringEnum() : 'ACCEPTED_FREE_CALL',
+        'reason': meeting.speed.num != 0
+            ? MeetingStatus.ACCEPTED.toStringEnum()
+            : 'ACCEPTED_FREE_CALL',
         'meetingId': meeting.id
       });
 
@@ -54,13 +59,14 @@ class RingingPageViewModel {
           txns = await algorand.lockCoins(meeting: meeting);
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
-          final HttpsCallable endMeeting =
-              functions.httpsCallable('endMeeting');
-          await endMeeting({
-            'meetingId': meeting.id,
-            'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
-          });
-          return;
+          return endMeeting(MeetingStatus.END_TXN_FAILED);
+          // final HttpsCallable endMeeting =
+          //     functions.httpsCallable('endMeeting');
+          // await endMeeting({
+          //   'meetingId': meeting.id,
+          //   'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
+          // });
+          // return;
         }
       }
 

@@ -20,10 +20,12 @@ class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
   final Function onHangPhone;
+  final MeetingChanger meetingChanger;
 
   CallPage({
     Key? key,
     required this.meeting,
+    required this.meetingChanger,
     required this.onHangPhone,
     required this.user,
   }) : super(key: key);
@@ -55,14 +57,15 @@ class _CallPageState extends ConsumerState<CallPage>
     await _remoteRenderer.initialize();
 
     signaling = Signaling(
-        meeting: widget.meeting,
-        amA: amA,
-        localVideo: _localRenderer,
-        remoteVideo: _remoteRenderer,
+      meeting: widget.meeting,
+      meetingChanger: widget.meetingChanger,
+      amA: amA,
+      localVideo: _localRenderer,
+      remoteVideo: _remoteRenderer,
     );
     signaling!.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
-      if(signaling?.localStream != null) {
+      if (signaling?.localStream != null) {
         ref.read(callScreenProvider).getInitialValue(signaling!.localStream!);
       }
       setState(() {});
