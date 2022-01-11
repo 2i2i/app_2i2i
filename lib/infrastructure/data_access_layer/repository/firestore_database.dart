@@ -66,13 +66,10 @@ class FirestoreDatabase {
   //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
       _service
-          .createData(
+          .setData(
         path: FirestorePath.newRating(uid, meetingId),
         data: rating.toMap(),
-      )
-          .onError((error, stackTrace) {
-        print(error);
-      });
+      );
 
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
