@@ -140,12 +140,14 @@ final algorandProvider = Provider((ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorandLib = ref.watch(algorandLibProvider);
+  final meetingChanger = ref.watch(meetingChangerProvider);
   // log('algorandProvider - functions=$functions');
   return AlgorandService(
       storage: storage,
       functions: functions,
       accountService: accountService,
-      algorandLib: algorandLib);
+      algorandLib: algorandLib,
+      meetingChanger: meetingChanger);
 });
 
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {

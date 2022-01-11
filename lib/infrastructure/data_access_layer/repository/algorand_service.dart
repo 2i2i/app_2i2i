@@ -9,6 +9,7 @@ import '../services/logging.dart';
 import 'secure_storage_service.dart';
 
 enum AlgorandNet { mainnet, testnet, betanet }
+
 extension ParseToString on AlgorandNet {
   String toStringEnum() {
     return this.toString().split('.').last;
@@ -76,7 +77,9 @@ class AlgorandService {
       {required this.storage,
       required this.functions,
       required this.accountService,
-      required this.algorandLib});
+      required this.algorandLib,
+      required this.meetingChanger});
+  final MeetingChanger meetingChanger;
   final FirebaseFunctions functions;
   final SecureStorage storage;
   final AccountService accountService;
@@ -200,20 +203,12 @@ class AlgorandService {
     log('lockALGO - grouped');
 
     // TXN_CREATED
-    final HttpsCallable advanceMeeting =
-        functions.httpsCallable('advanceMeeting');
-    await advanceMeeting({
-      'reason': MeetingStatus.TXN_CREATED.toStringEnum(),
-      'meetingId': meetingId
-    });
+    await meetingChanger.txnCreatedMeeting(meetingId);
 
     // TXN_SIGNED
     // TODO in parallel - together with previous
     final signedTxnsBytes = await account.sign(txns);
-    await advanceMeeting({
-      'reason': MeetingStatus.TXN_SIGNED.toStringEnum(),
-      'meetingId': meetingId
-    });
+    await meetingChanger.txnSignedMeeting(meetingId);
 
     try {
       final txId =
@@ -230,11 +225,7 @@ class AlgorandService {
       if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
       log('lockALGO - txnsIds=$txnsIds');
 
-      await advanceMeeting({
-        'reason': MeetingStatus.TXN_SENT.toStringEnum(),
-        'txns': txnsIds.toMap(),
-        'meetingId': meetingId
-      });
+      await meetingChanger.txnSentMeeting(meetingId, txnsIds);
       log('lockALGO - TXN_SENT');
 
       return txnsIds;
@@ -333,12 +324,10 @@ class AlgorandService {
   //   log('lockASA - grouped');
 
   //   // TXN_CREATED
-  //   final HttpsCallable advanceMeeting =
-  //       functions.httpsCallable('advanceMeeting');
-  //   await advanceMeeting({'reason': MeetingStatus.TXN_CREATED.toStringEnum(), 'meetingId': meetingId});
+  //   await meetingChanger.txnCreatedMeeting(meetingId);
 
   //   final signedTxnsBytes = await account.sign(txns);
-  //   await advanceMeeting({'reason': MeetingStatus.TXN_SIGNED.toStringEnum(), 'meetingId': meetingId});
+  //   await meetingChanger.txnSignedMeeting(meetingId);
 
   //   try {
   //     final txId =
@@ -363,11 +352,7 @@ class AlgorandService {
   //     );
   //     if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
 
-  //     await advanceMeeting({
-  //       'reason': MeetingStatus.TXN_SENT.toStringEnum(),
-  //       'txns': txnsIds.toMap(),
-  //       'meetingId': meetingId
-  //     });
+  //     await meetingChanger.txnSentMeeting(meetingId, txns);
 
   //     return txnsIds;
   //   } on AlgorandException catch (ex) {

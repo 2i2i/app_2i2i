@@ -40,14 +40,11 @@ class RingingPageViewModel {
       log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id}');
 
       // ACCEPT
-      final HttpsCallable advanceMeeting =
-          functions.httpsCallable('advanceMeeting');
-      await advanceMeeting({
-        'reason': meeting.speed.num != 0
-            ? MeetingStatus.ACCEPTED.toStringEnum()
-            : 'ACCEPTED_FREE_CALL',
-        'meetingId': meeting.id
-      });
+      if (meeting.speed.num == 0) {
+        await meetingChanger.acceptFreeCallMeeting(meeting.id);
+      } else {
+        await meetingChanger.acceptMeeting(meeting.id);
+      }
 
       MeetingTxns txns = MeetingTxns();
       if (meeting.speed.num != 0) {
@@ -86,12 +83,6 @@ class RingingPageViewModel {
     }
     log('RingingPageViewModel - waitForAlgorandAndUpdateMeetingToLockCoinsConfirmed - budget=$budget');
 
-    final HttpsCallable advanceMeeting =
-        functions.httpsCallable('advanceMeeting');
-    await advanceMeeting({
-      'reason': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
-      'budget': budget,
-      'meetingId': meeting.id
-    });
+    await meetingChanger.txnConfirmedMeeting(meeting.id, budget);
   }
 }

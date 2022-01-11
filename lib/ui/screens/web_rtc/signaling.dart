@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 
@@ -51,13 +49,7 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    final advanceMeeting =
-        FirebaseFunctions.instance.httpsCallable('advanceMeeting');
-    await advanceMeeting({
-      'meetingId': meeting.id,
-      'room': roomRef.id,
-      'reason': MeetingStatus.ROOM_CREATED.toStringEnum()
-    });
+    await meetingChanger.roomCreatedMeeting(meeting.id, roomRef.id);
   }
 
   final Meeting meeting;
@@ -123,7 +115,7 @@ class Signaling {
 
     await roomRef.set(roomWithOffer);
 
-    peerConnection?.onTrack = (RTCTrackEvent event) {
+    peerConnection?.onTrack = (RTCTrackEvent event) async {
       log(G + 'Got remote track: event.streams.length=${event.streams.length}');
       // for (int i = 0; i < event.streams.length; i++) {}
 
@@ -132,16 +124,11 @@ class Signaling {
         remoteStream?.addTrack(track);
       });
 
-      final advanceMeeting =
-          FirebaseFunctions.instance.httpsCallable('advanceMeeting');
-      final newStatus = amA
-          ? MeetingStatus.A_RECEIVED_REMOTE
-          : MeetingStatus.B_RECEIVED_REMOTE;
-      log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
-      advanceMeeting({
-        'meetingId': meeting.id,
-        'reason': newStatus.toStringEnum(),
-      });
+      if (amA) {
+        await meetingChanger.remoteReceivedByAMeeting(meeting.id);
+      } else {
+        await meetingChanger.remoteReceivedByBMeeting(meeting.id);
+      }
     };
 
     // Listening for remote session description below
@@ -207,23 +194,18 @@ class Signaling {
       };
       // Code for collecting ICE candidate above
 
-      peerConnection?.onTrack = (RTCTrackEvent event) {
+      peerConnection?.onTrack = (RTCTrackEvent event) async {
         log(G + 'Got remote track: ${event.streams[0]}');
         event.streams[0].getTracks().forEach((track) {
           log(G + 'Add a track to the remoteStream: $track');
           remoteStream?.addTrack(track);
         });
 
-        final advanceMeeting =
-            FirebaseFunctions.instance.httpsCallable('advanceMeeting');
-        final newStatus = amA
-            ? MeetingStatus.A_RECEIVED_REMOTE
-            : MeetingStatus.B_RECEIVED_REMOTE;
-        log(I + 'Got remote track: amA=$amA + newStatus=$newStatus');
-        advanceMeeting({
-          'meetingId': meeting.id,
-          'reason': newStatus.toStringEnum(),
-        });
+        if (amA) {
+          await meetingChanger.remoteReceivedByAMeeting(meeting.id);
+        } else {
+          await meetingChanger.remoteReceivedByBMeeting(meeting.id);
+        }
       };
 
       // Code for creating SDP answer below

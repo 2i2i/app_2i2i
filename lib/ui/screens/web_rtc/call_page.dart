@@ -93,8 +93,10 @@ class _CallPageState extends ConsumerState<CallPage>
     int duration = maxDuration;
     final activeTime = widget.meeting.start;
     if (activeTime != null) {
-      final maxEndTime = activeTime + maxDuration;
-      duration = max(maxEndTime - epochSecsNow(), 0);
+      final DateTime maxEndTime =
+          activeTime.add(Duration(seconds: maxDuration));
+      final durationObj = maxEndTime.difference(DateTime.now().toUtc());
+      duration = durationObj.inSeconds;
     }
     return duration;
   }
@@ -105,7 +107,7 @@ class _CallPageState extends ConsumerState<CallPage>
     }
     final maxDuration = widget.meeting.maxDuration()!;
     final duration = getDuration(maxDuration);
-    log(F + ' ====== $duration');
+    log(' ====== $duration');
     if (duration <= 100) {
       countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
       if (mounted) {
@@ -316,10 +318,10 @@ class _CallPageState extends ConsumerState<CallPage>
                             }
                             final reason =
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
-                            signaling?.hangUp(_localRenderer, reason: reason);
+                            await signaling?.hangUp(_localRenderer, reason: reason);
                             final otherUid =
                                 amA ? widget.meeting.B : widget.meeting.A;
-                            widget.onHangPhone(otherUid, widget.meeting.id);
+                            await widget.onHangPhone(otherUid, widget.meeting.id);
                             dispose();
                           }),
                       CircleButton(
