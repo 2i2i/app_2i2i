@@ -56,13 +56,6 @@ class RingingPageViewModel {
           log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
           return endMeeting(MeetingStatus.END_TXN_FAILED);
-          // final HttpsCallable endMeeting =
-          //     functions.httpsCallable('endMeeting');
-          // await endMeeting({
-          //   'meetingId': meeting.id,
-          //   'reason': MeetingStatus.END_TXN_FAILED.toStringEnum()
-          // });
-          // return;
         }
       }
 

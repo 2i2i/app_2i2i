@@ -284,12 +284,6 @@ class Signaling {
   Future hangUp(RTCVideoRenderer localVideo, {required MeetingStatus reason}) {
     peerConnection?.close();
     return meetingChanger.endMeeting(meeting, reason);
-    // final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
-    // final args = {
-    //   'meetingId': meeting.id,
-    //   'reason': reason.toStringEnum(),
-    // };
-    // endMeeting(args);
   }
 
   void registerPeerConnectionListeners() {
