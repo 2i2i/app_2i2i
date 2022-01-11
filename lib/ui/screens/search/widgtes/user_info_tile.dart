@@ -118,6 +118,8 @@ class UserInfoTile extends ConsumerWidget {
                               initialRating: (userModel.rating ?? 0) * 5,
                               minRating: 1,
                               direction: Axis.horizontal,
+                              tapOnlyMode: false,
+                              updateOnDrag: false,
                               itemCount: 5,
                               itemSize: 16,
                               glowColor: Colors.white,

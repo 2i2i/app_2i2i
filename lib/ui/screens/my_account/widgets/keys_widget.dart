@@ -1,3 +1,6 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/verify_perhaps_page.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -101,9 +104,12 @@ class KeysWidget extends StatelessWidget {
 
   Widget keyListWidget(BuildContext context) {
     return FutureBuilder(
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
+          List perhaps = snapshot.data;
           return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GridView.count(
@@ -111,47 +117,44 @@ class KeysWidget extends StatelessWidget {
                 crossAxisCount: 2,
                 childAspectRatio: 5,
                 padding: EdgeInsets.all(8),
-                children: List.generate(snapshot.data.length, (index) {
-                  return TextButton.icon(
-                      onPressed: () {},
-                      icon: CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        radius: 10,
-                        child: Text('${index + 1}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .caption!
-                                .copyWith(fontWeight: FontWeight.w800)),
+                children:
+                List.generate(perhaps.length, (index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor:
+                      Theme.of(context).primaryColor,
+                      radius: 10,
+                      child: Text(
+                        '${index + 1}',
+                        style: Theme.of(context).textTheme.caption,
                       ),
-                      label: Expanded(
-                          child: Text('${snapshot.data[index]}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2!
-                                  .copyWith(
-                                      color:
-                                          Theme.of(context).disabledColor))));
+                    ),
+                    minLeadingWidth: 10,
+                    title: Text(
+                      '${perhaps[index]}',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  );
                 }),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  Clipboard.setData(
-                      ClipboardData(text: snapshot.data.join(' ')));
-                  CustomDialogs.showToastMessage(
-                      context, Strings().copyMessage);
-                  Future.delayed(Duration(seconds: 1))
-                      .then((value) => Navigator.of(context).pop());
+                  if(perhaps.isNotEmpty) {
+                    Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
+                    CustomDialogs.showToastMessage(context, Strings().copyMessage);
+                  }
+                    Navigator.of(context,rootNavigator: true).pop();
                 },
-                child: Text(Strings().doneIHaveCopied),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).shadowColor,
-                ),
+                child: Text('Copy and Done'),
+                style: ElevatedButton.styleFrom(primary: Theme.of(context).shadowColor),
               )
             ],
           );
         }
-        return CupertinoActivityIndicator();
+        return WaitPage(
+          height: MediaQuery.of(context).size.height / 2,
+        );
       },
       future: account.mnemonic(),
     );

@@ -402,9 +402,14 @@ final accountsProvider = FutureProvider((ref) {
   return accountService.getAllAccounts();
 });
 
-final myAccountPageViewModelProvider =
-    ChangeNotifierProvider<MyAccountPageViewModel>(
+final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>(
         (ref) => MyAccountPageViewModel(ref));
+
+final createLocalAccountProvider = FutureProvider((ref) async {
+  final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+  LocalAccount account = await myAccountPageViewModel.addLocalAccount();
+  return account;
+},);
 
 final userModelChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);

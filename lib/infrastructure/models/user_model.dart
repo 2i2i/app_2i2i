@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModelChanger {
   UserModelChanger(this.database, this.uid);
@@ -86,19 +87,19 @@ class UserModel extends Equatable {
     // log('UserModel.fromMap - data=${data['bidsIn']}');
     // log('UserModel.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final status = data['status'] as String;
-    final meeting = data['meeting'] as String?;
-    final name = data['name'] as String;
-    final bio = data['bio'] as String;
-    final rating = double.parse(data['rating'].toString());
-    final numRatings = data['numRatings'] as int;
+    var status = data['status'];
+    var meeting = data['meeting'];
+    var name = data['name']??'';
+    var bio = data['bio']??'';
+    final rating = double.tryParse(data['rating'].toString());
+    final numRatings = int.tryParse(data['numRatings'].toString())??0;
     log(F + 'data=${data}');
     log(F + 'data[heartbeat]=${data['heartbeat']}');
     final DateTime? heartbeat = data['heartbeat']?.toDate();
 
     return UserModel(
       id: documentId,
-      status: status,
+      status: status??'',
       meeting: meeting,
       name: name,
       bio: bio,
@@ -159,5 +160,15 @@ class UserModelPrivate {
       'blocked': blocked,
       'friends': friends,
     };
+  }
+}
+extension ParseToDate on String {
+  DateTime? toDate() {
+    return DateTime.tryParse(this)?.toLocal();
+  }
+}
+extension ParseToTimeStamp on Timestamp {
+  DateTime? toDate() {
+    return this.toDate().toLocal();
   }
 }

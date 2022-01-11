@@ -154,8 +154,8 @@ class UserBidInsList extends ConsumerWidget {
               ),
             ),
           ),
-          title: Text(userModel.name),
-          subtitle: Text(userModel.bio),
+          title: Text(userModel.name,maxLines: 2,softWrap: false,overflow: TextOverflow.ellipsis,),
+          subtitle: Text(userModel.bio,maxLines: 2,softWrap: false,overflow: TextOverflow.ellipsis,),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

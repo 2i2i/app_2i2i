@@ -118,7 +118,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                           ),
                     ),
                     subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(top: 6,left: 6),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -140,6 +140,8 @@ class _UserPageState extends ConsumerState<UserPage> {
                                 direction: Axis.horizontal,
                                 itemCount: 5,
                                 itemSize: 16,
+                                tapOnlyMode: true,
+                                updateOnDrag: false,
                                 glowColor: Colors.white,
                                 unratedColor: Colors.grey.shade300,
                                 itemBuilder: (context, _) => Icon(
