@@ -2,10 +2,12 @@ import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
+import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
 import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +15,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/routes/app_routes.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
@@ -218,14 +221,39 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
             SizedBox(height: 12),
             Container(
               decoration: Custom.getBoxDecoration(context),
-              child: ListTile(
-                title: Text(
-                  'Blocked accounts',
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-                trailing: Icon(
-                  Icons.navigate_next,
-                ),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      'Friends',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                    onTap: () => CustomNavigation.push(
+                        context,
+                        FriendsListPage(
+                          isForBlockedUser: false,
+                        ),
+                        Routes.FRIENDS),
+                  ),
+                  ListTile(
+                    onTap: () => CustomNavigation.push(
+                        context,
+                        FriendsListPage(
+                          isForBlockedUser: true,
+                        ),
+                        Routes.FRIENDS),
+                    title: Text(
+                      'Blocked accounts',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
