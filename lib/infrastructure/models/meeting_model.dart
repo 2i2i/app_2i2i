@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:equatable/equatable.dart';
@@ -67,7 +66,6 @@ class TopMeeting extends Equatable {
     required this.id,
     required this.B,
     required this.name,
-    required this.start,
     required this.duration,
     required this.speed,
   });
@@ -75,7 +73,6 @@ class TopMeeting extends Equatable {
   final String id;
   final String B;
   final String name;
-  final int start;
   final int duration;
   final Quantity speed;
 
@@ -89,16 +86,10 @@ class TopMeeting extends Equatable {
     final id = data['id'] as String;
     final B = data['B'] as String;
     final name = data['name'] as String;
-    final start = data['start'] as int;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
     return TopMeeting(
-        id: id,
-        B: B,
-        name: name,
-        start: start,
-        duration: duration,
-        speed: speed);
+        id: id, B: B, name: name, duration: duration, speed: speed);
   }
 }
 
@@ -107,19 +98,75 @@ class MeetingChanger {
 
   final FirestoreDatabase database;
 
-  Future endMeeting(Meeting meeting, MeetingStatus reason) async {
-    final now = epochSecsNow();
-    final statusHistory = MeetingStatusWithTS(value: reason, ts: now);
-    log(J + 'endMeeting in changer');
+  Future endMeeting(Meeting meeting, MeetingStatus status) async {
+    final now = FieldValue.serverTimestamp();
     final Map<String, dynamic> data = {
-      'status': reason.toStringEnum(),
-      'statusHistory': FieldValue.arrayUnion([statusHistory.toMap()]),
+      'status': status.toStringEnum(),
+      'statusHistory': FieldValue.arrayUnion([{'value': status, 'ts': now}]),
       'isActive': false,
       'end': now,
     };
-    if (meeting.start != null) data['duration'] = now - meeting.start!;
-    await database.endMeeting(meeting.id, data);
+    return database.updateMeeting(meeting.id, data);
   }
+
+  Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
+    final now = FieldValue.serverTimestamp();
+    final statusString = status.toStringEnum();
+    final Map<String, dynamic> data = {
+      'status': statusString,
+      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+    };
+    return database.updateMeeting(meetingId, data);
+  }
+  Future acceptMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED);
+  Future acceptFreeCallMeeting(String meetingId) async {
+    final now = FieldValue.serverTimestamp();
+    final Map<String, dynamic> data = {
+      'status': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': MeetingStatus.ACCEPTED.toStringEnum(), 'ts': now},
+        {'value': MeetingStatus.TXN_CREATED.toStringEnum(), 'ts': now},
+        {'value': MeetingStatus.TXN_SIGNED.toStringEnum(), 'ts': now},
+        {'value': MeetingStatus.TXN_SENT.toStringEnum(), 'ts': now},
+        {'value': MeetingStatus.TXN_CONFIRMED.toStringEnum(), 'ts': now},
+      ]),
+    };
+    return database.updateMeeting(meetingId, data);
+  }
+  Future txnCreatedMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.TXN_CREATED);
+  Future txnSignedMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.TXN_SIGNED);
+  Future txnSentMeeting(String meetingId, MeetingTxns txns) {
+    final now = FieldValue.serverTimestamp();
+    final statusString = MeetingStatus.TXN_SENT.toStringEnum();
+    final Map<String, dynamic> data = {
+      'status': statusString,
+      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'txns': txns.toMap(),
+    };
+    return database.updateMeeting(meetingId, data);
+  }
+  Future txnConfirmedMeeting(String meetingId, int budget) {
+    final now = FieldValue.serverTimestamp();
+    final statusString = MeetingStatus.TXN_CONFIRMED.toStringEnum();
+    final Map<String, dynamic> data = {
+      'status': statusString,
+      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'budget': budget,
+    };
+    return database.updateMeeting(meetingId, data);
+  }
+  Future roomCreatedMeeting(String meetingId, String room) {
+    final now = FieldValue.serverTimestamp();
+    final statusString = MeetingStatus.ROOM_CREATED.toStringEnum();
+    final Map<String, dynamic> data = {
+      'status': statusString,
+      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'room': room,
+    };
+    return database.updateMeeting(meetingId, data);
+  }
+  Future remoteReceivedByAMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.A_RECEIVED_REMOTE);
+  Future remoteReceivedByBMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.B_RECEIVED_REMOTE);
 }
 
 @immutable

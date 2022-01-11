@@ -1,9 +1,6 @@
 import 'dart:math';
-
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
 
@@ -14,9 +11,8 @@ class UserModelChanger {
   final String uid;
 
   Future updateHeartbeat() async {
-    final heartbeat = epochSecsNow();
     final status = 'ONLINE';
-    await database.updateUserHeartbeat(uid, heartbeat, status);
+    await database.updateUserHeartbeat(uid, status);
   }
 
   Future updateNameAndBio(String name, String bio) async {

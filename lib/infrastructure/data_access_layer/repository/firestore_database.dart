@@ -30,15 +30,14 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> updateUserHeartbeat(String uid, int heartbeat, String status) =>
+  Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'heartbeat': heartbeat, 'status': status},
+        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
         merge: true,
       );
 
-  Future<void> endMeeting(String meetingId, Map<String, dynamic> data) {
-    log(J + 'endMeeting in database - meetingId=$meetingId - data=$data');
+  Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service.setData(
       path: FirestorePath.meeting(meetingId),
       data: data,
