@@ -68,7 +68,9 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     RectangleBox(
-                      onTap: () => CustomNavigation.push(context, RatingPage(),Routes.RATING),
+                      onTap: () => CustomNavigation.push(context, RatingPage(
+                        userModel: myUserPageViewModel.user,
+                      ),Routes.RATING),
                       // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
                       radius: 46,
                       icon: SvgPicture.asset(

@@ -12,16 +12,19 @@ class RatingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          TextProfileView(
-            text: ratingModel.rating.toString(),
-            isRating: true,
-            radius: 68,
-            hideStatus: true,
-            style: Theme.of(context).textTheme.headline5!.copyWith(
-                fontWeight: FontWeight.bold
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextProfileView(
+              text: ratingModel.rating.toString(),
+              isRating: true,
+              radius: 65,
+              hideStatus: true,
+              style: Theme.of(context).textTheme.headline5!.copyWith(
+                  fontWeight: FontWeight.bold
+              ),
             ),
           ),
           SizedBox(width: 10),

@@ -29,25 +29,25 @@ class MyAccountPage extends ConsumerStatefulWidget {
 class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   // wallet connect part
   String _displayUri = '';
+  bool isDialogOpen = false;
 
   Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
       AccountService accountService) async {
-    log(J + '_createSession');
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
-    log(J +
-        '_createSession - account.connector.connected=${account.connector.connected}');
     // Create a new session
     if (!account.connector.connected) {
       final session = await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
-      log(J + '_MyAccountPageState - _createSession - session=$session');
       await account.save();
       await myAccountPageViewModel.updateAccounts();
       _displayUri = '';
+      if (isDialogOpen && mounted) {
+        Navigator.of(context,rootNavigator: true).pop();
+      }
     } else {
       log(J +
           '_MyAccountPageState - _createSession - connector already connected');
@@ -66,6 +66,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     if (isMobile) {
       await launch(uri);
     } else {
+      isDialogOpen = true;
       await showDialog(
         context: context,
         builder: (context) => QrImagePage(imageUrl: _displayUri),

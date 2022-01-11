@@ -77,8 +77,7 @@ class TextProfileView extends StatelessWidget {
               children: [
                 Card(
                   elevation: 6,
-                  shadowColor:
-                      Theme.of(context).inputDecorationTheme.fillColor,
+                  shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14.0),
                   ),
