@@ -44,7 +44,7 @@ class UserModel extends Equatable {
     this.bio = '',
     this.rating,
     this.numRatings = 0,
-    this.heartbeat = 0,
+    this.heartbeat,
   }) {
     _tags = tagsFromBio(bio);
   }
@@ -57,7 +57,7 @@ class UserModel extends Equatable {
   late final List<String> _tags;
   final double? rating;
   final int numRatings;
-  final int heartbeat;
+  final DateTime? heartbeat;
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
@@ -92,7 +92,9 @@ class UserModel extends Equatable {
     final bio = data['bio'] as String;
     final rating = double.parse(data['rating'].toString());
     final numRatings = data['numRatings'] as int;
-    final heartbeat = data['heartbeat'] as int;
+    log(F + 'data=${data}');
+    log(F + 'data[heartbeat]=${data['heartbeat']}');
+    final DateTime? heartbeat = data['heartbeat']?.toDate();
 
     return UserModel(
       id: documentId,
@@ -104,49 +106,6 @@ class UserModel extends Equatable {
       numRatings: numRatings,
       heartbeat: heartbeat,
     );
-  }
-  static const words = [
-    'string',
-    'always',
-    'ends',
-    'with',
-    'would',
-    'also',
-    'assume',
-    'that',
-    'not',
-    'fastest',
-    'solution',
-    'need',
-    'third',
-    'party',
-    'packages',
-    'declare',
-    'obscure',
-    'constants',
-    'house',
-    'big'
-  ];
-  static const _chars =
-      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-  static Random _rnd = Random();
-  static String getRandomString(int length) =>
-      String.fromCharCodes(Iterable.generate(
-          length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-  factory UserModel.createRandomUser(String id) {
-    String bio = getRandomString(5);
-    int numHashWords = 2 + _rnd.nextInt(5);
-    for (int i = 0; i < numHashWords; i++) {
-      int ix = _rnd.nextInt(words.length);
-      bio += ' #' + words[ix];
-    }
-    int numNonHashWords = 2 + _rnd.nextInt(5);
-    for (int i = 0; i < numNonHashWords; i++) {
-      int ix = _rnd.nextInt(words.length);
-      bio += ' ' + words[ix];
-    }
-
-    return UserModel(id: id, bio: bio);
   }
 
   Map<String, dynamic> toMap() {

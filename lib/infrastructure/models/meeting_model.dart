@@ -45,7 +45,7 @@ extension ParseToString on MeetingStatus {
 class MeetingStatusWithTS {
   const MeetingStatusWithTS({required this.value, required this.ts});
   final MeetingStatus value;
-  final int ts;
+  final DateTime ts;
 
   Map<String, dynamic> toMap() {
     return {
@@ -102,7 +102,9 @@ class MeetingChanger {
     final now = FieldValue.serverTimestamp();
     final Map<String, dynamic> data = {
       'status': status.toStringEnum(),
-      'statusHistory': FieldValue.arrayUnion([{'value': status, 'ts': now}]),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': status.toStringEnum(), 'ts': DateTime.now().toUtc()}
+      ]),
       'isActive': false,
       'end': now,
     };
@@ -110,17 +112,23 @@ class MeetingChanger {
   }
 
   Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
-    final now = FieldValue.serverTimestamp();
+    log(F +
+        'normalAdvanceMeeting - meetingId=$meetingId - status=${status.toStringEnum()}');
+    final now = DateTime.now().toUtc();
     final statusString = status.toStringEnum();
     final Map<String, dynamic> data = {
       'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': statusString, 'ts': now}
+      ]),
     };
     return database.updateMeeting(meetingId, data);
   }
-  Future acceptMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED);
+
+  Future acceptMeeting(String meetingId) =>
+      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED);
   Future acceptFreeCallMeeting(String meetingId) async {
-    final now = FieldValue.serverTimestamp();
+    final now = DateTime.now().toUtc();
     final Map<String, dynamic> data = {
       'status': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
       'statusHistory': FieldValue.arrayUnion([
@@ -133,40 +141,54 @@ class MeetingChanger {
     };
     return database.updateMeeting(meetingId, data);
   }
-  Future txnCreatedMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.TXN_CREATED);
-  Future txnSignedMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.TXN_SIGNED);
+
+  Future txnCreatedMeeting(String meetingId) =>
+      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_CREATED);
+  Future txnSignedMeeting(String meetingId) =>
+      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_SIGNED);
   Future txnSentMeeting(String meetingId, MeetingTxns txns) {
-    final now = FieldValue.serverTimestamp();
+    final now = DateTime.now().toUtc();
     final statusString = MeetingStatus.TXN_SENT.toStringEnum();
     final Map<String, dynamic> data = {
       'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': statusString, 'ts': now}
+      ]),
       'txns': txns.toMap(),
     };
     return database.updateMeeting(meetingId, data);
   }
+
   Future txnConfirmedMeeting(String meetingId, int budget) {
-    final now = FieldValue.serverTimestamp();
+    final now = DateTime.now().toUtc();
     final statusString = MeetingStatus.TXN_CONFIRMED.toStringEnum();
     final Map<String, dynamic> data = {
       'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': statusString, 'ts': now}
+      ]),
       'budget': budget,
     };
     return database.updateMeeting(meetingId, data);
   }
+
   Future roomCreatedMeeting(String meetingId, String room) {
-    final now = FieldValue.serverTimestamp();
+    final now = DateTime.now().toUtc();
     final statusString = MeetingStatus.ROOM_CREATED.toStringEnum();
     final Map<String, dynamic> data = {
       'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([{'value': statusString, 'ts': now}]),
+      'statusHistory': FieldValue.arrayUnion([
+        {'value': statusString, 'ts': now}
+      ]),
       'room': room,
     };
     return database.updateMeeting(meetingId, data);
   }
-  Future remoteReceivedByAMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.A_RECEIVED_REMOTE);
-  Future remoteReceivedByBMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.B_RECEIVED_REMOTE);
+
+  Future remoteReceivedByAMeeting(String meetingId) =>
+      normalAdvanceMeeting(meetingId, MeetingStatus.A_RECEIVED_REMOTE);
+  Future remoteReceivedByBMeeting(String meetingId) =>
+      normalAdvanceMeeting(meetingId, MeetingStatus.B_RECEIVED_REMOTE);
 }
 
 @immutable
@@ -205,8 +227,8 @@ class Meeting extends Equatable {
   final String? addrB; // set if 0 < speed
 
   final int? budget; // [coins]; 0 for speed == 0
-  final int? start; // MeetingStatus.CALL_STARTED ts
-  final int? end; // MeetingStatus.END_* ts
+  final DateTime? start; // MeetingStatus.CALL_STARTED ts
+  final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
 
   // null in free call
@@ -253,8 +275,8 @@ class Meeting extends Equatable {
     final String? addrB = data['addrB'];
 
     final int? budget = data['budget'];
-    final int? start = data['start'];
-    final int? end = data['end'];
+    final DateTime? start = data['start']?.toDate;
+    final DateTime? end = data['end']?.toDate;
     final int? duration = data['duration'];
 
     final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
@@ -265,7 +287,7 @@ class Meeting extends Equatable {
         List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
       final value = MeetingStatus.values
           .firstWhere((e) => e.toStringEnum() == item['value']);
-      final ts = item['ts'] as int;
+      final DateTime ts = item['ts'].toDate();
       return MeetingStatusWithTS(value: value, ts: ts);
     }));
 
