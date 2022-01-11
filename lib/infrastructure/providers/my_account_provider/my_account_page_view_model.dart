@@ -1,4 +1,5 @@
 
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
@@ -31,13 +32,19 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addLocalAccount() async {
-    await LocalAccount.create(
-        accountService: accountService!,
-        algorandLib: algorandLib!,
-        storage: storage!,
+  Future<LocalAccount> addLocalAccount() async {
+    LocalAccount localAccount = await LocalAccount.createWithoutStore(
+      accountService: accountService!,
+      algorandLib: algorandLib!,
+      storage: storage!,
     );
-    await updateAccounts();
+    return localAccount;
+  }
+
+  Future<void> saveLocalAccount(LocalAccount account) async {
+    await account.storeAccount(account.account);
+    await account.updateBalances();
+    updateAccounts();
   }
 
   Future recoverAccount(List<String> mnemonic) async {

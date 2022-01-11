@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -18,8 +19,11 @@ import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      /*options: DefaultFirebaseConfig.platformOptions*/);
+  if(!kIsWeb) {
+    await Firebase.initializeApp();
+  }
+  // await Firebase.initializeApp(
+  //     /*options: DefaultFirebaseConfig.platformOptions*/);
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
@@ -107,7 +111,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
-      // homePageBuilder: (_) => FriendsListPage(),
+      // homePageBuilder: (_) => TestScreen(),
     );
   }
 }

@@ -128,7 +128,11 @@ class FirestoreDatabase {
   Stream<UserModel> userStream({required String uid}) =>
       _service.documentStream(
           path: FirestorePath.user(uid),
-          builder: (data, documentId) => UserModel.fromMap(data, documentId));
+          builder: (data, documentId) {
+            data ??= {};
+            return UserModel.fromMap(data, documentId);
+          },
+      );
 
   Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
