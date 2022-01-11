@@ -66,7 +66,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
         timer = Timer.periodic(Duration(seconds: 10), (timer) async {
           final userModelChanger = ref.watch(userModelChangerProvider);
           if (userModelChanger == null) return;
-          // await userModelChanger.updateHeartbeat();
+          await userModelChanger.updateHeartbeat();
         });
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
