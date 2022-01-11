@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/models/user_model.dart';

@@ -1,7 +1,4 @@
-
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';

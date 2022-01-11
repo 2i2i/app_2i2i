@@ -1,11 +1,7 @@
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/verify_perhaps_page.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';

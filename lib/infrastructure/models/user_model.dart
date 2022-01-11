@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import '../data_access_layer/repository/firestore_database.dart';
@@ -93,8 +92,6 @@ class UserModel extends Equatable {
     var bio = data['bio']??'';
     final rating = double.tryParse(data['rating'].toString());
     final numRatings = int.tryParse(data['numRatings'].toString())??0;
-    log(F + 'data=${data}');
-    log(F + 'data[heartbeat]=${data['heartbeat']}');
     final DateTime? heartbeat = data['heartbeat']?.toDate();
 
     return UserModel(

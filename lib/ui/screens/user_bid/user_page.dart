@@ -7,11 +7,8 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
-import '../../commons/custom_dialogs.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/create_bid_widget.dart';

@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';

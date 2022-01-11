@@ -1,6 +1,5 @@
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:flutter/foundation.dart';
@@ -38,7 +37,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     );
     // Create a new session
     if (!account.connector.connected) {
-      final session = await account.connector.createSession(
+      await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
