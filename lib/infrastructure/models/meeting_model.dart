@@ -275,8 +275,8 @@ class Meeting extends Equatable {
     final String? addrB = data['addrB'];
 
     final int? budget = data['budget'];
-    final DateTime? start = data['start']?.toDate;
-    final DateTime? end = data['end']?.toDate;
+    final DateTime? start = data['start']?.toDate();
+    final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
     final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
