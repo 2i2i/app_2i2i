@@ -12,7 +12,6 @@ import 'firestore_path.dart';
 import 'firestore_service.dart';
 
 class FirestoreDatabase {
-
   FirestoreDatabase._internal();
 
   static final FirestoreDatabase _singleton = FirestoreDatabase._internal();
@@ -37,6 +36,15 @@ class FirestoreDatabase {
         data: {'heartbeat': heartbeat, 'status': status},
         merge: true,
       );
+
+  Future<void> endMeeting(String meetingId, Map<String, dynamic> data) {
+    log(J + 'endMeeting in database - meetingId=$meetingId - data=$data');
+    return _service.setData(
+      path: FirestorePath.meeting(meetingId),
+      data: data,
+      merge: true,
+    );
+  }
 
   Future<void> updateUserNameAndBio(
           String uid, String name, String bio, List<String> tags) =>
@@ -181,7 +189,8 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidIns(uid),
       builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
@@ -189,13 +198,13 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) => query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
     );
   }
 
   //<editor-fold desc="Meeting Module">\
-  Stream<BidIn?> getBidIn(
-          {required String uid, required String bidId}) =>
+  Stream<BidIn?> getBidIn({required String uid, required String bidId}) =>
       _service.documentStream(
         path: FirestorePath.bidIn(uid, bidId),
         builder: (data, documentId) => BidIn.fromMap(data, documentId),

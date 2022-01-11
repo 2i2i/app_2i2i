@@ -270,19 +270,21 @@ final bidInProvider = StreamProvider.family<BidIn?, String>((ref, bidIn) {
   final database = ref.watch(databaseProvider);
   return database.getBidIn(uid: uid, bidId: bidIn);
 });
-final bidInPrivateProvider = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+final bidInPrivateProvider =
+    StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-
-final getBidOutsProvider = StreamProvider.family<List<BidOut>,String>((ref,uid) {
+final getBidOutsProvider =
+    StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidOutsStream(uid: uid);
 });
 
-final getBidInsProvider = StreamProvider.family<List<BidIn>,String>((ref,uid) {
+final getBidInsProvider =
+    StreamProvider.family<List<BidIn>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidInsStream(uid: uid);
 });
@@ -335,11 +337,14 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
 
+  final meetingChanger = ref.watch(meetingChangerProvider);
+
   return RingingPageViewModel(
       user: user.asData!.value,
       otherUser: otherUser.asData!.value,
       algorand: algorand,
       functions: functions,
+      meetingChanger: meetingChanger,
       meeting: meeting.asData!.value);
 });
 
@@ -405,6 +410,10 @@ final userModelChangerProvider = Provider((ref) {
   if (uid == null) return null;
   return UserModelChanger(database, uid);
 });
+final meetingChangerProvider = Provider((ref) {
+  final database = ref.watch(databaseProvider);
+  return MeetingChanger(database);
+});
 
 //Rating Module
 final ratingListProvider =
@@ -425,7 +434,8 @@ final estMaxDurationProvider =
   final speed = bidIn.speed.num;
   if (speed == 0) return double.infinity;
 
-  if (bidInPrivateAsyncValue is AsyncError || bidInPrivateAsyncValue is AsyncLoading) return null;
+  if (bidInPrivateAsyncValue is AsyncError ||
+      bidInPrivateAsyncValue is AsyncLoading) return null;
   final bidInPrivate = bidInPrivateAsyncValue.value;
   if (bidInPrivate == null) return null;
 

@@ -26,6 +26,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       return WaitPage();
     }
 
+    final meetingChanger = ref.watch(meetingChangerProvider);
+
     final meetingStatus = lockedUserViewModel.meeting.status;
 
     bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED ||
@@ -54,6 +56,7 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
                 widget.onHangPhone?.call(uid, meetingId);
               },
               meeting: lockedUserViewModel.meeting,
+              meetingChanger: meetingChanger,
               user: lockedUserViewModel.user),
         ),
         Visibility(

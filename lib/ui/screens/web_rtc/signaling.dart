@@ -11,6 +11,7 @@ typedef void StreamStateCallback(MediaStream stream);
 class Signaling {
   Signaling(
       {required this.meeting,
+      required this.meetingChanger,
       required this.amA,
       required this.localVideo,
       required this.remoteVideo}) {
@@ -60,6 +61,7 @@ class Signaling {
   }
 
   final Meeting meeting;
+  final MeetingChanger meetingChanger;
   final bool amA;
   final RTCVideoRenderer localVideo;
   final RTCVideoRenderer remoteVideo;
@@ -279,16 +281,9 @@ class Signaling {
     }
   }
 
-  void hangUp(RTCVideoRenderer localVideo,
-      {required MeetingStatus reason}) {
+  Future hangUp(RTCVideoRenderer localVideo, {required MeetingStatus reason}) {
     peerConnection?.close();
-
-    final endMeeting = FirebaseFunctions.instance.httpsCallable('endMeeting');
-    final args = {
-      'meetingId': meeting.id,
-      'reason': reason.toStringEnum(),
-    };
-    endMeeting(args);
+    return meetingChanger.endMeeting(meeting, reason);
   }
 
   void registerPeerConnectionListeners() {
