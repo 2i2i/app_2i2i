@@ -74,7 +74,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('(${(userModel?.rating ?? 0) * 5}/5)',
+                        Text('(${(userModel?.rating ?? 0)}/5)',
                             style: Theme.of(context)
                                 .textTheme
                                 .subtitle1

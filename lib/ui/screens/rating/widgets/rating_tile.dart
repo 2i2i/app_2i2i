@@ -37,11 +37,13 @@ class RatingTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       RatingBar.builder(
-                        initialRating: ratingModel.rating * 5,
+                        initialRating: ratingModel.rating,
                         minRating: 1,
+                        maxRating: 5,
                         direction: Axis.horizontal,
                         itemCount: 5,
                         itemSize: 22,
+                        allowHalfRating: true,
                         glowColor: Colors.white,
                         unratedColor: Colors.grey.shade300,
                         itemBuilder: (context, _) => Icon(
