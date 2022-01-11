@@ -43,8 +43,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
               if (myAccountPageViewModel.asData?.value is LocalAccount) {
                 LocalAccount account = myAccountPageViewModel.asData!.value;
                 return FutureBuilder(
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
                       List<String> perhaps = snapshot.data;
                       return Column(
