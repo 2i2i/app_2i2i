@@ -1,12 +1,17 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
+import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
+import '../../commons/custom_dialogs.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/create_bid_widget.dart';
@@ -107,7 +112,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                   child: ListTile(
                     title: Text(
                       user.name,
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).disabledColor,
                           ),
@@ -115,14 +120,17 @@ class _UserPageState extends ConsumerState<UserPage> {
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             shortBio.toString().trim(),
-                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                                  fontWeight: FontWeight.normal,
-                                  color: Theme.of(context).disabledColor,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.caption!.copyWith(
+                                      color: Theme.of(context).disabledColor,
+                                    ),
                           ),
+                          SizedBox(height: 3),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -142,9 +150,12 @@ class _UserPageState extends ConsumerState<UserPage> {
                                   print(rating);
                                 },
                               ),
-                              SizedBox(width: 6),
-                              Text('${(user.rating ?? 0) * 5}',
-                                  style: Theme.of(context).textTheme.caption)
+                              SizedBox(width: 4),
+                              TextButton(
+                                 onPressed: () => CustomNavigation.push(context, RatingPage(userModel: user,), Routes.RATING),
+                                child: Text('(view all)',
+                                    style: Theme.of(context).textTheme.caption),
+                              )
                             ],
                           )
                         ],

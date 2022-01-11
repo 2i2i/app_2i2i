@@ -46,11 +46,9 @@ class UserInfoTile extends ConsumerWidget {
 
     return Container(
       decoration: Custom.getBoxDecoration(context, radius: 12),
-      child: GestureDetector(
-        onTap: () {
-          CustomNavigation.push(
-              context, UserPage(uid: userModel.id), Routes.USER);
-        },
+      child: InkWell(
+        onTap: () => CustomNavigation.push(
+            context, UserPage(uid: userModel.id), Routes.USER),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
           child: Row(
