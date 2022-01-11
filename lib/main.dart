@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,9 @@ import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if(!kIsWeb) {
+    await Firebase.initializeApp();
+  }
   // await Firebase.initializeApp(
   //     /*options: DefaultFirebaseConfig.platformOptions*/);
   // await FirebaseAppCheck.instance.activate(
@@ -62,7 +66,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
         timer = Timer.periodic(Duration(seconds: 10), (timer) async {
           final userModelChanger = ref.watch(userModelChangerProvider);
           if (userModelChanger == null) return;
-          await userModelChanger.updateHeartbeat();
+          // await userModelChanger.updateHeartbeat();
         });
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);

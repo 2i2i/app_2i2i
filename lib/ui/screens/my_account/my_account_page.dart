@@ -2,6 +2,7 @@ import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -244,15 +245,9 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ListTile(
               onTap: () async {
                 Navigator.of(context).maybePop();
-                CustomDialogs.loader(true, context);
-                try {
-                  final myAccountPageViewModel =
-                      ref.read(myAccountPageViewModelProvider);
-                  await myAccountPageViewModel.addLocalAccount();
-                } catch (e) {
-                  print(e);
-                }
-                CustomDialogs.loader(false, context, rootNavigator: true);
+                Future.delayed(Duration.zero).then((value) {
+                  CustomNavigation.push(context, CreateLocalAccount(), 'CreateLocalAccount');
+                });
               },
               leading: Container(
                 height: 50,

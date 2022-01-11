@@ -172,7 +172,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                             onPressed: () => CustomDialogs.infoDialog(
                                 context: context,
                                 child: KeysWidget(
-                                    account: widget.account as LocalAccount))
+                                    account: widget.account as LocalAccount),
+                            )
                             // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
                             ),
                       ),

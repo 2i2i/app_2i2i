@@ -35,12 +35,12 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     if (myAccountPageViewModel is AsyncLoading ||
         myAccountPageViewModel is AsyncError) {
-      return WaitPage(true);
+      return WaitPage(isCupertino: true);
     }
     final addBidPageViewModel =
         ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
-    if (addBidPageViewModel == null) return WaitPage(true);
-    if (addBidPageViewModel.submitting) return WaitPage(true);
+    if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
+    if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
     if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
       account ??= myAccountPageViewModel.accounts!.first;
     }
