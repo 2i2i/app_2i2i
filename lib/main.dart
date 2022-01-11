@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_app_check/firebase_app_check.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,12 @@ import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(/*options: DefaultFirebaseConfig.platformOptions*/);
+  // await Firebase.initializeApp(
+  //     /*options: DefaultFirebaseConfig.platformOptions*/);
+  // await FirebaseAppCheck.instance.activate(
+  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
+  // );
+  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
@@ -83,7 +89,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   }
 
   Widget getView() {
-    if(kIsWeb) {
+    if (kIsWeb) {
       return FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
@@ -108,7 +114,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 class AppScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.mouse,
-  };
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }
