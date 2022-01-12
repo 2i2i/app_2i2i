@@ -263,7 +263,7 @@ class Signaling {
     }
   }
 
-  Future hangUp(RTCVideoRenderer localVideo, {required MeetingStatus reason}) {
+  Future hangUp({required MeetingStatus reason}) {
     peerConnection?.close();
     return meetingChanger.endMeeting(meeting, reason);
   }

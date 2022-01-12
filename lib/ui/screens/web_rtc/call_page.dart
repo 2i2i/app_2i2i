@@ -75,7 +75,7 @@ class _CallPageState extends ConsumerState<CallPage>
     final duration = getDuration(maxDuration);
     budgetTimer = Timer(Duration(seconds: duration), () {
       progressTimer?.cancel();
-      signaling?.hangUp(_localRenderer, reason: MeetingStatus.END_TIMER);
+      signaling?.hangUp(reason: MeetingStatus.END_TIMER);
     });
 
     progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -315,10 +315,11 @@ class _CallPageState extends ConsumerState<CallPage>
                             }
                             final reason =
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
-                            await signaling?.hangUp(_localRenderer, reason: reason);
+                            await signaling?.hangUp(reason: reason);
                             final otherUid =
                                 amA ? widget.meeting.B : widget.meeting.A;
-                            await widget.onHangPhone(otherUid, widget.meeting.id);
+                            await widget.onHangPhone(
+                                otherUid, widget.meeting.id);
                             dispose();
                           }),
                       CircleButton(

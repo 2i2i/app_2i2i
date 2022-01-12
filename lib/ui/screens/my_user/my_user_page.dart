@@ -238,11 +238,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 noBidsText: Strings().noBidFound,
-                onTap: (BidIn bid) async {
-                  CustomDialogs.loader(true, context);
-                  await myUserPageViewModel.acceptBid(bid);
-                  CustomDialogs.loader(false, context);
-                },
+                onTap: myUserPageViewModel.acceptBid,
               ),
               UserBidOutsList(
                 uid: myUserPageViewModel.user.id,
