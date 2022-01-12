@@ -115,13 +115,14 @@ class UserInfoTile extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             RatingBar.builder(
-                              initialRating: (userModel.rating ?? 0) * 5,
+                              initialRating: userModel.rating * 5,
                               minRating: 1,
                               direction: Axis.horizontal,
                               tapOnlyMode: false,
                               updateOnDrag: false,
                               itemCount: 5,
                               itemSize: 16,
+                              allowHalfRating: true,
                               glowColor: Colors.white,
                               unratedColor: Colors.grey.shade300,
                               itemBuilder: (context, _) => Icon(
@@ -133,7 +134,7 @@ class UserInfoTile extends ConsumerWidget {
                               },
                             ),
                             SizedBox(width: 6),
-                            Text('${(userModel.rating ?? 0) * 5}',
+                            Text('${(userModel.rating * 5).toStringAsFixed(1)}',
                                 style: Theme.of(context).textTheme.caption)
                           ],
                         ),

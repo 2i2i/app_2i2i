@@ -137,6 +137,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
     final _ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
     if (_ringingPageViewModel == null) return WaitPage();
     ringingPageViewModel = _ringingPageViewModel;
+    String name = '';
+
+    bool amA = ringingPageViewModel!.amA();
+    String userId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    final userAsyncValue = ref.read(userProvider(userId));
+    if (!(userAsyncValue is AsyncLoading || userAsyncValue is AsyncError)) {
+      name = userAsyncValue.asData!.value.name;
+    }
 
     log(F + 'RingingPage - scaffold');
     return Scaffold(
@@ -207,6 +215,11 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       comment(ringingPageViewModel!),
                       style: Theme.of(context).textTheme.caption,
                     ),
+                    SizedBox(height: 10),
+                    Text(
+                      name,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
                   ],
                 ),
               ),
@@ -215,11 +228,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Visibility(
-                      visible: !isClicked &&
-                          ringingPageViewModel!.meeting.status ==
-                              MeetingStatus.INIT,
-                      child: Column(
+                    if (!isClicked &&
+                        ringingPageViewModel!.meeting.status ==
+                            MeetingStatus.INIT)
+                      Column(
                         children: [
                           FloatingActionButton(
                             child: Icon(Icons.call_end, color: Colors.white),
@@ -236,13 +248,11 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           ),
                         ],
                       ),
-                    ),
-                    Visibility(
-                      visible: !isClicked &&
-                          ringingPageViewModel!.amA() &&
-                          ringingPageViewModel!.meeting.status ==
-                              MeetingStatus.INIT,
-                      child: Column(
+                    if (!isClicked &&
+                        ringingPageViewModel!.amA() &&
+                        ringingPageViewModel!.meeting.status ==
+                            MeetingStatus.INIT)
+                      Column(
                         children: [
                           Bounce(
                             child: FloatingActionButton(
@@ -262,8 +272,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             ),
                           ),
                         ],
-                      ),
-                    )
+                      )
                   ],
                 ),
               )

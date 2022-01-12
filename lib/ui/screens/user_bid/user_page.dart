@@ -132,13 +132,14 @@ class _UserPageState extends ConsumerState<UserPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               RatingBar.builder(
-                                initialRating: (user.rating ?? 0) * 5,
+                                initialRating: user.rating * 5,
                                 minRating: 1,
                                 direction: Axis.horizontal,
                                 itemCount: 5,
                                 itemSize: 16,
                                 tapOnlyMode: true,
                                 updateOnDrag: false,
+                                allowHalfRating: true,
                                 glowColor: Colors.white,
                                 unratedColor: Colors.grey.shade300,
                                 itemBuilder: (context, _) => Icon(

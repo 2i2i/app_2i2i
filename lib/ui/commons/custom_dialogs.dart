@@ -51,8 +51,7 @@ class CustomDialogs {
     }
   }
 
-  static inAppRatingDialog(BuildContext context,
-      {required Function onPressed, bool rootNavigator = false}) {
+  static inAppRatingDialog(BuildContext context, {required Function onPressed, bool rootNavigator = false}) {
     double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
@@ -137,7 +136,8 @@ class CustomDialogs {
             onWillPop: () async {
               return false;
             },
-            child: ratingDialog);
+            child: ratingDialog,
+        );
       },
     );
   }

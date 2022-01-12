@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -34,6 +34,11 @@ class _HomePageState extends ConsumerState<HomePage>{
     // TabItem(GlobalKey<NavigatorState>(), QRCodePage()),
   ];
 
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
+
+  TextEditingController ratingFeedBack = TextEditingController();
+
 //if the user double-clicked on any tab, all tab's sub-page is removed
   void _onTap(index) {
     setState(() {
@@ -43,9 +48,11 @@ class _HomePageState extends ConsumerState<HomePage>{
   }
 
 
+  double rating = 1;
 
   @override
   Widget build(BuildContext context) {
+
     var lockUser = ref.watch(lockedUserViewModelProvider);
     bool loading = lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
     if (!loading) {
@@ -67,6 +74,7 @@ class _HomePageState extends ConsumerState<HomePage>{
       onWillPop: () async =>
           !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
       child: Scaffold(
+        key: scaffoldKey,
         body: Stack(
           children: _tabItems
               .asMap()
@@ -117,6 +125,116 @@ class _HomePageState extends ConsumerState<HomePage>{
             ),
           ),
         ),
+        bottomSheet: ValueListenableBuilder(
+          valueListenable: showRating,
+          builder: (BuildContext context,Map value, Widget? child) {
+            print('value === ${value}');
+            child ??= Container();
+            return Visibility(
+              visible: value['show'] ?? false,
+              child: child,
+            );
+          },
+
+          child: BottomSheet(
+            backgroundColor: Theme.of(context).cardColor,
+            elevation: 8,
+             shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+             ),
+             onClosing: () {  }, builder: (BuildContext context) {
+              var otherUid = showRating.value['otherUid'];
+              var meetingId = showRating.value['meetingId'];
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      Strings().appRatingTitle,
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      Strings().appRatingMessage,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 20, top: 8),
+                      child: RatingBar.builder(
+                        initialRating: this.rating * 5,
+                        minRating: 1,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        glowColor: Colors.white,
+                        unratedColor: Colors.grey.shade300,
+                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (starRating) {
+                          this.rating = starRating / 5;
+                        },
+                      ),
+                    ),
+                    TextFormField(
+                      controller: ratingFeedBack,
+                      minLines: 5,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0)
+                        )
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => {
+                            showRating.value = {
+                              'show':false
+                            }
+                          },
+                          child:
+                          Text(Strings().cancel, style: Theme.of(context).textTheme.button,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        TextButton(
+                          onPressed: () async {
+                            if(otherUid is String && meetingId is String) {
+                              final database = ref.watch(databaseProvider);
+                              database.addRating(otherUid, meetingId, RatingModel(rating: rating, comment: ratingFeedBack.text));
+                            }
+                            showRating.value = {
+                              'show':false
+                            };
+                          },
+                          child: Text(Strings().appRatingSubmitButton,
+                              style: Theme.of(context).textTheme.button?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary
+                              ),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              );
+          },
+          ),
+        ),
       ),
     );
   }
@@ -143,14 +261,18 @@ class _HomePageState extends ConsumerState<HomePage>{
   submitReview(otherUid, meetingId) {
     if(mounted) {
       Future.delayed(Duration(milliseconds: 300)).then((value) {
-        CustomDialogs.inAppRatingDialog(
+        showRating.value = {
+          'show': true,
+          'otherUid':otherUid,
+          'meetingId':meetingId
+        };
+        /*CustomDialogs.inAppRatingDialog(
           context,
           onPressed: (double rating, String? ratingFeedBack) {
             final database = ref.watch(databaseProvider);
-            database.addRating(otherUid, meetingId,
-                RatingModel(rating: rating, comment: ratingFeedBack));
+            database.addRating(otherUid, meetingId, RatingModel(rating: rating, comment: ratingFeedBack));
           },
-        );
+        );*/
       });
     }
   }
