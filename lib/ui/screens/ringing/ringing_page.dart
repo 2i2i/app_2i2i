@@ -47,7 +47,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   // TODO does this work? does the timer stay when changing to MeetingStatus.TXN_SENT? that would be wrong
   void setTimer() {
-    log(J + 'setTimer - widget.meeting.status=${widget.meeting.status}');
+    log('setTimer - widget.meeting.status=${widget.meeting.status}');
 
     int? duration;
     if (widget.meeting.status == MeetingStatus.INIT)

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:algorand_dart/algorand_dart.dart' as al;
 import 'package:cloud_functions/cloud_functions.dart';
@@ -27,15 +29,23 @@ class AlgorandLib {
     AlgorandNet.testnet: AlgoExplorer.TESTNET_INDEXER_API_URL,
     AlgorandNet.betanet: AlgoExplorer.BETANET_INDEXER_API_URL,
   };
+  static const Map<AlgorandNet, String> API_KEY = {
+    AlgorandNet.mainnet: '',
+    AlgorandNet.testnet: '',
+    AlgorandNet.betanet: '',
+  };
+  // static const Map<AlgorandNet, String> API_KEY = {
+  //   AlgorandNet.mainnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
+  //   AlgorandNet.testnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
+  //   AlgorandNet.betanet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
+  // };
   AlgorandLib() {
-    client[AlgorandNet.mainnet] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.mainnet]!),
-        indexerClient:
-            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.mainnet]!));
-    client[AlgorandNet.testnet] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AlgorandNet.testnet]!),
-        indexerClient:
-            IndexerClient(apiUrl: INDEXER_URL[AlgorandNet.testnet]!));
+    for (final net in [AlgorandNet.mainnet, AlgorandNet.testnet]) {
+      client[net] = Algorand(
+          algodClient:
+              AlgodClient(apiUrl: API_URL[net]!, apiKey: API_KEY[net]!),
+          indexerClient: IndexerClient(apiUrl: INDEXER_URL[net]!));
+    }
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
@@ -153,7 +163,8 @@ class AlgorandService {
     required AbstractAccount account,
     required AlgorandNet net,
   }) async {
-    log('lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
+    log(J +
+        'lockALGO - B=$B - speed=$speed - waitForConfirmation=$waitForConfirmation');
 
     log('lockALGO - account=${account.address}');
 
@@ -188,7 +199,10 @@ class AlgorandService {
     txns.add(lockTxn);
 
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
-    log('lockALGO - arguments=$arguments');
+    log(J + 'lockALGO - speed=$speed - arguments=$arguments');
+    // arguments[1] = Uint8List.fromList([39, 16]);
+    arguments[1] = Uint8List.fromList(arguments[1].reversed.toList()); // toApplicationArguments seems have a bug, result for int in reverse
+    log(J + 'lockALGO - speed=$speed - arguments=$arguments');
     final stateTxn = await (ApplicationCallTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
           ..applicationId = SYSTEM_ID[net]!
@@ -196,15 +210,18 @@ class AlgorandService {
           ..accounts = [Address.fromAlgorandAddress(address: B)]
           ..suggestedParams = params)
         .build();
-    log('lockALGO - stateTxn=$stateTxn');
+    log(J + 'lockALGO - stateTxn=$stateTxn');
     txns.add(stateTxn);
 
     AtomicTransfer.group(txns);
-    log('lockALGO - grouped');
+    log(J + 'lockALGO - grouped');
 
     // TXN_CREATED
     await meetingChanger.txnCreatedMeeting(meetingId);
 
+    // for (var i = 0; i < txns.length; i++) {
+    //   await txns[i].export('/Users/imi/Downloads/txns_$i.txn');
+    // }
     // TXN_SIGNED
     // TODO in parallel - together with previous
     final signedTxnsBytes = await account.sign(txns);
@@ -213,7 +230,7 @@ class AlgorandService {
     try {
       final txId =
           await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      log('lockALGO - txId=$txId');
+      log(J + 'lockALGO - txId=$txId');
 
       // tx ids
       final txnsIds = MeetingTxns(
@@ -221,22 +238,22 @@ class AlgorandService {
         lockALGO: lockTxn.id,
         state: stateTxn.id,
       );
-      log('lockALGO - txnsIds=$txnsIds - optedIntoSystem=$optedIntoSystem');
+      log(J + 'lockALGO - txnsIds=$txnsIds - optedIntoSystem=$optedIntoSystem');
       if (!optedIntoSystem) txnsIds.optIn = txns[0].id;
-      log('lockALGO - txnsIds=$txnsIds');
+      log(J + 'lockALGO - txnsIds=$txnsIds');
 
       await meetingChanger.txnSentMeeting(meetingId, txnsIds);
-      log('lockALGO - TXN_SENT');
+      log(J + 'lockALGO - TXN_SENT');
 
       return txnsIds;
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {
-        log('AlgorandException ' + cause.response?.data['message']);
+        log(J + 'AlgorandException ' + cause.response?.data['message']);
       }
       throw ex;
     } on Exception catch (ex) {
-      log('Exception ' + ex.toString());
+      log(J + 'Exception ' + ex.toString());
       throw ex;
     }
   }

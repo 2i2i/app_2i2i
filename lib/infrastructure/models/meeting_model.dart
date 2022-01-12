@@ -99,6 +99,7 @@ class MeetingChanger {
   final FirestoreDatabase database;
 
   Future endMeeting(Meeting meeting, MeetingStatus status) async {
+    log(J + 'endMeeting - status=$status');
     final now = FieldValue.serverTimestamp();
     final Map<String, dynamic> data = {
       'status': status.toStringEnum(),

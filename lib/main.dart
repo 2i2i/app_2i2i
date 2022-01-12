@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,8 +19,6 @@ Future<void> main() async {
   if (!kIsWeb) {
     await Firebase.initializeApp();
   }
-  // await Firebase.initializeApp(
-  //     /*options: DefaultFirebaseConfig.platformOptions*/);
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );

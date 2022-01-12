@@ -49,8 +49,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         Navigator.of(context, rootNavigator: true).pop();
       }
     } else {
-      log(J +
-          '_MyAccountPageState - _createSession - connector already connected');
+      log('_MyAccountPageState - _createSession - connector already connected');
     }
   }
 
@@ -58,7 +57,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       defaultTargetPlatform == TargetPlatform.android;
 
   Future _changeDisplayUri(String uri) async {
-    log(J + '_changeDisplayUri - uri=$uri');
+    log('_changeDisplayUri - uri=$uri');
     _displayUri = uri;
     if (mounted) {
       setState(() {});
