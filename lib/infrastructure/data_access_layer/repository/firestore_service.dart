@@ -4,15 +4,21 @@ class FirestoreService {
   FirestoreService._();
   static final instance = FirestoreService._();
 
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future runTransaction(Future<void> Function(Transaction) transactionCreator) {
+    return firestore.runTransaction(transactionCreator);
+  }
+
   String newDocId({required String path}) =>
-      FirebaseFirestore.instance.collection(path).doc().id;
+      firestore.collection(path).doc().id;
 
   Future<void> createData({
     required String path,
     required Map<String, dynamic> data,
     bool merge = false,
   }) async {
-    final reference = FirebaseFirestore.instance.collection(path).doc();
+    final reference = firestore.collection(path).doc();
     // print('$path: $data');
     await reference.set(data);
   }
@@ -22,18 +28,18 @@ class FirestoreService {
     required Map<String, dynamic> data,
     bool merge = false,
   }) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = firestore.doc(path);
     await reference.set(data, SetOptions(merge: merge));
   }
 
   Future<DocumentSnapshot> getData({required String path}) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = firestore.doc(path);
     // print('$path: $data');
     return await reference.get(GetOptions(source: Source.serverAndCache));
   }
 
   Future<void> deleteData({required String path}) async {
-    final reference = FirebaseFirestore.instance.doc(path);
+    final reference = firestore.doc(path);
     // print('delete: $path');
     await reference.delete();
   }
@@ -46,7 +52,7 @@ class FirestoreService {
     int Function(T lhs, T rhs)? sort,
   }) {
     Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection(path);
+        firestore.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query)!;
     }
@@ -73,7 +79,7 @@ class FirestoreService {
     int Function(T lhs, T rhs)? sort,
   }) {
     Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection(path);
+        firestore.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query)!;
     }
@@ -96,7 +102,7 @@ class FirestoreService {
     required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) {
     final DocumentReference<Map<String, dynamic>> reference =
-        FirebaseFirestore.instance.doc(path);
+        firestore.doc(path);
     final Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
         reference.snapshots();
     return snapshots.map((snapshot) => builder(snapshot.data(), snapshot.id));

@@ -326,6 +326,40 @@ class Meeting extends Equatable {
     );
   }
 
+  // used by acceptBid, as B
+  factory Meeting.newMeeting({
+    required String uid,
+    required String? addrB,
+    required BidIn bidIn,
+    required BidInPrivate bidInPrivate,
+  }) {
+    return Meeting(
+      id: '',
+      isActive: true,
+      isSettled: false,
+      A: bidInPrivate.A,
+      B: uid,
+      addrA: bidInPrivate.addrA,
+      addrB: addrB,
+      budget: bidIn.speed.num == 0 ? 0 : null,
+      start: null,
+      end: null,
+      duration: null,
+      txns: MeetingTxns(),
+      status: MeetingStatus.INIT,
+      statusHistory: [
+        MeetingStatusWithTS(
+            value: MeetingStatus.INIT, ts: DateTime.now().toUtc())
+      ],
+      net: bidIn.net,
+      speed: bidIn.speed,
+      bid: bidIn.id,
+      room: null,
+      coinFlowsA: [],
+      coinFlowsB: [],
+    );
+  }
+
   Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
@@ -341,7 +375,7 @@ class Meeting extends Equatable {
       'duration': duration,
       'txns': txns.toMap(),
       'status': status.toStringEnum(),
-      'statusHistory': statusHistory,
+      'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'bid': bid,
