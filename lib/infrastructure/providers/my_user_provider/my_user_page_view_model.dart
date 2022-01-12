@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,16 +22,18 @@ class MyUserPageViewModel {
   final UserModelChanger userModelChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn) async {
-    // log(J + 'acceptBid');
-    final account = await accountService.getMainAccount();
-    // log(J + 'acceptBid - account=$account');
-    final HttpsCallable acceptBid = functions.httpsCallable('acceptBid');
-    // TODO only get algorandAddress if bid.speed.num != 0
-    await acceptBid({
-      'addrB': account.address,
-      'bid': bidIn.id,
-    });
+  Future acceptBid(BidIn bidIn, BidInPrivate bidInPrivate) async {
+    String? addrB;
+    if (bidIn.speed.num != 0) {
+      final account = await accountService.getMainAccount();
+      addrB = account.address;
+    }
+    final meeting = Meeting.newMeeting(
+        uid: user.id,
+        addrB: addrB,
+        bidIn: bidIn,
+        bidInPrivate: bidInPrivate);
+    database.acceptBid(meeting);
   }
 
   // TODO clean separation into firestore_service and firestore_database

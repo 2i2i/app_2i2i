@@ -17,7 +17,20 @@ class UserModelChanger {
 
   Future updateNameAndBio(String name, String bio) async {
     final tags = UserModel.tagsFromBio(bio);
-    await database.updateUserNameAndBio(uid, name, bio, [name, ...tags]);
+    final Map<String, dynamic> data = {
+      'name': name,
+      'bio': bio,
+      'tags': [name, ...tags]
+    };
+    final user = await database.getUser(uid);
+    if (user == null) {
+      data['status'] = 'ONLINE';
+      data['meeting'] = null;
+      data['rating'] = 1;
+      data['numRatings'] = 0;
+      data['heartbeat'] = DateTime.now().toUtc();
+    }
+    await database.updateUserNameAndBio(uid, data);
   }
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
@@ -88,15 +101,15 @@ class UserModel extends Equatable {
 
     var status = data['status'];
     var meeting = data['meeting'];
-    var name = data['name']??'';
-    var bio = data['bio']??'';
+    var name = data['name'] ?? '';
+    var bio = data['bio'] ?? '';
     final rating = double.tryParse(data['rating'].toString());
-    final numRatings = int.tryParse(data['numRatings'].toString())??0;
+    final numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
 
     return UserModel(
       id: documentId,
-      status: status??'',
+      status: status ?? '',
       meeting: meeting,
       name: name,
       bio: bio,
@@ -159,11 +172,13 @@ class UserModelPrivate {
     };
   }
 }
+
 extension ParseToDate on String {
   DateTime? toDate() {
     return DateTime.tryParse(this)?.toLocal();
   }
 }
+
 extension ParseToTimeStamp on Timestamp {
   DateTime? toDate() {
     return this.toDate().toLocal();

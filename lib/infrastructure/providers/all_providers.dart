@@ -3,6 +3,7 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/screens/user_bid/user_bid_ins_list.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,24 +63,6 @@ final userPrivateProvider =
   final database = ref.watch(databaseProvider);
   // log('userPrivateProvider - database=$database');
   return database.userPrivateStream(uid: uid);
-});
-
-final bidUserProvider = Provider.family<UserModel?, String>((ref, bidId) {
-  // log(J + 'bidUserProvider - bidId=$bidId');
-  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
-  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
-  if (bidInPrivateAsyncValue is AsyncLoading ||
-      bidInPrivateAsyncValue is AsyncError) {
-    return null;
-  }
-  final uid = bidInPrivateAsyncValue.value!.A;
-  // log(J + 'bidUserProvider - uid=$uid');
-  final user = ref.watch(userProvider(uid));
-  // log(J + 'bidUserProvider - user=$user');
-  if (user is AsyncLoading || user is AsyncError) {
-    return null;
-  }
-  return user.asData!.value;
 });
 
 final userPageViewModelProvider =
@@ -279,6 +262,30 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
+final bidAndUserProvider = Provider.family<BidAndUser?, BidIn>((ref, bidIn) {
+  // log(J + 'bidUserProvider - bidId=$bidId');
+  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidIn.id));
+  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
+  if (bidInPrivateAsyncValue is AsyncLoading ||
+      bidInPrivateAsyncValue is AsyncError) {
+    return null;
+  }
+  final bidInPrivate = bidInPrivateAsyncValue.value!;
+  final A = bidInPrivate.A;
+  // log(J + 'bidUserProvider - uid=$uid');
+  final userAsyncValue = ref.watch(userProvider(A));
+  // log(J + 'bidUserProvider - user=$user');
+  if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
+    return null;
+  }
+  final user = userAsyncValue.asData!.value;
+  return BidAndUser(
+    bidIn,
+    bidInPrivate,
+    user
+  );
+});
+
 final getBidOutsProvider =
     StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
@@ -402,14 +409,17 @@ final accountsProvider = FutureProvider((ref) {
   return accountService.getAllAccounts();
 });
 
-final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>(
+final myAccountPageViewModelProvider =
+    ChangeNotifierProvider<MyAccountPageViewModel>(
         (ref) => MyAccountPageViewModel(ref));
 
-final createLocalAccountProvider = FutureProvider((ref) async {
-  final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-  LocalAccount account = await myAccountPageViewModel.addLocalAccount();
-  return account;
-},);
+final createLocalAccountProvider = FutureProvider(
+  (ref) async {
+    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+    LocalAccount account = await myAccountPageViewModel.addLocalAccount();
+    return account;
+  },
+);
 
 final userModelChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);

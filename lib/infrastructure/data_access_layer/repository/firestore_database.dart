@@ -30,6 +30,26 @@ class FirestoreDatabase {
         merge: true,
       );
 
+  Future acceptBid(Meeting meeting) async {
+    return _service.runTransaction((transaction) {
+      final meetingDocRef =
+          _service.firestore.collection(FirestorePath.meetings()).doc();
+
+      final lockObj = {'meeting': meetingDocRef.id};
+
+      // log(H + 'meeting.toMap()=${meeting.toMap()}');
+      // log(H + 'lockObj()=$lockObj');
+
+      transaction.set(meetingDocRef, meeting.toMap());
+      final userADocRef = _service.firestore.doc(FirestorePath.user(meeting.A));
+      transaction.update(userADocRef, lockObj);
+      final userBDocRef = _service.firestore.doc(FirestorePath.user(meeting.B));
+      transaction.update(userBDocRef, lockObj);
+
+      return Future.value();
+    });
+  }
+
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
@@ -46,10 +66,10 @@ class FirestoreDatabase {
   }
 
   Future<void> updateUserNameAndBio(
-          String uid, String name, String bio, List<String> tags) =>
+          String uid, Map<String, dynamic> data) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'name': name, 'bio': bio, 'tags': tags},
+        data: data,
         merge: true,
       );
 
@@ -65,8 +85,7 @@ class FirestoreDatabase {
 
   //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
-      _service
-          .setData(
+      _service.setData(
         path: FirestorePath.newRating(uid, meetingId),
         data: rating.toMap(),
       );
@@ -124,11 +143,11 @@ class FirestoreDatabase {
 
   Stream<UserModel> userStream({required String uid}) =>
       _service.documentStream(
-          path: FirestorePath.user(uid),
-          builder: (data, documentId) {
-            data ??= {};
-            return UserModel.fromMap(data, documentId);
-          },
+        path: FirestorePath.user(uid),
+        builder: (data, documentId) {
+          data ??= {};
+          return UserModel.fromMap(data, documentId);
+        },
       );
 
   Future<UserModel?> getUser(String uid) async {
