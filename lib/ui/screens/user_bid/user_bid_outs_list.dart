@@ -2,12 +2,15 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../infrastructure/models/bid_model.dart';
+import 'user_page.dart';
 
 class UserBidOutsList extends ConsumerWidget {
   UserBidOutsList({
@@ -56,7 +59,9 @@ class UserBidOutsList extends ConsumerWidget {
             firstNameChar = firstNameChar.substring(0, 1);
           }
           return ListTile(
-            onTap: () {},
+            onTap: () {
+              CustomNavigation.push(context, UserPage(uid: user.id), Routes.USER);
+            },
             leading: FittedBox(
               fit: BoxFit.scaleDown,
               child: SizedBox(
