@@ -132,7 +132,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               RatingBar.builder(
-                                initialRating: (user.rating ?? 0),
+                                initialRating: user.rating * 5,
                                 minRating: 1,
                                 direction: Axis.horizontal,
                                 itemCount: 5,

@@ -55,7 +55,7 @@ class UserModel extends Equatable {
     this.meeting,
     this.name = '',
     this.bio = '',
-    this.rating,
+    this.rating = 1,
     this.numRatings = 0,
     this.heartbeat,
   }) {
@@ -68,7 +68,7 @@ class UserModel extends Equatable {
   final String bio;
   final String name;
   late final List<String> _tags;
-  final double? rating;
+  final double rating;
   final int numRatings;
   final DateTime? heartbeat;
 
@@ -103,7 +103,7 @@ class UserModel extends Equatable {
     var meeting = data['meeting'];
     var name = data['name'] ?? '';
     var bio = data['bio'] ?? '';
-    final rating = double.tryParse(data['rating'].toString());
+    final rating = double.tryParse(data['rating'].toString()) ?? 1;
     final numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
 

@@ -115,7 +115,7 @@ class UserInfoTile extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             RatingBar.builder(
-                              initialRating: (userModel.rating ?? 0),
+                              initialRating: userModel.rating * 5,
                               minRating: 1,
                               direction: Axis.horizontal,
                               tapOnlyMode: false,
@@ -134,7 +134,7 @@ class UserInfoTile extends ConsumerWidget {
                               },
                             ),
                             SizedBox(width: 6),
-                            Text('${(userModel.rating ?? 0)}',
+                            Text('${(userModel.rating * 5).toStringAsFixed(1)}',
                                 style: Theme.of(context).textTheme.caption)
                           ],
                         ),

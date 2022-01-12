@@ -58,7 +58,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     timer = Timer(Duration(seconds: duration), () async {
       final finishFuture = finish();
       final endMeetingFuture =
-      ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
+          ringingPageViewModel!.endMeeting(MeetingStatus.END_TIMER);
       await Future.wait([finishFuture, endMeetingFuture]);
     });
   }
@@ -139,18 +139,11 @@ class RingingPageState extends ConsumerState<RingingPage> {
     ringingPageViewModel = _ringingPageViewModel;
     String name = '';
 
-    bool amI = ringingPageViewModel?.amA()??false;
-    String? userId = ref.read(myUIDProvider);
-    if(amI) {
-      userId = ringingPageViewModel?.meeting.B;
-    }else{
-      userId = ringingPageViewModel?.meeting.A;
-    }
-    if(userId is String){
-      var user = ref.read(userProvider(userId));
-      if(!(user is AsyncLoading || user is AsyncError)) {
-        name = user.asData!.value.name;
-      }
+    bool amA = ringingPageViewModel!.amA();
+    String userId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    final userAsyncValue = ref.read(userProvider(userId));
+    if (!(userAsyncValue is AsyncLoading || userAsyncValue is AsyncError)) {
+      name = userAsyncValue.asData!.value.name;
     }
 
     log(F + 'RingingPage - scaffold');
@@ -223,8 +216,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       style: Theme.of(context).textTheme.caption,
                     ),
                     SizedBox(height: 10),
-                    Text(name,
-                      style: Theme.of(context).textTheme.headline6,),
+                    Text(
+                      name,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
                   ],
                 ),
               ),
@@ -233,7 +228,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if(!isClicked && ringingPageViewModel!.meeting.status == MeetingStatus.INIT)
+                    if (!isClicked &&
+                        ringingPageViewModel!.meeting.status ==
+                            MeetingStatus.INIT)
                       Column(
                         children: [
                           FloatingActionButton(
@@ -243,15 +240,18 @@ class RingingPageState extends ConsumerState<RingingPage> {
                               final finishFuture = finish();
                               final cancelMeetingFuture = ringingPageViewModel!
                                   .endMeeting(ringingPageViewModel!.amA()
-                                  ? MeetingStatus.END_A
-                                  : MeetingStatus.END_B);
+                                      ? MeetingStatus.END_A
+                                      : MeetingStatus.END_B);
                               await Future.wait(
                                   [finishFuture, cancelMeetingFuture]);
                             },
                           ),
                         ],
                       ),
-                    if(!isClicked && ringingPageViewModel!.amA() && ringingPageViewModel!.meeting.status == MeetingStatus.INIT)
+                    if (!isClicked &&
+                        ringingPageViewModel!.amA() &&
+                        ringingPageViewModel!.meeting.status ==
+                            MeetingStatus.INIT)
                       Column(
                         children: [
                           Bounce(
@@ -265,7 +265,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 }
                                 final finishFuture = finish();
                                 final acceptMeetingFuture =
-                                ringingPageViewModel!.acceptMeeting();
+                                    ringingPageViewModel!.acceptMeeting();
                                 await Future.wait(
                                     [finishFuture, acceptMeetingFuture]);
                               },
@@ -282,5 +282,4 @@ class RingingPageState extends ConsumerState<RingingPage> {
       ),
     );
   }
-
 }

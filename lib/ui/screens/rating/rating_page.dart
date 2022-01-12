@@ -43,6 +43,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     }
 
     final ratingList = ratingListAsyncValue.asData!.value;
+    final totalRating = (userModel!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(),
@@ -74,7 +75,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('(${(userModel?.rating ?? 0)}/5)',
+                        Text('($totalRating/5)',
                             style: Theme.of(context)
                                 .textTheme
                                 .subtitle1

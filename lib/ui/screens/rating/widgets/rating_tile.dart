@@ -37,7 +37,7 @@ class RatingTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       RatingBar.builder(
-                        initialRating: ratingModel.rating,
+                        initialRating: ratingModel.rating * 5,
                         minRating: 1,
                         maxRating: 5,
                         direction: Axis.horizontal,

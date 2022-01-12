@@ -48,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage>{
   }
 
 
-  double rating = 5;
+  double rating = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +167,7 @@ class _HomePageState extends ConsumerState<HomePage>{
                     Container(
                       margin: EdgeInsets.only(bottom: 20, top: 8),
                       child: RatingBar.builder(
-                        initialRating: 5,
+                        initialRating: this.rating * 5,
                         minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: true,
@@ -179,8 +179,8 @@ class _HomePageState extends ConsumerState<HomePage>{
                           Icons.star_rounded,
                           color: Colors.amber,
                         ),
-                        onRatingUpdate: (rating) {
-                          this.rating = rating;
+                        onRatingUpdate: (starRating) {
+                          this.rating = starRating / 5;
                         },
                       ),
                     ),
