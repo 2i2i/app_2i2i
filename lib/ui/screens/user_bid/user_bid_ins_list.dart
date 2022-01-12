@@ -213,7 +213,7 @@ class UserBidInsList extends ConsumerWidget {
             .toList();
       }
     }
-
+    bidInsWithUser.remove(null);
     final bidInsWithUserNoNulls = bidInsWithUser.map((b) => b!).toList();
     // sort
     bidInsWithUserNoNulls
