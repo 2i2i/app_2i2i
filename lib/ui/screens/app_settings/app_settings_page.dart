@@ -36,7 +36,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
     if (uid == null) return WaitPage();
     final user = ref.watch(userProvider(uid));
     if (user is AsyncLoading || user is AsyncError) return WaitPage();
-    final message = 'https://test.2i2i.app/user/$uid';
+    final message = 'https://2i2i.app/user/$uid';
     var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
