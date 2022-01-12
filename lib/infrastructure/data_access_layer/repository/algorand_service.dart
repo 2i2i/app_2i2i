@@ -219,7 +219,7 @@ class AlgorandService {
     // for (var i = 0; i < txns.length; i++) {
     //   await txns[i].export('/Users/imi/Downloads/txns_$i.txn');
     // }
-    
+
     // TXN_SIGNED
     // TODO in parallel - together with previous
     final signedTxnsBytes = await account.sign(txns);
