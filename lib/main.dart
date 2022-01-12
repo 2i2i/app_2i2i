@@ -93,7 +93,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       return FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
-          width: 390,
+          width: 500,
           height: 844,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
