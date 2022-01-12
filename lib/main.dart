@@ -20,7 +20,7 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
   // await FirebaseAppCheck.instance.activate(
-  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
+  //   webRecaptchaSiteKey: '6Lf-IwoeAAAAAJ14IkTS2pWgolnAlWrDNw6hXn_a',
   // );
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
