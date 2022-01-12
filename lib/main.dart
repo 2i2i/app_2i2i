@@ -1,257 +1,120 @@
 import 'dart:async';
-
-import 'package:app_2i2i/app/home/cv/cv_page.dart';
-import 'package:app_2i2i/app/home/error_page.dart';
-import 'package:app_2i2i/app/home/search/add_bid_page.dart';
-import 'package:app_2i2i/app/home/search/user_page.dart';
-import 'package:app_2i2i/app/locked_user/locked_user_page.dart';
-import 'package:app_2i2i/providers/all_providers.dart';
-import 'package:go_router/go_router.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:app_2i2i/app/setup_user/setup_user_page.dart';
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
+// import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:app_2i2i/app/auth_widget.dart';
-import 'package:app_2i2i/app/home/home_page.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_2i2i/app/logging.dart';
-import 'app/home/about/about_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+import 'infrastructure/commons/strings.dart';
+import 'infrastructure/providers/all_providers.dart';
+import 'ui/screens/app/auth_widget.dart';
+import 'ui/screens/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
+  // await FirebaseAppCheck.instance.activate(
+  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
+  // );
+  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
-  // DEBUG
+  //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // DEBUG
-
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-    },
-    appRunner: () => runApp(ProviderScope(
-      child: MainWidget(),
-    )),
-  );
-
-  // runApp(ProviderScope(
-  //   child: MainWidget(),
-  // ));
-
-  // runApp(ProviderScope(
-  //   child: StaticHomePage(),
-  // ));
+  //endregion DEBUG
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  }, appRunner: () {
+    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+      return runApp(
+        ProviderScope(
+          child: MainWidget(themeMode: value ?? "AUTO"),
+        ),
+      );
+    });
+  });
 }
 
-class StaticHomePage extends StatelessWidget {
+class MainWidget extends ConsumerStatefulWidget {
+  final String themeMode;
+
+  const MainWidget({required this.themeMode, Key? key}) : super(key: key);
+
+  @override
+  _MainWidgetState createState() => _MainWidgetState();
+}
+
+class _MainWidgetState extends ConsumerState<MainWidget> {
+  var timer;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (timer == null) {
+        timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+          final userModelChanger = ref.watch(userModelChangerProvider);
+          if (userModelChanger == null) return;
+          await userModelChanger.updateHeartbeat();
+        });
+      }
+      ref.watch(appSettingProvider).getTheme(widget.themeMode);
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Welcome to Flutter'),
+      scrollBehavior: AppScrollBehavior(),
+      home: getView(),
+      // home:TestScreen(),
+      title: Strings().appName,
+      debugShowCheckedModeBanner: false,
+      // themeMode: appSettingModel.currentThemeMode,
+      themeMode: ThemeMode.light,
+
+      theme: AppTheme().mainTheme(context),
+      darkTheme: AppTheme().darkTheme(context),
+    );
+  }
+
+  Widget getView() {
+    if (kIsWeb) {
+      return FittedBox(
+        fit: BoxFit.scaleDown,
+        child: SizedBox(
+          width: 390,
+          height: 844,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AuthWidget(
+              homePageBuilder: (_) => HomePage(),
+            ),
+          ),
         ),
-        body: Center(
-          child: Text('2i2i'),
-        ),
-      ),
+      );
+    }
+    return AuthWidget(
+      homePageBuilder: (_) => HomePage(),
+      // homePageBuilder: (_) => TestScreen(),
     );
   }
 }
 
-ThemeData mainTheme = ThemeData(
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Color.fromRGBO(208, 226, 105, 1)),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      primary: Color.fromRGBO(208, 226, 105, 1),
-      onPrimary: Colors.black,
-    ),
-  ),
-  buttonTheme: const ButtonThemeData(
-    buttonColor: Colors.red,
-  ),
-  textTheme: const TextTheme(),
-  scaffoldBackgroundColor: Colors.white,
-  colorScheme: ColorScheme(
-      primary: Color.fromRGBO(116, 117, 109, 1),
-      primaryVariant: Color.fromRGBO(157, 193, 131, 1),
-      secondary: Color.fromRGBO(199, 234, 70, 1),
-      secondaryVariant: Color.fromRGBO(199, 234, 70, 1),
-      surface: Colors.red,
-      background: Colors.red,
-      error: Colors.red,
-      onPrimary: Color.fromRGBO(189, 239, 204, 1),
-      onSecondary: Colors.black,
-      onSurface: Colors.black,
-      onBackground: Colors.black,
-      onError: Colors.black,
-      brightness: Brightness.light),
-);
-
-Widget AppPage() => AuthWidget(
-      homePageBuilder: (_) => HomePage(),
-      setupPageBuilder: (_) => SetupUserPage(),
-    );
-
-// class NoTransitionPage<T> extends CustomTransitionPage<T> {
-//   const NoTransitionPage({required Widget child, LocalKey? key})
-//       : super(transitionsBuilder: _transitionsBuilder, child: child, key: key);
-
-//   static Widget _transitionsBuilder(
-//           BuildContext context,
-//           Animation<double> animation,
-//           Animation<double> secondaryAnimation,
-//           Widget child) =>
-//       child;
-// }
-
-// TODO MainWidget is not immutable anymore
-class MainWidget extends ConsumerWidget {
-  Timer? T;
-
+class AppScrollBehavior extends MaterialScrollBehavior {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // User heartbeat timer
-    if (T == null) {
-      T = Timer.periodic(Duration(seconds: 10), (timer) async {
-        // log('UserModel Timer');
-        final userModelChanger = ref.watch(userModelChangerProvider);
-        if (userModelChanger == null) return;
-        await userModelChanger.updateHeartbeat();
-      });
-    }
-
-    return MaterialApp.router(
-      routeInformationParser: _router.routeInformationParser,
-      routerDelegate: _router.routerDelegate,
-      title: '2i2i',
-      debugShowCheckedModeBanner: false,
-      theme: mainTheme,
-    );
-  }
-
-  final _router = GoRouter(
-    urlPathStrategy:
-        UrlPathStrategy.path, // turn off the # in the URLs on the web
-    refreshListenable: isUserLocked,
-    // redirect to the login page if the user is not logged in
-    redirect: (state) {
-      log('GoRouter - redirect');
-      final locked = isUserLocked.value;
-      final goingToLocked = state.location == '/lock';
-      log('GoRouter - redirect - locked=$locked goingToLocked=$goingToLocked');
-
-      if (!locked && goingToLocked) return '/home';
-      // if (!locked && goingToLocked) return '/home/search';
-      if (locked && goingToLocked) return null;
-      if (locked) return '/lock';
-
-      return null;
-    },
-    routes: [
-      GoRoute(
-        path: '/',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: AppPage(),
-        ),
-      ),
-      GoRoute(
-        name: 'home',
-        path: '/home',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: HomePage(),
-        ),
-      ),
-      // GoRoute(
-      //   name: 'home',
-      //   path: '/home/:tab',
-      //   pageBuilder: (context, state) {
-      //     log('GoRoute - home - state.location=${state.location}');
-      //     // if (state.location)
-      //     return MaterialPage<void>(
-      //       key: state.pageKey,
-      //       child: HomePage(
-      //           initialTab: EnumToString.fromString(
-      //               HomePageTabs.values, state.params['tab']!)!),
-      //     );
-      //   },
-      // ),
-      GoRoute(
-        name: 'user',
-        path: '/user/:uid',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: UserPage(uid: state.params['uid']!),
-        ),
-      ),
-      GoRoute(
-        name: 'addbidpage',
-        path: '/user/:uid/addbidpage',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: AddBidPage(uid: state.params['uid']!),
-        ),
-      ),
-      GoRoute(
-        name: 'lock',
-        path: '/lock',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: LockedUserPage(),
-        ),
-      ),
-      GoRoute(
-        name: 'imi',
-        path: '/imi',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: CVPage(person: CVPerson.imi),
-        ),
-      ),
-      GoRoute(
-        name: 'solli',
-        path: '/solli',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: CVPage(person: CVPerson.solli),
-        ),
-      ),
-      GoRoute(
-        name: 'about',
-        path: '/about',
-        pageBuilder: (context, state) => MaterialPage<void>(
-          key: state.pageKey,
-          child: AboutPage(),
-        ),
-      ),
-      // GoRoute(
-      //   name: 'addbid',
-      //   path: '/user/:uid/addbid',
-      //   pageBuilder: (context, state) => NoTransitionPage<void>(
-      //     key: state.pageKey,
-      //     child: FutureBuilder(
-      //       future: (state.extra! as AddBidPageViewModel).addBid(),
-      //       builder: (context, snapshot) {
-      //         if (snapshot.hasError)
-      //           return ErrorPage(snapshot.error as Exception?);
-      //         if (snapshot.hasData)
-      //           return AddBidPage(uid: state.params['uid']!);
-      //         return WaitPage();
-      //       },
-      //     ),
-      //   ),
-      // ),
-    ],
-    errorPageBuilder: (context, state) => MaterialPage<void>(
-      key: state.pageKey,
-      child: ErrorPage(state.error),
-    ),
-  );
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }

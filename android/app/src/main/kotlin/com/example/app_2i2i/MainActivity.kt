@@ -1,4 +1,4 @@
-package com.example.app_2i2i
+package app.i2i2.test
 
 import io.flutter.embedding.android.FlutterActivity
 
