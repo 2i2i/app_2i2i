@@ -104,11 +104,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       if (u1Match < u2Match) return 1;
     }
 
-    if (u1.rating != null && u2.rating == null) return -1;
-    if (u1.rating == null && u2.rating != null) return 1;
-    if (u1.rating == null && u2.rating == null) return -1;
-    if (u2.rating! < u1.rating!) return -1;
-    if (u1.rating! < u2.rating!) return 1;
+    if (u2.rating < u1.rating) return -1;
+    if (u1.rating < u2.rating) return 1;
 
     return -1;
   }
@@ -118,7 +115,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final mainUserID = ref.watch(myUIDProvider)!;
     return StreamBuilder(
       stream: FirestoreDatabase().usersStream(tags: filter),
-      builder: (BuildContext contextMain, AsyncSnapshot<List<UserModel>> snapshot) {
+      builder:
+          (BuildContext contextMain, AsyncSnapshot<List<UserModel>> snapshot) {
         if (snapshot.hasData) {
           final users = snapshot.data!;
           users.sort((u1, u2) => usersSort(u1, u2, filter));

@@ -5,7 +5,7 @@ import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class RatingTile extends StatelessWidget {
-  const RatingTile({Key? key,required this.ratingModel}) : super(key: key);
+  const RatingTile({Key? key, required this.ratingModel}) : super(key: key);
 
   final RatingModel ratingModel;
 
@@ -18,13 +18,14 @@ class RatingTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextProfileView(
-              text: ratingModel.rating.toString(),
+              text: (ratingModel.rating * 5).toStringAsFixed(0),
               isRating: true,
               radius: 65,
               hideStatus: true,
-              style: Theme.of(context).textTheme.headline5!.copyWith(
-                  fontWeight: FontWeight.bold
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: 10),
@@ -56,9 +57,7 @@ class RatingTile extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       Text('24 Dec 2021',
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption)
+                          style: Theme.of(context).textTheme.caption)
                     ],
                   ),
                   subtitle: Padding(
