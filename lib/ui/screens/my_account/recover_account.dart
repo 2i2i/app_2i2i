@@ -233,7 +233,8 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
     List<String> keys = listOfString.map((e) => e.text).toList();
     CustomDialogs.loader(true, context);
     try {
-      await myAccountPageViewModel.recoverAccount(keys);
+      final account = await myAccountPageViewModel.recoverAccount(keys);
+      await account.setMainAccount();
       Navigator.of(context).maybePop();
     } catch (e) {
       print(e.toString());

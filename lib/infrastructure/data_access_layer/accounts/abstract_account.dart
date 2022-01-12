@@ -1,5 +1,3 @@
-
-
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -111,7 +109,8 @@ class AccountService {
     return Future.wait(futures);
   }
 
-  List<WalletConnectAccount> getAllWalletConnectAccounts() => WalletConnectAccount.getAllAccounts();
+  List<WalletConnectAccount> getAllWalletConnectAccounts() =>
+      WalletConnectAccount.getAllAccounts();
 
   Future<List<AbstractAccount>> getAllAccounts() async {
     final localAccounts = await getAllLocalAccounts();
@@ -185,6 +184,8 @@ abstract class AbstractAccount {
 
   late String address;
   List<Balance> balances = [];
+
+  Future setMainAccount() => accountService.setMainAcccount(address);
 
   Future<String> optInToDapp(
       {required int dappId,

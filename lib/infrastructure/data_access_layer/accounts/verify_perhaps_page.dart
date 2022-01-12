@@ -9,7 +9,8 @@ class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
   final LocalAccount account;
 
-  const VerifyPerhapsPage(this.perhaps, this.account, {Key? key}) : super(key: key);
+  const VerifyPerhapsPage(this.perhaps, this.account, {Key? key})
+      : super(key: key);
 
   @override
   _VerifyPerhapsPageState createState() => _VerifyPerhapsPageState();
@@ -100,17 +101,22 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
         child: ElevatedButton(
-          onPressed: isValid() ? () async {
-            CustomDialogs.loader(true, context);
-            try {
-              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-              await myAccountPageViewModel.saveLocalAccount(widget.account);
-            } catch (e) {
-              print(e);
-            }
-            CustomDialogs.loader(false, context);
-            Navigator.of(context).pop();
-          } : null,
+          onPressed: isValid()
+              ? () async {
+                  CustomDialogs.loader(true, context);
+                  try {
+                    final myAccountPageViewModel =
+                        ref.read(myAccountPageViewModelProvider);
+                    await myAccountPageViewModel
+                        .saveLocalAccount(widget.account);
+                    await widget.account.setMainAccount();
+                  } catch (e) {
+                    print(e);
+                  }
+                  CustomDialogs.loader(false, context);
+                  Navigator.of(context).pop();
+                }
+              : null,
           child: Text('Complete'),
         ),
       ),

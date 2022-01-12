@@ -42,10 +42,11 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
       await account.save();
+      await account.setMainAccount();
       await myAccountPageViewModel.updateAccounts();
       _displayUri = '';
       if (isDialogOpen && mounted) {
-        Navigator.of(context,rootNavigator: true).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       }
     } else {
       log(J +
@@ -246,7 +247,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               onTap: () async {
                 Navigator.of(context).maybePop();
                 Future.delayed(Duration.zero).then((value) {
-                  CustomNavigation.push(context, CreateLocalAccount(), 'CreateLocalAccount');
+                  CustomNavigation.push(
+                      context, CreateLocalAccount(), 'CreateLocalAccount');
                 });
               },
               leading: Container(
