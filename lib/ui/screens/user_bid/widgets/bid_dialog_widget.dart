@@ -79,7 +79,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                       highlightColor: Colors.transparent,
                       onTap: () {
                         Navigator.pop(context);
-                        widget.onTapTalk!();
+                        widget.onTapTalk?.call();
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -87,8 +87,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                         child: Text(Strings().talk,
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle2!
-                                .copyWith(color: AppTheme().green)),
+                                .subtitle2
+                                ?.copyWith(color: AppTheme().green)),
                       ),
                     ),
                   ),
@@ -104,29 +104,16 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: Text(
-                    widget.userModel!.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(fontWeight: FontWeight.w800),
-                  )),
-                  SizedBox(width: 6),
-                  BidSpeedWidget(
-                    speed: widget.bidIn.speed.num.toString(),
-                    unit:
-                        '${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s',
-                  )
-                ],
-              ),
+            Text(
+              widget.userModel!.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .copyWith(fontWeight: FontWeight.w800),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: TextFormField(
@@ -144,6 +131,15 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                       EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 ),
               ),
+            ),
+            ListTile(
+              leading: Image.asset(
+                'assets/algo_logo.png',
+                width: 35,
+                height: 35,
+              ),
+              title: Text(widget.bidIn.speed.num.toString() + ' ${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s'),
+              isThreeLine: false,
             ),
             ListTile(
               leading: IconButton(
