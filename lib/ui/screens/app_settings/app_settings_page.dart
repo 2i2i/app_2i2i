@@ -258,7 +258,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
             SizedBox(height: 20),
 
             //lgout
-            Text(
+            /*Text(
               'Logout',
               style: Theme.of(context).textTheme.subtitle1,
             ),
@@ -284,7 +284,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                   Icons.navigate_next,
                 ),
               ),
-            ),
+            ),*/
             SizedBox(height: 20),
             /*Text(Strings().selectNetworkMode,
                 style: Theme.of(context)
