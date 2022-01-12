@@ -43,10 +43,11 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future signInAnonymously() async{
-    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
+  Future signInAnonymously() async {
+    UserCredential firebaseUser =
+        await FirebaseAuth.instance.signInAnonymously();
     String? userId = firebaseUser.user?.uid;
-    if(userId is String){
+    if (userId is String) {
       createAuthAndStartAlgoRand(firebaseUserId: userId);
     }
   }
@@ -65,7 +66,8 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    // await algorand.giftALGO(my_account_provider);
+    // await algorand.giftALGO(account);
+    // await account.updateBalances();
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
