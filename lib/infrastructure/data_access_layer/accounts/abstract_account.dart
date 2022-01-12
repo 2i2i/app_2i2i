@@ -25,7 +25,16 @@ class AccountService {
       storage.write('main_account', address);
   Future<AbstractAccount> getMainAccount() async {
     final mainAccountAddress = await storage.read('main_account');
-    return (await findAccount(mainAccountAddress!))!;
+    if (mainAccountAddress == null) {
+      final allAccounts = await getAllAccounts();
+      return allAccounts.first;
+    }
+    final foundAccount = await findAccount(mainAccountAddress);
+    if (foundAccount == null) {
+      final allAccounts = await getAllAccounts();
+      return allAccounts.first;
+    }
+    return foundAccount;
   }
 
   Future<AssetHolding> getALGOBalance(
