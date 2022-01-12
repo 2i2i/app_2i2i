@@ -82,7 +82,7 @@ class KeysWidget extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Do not share these words with anyone, as it grants full access to your account ',
+                    'Do not share these words with anyone, as it grants full access to your account',
                     style: Theme.of(context).textTheme.bodyText2!.copyWith(
                         fontWeight: FontWeight.normal,
                         color: AppTheme().redColor),

@@ -97,7 +97,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
               child: ratingList.isEmpty
                   ? Center(
                       child: Text(
-                      'No rating found',
+                      'No ratings found',
                       style: Theme.of(context).textTheme.subtitle2,
                     ))
                   : ListView.builder(

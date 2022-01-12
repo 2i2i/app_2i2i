@@ -62,7 +62,7 @@ class AuthWidget extends ConsumerWidget {
                           .read(setupUserViewModelProvider)
                           .createAuthAndStartAlgoRand(),
                       icon: Icon(Icons.login),
-                      label: Text('Sign in as Guest'),
+                      label: Text('Sign Anonymously'),
                     ),
                   ),
                 );

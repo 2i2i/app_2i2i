@@ -245,7 +245,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                         ),
                         Routes.FRIENDS),
                     title: Text(
-                      'Blocked accounts',
+                      'Blocked users',
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(

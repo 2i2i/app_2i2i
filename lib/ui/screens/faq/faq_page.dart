@@ -15,23 +15,21 @@ class FAQPage extends StatefulWidget {
 class _FAQPageState extends State<FAQPage> {
   List<FAQData> faqs = [
     FAQData(title: 'What is 2i2i?', description: '''
-    2i2i is a market for live video calls.
-    Find out the fair value for your time.
+    2i2i is where all minds meet.
+    It is a market for live video calls.
+    Any user can bid in any coin to chat with any other user.
     '''),
     FAQData(title: 'What version is it?', description: '''
     2i2i is still in Alpha version, which means testing.
     Just reload the page if it seems stuck.
-    Some buttons e.g. work, but seem like they are not working.
-    Please click once and have patience.
-    Also, the status on the search page is currently always green.
     '''),
     FAQData(title: 'Who needs 2i2i?', description: '''
-    Maybe you are a teacher - students can bid for your time.
-    Or you are just bored and willing to listen to someone;
-    someone will value that and bid for your time
     If you have fans, let your fans outbid each other to see you live.
     Literally anyone with internet can earn coins just by talking
     about whatever.
+    Maybe you are a teacher - students can bid for your time.
+    Or you are just bored and willing to listen to someone;
+    someone will value that and bid for your time
     '''),
     FAQData(title: 'Is 2i2i only for **live** video calls?', description: '''
     Yes.
@@ -45,9 +43,9 @@ class _FAQPageState extends State<FAQPage> {
     with you. If a bid is attractive, accept it and talk.
     '''),
     FAQData(title: 'What is the meaning of speed?', description: '''
-    User A bids for the **speed** of coin transfer from user A
-    to user B.
-    User B in turn will have a live video call with user A.
+    The 'Caller' bids for the **speed** of coin transfer from the 'Caller'
+    to the 'Mind'.
+    The 'Mind' in turn will have a live video call with the 'Caller'.
     *speed*s are measured in coins/sec.
     '''),
     FAQData(title: 'Is my Algorand account safe?', description: '''
@@ -56,14 +54,14 @@ class _FAQPageState extends State<FAQPage> {
     It is encrypted on your device using amongst the highest standards of cryptography: WebCrypto or Keychains.
     '''),
     FAQData(title: 'Can I use other wallets?', description: '''
-    Soon. We will add support to use 2i2i with other wallets soon.
+    Yes, you can use any wallet that connects with WalletConnect.
     '''),
     FAQData(title: 'Is 2i2i only on the Algorand testnet?', description: '''
     Yes, 2i2i is currently in the alpha version and hence running only on the Algorand testnet.
     '''),
     FAQData(title: 'How does the Algorand system work?', description: '''
-    2i2i never gets the users coins. User As coins are locked in a smart contract during the call.
-    When the call ends, the smart contract divides the coins amongst user A, user B and the 2i2i fee account.
+    2i2i never gets the users coins. The 'Caller's coins are locked in a smart contract during the call.
+    When the call ends, the smart contract divides the coins amongst the 'Caller', the 'Mind' and the 2i2i fee account.
     Unused coins are sent back to user A. The fee is 10% and is used to further improve the system.
     '''),
     FAQData(title: 'Can I use fiat?', description: '''
@@ -71,7 +69,7 @@ class _FAQPageState extends State<FAQPage> {
     '''),
     FAQData(title: 'Are the video calls private?', description: '''
     Yes. All video calls are end-to-end encrypted. All calls are also peer-to-peer.
-    This means 2i2i never sees anything from your call. User A and user B connect directly to each other.
+    This means 2i2i never sees anything from your call. The 'Caller' and the 'Mind' connect directly to each other.
     '''),
     FAQData(title: 'How about audio only calls?', description: '''
     We are thinking about that. The issue is that an audio call is usually worth less.
@@ -79,16 +77,16 @@ class _FAQPageState extends State<FAQPage> {
     '''),
     FAQData(title: 'What is the meaning of energy?', description: '''
     Coins are a form of energy. Arguably, coins are the most efficient storage of energy.
-    User A could build a house, losing energy, sell the house and get coins in exchange.
-    Years later, user A can exchange the coins to for someone putting energy into making two houses.
+    Any person could build a house, losing energy, sell the house and get coins in exchange.
+    Years later, this person can exchange the coins to for someone putting energy into making two houses.
     Hence, the coins stored energy over a long time period efficiently.
     '''),
     FAQData(title: 'What is the meaning of info?', description: '''
-    User B provides info in exchange for energy/coins. User B has something to say or show
+    The 'Mind' provides info in exchange for energy/coins. The 'Mind' has something to say or show
     that convinces other users to bid for.
     '''),
     FAQData(title: 'Does 2i2i have its own coin?', description: '''
-    We do not promote any specific coin. User A can bid for user B using any coin they like.
+    We do not promote any specific coin. The 'Caller' can bid for the 'Mind' using any coin they like.
     '''),
     FAQData(title: 'Can I use any coin/token/ASA?', description: '''
     Yes. Anything on Algorand. On Algorand, to use a new coin, accounts have to opt-in.
@@ -105,8 +103,8 @@ class _FAQPageState extends State<FAQPage> {
     This means 0 credit risk. There is nothing to hack and we cannot steal anything. No risk for the user.
     '''),
     FAQData(title: 'How does bidding work?', description: '''
-    Maybe user A bids 5 TACOCOIN/sec. If user B accepts the bid, they are in a video call.
-    If the call ends e.g. after 600 seconds, user A will send 3000 TACOCOIN to B. User B will get 2700 TACOCOIN
+    Maybe the 'Caller' bids 5 TACOCOIN/sec. If the 'Mind' accepts the bid, they are in a video call.
+    If the call ends e.g. after 600 seconds, the 'Caller' will send 3000 TACOCOIN to the 'Mind'. The 'Mind' will get 2700 TACOCOIN
     and the system will take 300 TACOCOIN.
     '''),
     FAQData(title: 'How does the bio/name work?', description: '''
