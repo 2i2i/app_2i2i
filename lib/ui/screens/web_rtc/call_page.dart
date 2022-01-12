@@ -214,7 +214,8 @@ class _CallPageState extends ConsumerState<CallPage>
                   alignment: Alignment.centerRight,
                   child: ValueListenableBuilder(
                     valueListenable: progress,
-                    builder: (BuildContext context, double value, Widget? child) {
+                    builder:
+                        (BuildContext context, double value, Widget? child) {
                       var val = value;
                       if(!amA){
                         val = 100 - value;
