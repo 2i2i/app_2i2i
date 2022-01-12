@@ -23,6 +23,8 @@ class UserPage extends ConsumerStatefulWidget {
 }
 
 class _UserPageState extends ConsumerState<UserPage> {
+  var showBio = false;
+
 
 
   @override
@@ -41,7 +43,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     int aPoint = shortBioStart + 10;
     int bPoint = user.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
-    final shortBio = user.bio.substring(shortBioStart, shortBioEnd);
+    final shortBio = user.bio;//user.bio.substring(shortBioStart, shortBioEnd);
     // var statusColor = AppTheme().green;
     // if (user.status == 'OFFLINE') {
     //   statusColor = AppTheme().gray;
@@ -55,8 +57,8 @@ class _UserPageState extends ConsumerState<UserPage> {
           PopupMenuButton<int>(
             onSelected: (item) => handleClick(item),
             itemBuilder: (context) => [
-              PopupMenuItem<int>(value: 0, child: Text('Add To Favorite')),
-              PopupMenuItem<int>(value: 1, child: Text('Add To Block')),
+              PopupMenuItem<int>(value: 0, child: Text('Add as Friend')),
+              PopupMenuItem<int>(value: 1, child: Text('Block user')),
             ],
           ),
           SizedBox(width: 6)
@@ -120,12 +122,32 @@ class _UserPageState extends ConsumerState<UserPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            shortBio.toString().trim(),
-                            style:
-                                Theme.of(context).textTheme.caption!.copyWith(
-                                      color: Theme.of(context).disabledColor,
-                                    ),
+                          Wrap(
+                            direction: Axis.horizontal,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text(
+                                shortBio.toString().trim(),
+                                maxLines: showBio?null:2,
+                                softWrap: showBio?null:false,
+                                overflow: showBio?null:TextOverflow.ellipsis,
+                                style:
+                                    Theme.of(context).textTheme.caption!.copyWith(
+                                          color: Theme.of(context).disabledColor,
+                                        ),
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                  showBio = !showBio;
+                                  if(mounted) {
+                                    setState(() {});
+                                  }
+                                },
+                                child: Icon(showBio?Icons.expand_less:Icons.expand_more,
+                                    color: Theme.of(context).disabledColor
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 3),
                           Row(

@@ -1,7 +1,9 @@
 // order of bid ins: status (online->locked->offline), friends->non-friends, speed
 // do not show bid ins of blocked users
 
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +75,15 @@ class UserBidInsList extends ConsumerWidget {
     }
     final myPrivateUserAsyncValue = ref.watch(userPrivateProvider(uid));
     List<BidIn> bids = bidInList.asData!.value;
-    List<BidAndUser> bidInsWithUser =
-        sortAndFilterList(bids, ref, myPrivateUserAsyncValue);
+    List<BidAndUser> bidInsWithUser = sortAndFilterList(bids, ref, myPrivateUserAsyncValue);
+    SecureStorage().read(Keys.myReadBids).then((value) {
+      List localBids = [];
+      if(value?.isNotEmpty??false){
+        localBids = value!.split(',').toList();
+      }
+      localBids.addAll(bids.map((e) => e.id).toList());
+      SecureStorage().write(Keys.myReadBids, localBids.toSet().toList().join(','));
+    });
     return ListView.separated(
       primary: false,
       physics: NeverScrollableScrollPhysics(),
@@ -204,7 +213,7 @@ class UserBidInsList extends ConsumerWidget {
             .toList();
       }
     }
-
+    bidInsWithUser.remove(null);
     final bidInsWithUserNoNulls = bidInsWithUser.map((b) => b!).toList();
     // sort
     bidInsWithUserNoNulls

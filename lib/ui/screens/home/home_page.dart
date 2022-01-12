@@ -1,3 +1,6 @@
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
+import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +81,8 @@ class _HomePageState extends ConsumerState<HomePage>{
         body: Stack(
           children: _tabItems
               .asMap()
-              .map((index, value) => MapEntry(index, _buildOffstageNavigator(_tabItems[index], index)))
+              .map((index, value) => MapEntry(
+                  index, _buildOffstageNavigator(_tabItems[index], index)))
               .values
               .toList(),
         ),
@@ -101,7 +105,62 @@ class _HomePageState extends ConsumerState<HomePage>{
                   label: Strings().profile,
                   activeIcon:
                       selectedIcon('assets/icons/person.svg', isSelected: true),
-                  icon: selectedIcon('assets/icons/person.svg'),
+                  icon: Consumer(
+                    builder: (context, ref, _) {
+                      final userId = ref.watch(myUIDProvider);
+                      if(userId is String) {
+                        final bidInList = ref.watch(getBidInsProvider(userId));
+                        if(bidInList.asData?.value is List<BidIn>){
+                          List<BidIn> bids = bidInList.asData!.value;
+                          if(bids.isNotEmpty) {
+                            return FutureBuilder(
+                              future: SecureStorage().read(Keys.myReadBids),
+                              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                                if(snapshot.data is String){
+                                  List localIds = snapshot.data!.split(',').toSet().toList();
+                                  List serverIds = bids.map((e) => e.id).toSet().toList();
+                                  bool anyNew = serverIds.any((element) => !localIds.contains(element));
+                                  if(anyNew) {
+                                    return SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: Stack(
+                                        children: [
+                                          selectedIcon(
+                                              'assets/icons/person.svg'),
+                                          Align(
+                                            alignment: Alignment.topRight,
+                                            child: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                                borderRadius: BorderRadius
+                                                    .circular(20),
+                                                border:
+                                                Border.all(
+                                                    color: Colors.white,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }
+                                return selectedIcon('assets/icons/person.svg');
+                              },
+                            );
+                          }
+                        }
+                      }
+
+                      return selectedIcon('assets/icons/person.svg');
+
+                    },
+
+                  ),
                 ),
                 BottomNavigationBarItem(
                   label: Strings().account,

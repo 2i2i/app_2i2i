@@ -42,7 +42,8 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
               if (myAccountPageViewModel.asData?.value is LocalAccount) {
                 LocalAccount account = myAccountPageViewModel.asData!.value;
                 return FutureBuilder(
-                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
                       List<String> perhaps = snapshot.data;
                       return Column(
@@ -54,8 +55,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                             crossAxisCount: 2,
                             childAspectRatio: 5,
                             padding: EdgeInsets.all(8),
-                            children:
-                                List.generate(perhaps.length, (index) {
+                            children: List.generate(perhaps.length, (index) {
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor:
@@ -75,15 +75,25 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                             }),
                           ),
                           SizedBox(height: 30),
+                          IconButton(
+                              onPressed: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: perhaps.join(' ')));
+                                CustomDialogs.showToastMessage(
+                                    context, Strings().copyMessage);
+                              },
+                              icon: Icon(Icons.copy)),
+                          SizedBox(height: 30),
                           ElevatedButton(
                             onPressed: () {
-                              if(perhaps.isNotEmpty) {
-                                Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                                CustomDialogs.showToastMessage(context, Strings().copyMessage);
-                                CustomNavigation.pushReplacement(context, VerifyPerhapsPage(perhaps,account), 'VerifyPerhapsPage');
+                              if (perhaps.isNotEmpty) {
+                                CustomNavigation.pushReplacement(
+                                    context,
+                                    VerifyPerhapsPage(perhaps, account),
+                                    'VerifyPerhapsPage');
                               }
                             },
-                            child: Text('Copy and Next'),
+                            child: Text('Next'),
                             // style: ElevatedButton.styleFrom(primary: Theme.of(context).shadowColor),
                           )
                         ],

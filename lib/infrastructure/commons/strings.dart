@@ -3,13 +3,13 @@ class Strings {
 
   String aboutYou = 'About you';
 
-  String aboutYouDesc = 'Fill below form to communicate with cool people';
+  String aboutYouDesc = 'Please fill this out';
 
   String faq = 'FAQ';
 
   String automatic = 'Automatic';
 
-  String shareQr = 'Share your QR code with others,\nso others can connect with you easily.';
+  String shareQr = 'Share yourself';
 
   Strings._internal();
 
@@ -40,8 +40,8 @@ class Strings {
   // Home page
   String homePage = 'Home Page';
   String home = 'Home';
-  String account = 'Account';
-  String doneIHaveCopied = 'Done, I have copied';
+  String account = 'Accounts';
+  String doneIHaveCopied = 'Done and copied';
   String profile = 'Profile';
   String settings = 'Settings';
   String searchUserHint = 'Search user';
@@ -62,7 +62,7 @@ class Strings {
   String createABid = 'Create a bid';
   String algoSec = 'μAlgo/s';
   String bidAmount = 'Bid Amount';
-  String note = 'Note(Optional)';
+  String note = 'Note (optional)';
   String bidNote = 'Say something awesome';
 
   //SetUp User page
@@ -79,7 +79,7 @@ class Strings {
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
-  String appRatingMessage = 'Write your feedback to this meeting.';
+  String appRatingMessage = 'Any feedback?';
   String appRatingSubmitButton = 'Submit';
 
   //App Setting
@@ -90,7 +90,7 @@ class Strings {
   String myProfile = 'My Profile';
   String bidIn = 'Bid in';
   String bidOut = 'Bid out';
-  String noBidFound = 'No bid found';
+  String noBidFound = 'No bids found';
 
   //Meeting History
   String meetingsHistory = 'Meetings History';

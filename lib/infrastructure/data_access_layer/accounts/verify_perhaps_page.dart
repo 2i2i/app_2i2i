@@ -129,7 +129,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
     List questions = [];
     int min = 0, max = 24;
 
-    for (int i = 0; questions.length < 3; i++) {
+    for (int i = 0; questions.length < 4; i++) {
       int num = min + random.nextInt(max - min);
       if (!questions.contains(num)) {
         questions.add(num);

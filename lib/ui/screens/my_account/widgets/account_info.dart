@@ -121,7 +121,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         SizedBox(height: 8),
                         Text(
                           widget.account.address,
-                          maxLines: 2,
+                          maxLines: 4,
                           style: Theme.of(context)
                               .textTheme
                               .caption!
@@ -130,6 +130,23 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.refresh,
+                        size: 20,
+                      ),
+                      onPressed: () async {
+                        CustomDialogs.loader(true, context);
+                        await widget.account.updateBalances();
+                        CustomDialogs.loader(false, context);
+                        setState(() {});
+                      },
                     ),
                   ),
                   Container(
@@ -170,10 +187,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                               height: 20,
                             ),
                             onPressed: () => CustomDialogs.infoDialog(
-                                context: context,
-                                child: KeysWidget(
-                                    account: widget.account as LocalAccount),
-                            )
+                                  context: context,
+                                  child: KeysWidget(
+                                      account: widget.account as LocalAccount),
+                                )
                             // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
                             ),
                       ),

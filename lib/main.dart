@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
 import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
@@ -40,6 +39,8 @@ Future<void> main() async {
         ),
       );
     });
+  }).onError((error, stackTrace) {
+    print(error);
   });
 }
 
@@ -79,21 +80,22 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       home: getView(),
       // home:TestScreen(),
       title: Strings().appName,
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       // themeMode: appSettingModel.currentThemeMode,
       themeMode: ThemeMode.light,
-
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
     );
   }
 
   Widget getView() {
-    if (kIsWeb) {
+    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+    if (kIsWeb && !isMobile) {
       return FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
-          width: 390,
+          width: 500,
           height: 844,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
