@@ -43,6 +43,14 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Future signInAnonymously() async{
+    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
+    String? userId = firebaseUser.user?.uid;
+    if(userId is String){
+      createAuthAndStartAlgoRand(firebaseUserId: userId);
+    }
+  }
+
   // KEEP my_account_provider in local scope
   Future setupAlgorandAccount() async {
     notifyListeners();

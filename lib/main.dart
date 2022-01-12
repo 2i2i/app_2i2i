@@ -14,6 +14,7 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+import 'ui/test_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,8 @@ Future<void> main() async {
         ),
       );
     });
+  }).onError((error, stackTrace) {
+    print(error);
   });
 }
 
