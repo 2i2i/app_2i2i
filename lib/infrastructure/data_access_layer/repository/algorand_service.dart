@@ -200,9 +200,6 @@ class AlgorandService {
 
     final arguments = 'str:LOCK,int:$speed'.toApplicationArguments();
     log(J + 'lockALGO - speed=$speed - arguments=$arguments');
-    // arguments[1] = Uint8List.fromList([39, 16]);
-    arguments[1] = Uint8List.fromList(arguments[1].reversed.toList()); // toApplicationArguments seems have a bug, result for int in reverse
-    log(J + 'lockALGO - speed=$speed - arguments=$arguments');
     final stateTxn = await (ApplicationCallTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
           ..applicationId = SYSTEM_ID[net]!
@@ -222,6 +219,7 @@ class AlgorandService {
     // for (var i = 0; i < txns.length; i++) {
     //   await txns[i].export('/Users/imi/Downloads/txns_$i.txn');
     // }
+    
     // TXN_SIGNED
     // TODO in parallel - together with previous
     final signedTxnsBytes = await account.sign(txns);
