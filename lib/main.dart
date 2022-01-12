@@ -89,7 +89,9 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   }
 
   Widget getView() {
-    if (kIsWeb) {
+    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
+    if (kIsWeb && !isMobile) {
       return FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
