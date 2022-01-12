@@ -25,32 +25,38 @@ class WalletConnectAccount extends AbstractAccount {
 
   late WalletConnect connector;
 
-  WalletConnectAccount({required AccountService accountService, required this.connector}) : super(accountService: accountService);
-  factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
+  WalletConnectAccount(
+      {required AccountService accountService, required this.connector})
+      : super(accountService: accountService);
+  factory WalletConnectAccount.fromNewConnector(
+      {required AccountService accountService}) {
     final connector = newConnector();
-    return WalletConnectAccount(accountService: accountService, connector: connector);
+    return WalletConnectAccount(
+        accountService: accountService, connector: connector);
   }
 
   // TODO cache management
   Future<void> save() async {
-    final List<Future<void>> futures = [];
-    for (int i = 0; i < connector.session.accounts.length; i++) {
-      final account = WalletConnectAccount(
-          accountService: accountService,
-          connector: connector,
-      );
+    // final List<Future<void>> futures = [];
+    // for (int i = 0; i < connector.session.accounts.length; i++) {
+    // final account = WalletConnectAccount(
+    //     accountService: accountService,
+    //     connector: connector,
+    // );
 
-      account.address = connector.session.accounts[i];
-      futures.add(account.updateBalances());
+    address = connector.session.accounts[0];
+    await updateBalances();
+    // futures.add(updateBalances());
 
-      int alreadyExistIndex = cache.indexWhere((element) => element.address == account.address);
-      if(alreadyExistIndex < 0) {
-        cache.add(account);
-      }else{
-        cache[alreadyExistIndex] = account;
-      }
+    int alreadyExistIndex =
+        cache.indexWhere((element) => element.address == address);
+    if (alreadyExistIndex < 0) {
+      cache.add(this);
+    } else {
+      cache[alreadyExistIndex] = this;
     }
-    await Future.wait(futures);
+    // }
+    // await Future.wait(futures);
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;

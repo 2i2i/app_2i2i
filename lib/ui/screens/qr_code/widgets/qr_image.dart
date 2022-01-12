@@ -52,8 +52,8 @@ class QrWidget extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.secondary,
               ),
               embeddedImage: snapshot.data,
-              embeddedImageStyle:
-                  QrEmbeddedImageStyle(size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
+              embeddedImageStyle: QrEmbeddedImageStyle(
+                  size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
             ),
           );
         });

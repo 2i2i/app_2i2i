@@ -42,8 +42,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
       await account.save();
-      await account.setMainAccount();
       await myAccountPageViewModel.updateAccounts();
+      await account.setMainAccount();
       _displayUri = '';
       if (isDialogOpen && mounted) {
         Navigator.of(context, rootNavigator: true).pop();
