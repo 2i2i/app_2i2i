@@ -222,7 +222,7 @@ class _CallPageState extends ConsumerState<CallPage>
                       double width = MediaQuery.of(context).size.height / 3;
                       double height = val * width / 100;
                       return RotationTransition(
-                        turns: new AlwaysStoppedAnimation(amA ? 0 : 180 / 360),
+                        turns: new AlwaysStoppedAnimation(amA ? 0 : 0),
                         child: Container(
                           height: width,
                           width: 28,
