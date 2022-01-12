@@ -49,8 +49,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         Navigator.of(context, rootNavigator: true).pop();
       }
     } else {
-      log(J +
-          '_MyAccountPageState - _createSession - connector already connected');
+      log('_MyAccountPageState - _createSession - connector already connected');
     }
   }
 
@@ -58,7 +57,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       defaultTargetPlatform == TargetPlatform.android;
 
   Future _changeDisplayUri(String uri) async {
-    log(J + '_changeDisplayUri - uri=$uri');
+    log('_changeDisplayUri - uri=$uri');
     _displayUri = uri;
     if (mounted) {
       setState(() {});
@@ -195,7 +194,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 ),
               ),
               title: Text('Wallet account'),
-              subtitle: Text('I want to connect my existing wallet'),
+              subtitle: Text('I want to connect a 3rd party wallet'),
               trailing: Icon(Icons.navigate_next),
             ),
             Padding(
@@ -236,7 +235,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               ),
               title: Text('Recover with passphase'),
               subtitle:
-                  Text('I already have an account and I know my 25 phrases'),
+                  Text('I know the 25 secret words'),
               trailing: Icon(Icons.navigate_next),
             ),
             Padding(
@@ -274,7 +273,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 ),
               ),
               title: Text('Add Local Account'),
-              subtitle: Text('I want to create a new local account'),
+              subtitle: Text('Create a local account on this device'),
               trailing: Icon(Icons.navigate_next),
             ),
           ],

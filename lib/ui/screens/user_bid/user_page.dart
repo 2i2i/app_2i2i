@@ -55,8 +55,8 @@ class _UserPageState extends ConsumerState<UserPage> {
           PopupMenuButton<int>(
             onSelected: (item) => handleClick(item),
             itemBuilder: (context) => [
-              PopupMenuItem<int>(value: 0, child: Text('Add To Favorite')),
-              PopupMenuItem<int>(value: 1, child: Text('Add To Block')),
+              PopupMenuItem<int>(value: 0, child: Text('Add as Friend')),
+              PopupMenuItem<int>(value: 1, child: Text('Block user')),
             ],
           ),
           SizedBox(width: 6)

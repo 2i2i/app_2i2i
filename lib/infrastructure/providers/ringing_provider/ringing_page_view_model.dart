@@ -50,7 +50,7 @@ class RingingPageViewModel {
       if (meeting.speed.num != 0) {
         try {
           txns = await algorand.lockCoins(meeting: meeting);
-          log('RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
+          log(J + 'RingingPageViewModel - acceptMeeting - meeting.id=${meeting.id} - txns=$txns');
         } catch (ex) {
           return endMeeting(MeetingStatus.END_TXN_FAILED);
         }

@@ -27,7 +27,7 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.isForBlockedUser ? 'Blocked Accounts' : 'Friends List',
+              widget.isForBlockedUser ? 'Blocked Users' : 'Friends List',
               style: Theme.of(context).textTheme.headline6,
             ),
             SizedBox(height: 20),
@@ -56,7 +56,7 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
     if (friendsList.isEmpty) {
       return Center(
           child: Text(
-        'No user found',
+        'No users found',
         style: Theme.of(context).textTheme.subtitle2,
       ));
     }
