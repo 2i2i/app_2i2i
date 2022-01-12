@@ -24,6 +24,7 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
     final topMeetings = topMeetingsAsyncValue.value!;
 
     return ListView.separated(
+
       itemCount: topMeetings.length,
       padding: EdgeInsets.symmetric(vertical: 8),
       itemBuilder: (BuildContext context, int index) => ListTile(
