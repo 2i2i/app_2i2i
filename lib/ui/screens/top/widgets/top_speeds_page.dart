@@ -22,36 +22,38 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
         topMeetingsAsyncValue is AsyncError) return WaitPage();
     final topMeetings = topMeetingsAsyncValue.value!;
 
-    return ListView.separated(
+    return ListView.builder(
       itemCount: topMeetings.length,
       padding: EdgeInsets.symmetric(vertical: 8),
-      itemBuilder: (BuildContext context, int index) => ListTile(
-        onTap: () {
-          CustomNavigation.push(context, UserPage(uid: topMeetings[index].B), Routes.USER);
-        },
-        title: Row(
-          children: [
-            SizedBox(width: 8),
-            Expanded(
-              child: Row(
-                children: [
-                  SizedBox(width: 8),
-                  Text(topMeetings[index].name,
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme().tabTextColor)),
-                ],
+      itemBuilder: (BuildContext context, int index) => Card(
+        child: ListTile(
+          contentPadding: EdgeInsets.all(8),
+          onTap: () {
+            CustomNavigation.push(context, UserPage(uid: topMeetings[index].B), Routes.USER);
+          },
+          title: Row(
+            children: [
+              SizedBox(width: 8),
+              Expanded(
+                child: Row(
+                  children: [
+                    SizedBox(width: 8),
+                    Text(topMeetings[index].name,
+                        style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme().tabTextColor)),
+                  ],
+                ),
               ),
-            ),
-            Text('${topMeetings[index].speed.num} μALGO/s',
-                style: Theme.of(context)
-                    .textTheme
-                    .headline5!
-                    .copyWith(fontWeight: FontWeight.bold)),
-          ],
+              Text('${topMeetings[index].speed.num} μALGO/s',
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle2!
+                      .copyWith(fontWeight: FontWeight.bold)),
+            ],
+          ),
         ),
       ),
-      separatorBuilder: (BuildContext context, int index) => Divider(),
     );
   }
 }

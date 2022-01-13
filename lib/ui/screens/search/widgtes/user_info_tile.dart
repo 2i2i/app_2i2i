@@ -114,24 +114,25 @@ class UserInfoTile extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            RatingBar.builder(
-                              initialRating: userModel.rating * 5,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              tapOnlyMode: false,
-                              updateOnDrag: false,
-                              itemCount: 5,
-                              itemSize: 16,
-                              allowHalfRating: true,
-                              glowColor: Colors.white,
-                              unratedColor: Colors.grey.shade300,
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star_rounded,
-                                color: Colors.grey,
+                            IgnorePointer(
+                              ignoring: true,
+                              child: RatingBar.builder(
+                                initialRating: userModel.rating * 5,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                tapOnlyMode: true,
+                                updateOnDrag: false,
+                                itemCount: 5,
+                                itemSize: 16,
+                                allowHalfRating: true,
+                                glowColor: Colors.white,
+                                ignoreGestures: false,
+                                unratedColor: Colors.grey.shade300,
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star_rounded,
+                                  color: Colors.grey,
+                                ), onRatingUpdate: (double value) {  },
                               ),
-                              onRatingUpdate: (rating) {
-                                print(rating);
-                              },
                             ),
                             SizedBox(width: 6),
                             Text('${(userModel.rating * 5).toStringAsFixed(1)}',

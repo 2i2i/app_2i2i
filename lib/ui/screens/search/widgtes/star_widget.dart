@@ -29,7 +29,7 @@ class _StarWidgetState extends State<StarWidget> {
     final pathBounds = shapePath(iconSize).getBounds();
     return SizedBox(
       width: pathBounds.width + pathBounds.left,
-      height: pathBounds.height + pathBounds.top,
+      height: pathBounds.height + pathBounds.top + 5,
       child: ClipPath(
         clipper: _CustomPathClipper(
           path: shapePath(iconSize),
@@ -37,12 +37,10 @@ class _StarWidgetState extends State<StarWidget> {
         child: CustomPaint(
           painter: _CustomPathPainter(
             path: shapePath(iconSize),
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.secondary,
           ),
           child: ClipPath(
-            child: Container(
-              color: Colors.yellow,
-            ),
+            child: Container(color: Theme.of(context).colorScheme.secondary),
             clipper: _WaveClipper(
               value: widget.value,
             ),
@@ -79,7 +77,11 @@ class _CustomPathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    
     canvas.drawPath(path, paint);
   }
 
