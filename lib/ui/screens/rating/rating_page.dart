@@ -99,7 +99,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                       child: Text(
                       'No ratings found',
                       style: Theme.of(context).textTheme.subtitle2,
-                    ))
+                    ),)
                   : ListView.builder(
                       itemCount: ratingList.length,
                       itemBuilder: (BuildContext context, int index) {

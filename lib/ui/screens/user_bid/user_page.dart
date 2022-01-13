@@ -153,24 +153,27 @@ class _UserPageState extends ConsumerState<UserPage> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              RatingBar.builder(
-                                initialRating: user.rating * 5,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                itemCount: 5,
-                                itemSize: 16,
-                                tapOnlyMode: true,
-                                updateOnDrag: false,
-                                allowHalfRating: true,
-                                glowColor: Colors.white,
-                                unratedColor: Colors.grey.shade300,
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star_rounded,
-                                  color: Colors.grey,
+                              IgnorePointer(
+                                ignoring: true,
+                                child: RatingBar.builder(
+                                  initialRating: user.rating * 5,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  itemCount: 5,
+                                  itemSize: 16,
+                                  tapOnlyMode: true,
+                                  updateOnDrag: false,
+                                  allowHalfRating: true,
+                                  glowColor: Colors.white,
+                                  unratedColor: Colors.grey.shade300,
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star_rounded,
+                                    color: Colors.grey,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    print(rating);
+                                  },
                                 ),
-                                onRatingUpdate: (rating) {
-                                  print(rating);
-                                },
                               ),
                               SizedBox(width: 4),
                               TextButton(
