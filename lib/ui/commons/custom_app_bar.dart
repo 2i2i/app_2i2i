@@ -41,7 +41,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
                     icon: StarWidget(
                       width: 20,
                       height: 32,
-                      value: (user.value?.rating ?? 0) / 5,
+                      value: user.value?.rating ?? 1,
                       startColor: Theme.of(context).colorScheme.secondary,
                     ),
                   )
