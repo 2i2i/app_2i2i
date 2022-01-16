@@ -135,13 +135,13 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Future<void> disposeInit() async {
     if (_localRenderer.srcObject != null) {
-      _localRenderer.srcObject?.getTracks().forEach((element) async => await element.stop());
+      _localRenderer.srcObject!.getTracks().forEach((element) async => await element.stop());
       await _localRenderer.srcObject!.dispose();
       _localRenderer.srcObject = null;
     }
 
     if (_remoteRenderer.srcObject != null) {
-      _remoteRenderer.srcObject?.getTracks().forEach((element) async => await element.stop());
+      _remoteRenderer.srcObject!.getTracks().forEach((element) async => await element.stop());
       await _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
