@@ -61,11 +61,9 @@ class AddBidPageViewModel {
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
         if (cause is dio.DioError) {
-          log('AlgorandException ' + cause.response?.data['message']);
+          final message = cause.response?.data['message'];
+          log('AlgorandException ' + message);
         }
-        return;
-      } on Exception catch (ex) {
-        log('Exception ' + ex.toString());
         return;
       }
     }
