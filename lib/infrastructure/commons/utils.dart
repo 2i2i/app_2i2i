@@ -10,6 +10,7 @@ int epochSecsNow() {
 }
 
 String secondsToSensibleTimePeriod(num secs) {
+  if (secs == 0) return 'zero';
   if (secs == double.infinity) return 'foreever';
 
   String currentBestTimePeriod = 'secs';

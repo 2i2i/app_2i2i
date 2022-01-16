@@ -38,11 +38,6 @@ class _UserPageState extends ConsumerState<UserPage> {
     }
 
     var user = userPageViewModel.user;
-
-    final shortBioStart = user.bio.indexOf(RegExp(r'\s')) + 1;
-    int aPoint = shortBioStart + 10;
-    int bPoint = user.bio.length;
-    final shortBioEnd = min(aPoint, bPoint);
     final shortBio = user.bio;//user.bio.substring(shortBioStart, shortBioEnd);
     // var statusColor = AppTheme().green;
     // if (user.status == 'OFFLINE') {

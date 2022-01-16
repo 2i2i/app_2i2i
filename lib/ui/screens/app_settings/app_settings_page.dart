@@ -25,12 +25,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
-  void initState() {
-    getMode();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
@@ -332,15 +326,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
         ),
       ),
     );
-  }
-
-  Future<void> getMode() async {
-    String? networkMode = await ref.read(algorandProvider).getNetworkMode();
-    int itemIndex = networkList.indexWhere((element) => element == networkMode);
-    if (itemIndex < 0) {
-      itemIndex = 0;
-    }
-    setState(() {});
   }
 
   String getThemeModeName(ThemeMode? currentThemeMode) {

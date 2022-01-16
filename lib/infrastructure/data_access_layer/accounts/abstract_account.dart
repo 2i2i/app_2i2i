@@ -1,8 +1,5 @@
-import 'dart:math';
 import 'dart:typed_data';
-
 import 'package:algorand_dart/algorand_dart.dart';
-
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import '../services/logging.dart';
@@ -125,41 +122,6 @@ class AccountService {
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
     return [...localAccounts, ...walletConnectAccounts];
-  }
-
-  Future<Balance> _extractBalance(
-      List<Balance> balances, int assetId, AlgorandNet net) async {
-    for (final balance in balances) {
-      if (balance.assetHolding.assetId == assetId && balance.net == net)
-        return balance;
-    }
-    throw Exception('extractBalance - assetId=$assetId not found');
-  }
-
-  Future<int> calcBudget(
-      {required int assetId,
-      required AbstractAccount account,
-      required AlgorandNet net}) async {
-    final balances = account.balances;
-    final balance = await _extractBalance(balances, assetId, net);
-
-    final feesForApp = assetId == 0 ? AlgorandService.LOCK_ALGO_FEE : 0;
-
-    final feeForAlgorand = assetId == 0
-        ? 2 * AlgorandService.MIN_TXN_FEE
-        : 0; // 2 txns to lock ALGO
-
-    final numAssets = balances.where((balance) => balance.net == net).length;
-
-    final minBalance = assetId == 0
-        ? AlgorandService.MIN_BALANCE_FOR_SYSTEM +
-            numAssets * AlgorandService.MIN_ASA_BALANCE
-        : 0;
-
-    final budget =
-        balance.assetHolding.amount - feesForApp - feeForAlgorand - minBalance;
-
-    return max(budget, 0);
   }
 
   Future<bool> isOptedInToASA(

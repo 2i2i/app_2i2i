@@ -12,6 +12,9 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +30,16 @@ Future<void> main() async {
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  //   return runApp(
+  //     ProviderScope(
+  //       child: MainWidget(themeMode: value ?? "AUTO"),
+  //     ),
+  //   );
+  // });
+
   //endregion DEBUG
+
   await SentryFlutter.init((options) {
     options.dsn =
         'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
