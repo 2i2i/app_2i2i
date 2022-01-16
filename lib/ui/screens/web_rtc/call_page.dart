@@ -1,11 +1,13 @@
 import 'dart:async';
+
 import 'package:animate_countdown_text/animate_countdown_text.dart';
-import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/models/user_model.dart';
@@ -124,27 +126,31 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void dispose() async {
-    _localRenderer.srcObject?.getTracks().forEach((element) async {
-      await element.stop();
-    });
-    await _localRenderer.srcObject?.dispose();
-    _localRenderer.srcObject = null;
-    await _localRenderer.dispose();
+    super.dispose();
+    await disposeInit();
 
-    _remoteRenderer.srcObject?.getTracks().forEach((element) async {
-      await element.stop();
-    });
-    await _remoteRenderer.srcObject?.dispose();
-    _remoteRenderer.srcObject = null;
-    await _remoteRenderer.dispose();
+    // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
+    // await widget.onHangPhone(otherUid, widget.meeting.id);
+  }
+
+  Future<void> disposeInit() async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject?.getTracks().forEach((element) async => await element.stop());
+      await _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject = null;
+    }
+
+    if (_remoteRenderer.srcObject != null) {
+      _remoteRenderer.srcObject?.getTracks().forEach((element) async => await element.stop());
+      await _remoteRenderer.srcObject!.dispose();
+      _remoteRenderer.srcObject = null;
+    }
 
     budgetTimer?.cancel();
     progressTimer?.cancel();
 
     // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
     // await widget.onHangPhone(otherUid, widget.meeting.id);
-
-    super.dispose();
   }
 
   @override
@@ -323,7 +329,7 @@ class _CallPageState extends ConsumerState<CallPage>
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
                             await signaling?.hangUp(reason: reason);
 
-                            dispose();
+                            await disposeInit();
                           }),
                       CircleButton(
                           icon: callScreenModel?.isAudioEnabled ?? false
