@@ -29,10 +29,7 @@ class MyUserPageViewModel {
       addrB = account.address;
     }
     final meeting = Meeting.newMeeting(
-        uid: user.id,
-        addrB: addrB,
-        bidIn: bidIn,
-        bidInPrivate: bidInPrivate);
+        uid: user.id, addrB: addrB, bidIn: bidIn, bidInPrivate: bidInPrivate);
     database.acceptBid(meeting);
   }
 
@@ -47,6 +44,8 @@ class MyUserPageViewModel {
       transaction.set(bidOutRef, {'active': false}, SetOptions(merge: true));
       transaction.set(bidInRef, {'active': false}, SetOptions(merge: true));
     });
+    final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+    await cancelBid({bidId: bidId});
   }
 
   Future changeNameAndBio(String name, String bio) async {

@@ -10,9 +10,11 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
+  Future unlock(String uid) => database.unlockUser(uid);
+
   Future updateHeartbeat() async {
     final status = 'ONLINE';
-    await database.updateUserHeartbeat(uid, status);
+    return database.updateUserHeartbeat(uid, status);
   }
 
   Future updateNameAndBio(String name, String bio) async {
@@ -30,7 +32,7 @@ class UserModelChanger {
       data['numRatings'] = 0;
       data['heartbeat'] = DateTime.now().toUtc();
     }
-    await database.updateUserNameAndBio(uid, data);
+    return database.updateUserNameAndBio(uid, data);
   }
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array

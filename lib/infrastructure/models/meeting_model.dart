@@ -7,33 +7,26 @@ import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
 enum MeetingStatus {
-  INIT, // B accepts bid
+  ACCEPTED_B, // B accepts bid
   // check that enough time passed
   // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after A/B_RECEIVED_REMOTE
-  ACCEPTED, // A accepts meeting after B accepts bid
-  TXN_CREATED, // A created txn
-  TXN_SIGNED, // A created txn
-  TXN_SENT, // A confirmed txn
-  TXN_CONFIRMED, // algorand confirmed txn
+  ACCEPTED_A, // A accepts meeting after B accepts bid
   ROOM_CREATED, // rtc room created
-  A_RECEIVED_REMOTE, // A received remote stream of B
-  B_RECEIVED_REMOTE, // B received remote stream of A
+  RECEIVED_REMOTE_A, // A received remote stream of B
+  RECEIVED_REMOTE_B, // B received remote stream of A
   CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
-  END_TXN_FAILED, // txn failed
   END_TIMER,
   END_A, // A hangs up
   END_B, // B hangs up
   END_DISCONNECT, // disconnected
 }
 
-// INIT -> END_TIMER
-// INIT -> END_A
-// INIT -> END_B
-// INIT -> ACCEPTED -> TXN_CREATED -> END_TIMER
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_A
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED-> END_B
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_TIMER
+// ACCEPTED_B -> END_TIMER
+// ACCEPTED_B -> END_A
+// ACCEPTED_B -> END_B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_A
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED-> END_B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_TIMER
 // always possible to get END_DISCONNECT_*
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
@@ -106,7 +99,7 @@ class MeetingChanger {
       'statusHistory': FieldValue.arrayUnion([
         {'value': status.toStringEnum(), 'ts': DateTime.now().toUtc()}
       ]),
-      'isActive': false,
+      'active': false,
       'end': now,
     };
     return database.updateMeeting(meeting.id, data);
@@ -127,51 +120,7 @@ class MeetingChanger {
   }
 
   Future acceptMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED);
-  Future acceptFreeCallMeeting(String meetingId) async {
-    final now = DateTime.now().toUtc();
-    final Map<String, dynamic> data = {
-      'status': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': MeetingStatus.ACCEPTED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_CREATED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_SIGNED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_SENT.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_CONFIRMED.toStringEnum(), 'ts': now},
-      ]),
-    };
-    return database.updateMeeting(meetingId, data);
-  }
-
-  Future txnCreatedMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_CREATED);
-  Future txnSignedMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_SIGNED);
-  Future txnSentMeeting(String meetingId, MeetingTxns txns) {
-    final now = DateTime.now().toUtc();
-    final statusString = MeetingStatus.TXN_SENT.toStringEnum();
-    final Map<String, dynamic> data = {
-      'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': statusString, 'ts': now}
-      ]),
-      'txns': txns.toMap(),
-    };
-    return database.updateMeeting(meetingId, data);
-  }
-
-  Future txnConfirmedMeeting(String meetingId, int budget) {
-    final now = DateTime.now().toUtc();
-    final statusString = MeetingStatus.TXN_CONFIRMED.toStringEnum();
-    final Map<String, dynamic> data = {
-      'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': statusString, 'ts': now}
-      ]),
-      'budget': budget,
-    };
-    return database.updateMeeting(meetingId, data);
-  }
+      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED_A);
 
   Future roomCreatedMeeting(String meetingId, String room) {
     final now = DateTime.now().toUtc();
@@ -187,17 +136,17 @@ class MeetingChanger {
   }
 
   Future remoteReceivedByAMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.A_RECEIVED_REMOTE);
+      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
   Future remoteReceivedByBMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.B_RECEIVED_REMOTE);
+      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
 }
 
 @immutable
 class Meeting extends Equatable {
   Meeting({
     required this.id,
-    required this.isActive,
-    required this.isSettled,
+    required this.active,
+    required this.settled,
     required this.A,
     required this.B,
     required this.addrA,
@@ -219,8 +168,8 @@ class Meeting extends Equatable {
 
   final String id;
 
-  final bool isActive; // status is not END_*
-  final bool isSettled; // after END
+  final bool active; // status is not END_*
+  final bool settled; // after END
 
   final String A;
   final String B;
@@ -267,8 +216,8 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
-    final bool isActive = data['isActive'] as bool;
-    final bool isSettled = data['isSettled'] as bool;
+    final bool active = data['active'] as bool;
+    final bool settled = data['settled'] as bool;
 
     final String A = data['A'];
     final String B = data['B'];
@@ -305,8 +254,8 @@ class Meeting extends Equatable {
 
     return Meeting(
       id: documentId,
-      isActive: isActive,
-      isSettled: isSettled,
+      active: active,
+      settled: settled,
       A: A,
       B: B,
       addrA: addrA,
@@ -336,21 +285,21 @@ class Meeting extends Equatable {
   }) {
     return Meeting(
       id: '',
-      isActive: true,
-      isSettled: false,
+      active: true,
+      settled: false,
       A: bidInPrivate.A,
       B: uid,
       addrA: bidInPrivate.addrA,
       addrB: addrB,
-      budget: bidIn.speed.num == 0 ? 0 : null,
+      budget: bidInPrivate.budget,
       start: null,
       end: null,
       duration: null,
       txns: MeetingTxns(),
-      status: MeetingStatus.INIT,
+      status: MeetingStatus.ACCEPTED_B,
       statusHistory: [
         MeetingStatusWithTS(
-            value: MeetingStatus.INIT, ts: DateTime.now().toUtc())
+            value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())
       ],
       net: bidIn.net,
       speed: bidIn.speed,
@@ -364,8 +313,8 @@ class Meeting extends Equatable {
   Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
-      'isActive': isActive,
-      'isSettled': isSettled,
+      'active': active,
+      'settled': settled,
       'A': A,
       'B': B,
       'addrA': addrA,

@@ -6,7 +6,6 @@ import 'package:flutter_animator/widgets/attention_seekers/bounce.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-
 import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
@@ -49,11 +48,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void setTimer() {
     log('setTimer - widget.meeting.status=${widget.meeting.status}');
 
-    int? duration;
-    if (widget.meeting.status == MeetingStatus.INIT)
-      duration = 30;
-    else if (widget.meeting.status == MeetingStatus.ACCEPTED) duration = 60;
-    if (duration == null) return;
+    if (widget.meeting.status != MeetingStatus.ACCEPTED_B) return;
+    int duration = 30;
 
     timer = Timer(Duration(seconds: duration), () async {
       final finishFuture = finish();
@@ -86,50 +82,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
-  String comment(RingingPageViewModel ringingPageViewModel) =>
-      ringingPageViewModel.amA()
-          ? commentAsA(ringingPageViewModel)
-          : commentAsB(ringingPageViewModel);
-  String commentAsA(RingingPageViewModel ringingPageViewModel) {
-    switch (widget.meeting.status) {
-      case MeetingStatus.INIT:
-        return '1/5 - Pick up for ${shortString(ringingPageViewModel.otherUser.name)}';
-      case MeetingStatus.ACCEPTED:
-        return '2/5 - Creating blockchain transaction';
-      case MeetingStatus.TXN_CREATED:
-        return '3/5 - Please confirm the blockchain transaction on your wallet';
-      case MeetingStatus.TXN_SIGNED:
-        return '3/5 - Transaction signed. Sending to the blockchain';
-      case MeetingStatus.TXN_SENT:
-        return '4/5 - Sent the transaction to the blockchain';
-      case MeetingStatus.TXN_CONFIRMED:
-        return '5/5 - Your coins are locked in the smart contract';
-      default:
-        throw Exception(
-            'commentAsA - should never be here - meeting.status=${widget.meeting.status}');
-    }
-  }
-
-  String commentAsB(RingingPageViewModel ringingPageViewModel) {
-    switch (widget.meeting.status) {
-      case MeetingStatus.INIT:
-        return '1/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to pick up';
-      case MeetingStatus.ACCEPTED:
-        return '2/5 - Creating blockchain transaction';
-      case MeetingStatus.TXN_CREATED:
-        return '3/5 - Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to confirm the blockchain transaction';
-      case MeetingStatus.TXN_SIGNED:
-        return '3/5 - ${shortString(ringingPageViewModel.otherUser.name)} has signed the transaction. Sending to the network';
-      case MeetingStatus.TXN_SENT:
-        return '4/5 - Sent the transaction to the blockchain';
-      case MeetingStatus.TXN_CONFIRMED:
-        return '5/5 - ${shortString(ringingPageViewModel.otherUser.name)}'
-            's coins are locked in the smart contract';
-      default:
-        throw Exception(
-            'commentAsB - should never be here - meeting.status=${widget.meeting.status}');
-    }
-  }
+  String comment(RingingPageViewModel ringingPageViewModel) => ringingPageViewModel
+          .amA()
+      ? 'Please pick up for ${shortString(ringingPageViewModel.otherUser.name)}'
+      : 'Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to pick up';
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +96,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
     String name = '';
 
     bool amA = ringingPageViewModel!.amA();
-    String userId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    String userId =
+        amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
     final userAsyncValue = ref.read(userProvider(userId));
     if (!(userAsyncValue is AsyncLoading || userAsyncValue is AsyncError)) {
       name = userAsyncValue.asData!.value.name;
@@ -230,7 +187,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   children: [
                     if (!isClicked &&
                         ringingPageViewModel!.meeting.status ==
-                            MeetingStatus.INIT)
+                            MeetingStatus.ACCEPTED_B)
                       Column(
                         children: [
                           FloatingActionButton(
@@ -251,7 +208,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     if (!isClicked &&
                         ringingPageViewModel!.amA() &&
                         ringingPageViewModel!.meeting.status ==
-                            MeetingStatus.INIT)
+                            MeetingStatus.ACCEPTED_B)
                       Column(
                         children: [
                           Bounce(

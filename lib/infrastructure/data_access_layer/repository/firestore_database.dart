@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 import '../../models/bid_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
@@ -54,6 +52,12 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.user(uid),
         data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
+        merge: true,
+      );
+  Future<void> unlockUser(String uid) =>
+      _service.setData(
+        path: FirestorePath.user(uid),
+        data: {'meeting': null},
         merge: true,
       );
 
