@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -42,9 +43,8 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
         ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
-    if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
-      account = myAccountPageViewModel.accounts!.first;
-    }
+    if (account == null) account = myAccountPageViewModel.accounts?.first;
+
     return Container(
       width: double.infinity,
       child: Padding(
@@ -150,8 +150,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                       ),
                       onChanged: (String value) {
                         final num = int.tryParse(value) ?? 0;
-                        amount =
-                            Quantity(num: num, assetId: amount.assetId);
+                        amount = Quantity(num: num, assetId: amount.assetId);
                         if (mounted) {
                           setState(() {});
                         }
@@ -176,7 +175,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                       trailing: Builder(builder: (context) {
                         if (account != null && account!.balances.isNotEmpty) {
                           return Text(addBidPageViewModel.duration(
-                                  account!, speed, amount));
+                              account!, speed, amount));
                         }
                         return Container();
                       }),
@@ -279,12 +278,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     );
   }
 
-  int? getBalanceOfAccount() {
-    if (account?.balances.isNotEmpty ?? false) {
-      return account!.balances.first.assetHolding.amount;
-    }
-    return null;
-  }
+  int? getBalanceOfAccount() => account?.balances.first.assetHolding.amount;
 
   onAddBid() async {
     if (isInsufficient()) {
