@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +13,7 @@ import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/create_bid_widget.dart';
 import 'widgets/friend_button_widget.dart';
+import 'widgets/user_info_widget.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({required this.uid});
@@ -132,7 +132,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             margin: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(020),
                   bottomRight: Radius.circular(20)),
             ),
             child: Padding(
@@ -141,51 +141,8 @@ class _UserPageState extends ConsumerState<UserPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      ProfileWidget(
-                        stringPath: user.name,
-                        statusColor: statusColor,
-                        radius: 80,
-                      ),
-                      Expanded(
-                        child: ListTile(
-                          title: Text(
-                            user.name,
-                            style: TextStyle(
-                                fontFamily: 'SofiaPro',
-                                color: Theme.of(context)
-                                    .tabBarTheme
-                                    .unselectedLabelColor,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 20),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6),
-                                child: Text(shortBio.toString().trim(),
-                                    maxLines: 2,
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1),
-                              ),
-                              Text(
-                                Strings().seeMore,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .caption!
-                                    .copyWith(
-                                      color: Theme.of(context).disabledColor,
-                                    ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                  UserInfoWidget(
+                    user: user,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 14),
