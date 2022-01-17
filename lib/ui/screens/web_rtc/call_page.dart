@@ -18,11 +18,13 @@ class CallPage extends ConsumerStatefulWidget {
   final UserModel user;
   final Function onHangPhone;
   final MeetingChanger meetingChanger;
+  final UserModelChanger userModelChanger;
 
   CallPage({
     Key? key,
     required this.meeting,
     required this.meetingChanger,
+    required this.userModelChanger,
     required this.onHangPhone,
     required this.user,
   }) : super(key: key);
@@ -56,6 +58,7 @@ class _CallPageState extends ConsumerState<CallPage>
     signaling = Signaling(
       meeting: widget.meeting,
       meetingChanger: widget.meetingChanger,
+      userModelChanger: widget.userModelChanger,
       amA: amA,
       localVideo: _localRenderer,
       remoteVideo: _remoteRenderer,
@@ -217,7 +220,7 @@ class _CallPageState extends ConsumerState<CallPage>
                     builder:
                         (BuildContext context, double value, Widget? child) {
                       var val = value;
-                      if(!amA){
+                      if (!amA) {
                         val = 100 - value;
                       }
                       double width = MediaQuery.of(context).size.height / 3;

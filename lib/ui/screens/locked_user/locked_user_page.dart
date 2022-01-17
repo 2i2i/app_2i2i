@@ -22,28 +22,24 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
-    if (lockedUserViewModel == null) {
-      return WaitPage();
-    }
+    if (lockedUserViewModel == null) return WaitPage();
+
+    final userModelChanger = ref.watch(userModelChangerProvider);
+    if (userModelChanger == null) return WaitPage();
 
     final meetingChanger = ref.watch(meetingChangerProvider);
 
     final meetingStatus = lockedUserViewModel.meeting.status;
 
     bool isActive = meetingStatus == MeetingStatus.ROOM_CREATED ||
-        meetingStatus == MeetingStatus.A_RECEIVED_REMOTE ||
-        meetingStatus == MeetingStatus.B_RECEIVED_REMOTE ||
+        meetingStatus == MeetingStatus.RECEIVED_REMOTE_A ||
+        meetingStatus == MeetingStatus.RECEIVED_REMOTE_B ||
         meetingStatus == MeetingStatus.CALL_STARTED;
-    bool showCallPage = (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
+    bool showCallPage = (meetingStatus == MeetingStatus.ACCEPTED_A &&
             lockedUserViewModel.amA()) ||
         isActive;
-    bool showRingingPage = meetingStatus == MeetingStatus.INIT ||
-        meetingStatus == MeetingStatus.ACCEPTED ||
-        meetingStatus == MeetingStatus.TXN_CREATED ||
-        meetingStatus == MeetingStatus.TXN_SIGNED ||
-        meetingStatus == MeetingStatus.TXN_SENT ||
-        (meetingStatus == MeetingStatus.TXN_CONFIRMED &&
-            lockedUserViewModel.amB());
+    bool showRingingPage = meetingStatus == MeetingStatus.ACCEPTED_B ||
+        meetingStatus == MeetingStatus.ACCEPTED_A;
     bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(
@@ -57,6 +53,7 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
               },
               meeting: lockedUserViewModel.meeting,
               meetingChanger: meetingChanger,
+              userModelChanger: userModelChanger,
               user: lockedUserViewModel.user),
         ),
         Visibility(

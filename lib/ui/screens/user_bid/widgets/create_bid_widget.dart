@@ -1,6 +1,7 @@
-import 'dart:developer';
-
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
@@ -25,8 +26,9 @@ class CreateBidWidget extends ConsumerStatefulWidget {
 class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     with SingleTickerProviderStateMixin {
   AbstractAccount? account;
-  int speedNum = 0;
-  String note = '';
+  Quantity amount = Quantity(num: 0, assetId: 0);
+  Quantity speed = Quantity(num: 0, assetId: 0);
+  String? note;
 
   final controller = PageController(initialPage: 0);
 
@@ -41,9 +43,8 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
         ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
-    if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
-      account ??= myAccountPageViewModel.accounts!.first;
-    }
+    if (account == null) account = myAccountPageViewModel.accounts?.first;
+
     return Container(
       width: double.infinity,
       child: Padding(
@@ -83,7 +84,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
               Padding(
                 padding: const EdgeInsets.only(bottom: 10.0),
                 child: CustomTextField(
-                  title: Strings().bidAmount,
+                  title: Strings().speed,
                   hintText: "0",
                   suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -103,9 +104,9 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                       SizedBox(width: 8)
                     ],
                   ),
-                  onChanged: (String? val) {
-                    val ??= '';
-                    speedNum = (num.tryParse(val) ?? 0).toInt();
+                  onChanged: (String value) {
+                    final num = int.tryParse(value) ?? 0;
+                    speed = Quantity(num: num, assetId: speed.assetId);
                     if (mounted) {
                       setState(() {});
                     }
@@ -117,63 +118,100 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 child: CustomTextField(
                   title: Strings().note,
                   hintText: Strings().bidNote,
-                  onChanged: (String? val) {
-                    val ??= '';
-                    note = val;
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  tileColor: Colors.white,
-                  leading: SvgPicture.asset(
-                    'assets/icons/hour_glass.svg',
-                    height: 20,
-                    width: 20,
-                  ),
-                  // leading: Container(color: Colors.grey,height: 30,width: 30,),
-                  title: Text('Est. max duration'),
-                  trailing: Builder(builder: (context) {
-                    if (account != null && account!.balances.isNotEmpty) {
-                      return Text(
-                        addBidPageViewModel.duration(
-                            account!, speedNum, account!.balances.first),
-                      );
-                    }
-                    return Container();
-                  }),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minHeight: 150,
-                  maxHeight: 200,
-                ),
-                child: PageView.builder(
-                  controller: controller,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-                  itemBuilder: (_, index) {
-                    return AccountInfo(
-                      false,
-                      key: ObjectKey(
-                          myAccountPageViewModel.accounts![index].address),
-                      account: myAccountPageViewModel.accounts![index],
-                    );
-                  },
-                  onPageChanged: (int val) {
-                    account = myAccountPageViewModel.accounts?.elementAt(val);
-                    if (mounted) {
-                      setState(() {});
-                    }
+                  onChanged: (String value) {
+                    note = value;
                   },
                 ),
               ),
               Visibility(
-                visible: (myAccountPageViewModel.accounts?.length ?? 0) > 1,
+                  visible: speed.num != 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: CustomTextField(
+                      title: Strings().bidAmount,
+                      hintText: "0",
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Text(
+                              '${Strings().algoSec}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle2!
+                                  .copyWith(
+                                      color: Theme.of(context).shadowColor,
+                                      fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                          SizedBox(width: 8)
+                        ],
+                      ),
+                      onChanged: (String value) {
+                        final num = int.tryParse(value) ?? 0;
+                        amount = Quantity(num: num, assetId: amount.assetId);
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      },
+                    ),
+                  )),
+              Visibility(
+                  visible: speed.num != 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      tileColor: Colors.white,
+                      leading: SvgPicture.asset(
+                        'assets/icons/hour_glass.svg',
+                        height: 20,
+                        width: 20,
+                      ),
+                      // leading: Container(color: Colors.grey,height: 30,width: 30,),
+                      title: Text('Est. max duration'),
+                      trailing: Builder(builder: (context) {
+                        if (account != null && account!.balances.isNotEmpty) {
+                          return Text(addBidPageViewModel.duration(
+                              account!, speed, amount));
+                        }
+                        return Container();
+                      }),
+                    ),
+                  )),
+              Visibility(
+                  visible: speed.num != 0,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      minHeight: 150,
+                      maxHeight: 200,
+                    ),
+                    child: PageView.builder(
+                      controller: controller,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                      itemBuilder: (_, index) {
+                        return AccountInfo(
+                          false,
+                          key: ObjectKey(
+                              myAccountPageViewModel.accounts![index].address),
+                          account: myAccountPageViewModel.accounts![index],
+                        );
+                      },
+                      onPageChanged: (int val) {
+                        account =
+                            myAccountPageViewModel.accounts?.elementAt(val);
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      },
+                    ),
+                  )),
+              Visibility(
+                visible: speed.num != 0 &&
+                    (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -200,7 +238,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                 child: ElevatedButton(
-                  onPressed: isInsufficient(account)
+                  onPressed: isInsufficient()
                       ? null
                       : () {
                           onAddBid();
@@ -240,15 +278,10 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     );
   }
 
-  int getBalanceOfAccount(AbstractAccount? account) {
-    if (account?.balances.isNotEmpty ?? false) {
-      return account!.balances.first.assetHolding.amount;
-    }
-    return 0;
-  }
+  int? getBalanceOfAccount() => account?.balances.first.assetHolding.amount;
 
   onAddBid() async {
-    if (isInsufficient(account)) {
+    if (isInsufficient()) {
       return;
     }
     final addBidPageViewModel =
@@ -270,28 +303,34 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   }
 
   String getConfirmSliderText() {
-    if (account is AbstractAccount) {
-      if (isInsufficient(account)) {
-        return 'Insufficient balance';
-      }
+    if (isInsufficient()) {
+      return 'Insufficient balance';
     }
     // return 'Swipe for bid';
     return 'Add bid';
   }
 
-  isInsufficient(AbstractAccount? account) {
-    return getBalanceOfAccount(account) < speedNum;
+  isInsufficient() {
+    if (speed.num == 0) return false;
+    if (account == null) return true;
+    final minCoinsNeeded = speed.num * 10;
+    if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
+    final accountBalance = getBalanceOfAccount();
+    if (accountBalance == null) return true;
+    final minAccountBalanceNeeded =
+        amount.num + 2 * AlgorandService.MIN_TXN_FEE;
+    if (accountBalance < minAccountBalanceNeeded) return true;
+    return false;
   }
 
   Future connectCall({required AddBidPageViewModel addBidPageViewModel}) async {
     CustomDialogs.loader(true, context);
-    var value = await addBidPageViewModel.addBid(
+    await addBidPageViewModel.addBid(
       account: account,
-      balance: account?.balances.first,
-      speedNum: speedNum,
-      note: note,
+      amount: amount,
+      speed: speed,
+      bidNote: note,
     );
-    log('$value');
     CustomDialogs.loader(false, context);
   }
 }

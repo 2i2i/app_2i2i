@@ -30,12 +30,20 @@ class BidOut extends Equatable {
     required this.B,
     required this.speed,
     required this.net,
+    required this.txId,
+    required this.addrA,
+    required this.active,
+    required this.budget,
   });
 
   final String id;
   final String B;
   final Quantity speed;
   final AlgorandNet net;
+  final String? addrA;
+  final String? txId;
+  final bool active;
+  final int budget;
 
   @override
   List<Object> get props => [id];
@@ -49,25 +57,36 @@ class BidOut extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
+    final bool active = data['active'];
+    final String? addrA = data['addrA'];
     final String B = data['B'];
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
+    final txId = data['txId'] as String?;
+    final int budget = data['budget'];
 
     return BidOut(
+      active: active,
+      addrA: addrA,
       id: documentId,
       B: B,
       speed: speed,
       net: net,
+      txId: txId,
+      budget: budget,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'addrA': addrA,
+      'txId': txId,
       'B': B,
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
-      'active': true, // TODO should support false as well
+      'active': active,
+      'budget': budget,
     };
   }
 }
@@ -75,11 +94,13 @@ class BidOut extends Equatable {
 @immutable
 class BidIn extends Equatable {
   BidIn({
+    required this.active,
     required this.id,
     required this.speed,
     required this.net,
   });
 
+  final bool active;
   final String id;
   final Quantity speed;
   final AlgorandNet net;
@@ -96,12 +117,14 @@ class BidIn extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
+    final bool active = data['active'];
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
 
     return BidIn(
       id: documentId,
+      active: active,
       speed: speed,
       net: net,
     );
@@ -111,7 +134,7 @@ class BidIn extends Equatable {
     return {
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
-      'active': true, // TODO should support false as well
+      'active': active,
     };
   }
 
@@ -128,13 +151,17 @@ class BidIn extends Equatable {
 class BidInPrivate {
   BidInPrivate({
     required this.A,
-    this.addrA,
-    this.comment,
+    required this.addrA,
+    required this.comment,
+    required this.txId,
+    required this.budget,
   });
 
   final String A;
   final String? addrA;
   final String? comment;
+  final String? txId;
+  final int budget;
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -142,21 +169,27 @@ class BidInPrivate {
       throw StateError('missing data for id: $documentId');
     }
 
+    String? txId = data['txId'];
     String A = data['A'];
     String? addrA = data['addrA'];
     String? comment = data['comment'];
+    int budget = data['budget'];
     return BidInPrivate(
+      txId: txId,
       A: A,
       addrA: addrA,
       comment: comment,
+      budget: budget,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'txId': txId,
       'A': A,
       'addrA': addrA,
       'comment': comment,
+      'budget': budget,
     };
   }
 }

@@ -61,6 +61,7 @@ class Strings {
   //User Info page
   String createABid = 'Create a bid';
   String algoSec = 'μAlgo/s';
+  String speed = 'Speed';
   String bidAmount = 'Bid Amount';
   String note = 'Note (optional)';
   String bidNote = 'Say something awesome';

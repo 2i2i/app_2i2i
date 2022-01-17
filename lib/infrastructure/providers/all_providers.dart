@@ -7,7 +7,6 @@ import 'package:app_2i2i/ui/screens/user_bid/user_bid_ins_list.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
