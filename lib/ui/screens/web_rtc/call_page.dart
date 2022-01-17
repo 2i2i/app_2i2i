@@ -220,11 +220,14 @@ class _CallPageState extends ConsumerState<CallPage>
                     builder:
                         (BuildContext context, double value, Widget? child) {
                       var val = value;
-                      if (!amA) {
-                        val = 100 - value;
+                      if (amA) {
+                        val = value;
+                      }else if (val > 0) {
+                        val = 100 - val;
                       }
+
                       double width = MediaQuery.of(context).size.height / 3;
-                      double height = val * width / 100;
+                      double height = (val * width) / 100;
                       return RotationTransition(
                         turns: new AlwaysStoppedAnimation(amA ? 0 : 0),
                         child: Container(
@@ -245,8 +248,8 @@ class _CallPageState extends ConsumerState<CallPage>
                                     color: Colors.transparent,
                                     shadowColor: Colors.black,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
+                                        borderRadius: BorderRadius.circular(20),
+                                    ),
                                     type: MaterialType.card,
                                     child: SizedBox(
                                       height: width,
@@ -260,13 +263,40 @@ class _CallPageState extends ConsumerState<CallPage>
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Material(
-                                    shadowColor: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
+                                    borderRadius: BorderRadius.circular(20),
+                                    shadowColor: Colors.black12,
                                     type: MaterialType.card,
-                                    child: ProgressBar(
+                                    child:  ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: ProgressBar(
+                                        height: width,
+                                        radius: 0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    color: Colors.grey,
+                                    shadowColor: Colors.black,
+                                    type: MaterialType.card,
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      topLeft: Radius.circular(20),
+                                    ),
+                                    child: Container(
                                       height: height,
+                                      width: 20,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white24,
+                                        border: Border(
+                                          bottom: BorderSide()
+                                        )
+                                      ),
                                     ),
                                   ),
                                 ),
