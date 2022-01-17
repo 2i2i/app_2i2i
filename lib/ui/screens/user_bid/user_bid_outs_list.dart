@@ -5,9 +5,9 @@ import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../infrastructure/models/bid_model.dart';
 import 'user_page.dart';
@@ -138,38 +138,7 @@ class UserBidOutsList extends ConsumerWidget {
             ),
           );
         }
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.grey.shade300
-                  )
-              ),
-              trailing: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              title: Container(
-                height: 10,
-                color: Colors.grey.shade300,
-              ),
-              subtitle: Container(
-                height: 5,
-                color: Colors.grey.shade300,
-              ),
-              // tileColor: color,
-              // onTap: () => onTap(bid),
-            ),
-          ),
-        );
+        return Center(child: CupertinoActivityIndicator());
       },
       separatorBuilder: (BuildContext context, int index) {
         return Padding(

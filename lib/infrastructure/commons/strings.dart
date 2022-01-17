@@ -76,6 +76,10 @@ class Strings {
   String setUpAccount = 'Setup Account';
   String userName = 'Username';
   String bio = 'Bio';
+  String report = 'Report';
+  String block = 'Block';
+  String unBlock = 'Unblock';
+  String seeMore = 'see more';
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';

@@ -17,11 +17,11 @@ class RatingTile extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextProfileView(
-              text: (ratingModel.rating * 5).toStringAsFixed(0),
+            child: ProfileWidget(
+              stringPath: (ratingModel.rating * 5).toStringAsFixed(0),
               isRating: true,
+              showBorder: true,
               radius: 65,
-              hideStatus: true,
               style: Theme.of(context)
                   .textTheme
                   .headline5!
