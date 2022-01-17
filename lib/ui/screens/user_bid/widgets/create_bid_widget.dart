@@ -6,9 +6,9 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom_alert_widget.dart';
 import '../../../commons/custom_text_field.dart';
@@ -17,8 +17,17 @@ import '../../my_account/widgets/add_account_options_widget.dart';
 
 class CreateBidWidget extends ConsumerStatefulWidget {
   final String uid;
+  final double sliderHeight;
+  final int min;
+  final int max;
+  final fullWidth;
 
-  const CreateBidWidget({Key? key, required this.uid}) : super(key: key);
+  CreateBidWidget(
+      {this.sliderHeight = 48,
+      this.max = 10,
+      required this.uid,
+      this.min = 0,
+      this.fullWidth = false});
 
   @override
   _CreateBidWidgetState createState() => _CreateBidWidgetState();
@@ -31,6 +40,8 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? note;
 
+  double _value = 0;
+
   final controller = PageController(initialPage: 0);
 
   @override
@@ -38,7 +49,12 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     if (myAccountPageViewModel is AsyncLoading ||
         myAccountPageViewModel is AsyncError) {
-      return WaitPage(isCupertino: true);
+      return Container(
+          height: MediaQuery.of(context).size.height / 2,
+          child: WaitPage(
+        isCupertino: true,
+        height: MediaQuery.of(context).size.height / 2,
+      ));
     }
     final addBidPageViewModel =
         ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
@@ -126,6 +142,67 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 ),
               ),
               Visibility(
+                visible: speed.num != 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Est.max duration',
+                        style: Theme.of(context)
+                            .textTheme
+                            .caption!
+                            .copyWith(color: Theme.of(context).shadowColor)),
+                    SizedBox(height: 4),
+                    Container(
+                      decoration: BoxDecoration(
+                          color:
+                              Theme.of(context).shadowColor.withOpacity(0.20),
+                          borderRadius: BorderRadius.circular(10)),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 6),
+                          Text(
+                            '0 secs',
+                            style: Theme.of(context).textTheme.subtitle1,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor: Theme.of(context)
+                                      .tabBarTheme
+                                      .unselectedLabelColor,
+                                  thumbShape: CustomSliderThumbRect(
+                                      mainContext: context,
+                                      thumbRadius: 15,
+                                      max: 0,
+                                      min: 100),
+                                ),
+                                child: Slider(
+                                    value: _value,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _value = value;
+                                      });
+                                    }),
+                              ),
+                            ),
+                          ),
+                          Text('100 secs',
+                              style: Theme.of(context).textTheme.subtitle1),
+                          SizedBox(width: 6),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
+                ),
+              ),
+              Visibility(
                   visible: speed.num != 0,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
@@ -158,27 +235,6 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                         }
                       },
                     ),
-                  )),
-              Visibility(
-                  visible: speed.num != 0,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: ListTile(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        tileColor: Colors.white,
-                        leading: SvgPicture.asset(
-                          'assets/icons/hour_glass.svg',
-                          height: 20,
-                          width: 20,
-                        ),
-                        // leading: Container(color: Colors.grey,height: 30,width: 30,),
-                        title: Text('Est. max duration'),
-                        trailing:
-                            account != null && account!.balances.isNotEmpty
-                                ? Text(addBidPageViewModel.duration(
-                                    account!, speed, amount))
-                                : null),
                   )),
               Visibility(
                   visible: speed.num != 0,
@@ -278,38 +334,34 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                 child: ElevatedButton(
-                  onPressed: isInsufficient()
-                      ? null
-                      : () {
-                          onAddBid();
-                        },
+                  onPressed: isInsufficient() ? null : () => onAddBid(),
                   child: Text(getConfirmSliderText()),
                 ),
               ),
               /*Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: ConfirmationSlider(
-                  onConfirmation: () {
-                    onAddBid();
-                  },
-                  height: 50,
-                  width: getWidthForSlider(context),
-                  backgroundShape: BorderRadius.circular(12),
-                  backgroundColor: Color(0xffD2D2DF),
-                  thumbColor: isInsufficient(account)?Theme.of(context).errorColor:Theme.of(context).primaryColorDark,
-                  shadow: BoxShadow(
-                    blurRadius: 0,
-                    spreadRadius: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ConfirmationSlider(
+                    onConfirmation: () {
+                      onAddBid();
+                    },
+                    height: 50,
+                    width: getWidthForSlider(context),
+                    backgroundShape: BorderRadius.circular(12),
+                    backgroundColor: Color(0xffD2D2DF),
+                    thumbColor: isInsufficient(account)?Theme.of(context).errorColor:Theme.of(context).primaryColorDark,
+                    shadow: BoxShadow(
+                      blurRadius: 0,
+                      spreadRadius: 0,
+                    ),
+                    text: getConfirmSliderText(),
+                    textStyle: isInsufficient(account)
+                        ? Theme.of(context)
+                            .textTheme
+                            .bodyText2
+                            ?.copyWith(color: Theme.of(context).errorColor)
+                        : null,
                   ),
-                  text: getConfirmSliderText(),
-                  textStyle: isInsufficient(account)
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Theme.of(context).errorColor)
-                      : null,
-                ),
-              ),*/
+                ),*/
               SizedBox(height: 8),
             ],
           ),
@@ -372,5 +424,72 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
       bidNote: note,
     );
     CustomDialogs.loader(false, context);
+  }
+}
+
+class CustomSliderThumbRect extends SliderComponentShape {
+  final double? thumbRadius;
+  final BuildContext mainContext;
+  final int? min;
+  final int? max;
+
+  const CustomSliderThumbRect({
+    required this.mainContext,
+    this.thumbRadius,
+    this.min,
+    this.max,
+  });
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(thumbRadius!);
+  }
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    Animation<double>? activationAnimation,
+    Animation<double>? enableAnimation,
+    bool? isDiscrete,
+    TextPainter? labelPainter,
+    RenderBox? parentBox,
+    SliderThemeData? sliderTheme,
+    TextDirection? textDirection,
+    double? value,
+    double? textScaleFactor,
+    Size? sizeWithOverflow,
+  }) {
+    final Canvas canvas = context.canvas;
+
+    final rRect = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+          center: center, width: kToolbarHeight, height: kToolbarHeight * 0.6),
+      Radius.circular(thumbRadius!),
+    );
+
+    final paint = Paint()
+      ..color = AppTheme().primaryTextColor
+      ..style = PaintingStyle.fill;
+
+    TextSpan span = new TextSpan(
+        style: Theme.of(mainContext).textTheme.subtitle1!.copyWith(
+            color: Theme.of(mainContext).primaryColor,
+            fontWeight: FontWeight.w800),
+        text: '${getValue(value!)}s');
+
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr);
+    tp.layout();
+    Offset textCenter =
+        Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+    canvas.drawRRect(rRect, paint);
+    tp.paint(canvas, textCenter);
+  }
+
+  String getValue(double value) {
+    return (min! + (max! - min!) * value).round().toString();
   }
 }

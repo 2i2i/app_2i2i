@@ -12,6 +12,7 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+import 'ui/screens/user_bid/widgets/create_bid_widget.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -113,6 +114,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
               homePageBuilder: (_) => HomePage(),
+              // homePageBuilder: (_) => CreateBidWidget(uid: 'feztBsch9raB7L312GgaiB9Vxpn2',),
             ),
           ),
         ),
@@ -120,6 +122,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
+
       // homePageBuilder: (_) => TestScreen(),
     );
   }

@@ -135,7 +135,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   Container(
                     height: 40,
                     width: 40,
-                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    margin: EdgeInsets.symmetric(horizontal: 6),
                     child: IconButton(
                       icon: SvgPicture.asset(
                         'assets/icons/refresh.svg',
