@@ -77,6 +77,17 @@ class Strings {
   String setUpAccount = 'Setup Account';
   String userName = 'Username';
   String bio = 'Bio';
+  String addAccount = 'Add account';
+  String walletAccount = 'Wallet account';
+  String walletAccountMsg = 'I want to connect a 3rd party wallet';
+
+  String recoverPassphrase = 'Recover with passphrase';
+  String recoverPassPhaseMsg = 'I know the 25 secret words';
+
+  String addLocalAccount = 'Add local account';
+  String addLocalAccountMsg = 'Create a local account on this device';
+
+  String copyAndNext = 'Copy and Next';
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
@@ -95,4 +106,8 @@ class Strings {
 
   //Meeting History
   String meetingsHistory = 'Meetings History';
+
+
+
+
 }

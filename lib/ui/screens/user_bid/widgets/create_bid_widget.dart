@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -11,8 +10,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../commons/custom_alert_widget.dart';
 import '../../../commons/custom_text_field.dart';
 import '../../my_account/widgets/account_info.dart';
+import '../../my_account/widgets/add_account_options_widget.dart';
 
 class CreateBidWidget extends ConsumerStatefulWidget {
   final String uid;
@@ -43,7 +44,8 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
         ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
-    if (account == null) account = myAccountPageViewModel.accounts?.first;
+    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0)
+      account = myAccountPageViewModel.accounts!.first;
 
     return Container(
       width: double.infinity,
@@ -162,52 +164,90 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: ListTile(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      tileColor: Colors.white,
-                      leading: SvgPicture.asset(
-                        'assets/icons/hour_glass.svg',
-                        height: 20,
-                        width: 20,
-                      ),
-                      // leading: Container(color: Colors.grey,height: 30,width: 30,),
-                      title: Text('Est. max duration'),
-                      trailing: Builder(builder: (context) {
-                        if (account != null && account!.balances.isNotEmpty) {
-                          return Text(addBidPageViewModel.duration(
-                              account!, speed, amount));
-                        }
-                        return Container();
-                      }),
-                    ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        tileColor: Colors.white,
+                        leading: SvgPicture.asset(
+                          'assets/icons/hour_glass.svg',
+                          height: 20,
+                          width: 20,
+                        ),
+                        // leading: Container(color: Colors.grey,height: 30,width: 30,),
+                        title: Text('Est. max duration'),
+                        trailing:
+                            account != null && account!.balances.isNotEmpty
+                                ? Text(addBidPageViewModel.duration(
+                                    account!, speed, amount))
+                                : null),
                   )),
               Visibility(
                   visible: speed.num != 0,
                   child: Container(
-                    constraints: BoxConstraints(
-                      minHeight: 150,
-                      maxHeight: 200,
-                    ),
-                    child: PageView.builder(
-                      controller: controller,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-                      itemBuilder: (_, index) {
-                        return AccountInfo(
-                          false,
-                          key: ObjectKey(
-                              myAccountPageViewModel.accounts![index].address),
-                          account: myAccountPageViewModel.accounts![index],
-                        );
-                      },
-                      onPageChanged: (int val) {
-                        account =
-                            myAccountPageViewModel.accounts?.elementAt(val);
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      },
-                    ),
+                    constraints:
+                        (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                            ? BoxConstraints(
+                                minHeight: 150,
+                                maxHeight: 200,
+                              )
+                            : null,
+                    child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                        ? PageView.builder(
+                            controller: controller,
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                myAccountPageViewModel.accounts?.length ?? 0,
+                            itemBuilder: (_, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: AccountInfo(
+                                  false,
+                                  key: ObjectKey(myAccountPageViewModel
+                                      .accounts![index].address),
+                                  account:
+                                      myAccountPageViewModel.accounts![index],
+                                ),
+                              );
+                            },
+                            onPageChanged: (int val) {
+                              account = myAccountPageViewModel.accounts
+                                  ?.elementAt(val);
+                              if (mounted) {
+                                setState(() {});
+                              }
+                            },
+                          )
+                        : Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 12),
+                                Text(
+                                  'No account added',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                SizedBox(height: 12),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 10),
+                                  child: ElevatedButton(
+                                    child: Text(Strings().addAccount),
+                                    onPressed: () =>
+                                        CustomAlertWidget.showBidAlert(context,
+                                            AddAccountOptionsWidgets()),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                   )),
               Visibility(
                 visible: speed.num != 0 &&
