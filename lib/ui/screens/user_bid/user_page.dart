@@ -7,6 +7,7 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
@@ -24,8 +25,6 @@ class UserPage extends ConsumerStatefulWidget {
 
 class _UserPageState extends ConsumerState<UserPage> {
   var showBio = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +110,8 @@ class _UserPageState extends ConsumerState<UserPage> {
                   child: ListTile(
                     title: Text(
                       user.name,
-                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                            fontWeight: FontWeight.w600,
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontWeight: FontWeight.normal,
                             color: Theme.of(context).disabledColor,
                           ),
                     ),

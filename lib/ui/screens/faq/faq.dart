@@ -24,41 +24,38 @@ class FAQ extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color bg = index % 2 == 0
-        ? Theme.of(context).colorScheme.secondary.withOpacity(0.5)
-        : Theme.of(context).colorScheme.secondary.withOpacity(0.2);
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
         child: ExpansionTileCard(
-          elevation: 4,
+          elevation: 0,
           key: key,
-          leading: Icon(Icons.label_important),
-          title: Text(data.title),
-          baseColor: bg,
+          baseColor: Theme.of(context).primaryColorLight,
+          title: Text(data.title,style: Theme.of(context).textTheme.subtitle1,),
           expandedTextColor: Theme.of(context).colorScheme.secondary,
           children: <Widget>[
             Divider(
               thickness: 1.0,
               height: 1.0,
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: Text(
-                  data.description,
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontSize: 16),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+              child: Text(
+                data.description,
+                textAlign: TextAlign.justify,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText2!
+                    .copyWith(fontSize: 16),
               ),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

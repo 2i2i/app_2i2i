@@ -14,11 +14,7 @@ class FAQPage extends StatefulWidget {
 
 class _FAQPageState extends State<FAQPage> {
   List<FAQData> faqs = [
-    FAQData(title: 'What is 2i2i?', description: '''
-    2i2i is where all minds meet.
-    It is a market for live video calls.
-    Any user can bid in any coin to chat with any other user.
-    '''),
+    FAQData(title: 'What is 2i2i?', description: '2i2i is where all minds meet. It is a market for live video calls. Any user can bid in any coin to chat with any other user.'),
     FAQData(title: 'What version is it?', description: '''
     2i2i is still in Alpha version, which means testing.
     Just reload the page if it seems stuck.
