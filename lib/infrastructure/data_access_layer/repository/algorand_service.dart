@@ -1,3 +1,4 @@
+
 import 'package:dio/dio.dart' as dio;
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';

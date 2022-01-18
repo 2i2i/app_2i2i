@@ -1,9 +1,8 @@
-import 'dart:math';
 
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -140,31 +139,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             },
           );
         }
-        return Center(child: CircularProgressIndicator());
+        return Center(child: CupertinoActivityIndicator());
       },
     );
   }
 
-  Widget ratingWidget(score, name) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            0 <= score
-                ? Icon(Icons.change_history, color: Colors.green)
-                : Transform.rotate(
-                    angle: pi,
-                    child: Icon(Icons.change_history,
-                        color: Color.fromRGBO(211, 91, 122, 1))),
-            SizedBox(height: 4),
-            Text(score.toString(), style: Theme.of(context).textTheme.caption)
-          ],
-        ),
-        SizedBox(width: 10),
-        CustomImageProfileView(text: name)
-      ],
-    );
-  }
 }
