@@ -55,8 +55,8 @@ class _BidAlertWidgetState extends State<BidAlertWidget> {
             SizedBox(height: 8),
             Row(
               children: [
-                TextProfileView(
-                  text: "Ravi",
+                ProfileWidget(
+                  stringPath: "Ravi",
                   statusColor: Colors.green,
                   onTap: () => CustomNavigation.push(
                       context, SetupBio(), Routes.SETUP_ACCOUNT),

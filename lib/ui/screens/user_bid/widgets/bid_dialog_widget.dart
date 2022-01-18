@@ -4,11 +4,9 @@ import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
-import 'bid_speed_widget.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
   final BidIn bidIn;

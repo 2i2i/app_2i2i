@@ -8,6 +8,7 @@ import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
 import '../../../commons/custom_navigation.dart';
+import '../../../commons/custom_profile_image_view.dart';
 import '../../user_bid/user_page.dart';
 
 class UserInfoTile extends ConsumerWidget {
@@ -39,10 +40,7 @@ class UserInfoTile extends ConsumerWidget {
         !(userPrivateAsyncValue is AsyncLoading) &&
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.friends.contains(userModel.id);
-    String firstNameChar = userModel.name;
-    if (firstNameChar.isNotEmpty) {
-      firstNameChar = firstNameChar.substring(0, 1);
-    }
+
 
     return Container(
       decoration: Custom.getBoxDecoration(context, radius: 12),
@@ -50,48 +48,19 @@ class UserInfoTile extends ConsumerWidget {
         onTap: () => CustomNavigation.push(
             context, UserPage(uid: userModel.id), Routes.USER),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(
             children: [
-              SizedBox(
-                height: 55,
-                width: 55,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 20,
-                              spreadRadius: 0.5,
-                            )
-                          ]),
-                      alignment: Alignment.center,
-                      child: Text(
-                        firstNameChar,
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Container(
-                        height: 15,
-                        width: 15,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ProfileWidget(
+                stringPath: userModel.name,
+                radius: 62,
+                hideShadow: true,
+                showBorder: true,
+                statusColor: statusColor,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5!
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
               SizedBox(width: 10),
               Expanded(

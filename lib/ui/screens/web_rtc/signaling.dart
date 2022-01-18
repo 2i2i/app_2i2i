@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
@@ -10,6 +11,7 @@ class Signaling {
   Signaling(
       {required this.meeting,
       required this.meetingChanger,
+      required this.userModelChanger,
       required this.amA,
       required this.localVideo,
       required this.remoteVideo}) {
@@ -54,6 +56,7 @@ class Signaling {
 
   final Meeting meeting;
   final MeetingChanger meetingChanger;
+  final UserModelChanger userModelChanger;
   final bool amA;
   final RTCVideoRenderer localVideo;
   final RTCVideoRenderer remoteVideo;
@@ -265,7 +268,10 @@ class Signaling {
 
   Future hangUp({required MeetingStatus reason}) {
     peerConnection?.close();
-    return meetingChanger.endMeeting(meeting, reason);
+    final f1 = userModelChanger.unlock(meeting.A);
+    final f2 = userModelChanger.unlock(meeting.B);
+    final f3 = meetingChanger.endMeeting(meeting, reason);
+    return Future.wait([f1, f2, f3]);
   }
 
   void registerPeerConnectionListeners() {

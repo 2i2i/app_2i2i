@@ -27,7 +27,7 @@ class AppTheme{
   Color shaDowColor = Color(0xFFDCF9EB);
   Color secondaryDarkColor = Color(0xFF00a350);
 
-  Color primaryTextColor = Color(0xFF000000);
+  Color primaryTextColor = Color.fromRGBO(0,0,0,0.6);
   Color secondaryTextColor = Color(0xFFffffff);
 
   Color cardDarkColor = Colors.grey.shade800;

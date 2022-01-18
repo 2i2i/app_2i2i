@@ -1,17 +1,19 @@
 import 'dart:math';
 
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
-import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/theme.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/create_bid_widget.dart';
+import 'widgets/friend_button_widget.dart';
+import 'widgets/user_info_widget.dart';
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({required this.uid});
@@ -29,7 +31,10 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final mainUserID = ref.watch(myUIDProvider)!;
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
+    final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
+    final userModelChanger = ref.watch(userModelChangerProvider)!;
 
     if (userPageViewModel == null ||
         userPageViewModel is AsyncError ||
@@ -39,26 +44,50 @@ class _UserPageState extends ConsumerState<UserPage> {
 
     var user = userPageViewModel.user;
 
+    final isFriend = !(userPrivateAsyncValue is AsyncError) &&
+        !(userPrivateAsyncValue is AsyncLoading) &&
+        userPrivateAsyncValue.value != null &&
+        userPrivateAsyncValue.value!.friends.contains(widget.uid);
+
+    final isBlocked = !(userPrivateAsyncValue is AsyncError) &&
+        !(userPrivateAsyncValue is AsyncLoading) &&
+        userPrivateAsyncValue.value != null &&
+        userPrivateAsyncValue.value!.blocked.contains(widget.uid);
+
     final shortBioStart = user.bio.indexOf(RegExp(r'\s')) + 1;
     int aPoint = shortBioStart + 10;
     int bPoint = user.bio.length;
     final shortBioEnd = min(aPoint, bPoint);
-    final shortBio = user.bio;//user.bio.substring(shortBioStart, shortBioEnd);
-    // var statusColor = AppTheme().green;
-    // if (user.status == 'OFFLINE') {
-    //   statusColor = AppTheme().gray;
-    // } else if (user.isInMeeting()) {
-    //   statusColor = AppTheme().red;
-    // }
+    final shortBio = user.bio; //user.bio.substring(shortBioStart, shortBioEnd);
+    final totalRating = (user.rating * 5).toStringAsFixed(1);
+    var statusColor = AppTheme().green;
+    if (user.status == 'OFFLINE') {
+      statusColor = AppTheme().gray;
+    } else if (user.isInMeeting()) {
+      statusColor = AppTheme().red;
+    }
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColorLight,
         actions: [
           PopupMenuButton<int>(
-            onSelected: (item) => handleClick(item),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+            ),
+            onSelected: (item) =>
+                handleClick(item, userModelChanger, isBlocked),
             itemBuilder: (context) => [
-              PopupMenuItem<int>(value: 0, child: Text('Add as Friend')),
-              PopupMenuItem<int>(value: 1, child: Text('Block user')),
+              PopupMenuItem<int>(value: 0, child: Text(Strings().report)),
+              PopupMenuItem<int>(
+                value: 1,
+                child: Text(
+                  isBlocked ? Strings().unBlock : Strings().block,
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                ),
+              ),
             ],
           ),
           SizedBox(width: 6)
@@ -86,7 +115,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                   color: Theme.of(context)
                       .colorScheme
                       .secondary // changes position of shadow
-              ),
+                  ),
             ],
           ),
           child: Icon(
@@ -96,63 +125,43 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                TextProfileView(
-                  text: user.name,
-                  statusColor: Colors.green,
-                  radius: 70,
-                ),
-                Expanded(
-                  child: ListTile(
-                    title: Text(
-                      user.name,
-                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).disabledColor,
-                          ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 6,left: 6),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Wrap(
-                            direction: Axis.horizontal,
-                            crossAxisAlignment: WrapCrossAlignment.center,
+      body: Column(
+        children: [
+          Card(
+            elevation: 4,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(020),
+                  bottomRight: Radius.circular(20)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UserInfoWidget(
+                    user: user,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          child: Column(
                             children: [
                               Text(
-                                shortBio.toString().trim(),
-                                maxLines: showBio?null:2,
-                                softWrap: showBio?null:false,
-                                overflow: showBio?null:TextOverflow.ellipsis,
-                                style:
-                                    Theme.of(context).textTheme.caption!.copyWith(
-                                          color: Theme.of(context).disabledColor,
-                                        ),
+                                '$totalRating',
+                                maxLines: 2,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                        color: Theme.of(context).disabledColor),
                               ),
-                              GestureDetector(
-                                onTap: (){
-                                  showBio = !showBio;
-                                  if(mounted) {
-                                    setState(() {});
-                                  }
-                                },
-                                child: Icon(showBio?Icons.expand_less:Icons.expand_more,
-                                    color: Theme.of(context).disabledColor
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 3),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
+                              SizedBox(height: 4),
                               IgnorePointer(
                                 ignoring: true,
                                 child: RatingBar.builder(
@@ -160,7 +169,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                   minRating: 1,
                                   direction: Axis.horizontal,
                                   itemCount: 5,
-                                  itemSize: 16,
+                                  itemSize: 20,
                                   tapOnlyMode: true,
                                   updateOnDrag: false,
                                   allowHalfRating: true,
@@ -168,85 +177,56 @@ class _UserPageState extends ConsumerState<UserPage> {
                                   unratedColor: Colors.grey.shade300,
                                   itemBuilder: (context, _) => Icon(
                                     Icons.star_rounded,
-                                    color: Colors.grey,
+                                    color: Colors.amber,
                                   ),
                                   onRatingUpdate: (rating) {
                                     print(rating);
                                   },
                                 ),
                               ),
-                              SizedBox(width: 4),
-                              TextButton(
-                                 onPressed: () => CustomNavigation.push(context, RatingPage(userModel: user,), Routes.RATING),
-                                child: Text('(view all)',
-                                    style: Theme.of(context).textTheme.caption),
-                              )
                             ],
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: FriendButtonWidget(
+                            value: isFriend,
+                            onTap: (value) => value
+                                ? userModelChanger.addFriend(widget.uid)
+                                : userModelChanger.removeFriend(widget.uid),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            Divider(),
-            Expanded(
-              child: OtherBidInList(
-                B: user,
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: OtherBidInList(
+              B: user,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget ratingWidget(score, name, context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            0 <= score
-                ? Icon(Icons.change_history, color: Colors.green)
-                : Transform.rotate(
-                    angle: pi,
-                    child: Icon(Icons.change_history,
-                        color: Color.fromRGBO(211, 91, 122, 1))),
-            SizedBox(height: 4),
-            Text(score.toString(), style: Theme.of(context).textTheme.caption)
-          ],
-        ),
-        SizedBox(width: 10),
-        Container(
-          height: 40,
-          width: 40,
-          child: Center(
-            child: Text(
-              "${name.toString().isNotEmpty ? name : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase(),
-            ),
-          ),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.fromRGBO(214, 219, 134, 1),
-          ),
-        )
-      ],
-    );
-  }
-
-  void handleClick(int item) {
-    final userModelChanger = ref.watch(userModelChangerProvider)!;
+  void handleClick(
+      int item, UserModelChanger userModelChanger, bool isBlocked) {
     switch (item) {
       case 0:
-        userModelChanger.addFriend(widget.uid);
+        // userModelChanger.addFriend(widget.uid);
         break;
       case 1:
-        userModelChanger.addBlocked(widget.uid);
+        if (isBlocked) {
+          userModelChanger.removeBlocked(widget.uid);
+        } else {
+          userModelChanger.addBlocked(widget.uid);
+        }
+
         break;
     }
   }
