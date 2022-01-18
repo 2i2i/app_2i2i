@@ -77,7 +77,7 @@ class Strings {
   String setUpAccount = 'Setup Account';
   String userName = 'Username';
   String bio = 'Bio';
-  String addAccount = 'Add account';
+    String addAccount = 'Add account';
   String walletAccount = 'Wallet account';
   String walletAccountMsg = 'I want to connect a 3rd party wallet';
 
@@ -88,6 +88,11 @@ class Strings {
   String addLocalAccountMsg = 'Create a local account on this device';
 
   String copyAndNext = 'Copy and Next';
+  String report = 'Report';
+  String block = 'Block';
+  String unBlock = 'Unblock';
+  String seeMore = 'see more';
+
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
