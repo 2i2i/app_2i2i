@@ -92,7 +92,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       home: getView(),
       // home:TestScreen(),
       title: Strings().appName,
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,
       themeMode: ThemeMode.light,
       theme: AppTheme().mainTheme(context),

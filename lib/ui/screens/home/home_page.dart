@@ -78,6 +78,12 @@ class _HomePageState extends ConsumerState<HomePage>{
           !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
       child: Scaffold(
         key: scaffoldKey,
+        appBar: AppBar(
+          toolbarHeight: 20,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: Text('testnet'),
+          titleTextStyle: Theme.of(context).textTheme.bodyText1,
+        ),
         body: Stack(
           children: _tabItems
               .asMap()
