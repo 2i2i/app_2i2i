@@ -41,6 +41,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   double _value = 0;
 
+
   final controller = PageController(initialPage: 0);
 
   @override
