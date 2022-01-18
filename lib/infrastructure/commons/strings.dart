@@ -87,6 +87,12 @@ class Strings {
   String addLocalAccount = 'Add local account';
   String addLocalAccountMsg = 'Create a local account on this device';
 
+  String estMaxDuration = 'Est.max duration';
+  String swipeAndChangeAccount = 'Swipe Below Card Left or Right to change account';
+
+  String insufficientBalance = 'Insufficient balance';
+  String addBid = 'Add bid';
+
   String copyAndNext = 'Copy and Next';
   String report = 'Report';
   String block = 'Block';
@@ -110,6 +116,8 @@ class Strings {
 
   //Meeting History
   String meetingsHistory = 'Meetings History';
+
+
 
 
 
