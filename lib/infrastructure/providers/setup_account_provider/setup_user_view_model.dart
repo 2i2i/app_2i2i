@@ -37,7 +37,7 @@ class SetupUserViewModel with ChangeNotifier {
     if (firebaseUserId == null) {
       await auth.signInAnonymously();
     }
-    await setupAlgorandAccount();
+    // await setupAlgorandAccount();
     signUpInProcess = false;
 
     notifyListeners();
