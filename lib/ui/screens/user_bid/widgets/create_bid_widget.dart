@@ -330,6 +330,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
       amount: amount,
       speed: speed,
       bidNote: note,
+      context: context
     );
     CustomDialogs.loader(false, context);
   }

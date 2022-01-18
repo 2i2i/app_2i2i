@@ -1,10 +1,13 @@
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -44,6 +47,7 @@ class AddBidPageViewModel {
     required Quantity amount,
     required Quantity speed,
     String? bidNote,
+    BuildContext? context,
   }) async {
     log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
 
@@ -63,6 +67,13 @@ class AddBidPageViewModel {
         final cause = ex.cause;
         if (cause is dio.DioError) {
           final message = cause.response?.data['message'];
+          if(context != null) {
+            CustomAlertWidget.showErrorDialog(
+              context,
+              Strings().errorWhileAddBid,
+              errorStacktrace: '$message'
+            );
+          }
           log('AlgorandException ' + message);
         }
         return;

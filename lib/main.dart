@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+// import 'package:app_2i2i/ui/test_screen.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -113,6 +114,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
               homePageBuilder: (_) => HomePage(),
+              // homePageBuilder: (_) => TestScreen(),
             ),
           ),
         ),

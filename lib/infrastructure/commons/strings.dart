@@ -11,6 +11,10 @@ class Strings {
 
   String shareQr = 'Share yourself';
 
+  String error = 'Error';
+
+  String errorWhileAddBid ='Error while adding bid, Try another account or reduce the max duration or reduce the speed';
+
   Strings._internal();
 
   factory Strings() {

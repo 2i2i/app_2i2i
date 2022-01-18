@@ -143,27 +143,4 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       },
     );
   }
-
-  Widget ratingWidget(score, name) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            0 <= score
-                ? Icon(Icons.change_history, color: Colors.green)
-                : Transform.rotate(
-                    angle: pi,
-                    child: Icon(Icons.change_history,
-                        color: Color.fromRGBO(211, 91, 122, 1))),
-            SizedBox(height: 4),
-            Text(score.toString(), style: Theme.of(context).textTheme.caption)
-          ],
-        ),
-        SizedBox(width: 10),
-        CustomImageProfileView(text: name)
-      ],
-    );
-  }
 }
