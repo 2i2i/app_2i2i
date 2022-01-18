@@ -81,7 +81,7 @@ class _HomePageState extends ConsumerState<HomePage>{
         appBar: AppBar(
           toolbarHeight: 20,
           backgroundColor: Theme.of(context).colorScheme.secondary,
-          title: Text('Testnet'),
+          title: Text('testnet'),
           titleTextStyle: Theme.of(context).textTheme.bodyText1,
         ),
         body: Stack(
