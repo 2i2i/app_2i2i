@@ -88,6 +88,10 @@ class Strings {
   String addLocalAccountMsg = 'Create a local account on this device';
 
   String copyAndNext = 'Copy and Next';
+  String report = 'Report';
+  String block = 'Block';
+  String unBlock = 'Unblock';
+  String seeMore = 'see more';
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
