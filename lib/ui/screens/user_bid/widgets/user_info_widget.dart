@@ -5,37 +5,40 @@ import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
-class UserInfoWidget extends StatelessWidget {
-  final UserModel? user;
+class UserInfoWidget extends StatefulWidget {
+  final UserModel user;
 
-  const UserInfoWidget({Key? key, this.user}) : super(key: key);
+  const UserInfoWidget({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _UserInfoWidgetState createState() => _UserInfoWidgetState();
+}
+
+class _UserInfoWidgetState extends State<UserInfoWidget> {
+  ValueNotifier<bool> seeMore = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
     final shortBio =
-        user!.bio; //user.bio.substring(shortBioStart, shortBioEnd);
+        widget.user.bio; //user.bio.substring(shortBioStart, shortBioEnd);
     var statusColor = AppTheme().green;
-    if (user!.status == 'OFFLINE') {
+    if (widget.user.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
-    } else if (user!.isInMeeting()) {
+    } else if (widget.user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
     return Row(
       children: [
         ProfileWidget(
-          stringPath: user?.name ?? "",
+          stringPath: widget.user.name,
           statusColor: statusColor,
           radius: 80,
         ),
         Expanded(
           child: ListTile(
             title: Text(
-              user?.name ?? "",
-              style: TextStyle(
-                  fontFamily: 'SofiaPro',
-                  color: Theme.of(context).tabBarTheme.unselectedLabelColor,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20),
+              widget.user.name,
+              style: Theme.of(context).textTheme.headline6,
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,15 +46,30 @@ class UserInfoWidget extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(shortBio.toString().trim(),
-                      maxLines: 2,
-                      style: Theme.of(context).textTheme.bodyText1),
+                  child: ValueListenableBuilder(
+                    valueListenable: seeMore,
+                    builder: (BuildContext context, bool value, Widget? child) {
+                      return Text(
+                        shortBio.toString().trim(),
+                        maxLines: value ? null : 2,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      );
+                    },
+                  ),
                 ),
-                Text(
-                  Strings().seeMore,
-                  style: Theme.of(context).textTheme.caption!.copyWith(
-                        color: Theme.of(context).disabledColor,
-                      ),
+                InkResponse(
+                  onTap: (){
+                    seeMore.value = !seeMore.value;
+                  },
+                  child: ValueListenableBuilder(
+                    valueListenable: seeMore,
+                    builder: (BuildContext context, bool value, Widget? child) {
+                      return Text(
+                        value?Strings().less:Strings().seeMore,
+                        style: Theme.of(context).textTheme.caption,
+                      );
+                    },
+                  ),
                 )
               ],
             ),

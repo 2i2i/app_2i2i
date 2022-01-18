@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
@@ -63,10 +64,9 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                     child: Text(
                       Strings().createABid,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: Theme.of(context).disabledColor,
-                          ),
+                      style: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: AppTheme().lightSecondaryTextColor
+                      ),
                     ),
                   ),
                   IconButton(
@@ -75,7 +75,7 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                     highlightColor: Colors.transparent,
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(Icons.close),
-                    iconSize: 18,
+                    iconSize: 20,
                   )
                 ],
               ),
@@ -95,10 +95,9 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                           '${Strings().algoSec}',
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle2!
-                              .copyWith(
-                                  color: Theme.of(context).shadowColor,
-                                  fontWeight: FontWeight.normal),
+                              .bodyText2?.copyWith(
+                            color: AppTheme().lightSecondaryTextColor
+                          ),
                         ),
                       ),
                       SizedBox(width: 8)
@@ -139,10 +138,9 @@ class _CreateBidWidgetState extends ConsumerState<CreateBidWidget>
                               '${Strings().algoSec}',
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle2!
-                                  .copyWith(
-                                      color: Theme.of(context).shadowColor,
-                                      fontWeight: FontWeight.normal),
+                                  .bodyText2
+                                  ?.copyWith(
+                                      color: AppTheme().lightSecondaryTextColor),
                             ),
                           ),
                           SizedBox(width: 8)

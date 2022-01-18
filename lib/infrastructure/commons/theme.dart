@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class AppTheme{
   Color shaDowColor = Color(0xFFDCF9EB);
   Color secondaryDarkColor = Color(0xFF00a350);
 
-  Color primaryTextColor = Color.fromRGBO(0,0,0,0.6);
+  Color primaryTextColor = Color(0xFF000000);
   Color secondaryTextColor = Color(0xFFffffff);
 
   Color cardDarkColor = Colors.grey.shade800;
@@ -41,9 +42,12 @@ class AppTheme{
   Color warningColor = Color(0xFFFEEBEB);
   Color redColor = Color(0xFFF92A2A);
 
+  Color lightSecondaryTextColor = Color(0xff8E8E93);
+  Color lightPrimaryTextColor = Colors.black;
+
   ThemeData mainTheme(BuildContext context) {
+
     return ThemeData(
-      fontFamily: 'SofiaPro',
       brightness: Brightness.light,
       primaryColor: primaryColor,
       primaryColorLight: primaryLightColor,
@@ -89,17 +93,17 @@ class AppTheme{
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          primary: secondaryColor,
-          padding: EdgeInsets.all(kIsWeb?22:14),
-          textStyle: TextStyle(
-            fontFamily: 'SofiaPro',
-            fontSize: 17.0,
-            fontWeight: FontWeight.w400,
-          ),
-          side:BorderSide(color: secondaryColor),
-          shape:RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          )
+            primary: secondaryColor,
+            padding: EdgeInsets.all(kIsWeb?22:14),
+            textStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 17.0,
+              fontWeight: FontWeight.w400,
+            ),
+            side:BorderSide(color: secondaryColor),
+            shape:RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            )
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -132,15 +136,61 @@ class AppTheme{
             borderSide: BorderSide.none),
       ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: secondaryColor),
+      fontFamily: 'SofiaPro',
       textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Color(0xFF48484A),
-          fontSize: 34,
-          letterSpacing: 0.37,
+        headline4: TextStyle(
           fontStyle: FontStyle.normal,
           fontWeight: FontWeight.w600,
-        )
-      )
+          fontSize: 34,
+          // color: Color(0xff8E8E93),
+        ),
+        headline5: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 28,
+          // color: Color(0xff8E8E93),
+        ),
+        headline6: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          // color: Colors.black,
+        ),
+        subtitle1: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 16,
+          // color: Color(0xff8E8E93),
+        ),
+        subtitle2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 14,
+          // color: Colors.black,
+        ),
+        bodyText1: TextStyle(
+          // fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          fontSize: 16,
+          color: lightSecondaryTextColor,
+        ),
+        bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          // fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.black,
+        ),
+        /*bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          // color: Colors.black,
+        ),*/
+        caption: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 12,
+          // color: Color(0xff8E8E93),
+        ),
+      ),
     );
   }
 
@@ -163,13 +213,13 @@ class AppTheme{
             selectedIconTheme: IconThemeData(color: primaryColor)),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              primary: cardDarkColor,
-              padding: EdgeInsets.all(24),
-              textStyle: TextStyle(
-                fontFamily: 'SofiaPro',
-                fontSize: 17.0,
-                fontWeight: FontWeight.w600,
-              ),
+            primary: cardDarkColor,
+            padding: EdgeInsets.all(24),
+            textStyle: TextStyle(
+              fontFamily: 'SofiaPro',
+              fontSize: 17.0,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
@@ -205,28 +255,28 @@ class AppTheme{
         colorScheme: ColorScheme.dark(secondary: primaryColor),
         fontFamily: 'SofiaPro',
         textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Color(0xff48484A),
-          fontSize: 34,
-          fontStyle: FontStyle.normal,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.37,
-        ),
-      )
+          headline6: TextStyle(
+            color: Color(0xff48484A),
+            fontSize: 34,
+            fontStyle: FontStyle.normal,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.37,
+          ),
+        )
     );
   }
 
   AppBarTheme appBarTheme(bool dark,BuildContext context) => AppBarTheme(
-      elevation: 0,
-      backgroundColor: !dark ? primaryColor : primaryDarkColor,
-      iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
-      titleTextStyle: TextStyle(
-        color: Color(0xff48484A),
-        fontSize: 34,
-        fontStyle: FontStyle.normal,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.37,
-      ),
+    elevation: 0,
+    backgroundColor: !dark ? primaryColor : primaryDarkColor,
+    iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
+    titleTextStyle: TextStyle(
+      color: Color(0xff48484A),
+      fontSize: 34,
+      fontStyle: FontStyle.normal,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.37,
+    ),
   );
 
 /*ThemeMode getThemeMode() {

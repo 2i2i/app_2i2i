@@ -234,8 +234,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 ),
               ),
               title: Text('Recover with passphase'),
-              subtitle:
-                  Text('I know the 25 secret words'),
+              subtitle: Text('I know the 25 secret words'),
               trailing: Icon(Icons.navigate_next),
             ),
             Padding(

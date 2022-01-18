@@ -88,8 +88,7 @@ class ProfileWidget extends StatelessWidget {
                               style: style ??
                                   Theme.of(context)
                                       .textTheme
-                                      .headline6!
-                                      .copyWith(fontWeight: FontWeight.w600),
+                                      .headline6,
                             ),
                     ),
                   ),

@@ -82,7 +82,8 @@ class _HomePageState extends ConsumerState<HomePage>{
           toolbarHeight: 20,
           backgroundColor: Theme.of(context).colorScheme.secondary,
           title: Text('testnet'),
-          titleTextStyle: Theme.of(context).textTheme.bodyText1,
+          titleTextStyle: Theme.of(context).textTheme.bodyText2,
+          centerTitle: true,
         ),
         body: Stack(
           children: _tabItems
@@ -271,8 +272,7 @@ class _HomePageState extends ConsumerState<HomePage>{
                             }
                           },
                           child:
-                          Text(Strings().cancel, style: Theme.of(context).textTheme.button,
-                          ),
+                          Text(Strings().cancel,),
                         ),
                         SizedBox(width: 10),
                         TextButton(
@@ -285,10 +285,9 @@ class _HomePageState extends ConsumerState<HomePage>{
                               'show':false
                             };
                           },
-                          child: Text(Strings().appRatingSubmitButton,
-                              style: Theme.of(context).textTheme.button?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary
-                              ),
+                          child: Text(Strings().appRatingSubmitButton,),
+                          style: TextButton.styleFrom(
+                            primary: Theme.of(context).colorScheme.secondary,
                           ),
                         )
                       ],

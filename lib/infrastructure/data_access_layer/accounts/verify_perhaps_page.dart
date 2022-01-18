@@ -74,8 +74,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                                 text,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .caption
-                                    ?.copyWith(fontWeight: FontWeight.w300),
+                                    .bodyText2,
                               ),
                             ),
                           ),

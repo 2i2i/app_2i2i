@@ -101,8 +101,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                           '${index + 1}',
                           style: Theme.of(context)
                               .textTheme
-                              .caption
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                              .caption,
                         ),
                       ),
                       title: Text(
