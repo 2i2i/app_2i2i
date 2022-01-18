@@ -1,4 +1,6 @@
 import 'package:algorand_dart/algorand_dart.dart';
+
+import 'package:dio/dio.dart' as dio;
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
