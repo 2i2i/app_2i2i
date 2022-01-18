@@ -2,7 +2,7 @@ import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:app_2i2i/ui/screens/user_bid/user_page.dart';
+import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -29,7 +29,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
         child: ListTile(
           contentPadding: EdgeInsets.all(8),
           onTap: () {
-            CustomNavigation.push(context, UserPage(uid: topMeetings[index].B), Routes.USER);
+            CustomNavigation.push(context, UserInfoPage(uid: topMeetings[index].B), Routes.USER);
           },
           title: Row(
             children: [

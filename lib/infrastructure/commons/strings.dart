@@ -99,4 +99,7 @@ class Strings {
 
   //Meeting History
   String meetingsHistory = 'Meetings History';
+  String history = 'History';
+
+  String friendList = 'Friend list';
 }

@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
-import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -15,19 +12,17 @@ import 'widgets/create_bid_widget.dart';
 import 'widgets/friend_button_widget.dart';
 import 'widgets/user_info_widget.dart';
 
-class UserPage extends ConsumerStatefulWidget {
-  UserPage({required this.uid});
+class UserInfoPage extends ConsumerStatefulWidget {
+  UserInfoPage({required this.uid});
 
   final String uid;
 
   @override
-  _UserPageState createState() => _UserPageState();
+  _UserInfoPageState createState() => _UserInfoPageState();
 }
 
-class _UserPageState extends ConsumerState<UserPage> {
+class _UserInfoPageState extends ConsumerState<UserInfoPage> {
   var showBio = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +37,7 @@ class _UserPageState extends ConsumerState<UserPage> {
       return WaitPage();
     }
 
-    var user = userPageViewModel.user;
+    UserModel userModel = userPageViewModel.user;
 
     final isFriend = !(userPrivateAsyncValue is AsyncError) &&
         !(userPrivateAsyncValue is AsyncLoading) &&
@@ -54,18 +49,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
-    final shortBioStart = user.bio.indexOf(RegExp(r'\s')) + 1;
-    int aPoint = shortBioStart + 10;
-    int bPoint = user.bio.length;
-    final shortBioEnd = min(aPoint, bPoint);
-    final shortBio = user.bio; //user.bio.substring(shortBioStart, shortBioEnd);
-    final totalRating = (user.rating * 5).toStringAsFixed(1);
-    var statusColor = AppTheme().green;
-    if (user.status == 'OFFLINE') {
-      statusColor = AppTheme().gray;
-    } else if (user.isInMeeting()) {
-      statusColor = AppTheme().red;
-    }
+    final totalRating = (userModel.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(
@@ -98,7 +82,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           CustomAlertWidget.showBidAlert(
             context,
             CreateBidWidget(
-              uid: user.id,
+              uid: userModel.id,
             ),
           );
         },
@@ -142,7 +126,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   UserInfoWidget(
-                    user: user,
+                    userModel: userModel,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 14),
@@ -165,7 +149,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                               IgnorePointer(
                                 ignoring: true,
                                 child: RatingBar.builder(
-                                  initialRating: user.rating * 5,
+                                  initialRating: userModel.rating * 5,
                                   minRating: 1,
                                   direction: Axis.horizontal,
                                   itemCount: 5,
@@ -206,7 +190,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           Expanded(
             child: OtherBidInList(
-              B: user,
+              B: userModel,
             ),
           ),
         ],

@@ -112,6 +112,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
+              // homePageBuilder: (_) => MyUserPage(),
               homePageBuilder: (_) => HomePage(),
             ),
           ),
