@@ -34,17 +34,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-        ),
-        centerTitle: false,
-      ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 5),
+            Text(
+              'Settings',
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            SizedBox(height: 15),
             Text(
               'QR code',
               style: Theme.of(context).textTheme.subtitle1,
@@ -72,8 +73,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Color(0xffF3F3F7),
+                        // color: Color(0xffF3F3F7),
                         borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          width: 0.5,
+                          color: Theme.of(context).iconTheme.color??Colors.transparent
+                        )
                       ),
                       alignment: Alignment.center,
                       child: Text(

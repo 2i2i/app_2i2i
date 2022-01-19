@@ -69,12 +69,13 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                                   borderRadius: BorderRadius.circular(12),
                                   color: question.selected == text
                                       ? Theme.of(context).colorScheme.secondary
-                                      : Colors.grey.shade200),
+                                      : Theme.of(context).cardColor,
+                              ),
                               child: Text(
                                 text,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyText2,
+                                    .bodyText1,
                               ),
                             ),
                           ),

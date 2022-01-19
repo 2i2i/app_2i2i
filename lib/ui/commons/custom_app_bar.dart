@@ -70,12 +70,19 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
       title: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SvgPicture.asset(
-          'assets/icons/appbar_icon.svg',
+          getLogo(context),
           fit: BoxFit.fill,
           width: 55,
           height: 65,
         ),
       ),
     );
+  }
+
+  String getLogo(context)  {
+    if(Theme.of(context).brightness == Brightness.dark){
+      return 'assets/icons/appbar_icon_dark.svg';
+    }
+    return 'assets/icons/appbar_icon.svg';
   }
 }

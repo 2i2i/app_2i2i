@@ -47,7 +47,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
@@ -139,6 +139,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         'assets/icons/refresh.svg',
                         width: 20,
                         height: 20,
+                        color: iconColor(context),
                       ),
                       onPressed: () async {
                         CustomDialogs.loader(true, context);
@@ -157,6 +158,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         'assets/icons/copy.svg',
                         width: 20,
                         height: 20,
+                        color: iconColor(context),
                       ),
                       onPressed: () {
                         Clipboard.setData(
@@ -184,6 +186,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                               'assets/icons/key.svg',
                               width: 20,
                               height: 20,
+                              color: iconColor(context),
                             ),
                             onPressed: () => CustomDialogs.infoDialog(
                                   context: context,
@@ -202,6 +205,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       ),
     );
   }
+
+  Color? iconColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark?Theme.of(context).colorScheme.secondary:null;
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(

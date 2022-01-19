@@ -12,6 +12,7 @@ import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+import 'ui/screens/setup_account/setup_account.dart';
 import 'ui/test_screen.dart';
 // import 'ui/test_screen.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -123,7 +124,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
-      // homePageBuilder: (_) => SplashScreen(),
+      // homePageBuilder: (_) => SetupBio(),
     );
   }
 }

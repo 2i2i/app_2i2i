@@ -33,7 +33,7 @@ class _FriendButtonWidgetState extends State<FriendButtonWidget> {
         decoration: BoxDecoration(
           color: onTaped
               ? Theme.of(context).colorScheme.secondary
-              : Theme.of(context).primaryColorLight,
+              : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Theme.of(context).colorScheme.secondary),
         ),
@@ -43,7 +43,7 @@ class _FriendButtonWidgetState extends State<FriendButtonWidget> {
             Icon(
               onTaped ? Icons.favorite : Icons.favorite_border_rounded,
               color: onTaped
-                  ? Theme.of(context).primaryColorLight
+                  ? Theme.of(context).cardColor
                   : Theme.of(context).colorScheme.secondary,
             ),
             SizedBox(width: 6),
@@ -53,7 +53,7 @@ class _FriendButtonWidgetState extends State<FriendButtonWidget> {
               style: Theme.of(context).textTheme.bodyText2?.copyWith(
                   // fontWeight: FontWeight.w600,
                   color: onTaped
-                      ? Theme.of(context).primaryColorLight
+                      ? Theme.of(context).cardColor
                       : Theme.of(context).colorScheme.secondary,
               ),
             )

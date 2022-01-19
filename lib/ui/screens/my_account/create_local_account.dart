@@ -1,6 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/verify_perhaps_page.dart';
+import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
@@ -92,8 +92,6 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                 }
                               },
                               child: Text(Strings().copyAndNext),
-                              style: ElevatedButton.styleFrom(
-                                  primary: Theme.of(context).shadowColor),
                             ),
                           ],
                         );
