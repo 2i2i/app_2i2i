@@ -8,9 +8,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
+import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+import 'ui/test_screen.dart';
 // import 'ui/test_screen.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -86,15 +88,15 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // var appSettingModel = ref.watch(appSettingProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home: getView(),
       // home:TestScreen(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
-      // themeMode: appSettingModel.currentThemeMode,
-      themeMode: ThemeMode.light,
+      themeMode: appSettingModel.currentThemeMode,
+      // themeMode: ThemeMode.dark,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
     );
@@ -121,8 +123,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
-
-      // homePageBuilder: (_) => TestScreen(),
+      // homePageBuilder: (_) => SplashScreen(),
     );
   }
 }

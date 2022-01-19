@@ -209,10 +209,11 @@ class AppTheme{
             selectedItemColor: primaryColor,
             unselectedItemColor: disableColor,
             backgroundColor: Colors.grey[800],
-            selectedIconTheme: IconThemeData(color: primaryColor)),
+            selectedIconTheme: IconThemeData(color: primaryColor),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: cardDarkColor,
+            primary: secondaryDarkColor,
             padding: EdgeInsets.all(24),
             textStyle: TextStyle(
               fontFamily: 'SofiaPro',
@@ -223,7 +224,7 @@ class AppTheme{
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            primary: cardDarkColor,
+            primary: secondaryDarkColor,
             padding: EdgeInsets.all(24),
             textStyle: TextStyle(
               fontFamily: 'SofiaPro',
@@ -237,7 +238,9 @@ class AppTheme{
         ),
         tabBarTheme: TabBarTheme(
           indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0), color: primaryColor),
+              borderRadius: BorderRadius.circular(25.0),
+            color: primaryColor,
+          ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: primaryLightColor),
@@ -250,18 +253,63 @@ class AppTheme{
             borderSide: BorderSide(color: primaryLightColor),
           ),
         ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor),
         colorScheme: ColorScheme.dark(secondary: primaryColor),
-        fontFamily: 'SofiaPro',
-        textTheme: TextTheme(
-          headline6: TextStyle(
-            color: Color(0xff48484A),
-            fontSize: 34,
-            fontStyle: FontStyle.normal,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.37,
-          ),
-        )
+        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor),
+      fontFamily: 'SofiaPro',
+      textTheme: TextTheme(
+        headline4: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w600,
+          fontSize: 34,
+          // color: Color(0xff8E8E93),
+        ),
+        headline5: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 28,
+          // color: Color(0xff8E8E93),
+        ),
+        headline6: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          // color: Colors.black,
+        ),
+        subtitle1: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 16,
+          // color: Color(0xff8E8E93),
+        ),
+        subtitle2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 14,
+          // color: Colors.black,
+        ),
+        bodyText1: TextStyle(
+          // fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          fontSize: 16,
+          color: lightSecondaryTextColor,
+        ),
+        bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          // fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.black,
+        ),
+        /*bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          // color: Colors.black,
+        ),*/
+        caption: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 12,
+          // color: Color(0xff8E8E93),
+        ),
+      ),
     );
   }
 
