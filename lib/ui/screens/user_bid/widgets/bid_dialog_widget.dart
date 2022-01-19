@@ -1,9 +1,9 @@
-import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
@@ -34,13 +34,16 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
     final estMaxDurationAsyncValue =
         ref.watch(estMaxDurationProvider(widget.bidIn.id));
     final isMainAccountEmptyAsyncValue = ref.watch(isMainAccountEmptyProvider);
-
+    String coins = widget.bidIn.speed.num.toString() + ' ${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s';
     return AlertDialog(
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14.0))),
-      contentPadding: EdgeInsets.zero,
+        borderRadius: BorderRadius.all(
+          Radius.circular(14.0),
+        ),
+      ),
+      contentPadding: EdgeInsets.only(top: 8),
       insetPadding: EdgeInsets.zero,
       actionsPadding: EdgeInsets.zero,
       actions: [
@@ -52,17 +55,11 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
               Row(
                 children: [
                   Expanded(
-                    child: InkWell(
-                      hoverColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        alignment: Alignment.center,
-                        child: Text(Strings().cancel,
-                            style: Theme.of(context).textTheme.subtitle2),
-                      ),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(Strings().cancel),
                     ),
                   ),
                   Container(
@@ -71,23 +68,14 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                     width: 1,
                   ),
                   Expanded(
-                    child: InkWell(
-                      hoverColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
+                    child: TextButton(
+                      onPressed: () {
                         Navigator.pop(context);
                         widget.onTapTalk?.call();
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        alignment: Alignment.center,
-                        child: Text(Strings().talk,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2
-                                ?.copyWith(color: AppTheme().green)),
-                      ),
+                      child: Text(Strings().talk),
+                      style: TextButton.styleFrom(
+                          primary: Theme.of(context).colorScheme.secondary),
                     ),
                   ),
                 ],
@@ -108,8 +96,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
-                  .copyWith(fontWeight: FontWeight.w800),
+                  .headline6,
             ),
 
             Padding(
@@ -136,7 +123,10 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 width: 35,
                 height: 35,
               ),
-              title: Text(widget.bidIn.speed.num.toString() + ' ${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s'),
+              title: Text(
+                  coins,
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
               isThreeLine: false,
             ),
             ListTile(
@@ -144,26 +134,24 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 onPressed: null,
                 icon: SvgPicture.asset('assets/icons/timer.svg'),
               ),
-              title: Text('Estimate max duration',
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: Theme.of(context).disabledColor,
-                      fontWeight: FontWeight.normal)),
+              title: Text(
+                'Estimate max duration',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                    estMaxDurationAsyncValue.when(
-                        data: (double? estMaxDuration) {
-                          if (estMaxDuration == null ||
-                              estMaxDuration.isInfinite) return 'foreever';
-                          final estMaxDurationInt = estMaxDuration.floor();
-                          return secondsToSensibleTimePeriod(estMaxDurationInt);
-                        },
-                        error: (_, __) => 'error',
-                        loading: () => ''),
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle1!
-                        .copyWith(fontWeight: FontWeight.w400)),
+                  estMaxDurationAsyncValue.when(
+                      data: (double? estMaxDuration) {
+                        if (estMaxDuration == null || estMaxDuration.isInfinite)
+                          return Strings().forever;
+                        final estMaxDurationInt = estMaxDuration.floor();
+                        return secondsToSensibleTimePeriod(estMaxDurationInt);
+                      },
+                      error: (_, __) => 'error',
+                      loading: () => ''),
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
               ),
             ),
             isMainAccountEmptyAsyncValue.when(
@@ -177,18 +165,16 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                       onPressed: null,
                       icon: SvgPicture.asset('assets/icons/warning.svg'),
                     ),
-                    title: Text('Warning',
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            color: Theme.of(context).disabledColor,
-                            fontWeight: FontWeight.normal)),
+                    title: Text(
+                      'Warning',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                          'Your account is empty. If the call is too short, you cannot get your coins.',
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1!
-                              .copyWith(fontWeight: FontWeight.w400)),
+                        'Your account is empty. If the call is too short, you cannot get your coins.',
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
                     ),
                   );
                 },

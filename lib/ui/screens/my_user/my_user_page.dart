@@ -151,20 +151,22 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color:
-                                              Colors.black.withOpacity(0.08),
-                                              blurRadius: 20,
-                                              spreadRadius: 0.5,
-                                            )
-                                          ],
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        firstNameChar,
-                                        style:
-                                        Theme.of(context).textTheme.headline6,
-                                      ),
+                                          color: Colors.black.withOpacity(0.08),
+                                          blurRadius: 20,
+                                          spreadRadius: 0.5,
+                                        )
+                                      ],
                                     ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      firstNameChar,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline3
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                     Align(
                                       alignment: Alignment.bottomRight,
                                       child: Container(
@@ -183,7 +185,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                                 ),
                               ),
                             ),
-                            title: Text(userModel.name,style: Theme.of(context).textTheme.headline5,softWrap: false,
+                            title: Text(userModel.name,style: Theme.of(context).textTheme.headline6,softWrap: false,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,),
                             subtitle: Text(userModel.bio,
@@ -193,7 +195,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                             ),
                             dense: false,
                             isThreeLine: true,
-                            minVerticalPadding: 10,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 24),
@@ -241,7 +242,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                 uid: myUserPageViewModel.user.id,
                 titleWidget: Text(
                   'Bids In',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.subtitle2,
                 ),
                 noBidsText: Strings().noBidFound,
                 onTap: myUserPageViewModel.acceptBid,
@@ -250,7 +251,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                 uid: myUserPageViewModel.user.id,
                 titleWidget: Text(
                   'Bids Out',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.subtitle2,
                 ),
                 noBidsText: Strings().noBidFound,
                 trailingIcon: Icon(

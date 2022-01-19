@@ -300,8 +300,8 @@ class _CallPageState extends ConsumerState<CallPage>
                           animationType: AnimationType.scaleIn,
                           characterTextStyle: Theme.of(context)
                               .textTheme
-                              .headline3!
-                              .copyWith(color: Colors.white),
+                              .headline3
+                              !.copyWith(color: Colors.white),
                         ),
                       ),
                     ),

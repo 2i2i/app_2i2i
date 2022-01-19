@@ -47,7 +47,7 @@ class NoBidPage extends ConsumerWidget {
                 child: Text(message,
                     textAlign: TextAlign.center,
                     maxLines: 3,
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(
                       decoration: TextDecoration.underline
                     )),
               ),

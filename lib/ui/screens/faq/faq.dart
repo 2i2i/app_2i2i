@@ -50,11 +50,10 @@ class FAQ extends StatelessWidget {
                 ),
                 child: Text(
                   data.description,
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.justify,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText2!
-                      .copyWith(fontSize: 16),
+                      .bodyText2,
                 ),
               ),
             ),

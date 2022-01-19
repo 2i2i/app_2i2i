@@ -1,9 +1,7 @@
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import 'widgets/account_info.dart';

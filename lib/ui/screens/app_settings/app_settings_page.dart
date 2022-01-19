@@ -193,7 +193,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                       Text(
                         'System Defaults',
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary),
+                            color: Theme.of(context).colorScheme.secondary,
+                        ),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),

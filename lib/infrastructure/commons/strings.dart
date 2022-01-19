@@ -11,6 +11,10 @@ class Strings {
 
   String shareQr = 'Share yourself';
 
+  String less = 'less';
+
+  String forever = 'forever';
+
   Strings._internal();
 
   factory Strings() {
