@@ -10,11 +10,12 @@ class Strings {
   String automatic = 'Automatic';
 
   String shareQr = 'Share yourself';
+  String error = 'Error';
 
+  String errorWhileAddBid ='Error while adding bid, Try another account or reduce the max duration or reduce the speed';
   String less = 'less';
 
   String forever = 'forever';
-
   Strings._internal();
 
   factory Strings() {

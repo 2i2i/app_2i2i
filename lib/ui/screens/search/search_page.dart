@@ -143,5 +143,4 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       },
     );
   }
-
 }

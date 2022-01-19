@@ -114,7 +114,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
             child: AuthWidget(
               // homePageBuilder: (_) => MyUserPage(),
               homePageBuilder: (_) => HomePage(),
-              // homePageBuilder: (_) => CreateBidPage(uid: 'feztBsch9raB7L312GgaiB9Vxpn2',),
             ),
           ),
         ),
