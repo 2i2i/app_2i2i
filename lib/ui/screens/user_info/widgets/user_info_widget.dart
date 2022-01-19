@@ -5,10 +5,10 @@ import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
-class UserInfoWidget extends StatelessWidget {
+class UserInfoWidget extends StatefulWidget {
   final UserModel userModel;
 
-  const UserInfoWidget({Key? key, required this.userModel}) : super(key: key);
+ const UserInfoWidget({Key? key, required this.userModel}) : super(key: key);
 
   @override
   _UserInfoWidgetState createState() => _UserInfoWidgetState();
@@ -30,7 +30,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     return Row(
       children: [
         ProfileWidget(
-          stringPath: widget.userModel.name ?? "",
+          stringPath: widget.userModel.name,
           statusColor: statusColor,
           radius: 80,
         ),

@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
@@ -135,7 +134,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: user), Routes.RATING),
+                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: userModel), Routes.RATING),
                             child: Column(
                               children: [
                                 Text(
