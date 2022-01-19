@@ -9,7 +9,7 @@ import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
 import '../../../commons/custom_navigation.dart';
 import '../../../commons/custom_profile_image_view.dart';
-import '../../user_bid/user_page.dart';
+import '../../user_info/user_info_page.dart';
 
 class UserInfoTile extends ConsumerWidget {
   final UserModel userModel;
@@ -46,7 +46,7 @@ class UserInfoTile extends ConsumerWidget {
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
         onTap: () => CustomNavigation.push(
-            context, UserPage(uid: userModel.id), Routes.USER),
+            context, UserInfoPage(uid: userModel.id), Routes.USER),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(

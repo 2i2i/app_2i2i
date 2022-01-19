@@ -6,9 +6,9 @@ import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
-  final UserModel user;
+  final UserModel userModel;
 
-  const UserInfoWidget({Key? key, required this.user}) : super(key: key);
+ const UserInfoWidget({Key? key, required this.userModel}) : super(key: key);
 
   @override
   _UserInfoWidgetState createState() => _UserInfoWidgetState();
@@ -20,24 +20,24 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     final shortBio =
-        widget.user.bio; //user.bio.substring(shortBioStart, shortBioEnd);
+        widget.userModel.bio; //user.bio.substring(shortBioStart, shortBioEnd);
     var statusColor = AppTheme().green;
-    if (widget.user.status == 'OFFLINE') {
+    if (widget.userModel.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
-    } else if (widget.user.isInMeeting()) {
+    } else if (widget.userModel.isInMeeting()) {
       statusColor = AppTheme().red;
     }
     return Row(
       children: [
         ProfileWidget(
-          stringPath: widget.user.name,
+          stringPath: widget.userModel.name,
           statusColor: statusColor,
           radius: 80,
         ),
         Expanded(
           child: ListTile(
             title: Text(
-              widget.user.name,
+              widget.userModel.name,
               style: Theme.of(context).textTheme.headline6,
             ),
             subtitle: Column(
