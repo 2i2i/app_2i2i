@@ -14,7 +14,7 @@ class CustomAlertWidget {
       context: context,
       useRootNavigator: false,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).canvasColor,
       builder: (BuildContext context) => child,
       isDismissible: isDismissible,
     );

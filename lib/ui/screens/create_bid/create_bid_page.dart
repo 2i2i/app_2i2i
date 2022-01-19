@@ -71,7 +71,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
           children: [
             Text(
               Strings().createABid,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 20),
             Padding(
@@ -91,10 +91,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               '${Strings().algoSec}',
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle2!
-                                  .copyWith(
-                                      color: Theme.of(context).shadowColor,
-                                      fontWeight: FontWeight.normal),
+                                  .subtitle2
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .iconTheme
+                                        .color
+                                        ?.withOpacity(0.5),
+                                    fontWeight: FontWeight.normal,
+                                  ),
                             ),
                           ),
                           SizedBox(width: 8)
@@ -126,11 +130,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     '${Strings().algoSec}',
                                     style: Theme.of(context)
                                         .textTheme
-                                        .subtitle2!
-                                        .copyWith(
-                                            color:
-                                                Theme.of(context).shadowColor,
-                                            fontWeight: FontWeight.normal),
+                                        .subtitle2
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .iconTheme
+                                              .color
+                                              ?.withOpacity(0.5),
+                                          fontWeight: FontWeight.normal,
+                                        ),
                                   ),
                                 ),
                                 SizedBox(width: 8)
@@ -151,7 +158,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.only(top: 20),
               child: CustomTextField(
                 title: Strings().note,
                 hintText: Strings().bidNote,
@@ -163,15 +170,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             Visibility(
               visible: speed.num != 0,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.only(top: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Strings().estMaxDuration,
-                        style: Theme.of(context)
-                            .textTheme
-                            .caption!
-                            .copyWith(color: Theme.of(context).shadowColor)),
+                    Text(
+                      Strings().estMaxDuration,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     SizedBox(height: 4),
                     Container(
                       decoration: BoxDecoration(
@@ -192,14 +198,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   const EdgeInsets.symmetric(horizontal: 8),
                               child: SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
-                                  activeTrackColor: Theme.of(context)
-                                      .tabBarTheme
-                                      .unselectedLabelColor,
+                                  activeTrackColor: Theme.of(context).cardColor,
+                                  inactiveTrackColor:  Theme.of(context).disabledColor,
                                   thumbShape: CustomSliderThumbRect(
                                       mainContext: context,
                                       thumbRadius: 15,
                                       max: 0,
-                                      min: 100),
+                                      min: 100,
+                                  ),
                                 ),
                                 child: Slider(
                                     value: _value,
@@ -207,7 +213,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       setState(() {
                                         _value = value;
                                       });
-                                    }),
+                                    },
+                                ),
                               ),
                             ),
                           ),
@@ -319,12 +326,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       ),
                     ),
                     TextButton(
+                      style: TextButton.styleFrom(
+                        primary: Theme.of(context).colorScheme.secondary
+                      ),
                       onPressed: () => CustomAlertWidget.showBidAlert(
-                          context, AddAccountOptionsWidgets()),
+                          context, AddAccountOptionsWidgets(),
+                      ),
                       child: Text(
                         Strings().addAccount,
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
                       ),
                     )
                   ],
@@ -468,13 +477,11 @@ class CustomSliderThumbRect extends SliderComponentShape {
     );
 
     final paint = Paint()
-      ..color = Colors.black
+      ..color = Theme.of(mainContext).cardColor
       ..style = PaintingStyle.fill;
 
     TextSpan span = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1!.copyWith(
-            color: Theme.of(mainContext).primaryColor,
-            fontWeight: FontWeight.w800),
+        style: Theme.of(mainContext).textTheme.subtitle1,
         text: '${getValue(value!)}s');
 
     TextPainter tp = new TextPainter(

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -96,7 +97,6 @@ class _SetupBioState extends ConsumerState<SetupBio> {
               },
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Theme.of(context).primaryColorLight,
                 hintText: Strings().yourNameHint,
               ),
             ),
@@ -115,21 +115,22 @@ class _SetupBioState extends ConsumerState<SetupBio> {
               maxLines: 6,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Theme.of(context).primaryColorLight,
+                // fillColor: Theme.of(context).primaryColorLight,
                 border: OutlineInputBorder(),
                 hintText: Strings().bioExample,
               ),
             ),
             SizedBox(height: kToolbarHeight),
             ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState?.validate() ?? false) {
-                    myUserPageViewModel?.changeNameAndBio(
-                        userNameEditController.text, bioEditController.text);
-                    Navigator.of(context).maybePop();
-                  }
-                },
-                child: Text(Strings().save))
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  myUserPageViewModel?.changeNameAndBio(
+                      userNameEditController.text, bioEditController.text);
+                  Navigator.of(context).maybePop();
+                }
+              },
+              child: Text(Strings().save),
+            )
           ],
         ),
       ),

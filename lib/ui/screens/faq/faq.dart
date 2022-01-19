@@ -36,6 +36,7 @@ class FAQ extends StatelessWidget {
           title: Text(data.title),
           baseColor: bg,
           expandedTextColor: Theme.of(context).colorScheme.secondary,
+
           children: <Widget>[
             Divider(
               thickness: 1.0,

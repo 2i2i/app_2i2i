@@ -44,7 +44,7 @@ class BidInfoTile extends StatelessWidget {
                       height: 50,
                       width: 50,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                               width: 0.3,
@@ -114,13 +114,14 @@ class BidInfoTile extends StatelessWidget {
                       children: [],
                       style: Theme.of(context)
                           .textTheme
-                          .subtitle1!
-                          .copyWith(color: Theme.of(context).shadowColor),
+                          .subtitle1?.copyWith(
+                        color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                      ),
                     )
                   ],
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
-                      color: Theme.of(context).shadowColor,
-                      fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                  ),
                 ),
               ),
               // Text(bid.speed.num.toString() + ' μAlgo/s'),

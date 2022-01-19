@@ -46,7 +46,8 @@ class ProfileWidget extends StatelessWidget {
                       BoxShadow(
                           offset: Offset(2, 4),
                           blurRadius: 20,
-                          color: Color.fromRGBO(0, 0, 0, 0.12)),
+                          color: Theme.of(context).shadowColor,
+                      ),
                     ]
                   : null,
             ),
@@ -88,7 +89,7 @@ class ProfileWidget extends StatelessWidget {
                               style: style ??
                                   Theme.of(context)
                                       .textTheme
-                                      .headline6,
+                                      .headline5,
                             ),
                     ),
                   ),
@@ -135,7 +136,7 @@ class RectangleBox extends StatelessWidget {
         child: Center(child: icon),
         decoration: BoxDecoration(
           shape: BoxShape.rectangle,
-          color: Theme.of(context).primaryColorLight,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(

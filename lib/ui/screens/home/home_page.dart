@@ -93,107 +93,49 @@ class _HomePageState extends ConsumerState<HomePage>{
               .values
               .toList(),
         ),
-        bottomNavigationBar: Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              currentIndex: _tabSelectedIndex,
-              onTap: (i) => _onTap(i),
-              items: [
-                BottomNavigationBarItem(
-                  label: Strings().home,
-                  activeIcon:
-                      selectedIcon('assets/icons/house.svg', isSelected: true),
-                  icon: selectedIcon('assets/icons/house.svg'),
-                ),
-                BottomNavigationBarItem(
-                  label: Strings().profile,
-                  activeIcon:
-                      selectedIcon('assets/icons/person.svg', isSelected: true),
-                  icon: Consumer(
-                    builder: (context, ref, _) {
-                      final userId = ref.watch(myUIDProvider);
-                      if(userId is String) {
-                        final bidInList = ref.watch(getBidInsProvider(userId));
-                        if(bidInList.asData?.value is List<BidIn>){
-                          List<BidIn> bids = bidInList.asData!.value;
-                          if(bids.isNotEmpty) {
-                            return FutureBuilder(
-                              future: SecureStorage().read(Keys.myReadBids),
-                              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                                if(snapshot.data is String){
-                                  List localIds = snapshot.data!.split(',').toSet().toList();
-                                  List serverIds = bids.map((e) => e.id).toSet().toList();
-                                  bool anyNew = serverIds.any((element) => !localIds.contains(element));
-                                  if(anyNew) {
-                                    return SizedBox(
-                                      height: 30,
-                                      width: 30,
-                                      child: Stack(
-                                        children: [
-                                          selectedIcon(
-                                              'assets/icons/person.svg'),
-                                          Align(
-                                            alignment: Alignment.topRight,
-                                            child: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius: BorderRadius
-                                                    .circular(20),
-                                                border:
-                                                Border.all(
-                                                    color: Colors.white,
-                                                    width: 2),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                }
-                                return selectedIcon('assets/icons/person.svg');
-                              },
-                            );
-                          }
-                        }
-                      }
-
-                      return selectedIcon('assets/icons/person.svg');
-
-                    },
-
-                  ),
-                ),
-                BottomNavigationBarItem(
-                  label: Strings().account,
-                  activeIcon: selectedIcon('assets/icons/account.svg',
-                      isSelected: true),
-                  icon: selectedIcon('assets/icons/account.svg'),
-                ),
-                BottomNavigationBarItem(
-                  label: Strings().faq,
-                  activeIcon:
-                      selectedIcon('assets/icons/help.svg', isSelected: true),
-                  icon: selectedIcon('assets/icons/help.svg'),
-                ),
-                BottomNavigationBarItem(
-                  label: Strings().settings,
-                  activeIcon: selectedIcon('assets/icons/setting.svg',
-                      isSelected: true),
-                  icon: selectedIcon('assets/icons/setting.svg'),
-                ),
-              ],
-            ),
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(4.0),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _tabSelectedIndex,
+            onTap: (i) => _onTap(i),
+            items: [
+              BottomNavigationBarItem(
+                label: Strings().home,
+                activeIcon:
+                    selectedIcon('assets/icons/house.svg', isSelected: true),
+                icon: selectedIcon('assets/icons/house.svg'),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().profile,
+                activeIcon:
+                    selectedIcon('assets/icons/person.svg', isSelected: true),
+                icon: ProfileIcon(),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().account,
+                activeIcon:
+                    selectedIcon('assets/icons/account.svg', isSelected: true),
+                icon: selectedIcon('assets/icons/account.svg'),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().faq,
+                activeIcon:
+                    selectedIcon('assets/icons/help.svg', isSelected: true),
+                icon: selectedIcon('assets/icons/help.svg'),
+              ),
+              BottomNavigationBarItem(
+                label: Strings().settings,
+                activeIcon:
+                    selectedIcon('assets/icons/setting.svg', isSelected: true),
+                icon: selectedIcon('assets/icons/setting.svg'),
+              ),
+            ],
           ),
         ),
         bottomSheet: ValueListenableBuilder(
           valueListenable: showRating,
-          builder: (BuildContext context,Map value, Widget? child) {
+          builder: (BuildContext context, Map value, Widget? child) {
             child ??= Container();
             return Visibility(
               visible: value['show'] ?? false,
@@ -295,7 +237,7 @@ class _HomePageState extends ConsumerState<HomePage>{
                   ],
                 ),
               );
-          },
+            },
           ),
         ),
       ),
@@ -339,7 +281,72 @@ class _HomePageState extends ConsumerState<HomePage>{
       });
     }
   }
+}
 
+class ProfileIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final userId = ref.watch(myUIDProvider);
+        if (userId is String) {
+          final bidInList = ref.watch(getBidInsProvider(userId));
+          if (bidInList.asData?.value is List<BidIn>) {
+            List<BidIn> bids = bidInList.asData!.value;
+            if (bids.isNotEmpty) {
+              return FutureBuilder(
+                future: SecureStorage().read(Keys.myReadBids),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.data is String) {
+                    List localIds = snapshot.data!.split(',').toSet().toList();
+                    List serverIds = bids.map((e) => e.id).toSet().toList();
+                    bool anyNew =
+                        serverIds.any((element) => !localIds.contains(element));
+                    if (anyNew) {
+                      return SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: Stack(
+                          children: [
+                            selectedIcon('assets/icons/person.svg',context),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                height: 15,
+                                width: 15,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }
+                  return selectedIcon('assets/icons/person.svg',context);
+                },
+              );
+            }
+          }
+        }
+
+        return selectedIcon('assets/icons/person.svg',context);
+      },
+    );
+  }
+
+  Widget selectedIcon(String iconPath, BuildContext context,{bool isSelected = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: SvgPicture.asset(iconPath,
+          color: isSelected ? Theme.of(context).colorScheme.secondary : null),
+    );
+  }
 }
 
 class TabItem {

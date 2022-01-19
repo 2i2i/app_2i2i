@@ -58,7 +58,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColorLight,
+        backgroundColor: Theme.of(context).cardColor,
         actions: [
           PopupMenuButton<int>(
             shape: RoundedRectangleBorder(
@@ -94,16 +94,14 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               BoxShadow(
                   offset: Offset(2, 2),
                   blurRadius: 8,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .secondary // changes position of shadow
+                  color: Theme.of(context).colorScheme.secondary // changes position of shadow
                   ),
             ],
           ),
           child: Icon(
             Icons.add_rounded,
             size: 30,
-            color: Theme.of(context).primaryColorLight,
+            color: Theme.of(context).cardColor,
           ),
         ),
       ),

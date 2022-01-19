@@ -58,14 +58,15 @@ class MeetingHistoryTile extends ConsumerWidget {
                       height: 50,
                       width: 50,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                               width: 0.3,
-                              color: Theme.of(context).disabledColor),
+                              color: Theme.of(context).disabledColor,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Theme.of(context).iconTheme.color!.withOpacity(0.08),
                               blurRadius: 20,
                               spreadRadius: 0.5,
                             )
@@ -73,8 +74,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                       alignment: Alignment.center,
                       child: Text(
                         firstNameChar,
-                        style: Theme.of(context).textTheme.headline6!.copyWith(
-                            fontWeight: FontWeight.w600, fontSize: 20),
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
                     Align(
@@ -104,18 +104,15 @@ class MeetingHistoryTile extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context)
                             .textTheme
-                            .subtitle1!
-                            .copyWith(fontWeight: FontWeight.bold)),
+                            .subtitle1,
+                    ),
                     SizedBox(height: 4),
                     Text(
                       userModel.bio,
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.caption?.copyWith(
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).shadowColor,
-                          ),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ],
                 ),
@@ -130,10 +127,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).shadowColor,
-                          fontSize: 20),
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     SizedBox(height: 4),
                     Text(
@@ -141,9 +135,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.caption?.copyWith(
-                            fontWeight: FontWeight.w400,
-                          ),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ],
                 ),

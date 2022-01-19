@@ -21,7 +21,7 @@ class AppSettingPage extends ConsumerStatefulWidget {
   _AppSettingPageState createState() => _AppSettingPageState();
 }
 
-class _AppSettingPageState extends ConsumerState<AppSettingPage> {
+class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin{
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
@@ -34,17 +34,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
     var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-        ),
-        centerTitle: false,
-      ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 5),
+            Text(
+              'Settings',
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            SizedBox(height: 15),
             Text(
               'QR code',
               style: Theme.of(context).textTheme.subtitle1,
@@ -72,8 +73,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Color(0xffF3F3F7),
+                        // color: Color(0xffF3F3F7),
                         borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          width: 0.5,
+                          color: Theme.of(context).iconTheme.color??Colors.transparent
+                        )
                       ),
                       alignment: Alignment.center,
                       child: Text(
@@ -175,33 +180,84 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: ListTile(
-                onTap: () {
-                  CustomNavigation.push(
-                      context, ThemeModeScreen(), 'ThemeModeScreen');
-                },
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      getThemeModeName(appSettingModel.currentThemeMode),
-                      style: Theme.of(context).textTheme.subtitle1,
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                var appSettingModel = ref.watch(appSettingProvider);
+                int selectedIndex = 0;
+                if(appSettingModel.currentThemeMode == ThemeMode.system){
+                  selectedIndex = 2;
+                }else if(appSettingModel.currentThemeMode == ThemeMode.dark){
+                  selectedIndex = 1;
+                }
+                return Container(
+                  decoration: Custom.getBoxDecoration(context),
+                  child: TabBar(
+                    controller: TabController(length: 3, vsync: this,initialIndex: selectedIndex),
+                    indicatorPadding: EdgeInsets.all(3),
+                    indicator: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    if (appSettingModel.currentThemeMode == ThemeMode.system)
-                      Text(
-                        'System Defaults',
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    tabs: [
+                      Tab(
+                        text: 'Light',
                       ),
-                  ],
-                ),
-                trailing: Icon(
-                  Icons.navigate_next,
+                      Tab(
+                        text: 'Dark',
+                      ),
+                      Tab(
+                        text: 'Auto',
+                      ),
+                    ],
+                    onTap: (index){
+                      switch (index) {
+                        case 0:
+                          appSettingModel.setThemeMode("LIGHT");
+                          break;
+                        case 1:
+                          appSettingModel.setThemeMode("DARK");
+                          break;
+                        case 2:
+                          appSettingModel.setThemeMode("AUTO");
+                          break;
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
+            Visibility(
+              visible: false,
+              child: Container(
+                decoration: Custom.getBoxDecoration(context),
+                child: ListTile(
+                  onTap: () {
+                    CustomNavigation.push(
+                        context, ThemeModeScreen(), 'ThemeModeScreen');
+                  },
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        getThemeModeName(appSettingModel.currentThemeMode),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      if (appSettingModel.currentThemeMode == ThemeMode.system)
+                        Text(
+                          'System Defaults',
+                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                  trailing: Icon(
+                    Icons.navigate_next,
+                  ),
                 ),
               ),
             ),
