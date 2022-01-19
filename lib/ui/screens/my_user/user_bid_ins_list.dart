@@ -2,19 +2,22 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
-import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import 'widgets/bid_dialog_widget.dart';
-import 'widgets/no_bid_page.dart';
+import '../home/wait_page.dart';
+import '../user_info/widgets/bid_dialog_widget.dart';
+import '../user_info/widgets/no_bid_page.dart';
+import 'widgets/bid_info_tile.dart';
 
 class BidAndUser {
   const BidAndUser(this.bid, this.bidInPrivate, this.user, {this.bidOut});
+
   final BidIn bid;
   final BidInPrivate bidInPrivate;
   final BidOut? bidOut;
@@ -68,7 +71,7 @@ class UserBidInsList extends ConsumerWidget {
     if (bidInList is AsyncLoading ||
         bidInList is AsyncError ||
         (bidInList.asData?.value == null)) {
-      return CircularProgressIndicator();
+      return WaitPage();
     }
     if (bidInList.asData?.value.isEmpty ?? false) {
       NoBidPage(noBidsText: noBidsText);
@@ -84,17 +87,11 @@ class UserBidInsList extends ConsumerWidget {
       localBids.addAll(bids.map((e) => e.id).toList());
       SecureStorage().write(Keys.myReadBids, localBids.toSet().toList().join(','));
     });
-    return ListView.separated(
+    return ListView.builder(
       primary: false,
       physics: NeverScrollableScrollPhysics(),
       itemCount: bidInsWithUser.length,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      separatorBuilder: (_, ix) {
-        return Padding(
-          padding: EdgeInsets.only(left: 85),
-          child: Divider(),
-        );
-      },
+      padding: const EdgeInsets.symmetric(vertical: 10),
       itemBuilder: (_, ix) {
         BidAndUser bidAndUser = bidInsWithUser[ix];
 
@@ -104,94 +101,17 @@ class UserBidInsList extends ConsumerWidget {
         BidInPrivate bidInPrivate = bidAndUser.bidInPrivate;
         UserModel userModel = bidAndUser.user!;
 
-        var statusColor = AppTheme().green;
-        if (userModel.status == 'OFFLINE') {
-          statusColor = AppTheme().gray;
-        }
-        if (userModel.isInMeeting()) {
-          statusColor = AppTheme().red;
-        }
-        String firstNameChar = userModel.name;
-        if (firstNameChar.isNotEmpty) {
-          firstNameChar = firstNameChar.substring(0, 1);
-        }
-        return ListTile(
-          onTap: () {
-            CustomDialogs.infoDialog(
-              context: context,
-              child: BidDialogWidget(
-                bidIn: bid,
-                onTapTalk: () => onTap(bid, bidInPrivate),
-                userModel: userModel,
-              ),
-            );
-          },
-          leading: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: SizedBox(
-              height: 55,
-              width: 55,
-              child: Stack(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 20,
-                            spreadRadius: 0.5,
-                          )
-                        ]),
-                    alignment: Alignment.center,
-                    child: Text(
-                      firstNameChar,
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                      height: 15,
-                      width: 15,
-                      decoration: BoxDecoration(
-                          color: statusColor,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white, width: 2)),
-                    ),
-                  ),
-                ],
-              ),
+        return BidInfoTile(
+          onTap: () => CustomDialogs.infoDialog(
+            context: context,
+            child: BidDialogWidget(
+              bidIn: bid,
+              onTapTalk: () => onTap(bid, bidInPrivate),
+              userModel: userModel,
             ),
           ),
-          title: Text(
-            userModel.name,
-            maxLines: 2,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            userModel.bio,
-            maxLines: 2,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(bid.speed.num.toString() + ' μAlgo/s'),
-              SizedBox(width: 8),
-              Image.asset(
-                'assets/algo_logo.png',
-                height: 30,
-                width: 30,
-              )
-            ],
-          ),
+          bidSpeed: bid.speed.num.toString(),
+          userModel: userModel,
         );
       },
     );
@@ -199,25 +119,30 @@ class UserBidInsList extends ConsumerWidget {
 
   List<BidAndUser> sortAndFilterList(List<BidIn> bidIns, WidgetRef ref,
       AsyncValue<UserModelPrivate> myPrivateUserAsyncValue) {
+    List<BidAndUser> bidInsWithUserNoNulls = [];
+
     var bidInsWithUser =
         bidIns.map((bid) => ref.watch(bidAndUserProvider(bid))).toList();
-
     // filter out blocked users
     if (!(myPrivateUserAsyncValue is AsyncError) &&
         !(myPrivateUserAsyncValue is AsyncLoading)) {
       final myPrivateUser = myPrivateUserAsyncValue.value;
-      if (myPrivateUser != null) {
+      if (myPrivateUser != null && myPrivateUser.blocked.isNotEmpty) {
         bidInsWithUser = bidInsWithUser
             .where((BidAndUser? b) =>
                 b != null && !myPrivateUser.blocked.contains(b.user!.id))
             .toList();
       }
     }
-    bidInsWithUser.remove(null);
-    final bidInsWithUserNoNulls = bidInsWithUser.map((b) => b!).toList();
-    // sort
-    bidInsWithUserNoNulls
-        .sort((b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
+
+    if (bidInsWithUser.isNotEmpty) {
+      bidInsWithUser.removeWhere((e) => e == null);
+      bidInsWithUserNoNulls =
+          bidInsWithUser.map((element) => element!).toList();
+      bidInsWithUserNoNulls
+          .sort((b1, b2) => bidAndUserSort(b1, b2, myPrivateUserAsyncValue));
+    }
+
     return bidInsWithUserNoNulls;
   }
 }

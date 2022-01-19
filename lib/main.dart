@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -12,6 +11,10 @@ import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+// import 'ui/test_screen.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,6 +112,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
+              // homePageBuilder: (_) => MyUserPage(),
               homePageBuilder: (_) => HomePage(),
             ),
           ),

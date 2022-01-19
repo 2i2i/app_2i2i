@@ -9,7 +9,7 @@ import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
 import '../../../commons/custom_navigation.dart';
 import '../../../commons/custom_profile_image_view.dart';
-import '../../user_bid/user_page.dart';
+import '../../user_info/user_info_page.dart';
 
 class UserInfoTile extends ConsumerWidget {
   final UserModel userModel;
@@ -46,7 +46,7 @@ class UserInfoTile extends ConsumerWidget {
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
         onTap: () => CustomNavigation.push(
-            context, UserPage(uid: userModel.id), Routes.USER),
+            context, UserInfoPage(uid: userModel.id), Routes.USER),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(
@@ -57,10 +57,7 @@ class UserInfoTile extends ConsumerWidget {
                 hideShadow: true,
                 showBorder: true,
                 statusColor: statusColor,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline5!
-                    .copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headline5,
               ),
               SizedBox(width: 10),
               Expanded(
@@ -119,11 +116,7 @@ class UserInfoTile extends ConsumerWidget {
                             maxLines: 2,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
-                            style:
-                                Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).disabledColor,
-                                    ),
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
                         ),
                         isForBlockedUser

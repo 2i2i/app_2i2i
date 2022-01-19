@@ -50,11 +50,12 @@ class _FriendButtonWidgetState extends State<FriendButtonWidget> {
             Text(
               onTaped ? 'You are friends' : 'Friend',
               maxLines: 2,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  // fontWeight: FontWeight.w600,
                   color: onTaped
                       ? Theme.of(context).primaryColorLight
-                      : Theme.of(context).colorScheme.secondary),
+                      : Theme.of(context).colorScheme.secondary,
+              ),
             )
           ],
         ),

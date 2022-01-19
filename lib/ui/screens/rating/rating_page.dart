@@ -78,8 +78,8 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                         Text('($totalRating/5)',
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle1
-                                ?.copyWith(fontWeight: FontWeight.w600)),
+                                .subtitle2,
+                        ),
                         SizedBox(width: 4),
                         Icon(
                           Icons.star_purple500_outlined,

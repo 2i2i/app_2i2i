@@ -1,11 +1,12 @@
-import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
-import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -16,19 +17,17 @@ import 'other_bid_list.dart';
 import 'widgets/friend_button_widget.dart';
 import 'widgets/user_info_widget.dart';
 
-class UserPage extends ConsumerStatefulWidget {
-  UserPage({required this.uid});
+class UserInfoPage extends ConsumerStatefulWidget {
+  UserInfoPage({required this.uid});
 
   final String uid;
 
   @override
-  _UserPageState createState() => _UserPageState();
+  _UserInfoPageState createState() => _UserInfoPageState();
 }
 
-class _UserPageState extends ConsumerState<UserPage> {
+class _UserInfoPageState extends ConsumerState<UserInfoPage> {
   var showBio = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class _UserPageState extends ConsumerState<UserPage> {
       return WaitPage();
     }
 
-    var user = userPageViewModel.user;
+    UserModel userModel = userPageViewModel.user;
 
     final isFriend = !(userPrivateAsyncValue is AsyncError) &&
         !(userPrivateAsyncValue is AsyncLoading) &&
@@ -55,18 +54,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
-    final shortBioStart = user.bio.indexOf(RegExp(r'\s')) + 1;
-    int aPoint = shortBioStart + 10;
-    int bPoint = user.bio.length;
-    final shortBioEnd = min(aPoint, bPoint);
-    final shortBio = user.bio; //user.bio.substring(shortBioStart, shortBioEnd);
-    final totalRating = (user.rating * 5).toStringAsFixed(1);
-    var statusColor = AppTheme().green;
-    if (user.status == 'OFFLINE') {
-      statusColor = AppTheme().gray;
-    } else if (user.isInMeeting()) {
-      statusColor = AppTheme().red;
-    }
+    final totalRating = (userModel.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(
@@ -95,7 +83,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomNavigation.push(context, CreateBidPage(uid: user.id), Routes.CreateBid),
+        onTap: () => CustomNavigation.push(context, CreateBidPage(uid: userModel.id), Routes.CreateBid),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
@@ -127,7 +115,8 @@ class _UserPageState extends ConsumerState<UserPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(020),
-                  bottomRight: Radius.circular(20)),
+                  bottomRight: Radius.circular(20),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 8),
@@ -136,7 +125,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   UserInfoWidget(
-                    user: user,
+                    userModel: userModel,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 14),
@@ -144,41 +133,42 @@ class _UserPageState extends ConsumerState<UserPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                '$totalRating',
-                                maxLines: 2,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Theme.of(context).disabledColor),
-                              ),
-                              SizedBox(height: 4),
-                              IgnorePointer(
-                                ignoring: true,
-                                child: RatingBar.builder(
-                                  initialRating: user.rating * 5,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  itemCount: 5,
-                                  itemSize: 20,
-                                  tapOnlyMode: true,
-                                  updateOnDrag: false,
-                                  allowHalfRating: true,
-                                  glowColor: Colors.white,
-                                  unratedColor: Colors.grey.shade300,
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
+                          child: InkWell(
+                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: userModel), Routes.RATING),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '$totalRating',
+                                  maxLines: 2,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 4),
+                                IgnorePointer(
+                                  ignoring: true,
+                                  child: RatingBar.builder(
+                                    initialRating: userModel.rating * 5,
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    itemCount: 5,
+                                    itemSize: 20,
+                                    tapOnlyMode: true,
+                                    updateOnDrag: false,
+                                    allowHalfRating: true,
+                                    glowColor: Colors.white,
+                                    unratedColor: Colors.grey.shade300,
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amber,
+                                    ),
+                                    onRatingUpdate: (rating) {
+                                      print(rating);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(width: 8),
@@ -200,7 +190,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           Expanded(
             child: OtherBidInList(
-              B: user,
+              B: userModel,
             ),
           ),
         ],

@@ -44,24 +44,22 @@ class KeysWidget extends StatelessWidget {
           'Please read carefully',
           style: Theme.of(context)
               .textTheme
-              .subtitle1!
-              .copyWith(fontWeight: FontWeight.w800),
+              .headline6,
         ),
         SizedBox(height: 8),
         RichText(
           text: TextSpan(
               text:
               'Write down your recovery passphase(1-25 words). This is the',
-              style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  fontWeight: FontWeight.normal,
-                  color: Theme.of(context).disabledColor),
-              children: <TextSpan>[
-                TextSpan(
-                  text: ' only way to recover your account in future.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontWeight: FontWeight.w500),
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  color: AppTheme().lightSecondaryTextColor,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: ' only way to recover your account in future.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2,
                 )
               ]),
         ),
@@ -71,33 +69,33 @@ class KeysWidget extends StatelessWidget {
               color: AppTheme().warningColor,
               borderRadius: BorderRadius.circular(8)),
           padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              child: Column(
                 children: [
-                  SvgPicture.asset(
-                    'assets/icons/warning_red.svg',
-                    color: AppTheme().redColor,
-                    height: 18,
-                    width: 18,
-                  ),
-                  SizedBox(width: 4),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/warning_red.svg',
+                        color: AppTheme().redColor,
+                        height: 18,
+                        width: 18,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        'Warning',
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            color: AppTheme().redColor,
+                        ),
+                      )
+                    ],
+              ),
+                  SizedBox(height: 8),
                   Text(
-                    'Warning',
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppTheme().redColor),
-                  )
-                ],
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Do not share these words with anyone, as it grants full access to your account',
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: AppTheme().redColor),
-              ),
+                    'Do not share these words with anyone, as it grants full access to your account',
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        color: AppTheme().redColor,
+                    ),
+                  ),
 
             ],
           ),

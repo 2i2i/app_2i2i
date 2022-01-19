@@ -40,8 +40,10 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                 Text('Who’s Top?'.toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
-                        .headline5!
-                        .copyWith(fontWeight: FontWeight.bold)),
+                        .headline5?.copyWith(
+                      color: AppTheme().lightSecondaryTextColor
+                    ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
                   decoration: BoxDecoration(

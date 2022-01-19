@@ -3,10 +3,11 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/screens/user_bid/user_bid_ins_list.dart';
+import 'package:app_2i2i/ui/screens/my_user/user_bid_ins_list.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -356,8 +357,8 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meeting: meeting.asData!.value);
 });
 
-final meetingHistoryProvider = Provider<HistoryViewModel?>((ref) {
-  final uid = ref.watch(myUIDProvider)!;
+final meetingHistoryProvider =
+    StateProvider.family<HistoryViewModel?, String>((ref, uid) {
   final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;

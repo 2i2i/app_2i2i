@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,8 +82,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           assetName,
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle2!
-                              .copyWith(color: Theme.of(context).disabledColor),
+                              .subtitle1?.copyWith(
+                            color: AppTheme().lightSecondaryTextColor
+                          ),
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -92,10 +94,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 ),
                 Text(
                   "$amount",
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor),
+                  style: Theme.of(context).textTheme.headline4,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                 )
@@ -124,8 +123,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           maxLines: 4,
                           style: Theme.of(context)
                               .textTheme
-                              .caption!
-                              .copyWith(fontWeight: FontWeight.w600),
+                              .caption,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),

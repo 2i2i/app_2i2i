@@ -51,10 +51,7 @@ class Success extends StatelessWidget {
                 child: Text(
                   data.description,
                   textAlign: TextAlign.left,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
               ),
             ),

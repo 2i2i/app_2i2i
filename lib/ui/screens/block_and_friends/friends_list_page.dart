@@ -22,13 +22,13 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.isForBlockedUser ? 'Blocked Users' : 'Friends List',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 20),
             Expanded(child: buildListView())
