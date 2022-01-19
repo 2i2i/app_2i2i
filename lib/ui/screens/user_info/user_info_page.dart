@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,7 +116,8 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(020),
-                  bottomRight: Radius.circular(20)),
+                  bottomRight: Radius.circular(20),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 8),
@@ -128,41 +134,42 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                '$totalRating',
-                                maxLines: 2,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Theme.of(context).disabledColor),
-                              ),
-                              SizedBox(height: 4),
-                              IgnorePointer(
-                                ignoring: true,
-                                child: RatingBar.builder(
-                                  initialRating: userModel.rating * 5,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  itemCount: 5,
-                                  itemSize: 20,
-                                  tapOnlyMode: true,
-                                  updateOnDrag: false,
-                                  allowHalfRating: true,
-                                  glowColor: Colors.white,
-                                  unratedColor: Colors.grey.shade300,
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
+                          child: InkWell(
+                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: user), Routes.RATING),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '$totalRating',
+                                  maxLines: 2,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 4),
+                                IgnorePointer(
+                                  ignoring: true,
+                                  child: RatingBar.builder(
+                                    initialRating: userModel.rating * 5,
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    itemCount: 5,
+                                    itemSize: 20,
+                                    tapOnlyMode: true,
+                                    updateOnDrag: false,
+                                    allowHalfRating: true,
+                                    glowColor: Colors.white,
+                                    unratedColor: Colors.grey.shade300,
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amber,
+                                    ),
+                                    onRatingUpdate: (rating) {
+                                      print(rating);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(width: 8),

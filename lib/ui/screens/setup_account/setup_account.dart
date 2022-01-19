@@ -70,22 +70,20 @@ class _SetupBioState extends ConsumerState<SetupBio> {
             SizedBox(height: kRadialReactionRadius),
             Text(
               Strings().setUpAccount,
-              style: Theme.of(context).textTheme.headline4!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).tabBarTheme.unselectedLabelColor),
+              style: Theme.of(context).textTheme.headline4,
             ),
             SizedBox(height: kRadialReactionRadius+8),
             Text(Strings().userName,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1!
-                    .copyWith(color: Theme.of(context).disabledColor)),
+                    .bodyText1,
+            ),
             SizedBox(height: 6),
             TextFormField(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: userNameEditController,
               textInputAction: TextInputAction.next,
-              autofocus: true,
+              autofocus: false,
               onChanged: (value) {
                 imageUrl = value;
                 setState(() {});
@@ -106,8 +104,8 @@ class _SetupBioState extends ConsumerState<SetupBio> {
             Text(Strings().bio,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1!
-                    .copyWith(color: Theme.of(context).disabledColor)),
+                    .bodyText1,
+            ),
             SizedBox(height: 6),
             TextFormField(
               controller: bioEditController,

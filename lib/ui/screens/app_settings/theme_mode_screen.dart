@@ -23,18 +23,17 @@ class _ThemeModeScreenState extends ConsumerState<ThemeModeScreen> {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 25),
+        padding: EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Theme',style: Theme.of(context).textTheme.headline6,),
+            Text('Theme',style: Theme.of(context).textTheme.headline5,),
             SizedBox(height: 20),
             Text(
               Strings().themeMode,
               style: Theme.of(context)
                   .textTheme
-                  .subtitle1!
-                  .copyWith(fontWeight: FontWeight.bold),
+                  .subtitle1,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
