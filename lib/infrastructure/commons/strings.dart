@@ -1,5 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-
 class Strings {
   static final Strings _singleton = Strings._internal();
 
@@ -13,7 +11,7 @@ class Strings {
 
   String shareQr = 'Share yourself';
 
-  var less = 'less';
+  String less = 'less';
 
   String forever = 'forever';
 

@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
@@ -7,7 +6,6 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_bid/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../infrastructure/commons/theme.dart';
 
 class TopSpeedsPage extends ConsumerStatefulWidget {
   const TopSpeedsPage({Key? key}) : super(key: key);
