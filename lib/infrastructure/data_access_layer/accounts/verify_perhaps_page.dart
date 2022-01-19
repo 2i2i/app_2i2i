@@ -56,20 +56,20 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                       children: List.generate(options.length, (index) {
                         String text = options[index];
                         return Expanded(
-                          child: Container(
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.only(left: 5, right: 5, top: 20),
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: question.selected == text
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Colors.grey.shade200),
-                            child: GestureDetector(
-                              onTap: () {
-                                question.selected = text;
-                                setState(() {});
-                              },
+                          child: InkResponse(
+                            onTap: (){
+                              question.selected = text;
+                              setState(() {});
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(left: 5, right: 5, top: 20),
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: question.selected == text
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Colors.grey.shade200),
                               child: Text(
                                 text,
                                 style: Theme.of(context)

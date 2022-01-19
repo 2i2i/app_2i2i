@@ -37,79 +37,80 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
               'Do not share these words with anyone, as it grants full access to your account.',
               style: Theme.of(context).textTheme.caption,
             ),
-            SizedBox(height: 10),
-            Builder(builder: (context) {
-              if (myAccountPageViewModel.asData?.value is LocalAccount) {
-                LocalAccount account = myAccountPageViewModel.asData!.value;
-                return FutureBuilder(
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasData) {
-                      List<String> perhaps = snapshot.data;
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          GridView.count(
-                            shrinkWrap: true,
-                            crossAxisCount: 2,
-                            childAspectRatio: 5,
-                            padding: EdgeInsets.all(8),
-                            children: List.generate(perhaps.length, (index) {
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  radius: 10,
-                                  child: Text(
-                                    '${index + 1}',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ),
-                                minLeadingWidth: 10,
-                                title: Text(
-                                  '${perhaps[index]}',
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                              );
-                            }),
-                          ),
-                          SizedBox(height: 30),
-                          IconButton(
+            SizedBox(height: 6),
+            Expanded(
+              child: Builder(builder: (context) {
+                if (myAccountPageViewModel.asData?.value is LocalAccount) {
+                  LocalAccount account = myAccountPageViewModel.asData!.value;
+                  return FutureBuilder(
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        List<String> perhaps = snapshot.data;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: GridView.count(
+                                shrinkWrap: true,
+                                crossAxisCount: 2,
+                                childAspectRatio: 5,
+                                padding: EdgeInsets.all(8),
+                                children:
+                                    List.generate(perhaps.length, (index) {
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                          radius: 10,
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: Theme.of(context).textTheme.caption,
+                                          ),
+                                        ),
+                                        minLeadingWidth: 10,
+                                        title: Text(
+                                          '${perhaps[index]}',
+                                          style: Theme.of(context).textTheme.bodyText2,
+                                        ),
+                                      );
+                                }),
+                              ),
+                            ),
+                            ElevatedButton(
                               onPressed: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: perhaps.join(' ')));
-                                CustomDialogs.showToastMessage(
-                                    context, Strings().copyMessage);
+                                if (perhaps.isNotEmpty) {
+                                  Clipboard.setData(
+                                      ClipboardData(text: perhaps.join(' ')));
+                                  CustomDialogs.showToastMessage(
+                                      context, Strings().copyMessage);
+                                  CustomNavigation.pushReplacement(
+                                      context,
+                                      VerifyPerhapsPage(perhaps, account),
+                                      'VerifyPerhapsPage');
+                                }
                               },
-                              icon: Icon(Icons.copy)),
-                          SizedBox(height: 30),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (perhaps.isNotEmpty) {
-                                CustomNavigation.pushReplacement(
-                                    context,
-                                    VerifyPerhapsPage(perhaps, account),
-                                    'VerifyPerhapsPage');
-                              }
-                            },
-                            child: Text('Next'),
-                            // style: ElevatedButton.styleFrom(primary: Theme.of(context).shadowColor),
-                          )
-                        ],
+                              child: Text(Strings().copyAndNext),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context).shadowColor),
+                            ),
+                          ],
+                        );
+                      }
+                      return WaitPage(
+                        height: MediaQuery.of(context).size.height / 2,
                       );
-                    }
-                    return WaitPage(
-                      height: MediaQuery.of(context).size.height / 2,
-                    );
-                  },
-                  future: account.account?.seedPhrase ?? Future.value([]),
+                    },
+                    future: account.account?.seedPhrase ?? Future.value([]),
+                  );
+                }
+                return WaitPage(
+                  height: MediaQuery.of(context).size.height / 2,
                 );
-              }
-              return WaitPage(
-                height: MediaQuery.of(context).size.height / 2,
-              );
-            }),
+              }),
+            ),
+            SizedBox(height: 6),
           ],
         ),
       ),

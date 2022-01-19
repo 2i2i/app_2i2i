@@ -11,10 +11,11 @@ import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../commons/custom_alert_widget.dart';
+import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_navigation.dart';
+import '../create_bid/create_bid_page.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
-import 'widgets/create_bid_widget.dart';
 import 'widgets/friend_button_widget.dart';
 import 'widgets/user_info_widget.dart';
 
@@ -97,14 +98,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () {
-          CustomAlertWidget.showBidAlert(
-            context,
-            CreateBidWidget(
-              uid: user.id,
-            ),
-          );
-        },
+        onTap: () => CustomNavigation.push(context, CreateBidPage(uid: user.id), Routes.CreateBid),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,

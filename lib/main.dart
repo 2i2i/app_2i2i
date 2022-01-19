@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-// import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -114,6 +114,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
               homePageBuilder: (_) => HomePage(),
+              // homePageBuilder: (_) => CreateBidPage(uid: 'feztBsch9raB7L312GgaiB9Vxpn2',),
             ),
           ),
         ),
@@ -121,6 +122,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     }
     return AuthWidget(
       homePageBuilder: (_) => HomePage(),
+
       // homePageBuilder: (_) => TestScreen(),
     );
   }
