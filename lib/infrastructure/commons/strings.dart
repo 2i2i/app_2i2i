@@ -77,10 +77,28 @@ class Strings {
   String setUpAccount = 'Setup Account';
   String userName = 'Username';
   String bio = 'Bio';
+    String addAccount = 'Add account';
+  String walletAccount = 'Wallet account';
+  String walletAccountMsg = 'I want to connect a 3rd party wallet';
+
+  String recoverPassphrase = 'Recover with passphrase';
+  String recoverPassPhaseMsg = 'I know the 25 secret words';
+
+  String addLocalAccount = 'Add local account';
+  String addLocalAccountMsg = 'Create a local account on this device';
+
+  String estMaxDuration = 'Est.max duration';
+  String swipeAndChangeAccount = 'Swipe Below Card Left or Right to change account';
+
+  String insufficientBalance = 'Insufficient balance';
+  String addBid = 'Add bid';
+
+  String copyAndNext = 'Copy and Next';
   String report = 'Report';
   String block = 'Block';
   String unBlock = 'Unblock';
   String seeMore = 'see more';
+
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
