@@ -290,9 +290,9 @@ class ProfileIcon extends StatelessWidget {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final userId = ref.watch(myUIDProvider);
         if (userId is String) {
-          final bidInList = ref.watch(getBidInsProvider(userId));
-          if (bidInList.asData?.value is List<BidIn>) {
-            List<BidIn> bids = bidInList.asData!.value;
+          final bidInList = ref.watch(bidInsPublicProvider(userId));
+          if (bidInList.asData?.value is List<BidInPublic>) {
+            List<BidInPublic> bids = bidInList.asData!.value;
             if (bids.isNotEmpty) {
               return FutureBuilder(
                 future: SecureStorage().read(Keys.myReadBids),

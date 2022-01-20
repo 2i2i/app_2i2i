@@ -208,12 +208,20 @@ class FirestoreDatabase {
     );
   }
 
-  Stream<List<BidIn>> bidInsStream({required String uid}) {
+  Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
     return _service.collectionStream(
-      path: FirestorePath.bidIns(uid),
-      builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      path: FirestorePath.bidInsPublic(uid),
+      builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true).orderBy('ts'),
+    );
+  }
+  Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidInsPrivate(uid),
+      builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
+      queryBuilder: (query) =>
+          query.where('active', isEqualTo: true).orderBy('ts'),
     );
   }
 
@@ -222,16 +230,16 @@ class FirestoreDatabase {
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true).orderBy('ts'),
     );
   }
 
   //<editor-fold desc="Meeting Module">\
-  Stream<BidIn?> getBidIn({required String uid, required String bidId}) =>
-      _service.documentStream(
-        path: FirestorePath.bidIn(uid, bidId),
-        builder: (data, documentId) => BidIn.fromMap(data, documentId),
-      );
+  // Stream<BidInPublic?> getBidIn({required String uid, required String bidId}) =>
+  //     _service.documentStream(
+  //       path: FirestorePath.bidIn(uid, bidId),
+  //       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
+  //     );
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(
@@ -262,22 +270,19 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<List<Meeting?>> meetingHistoryA(String uid) =>
+  Stream<List<Meeting>> meetingHistoryA(String uid) =>
       _meetingHistoryX(uid, 'A');
 
-  Stream<List<Meeting?>> meetingHistoryB(String uid) =>
+  Stream<List<Meeting>> meetingHistoryB(String uid) =>
       _meetingHistoryX(uid, 'B');
 
-  Stream<List<Meeting?>> _meetingHistoryX(String uid, String field) {
+  Stream<List<Meeting>> _meetingHistoryX(String uid, String field) {
     return _service
         .collectionStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
-      queryBuilder: (query) => query.where(field, isEqualTo: uid),
-    )
-        .handleError((value) {
-      log(value);
-    });
+      queryBuilder: (query) => query.where(field, isEqualTo: uid).orderBy('end'),
+    );
   }
 //</editor-fold>
 }

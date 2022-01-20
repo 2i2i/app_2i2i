@@ -17,14 +17,14 @@ class OtherBidInList extends ConsumerWidget {
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
        return StreamBuilder(
-        stream: FirestoreDatabase().bidInsStream(uid: B.id),
+        stream: FirestoreDatabase().bidInsPublicStream(uid: B.id),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
                 shrinkWrap: true,
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, ix) {
-                  BidIn bidIn = snapshot.data[ix];
+                  BidInPublic bidIn = snapshot.data[ix];
                   log('bid.speed.num');
                   final String num = bidIn.speed.num.toString();
                   final int assetId = bidIn.speed.assetId;

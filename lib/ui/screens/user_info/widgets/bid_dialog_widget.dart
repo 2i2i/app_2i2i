@@ -9,7 +9,7 @@ import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
-  final BidIn bidIn;
+  final BidInPublic bidIn;
   final GestureTapCallback? onTapTalk;
   final UserModel? userModel;
 

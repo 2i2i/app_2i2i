@@ -96,7 +96,7 @@ class AddBidPageViewModel {
     final bidInRef = FirebaseFirestore.instance
         .collection('users/${B.id}/bidIns')
         .doc(bidId);
-    final bidIn = BidIn(id: bidId, speed: speed, net: net, active: true);
+    final bidIn = BidInPublic(id: bidId, speed: speed, net: net, active: true);
     final bidInPrivateRef = FirebaseFirestore.instance
         .collection('users/${B.id}/bidIns')
         .doc(bidId)

@@ -239,18 +239,18 @@ final topDurationsProvider = FutureProvider((ref) async {
 });
 
 final meetingHistoryA =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.meetingHistoryA(id);
+  return database.meetingHistoryA(uid);
 });
 
 final meetingHistoryB =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.meetingHistoryB(id);
+  return database.meetingHistoryB(uid);
 });
 
-final bidInProvider = StreamProvider.family<BidIn?, String>((ref, bidIn) {
+final bidInProvider = StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidIn(uid: uid, bidId: bidIn);
@@ -262,40 +262,30 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-final bidAndUserProvider = Provider.family<BidAndUser?, BidIn>((ref, bidIn) {
-  // log(J + 'bidUserProvider - bidId=$bidId');
-  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidIn.id));
-  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
-  if (bidInPrivateAsyncValue is AsyncLoading ||
-      bidInPrivateAsyncValue is AsyncError) {
-    return null;
-  }
-  final bidInPrivate = bidInPrivateAsyncValue.value!;
-  final A = bidInPrivate.A;
-  // log(J + 'bidUserProvider - uid=$uid');
+final bidInAndUserProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
+  final A = bidIn.private?.A;
+  if (A == null) return null;
   final userAsyncValue = ref.watch(userProvider(A));
-  // log(J + 'bidUserProvider - user=$user');
   if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
     return null;
   }
   final user = userAsyncValue.asData!.value;
-  return BidAndUser(
-    bidIn,
-    bidInPrivate,
-    user
-  );
+  return BidIn(public: bidIn.public, private: bidIn.private, user: user);
 });
 
-final getBidOutsProvider =
-    StreamProvider.family<List<BidOut>, String>((ref, uid) {
+final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidOutsStream(uid: uid);
 });
-
-final getBidInsProvider =
-    StreamProvider.family<List<BidIn>, String>((ref, uid) {
+final bidInsPublicProvider =
+    StreamProvider.family<List<BidInPublic>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.bidInsStream(uid: uid);
+  return database.bidInsPublicStream(uid: uid);
+});
+final bidInsPrivateProvider =
+    StreamProvider.family<List<BidInPrivate>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.bidInsPrivateStream(uid: uid);
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(

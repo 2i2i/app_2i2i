@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -94,16 +95,61 @@ class BidOut extends Equatable {
 @immutable
 class BidIn extends Equatable {
   BidIn({
+    required this.public,
+    this.private,
+    this.user,
+  });
+
+  final BidInPublic public;
+  final BidInPrivate? private;
+  final UserModel? user;
+
+  @override
+  List<Object> get props => [public.id];
+
+  @override
+  bool get stringify => true;
+
+  static List<BidIn> createList(
+      List<BidInPublic> publics, List<BidInPrivate> privates) {
+    if (publics.length != privates.length)
+      throw Exception(
+          'BidIn createList publics.length (${publics.length}) != privates.length (${privates.length})');
+
+    List<BidIn> bidIns = [];
+    for (int i = 0; i < publics.length; i++) {
+      BidIn bidIn = BidIn(public: publics[i], private: privates[i]);
+      if (bidIn.public.id != bidIn.private!.id)
+        throw Exception(
+            'BidIn createList bidIn.public.id (${bidIn.public.id}) != bidIn.private!.id (${bidIn.private!.id})');
+      bidIns.add(bidIn);
+    }
+    final futures = [];
+    for (int i = 0; i < bidIns.length; i++) {
+      final uid = bidIns[i].private!.A;
+      
+    }
+    return bidIns;
+  }
+}
+
+@immutable
+class BidInPublic extends Equatable {
+  BidInPublic({
     required this.active,
     required this.id,
     required this.speed,
     required this.net,
+    required this.ts,
+    required this.rule,
   });
 
   final bool active;
   final String id;
   final Quantity speed;
   final AlgorandNet net;
+  final DateTime ts;
+  final HangOutRule rule;
 
   @override
   List<Object> get props => [id];
@@ -111,7 +157,7 @@ class BidIn extends Equatable {
   @override
   bool get stringify => true;
 
-  factory BidIn.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory BidInPublic.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
       log('BidIn.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
@@ -121,12 +167,16 @@ class BidIn extends Equatable {
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
+    final DateTime ts = data['ts'].toDate();
+    final HangOutRule rule = HangOutRule.fromMap(data['rule']);
 
-    return BidIn(
+    return BidInPublic(
       id: documentId,
       active: active,
       speed: speed,
       net: net,
+      ts: ts,
+      rule: rule,
     );
   }
 
@@ -135,6 +185,8 @@ class BidIn extends Equatable {
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
       'active': active,
+      'ts': ts,
+      'rule': rule,
     };
   }
 
@@ -150,6 +202,7 @@ class BidIn extends Equatable {
 @immutable
 class BidInPrivate {
   BidInPrivate({
+    required this.id,
     required this.A,
     required this.addrA,
     required this.comment,
@@ -157,6 +210,7 @@ class BidInPrivate {
     required this.budget,
   });
 
+  final String id;
   final String A;
   final String? addrA;
   final String? comment;
@@ -174,7 +228,9 @@ class BidInPrivate {
     String? addrA = data['addrA'];
     String? comment = data['comment'];
     int budget = data['budget'];
+
     return BidInPrivate(
+      id: documentId,
       txId: txId,
       A: A,
       addrA: addrA,

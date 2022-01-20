@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -164,6 +165,7 @@ class Meeting extends Equatable {
     required this.room,
     required this.coinFlowsA,
     required this.coinFlowsB,
+    required this.lounge,
   });
 
   final String id;
@@ -194,6 +196,8 @@ class Meeting extends Equatable {
 
   final List<Quantity> coinFlowsA;
   final List<Quantity> coinFlowsB;
+
+  final Lounge lounge;
 
   @override
   List<Object> get props => [id];
@@ -280,7 +284,7 @@ class Meeting extends Equatable {
   factory Meeting.newMeeting({
     required String uid,
     required String? addrB,
-    required BidIn bidIn,
+    required BidInPublic bidIn,
     required BidInPrivate bidInPrivate,
   }) {
     return Meeting(

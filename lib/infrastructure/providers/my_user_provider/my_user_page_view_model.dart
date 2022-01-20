@@ -22,7 +22,7 @@ class MyUserPageViewModel {
   final UserModelChanger userModelChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn, BidInPrivate bidInPrivate) async {
+  Future acceptBid(BidInPublic bidIn, BidInPrivate bidInPrivate) async {
     String? addrB;
     if (bidIn.speed.num != 0) {
       final account = await accountService.getMainAccount();

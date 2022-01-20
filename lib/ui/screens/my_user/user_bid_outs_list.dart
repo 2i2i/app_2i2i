@@ -27,7 +27,7 @@ class UserBidOutsList extends ConsumerWidget {
   final void Function(BidOut bid)? onTrailingIconClick;
 
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidOutList = ref.watch(getBidOutsProvider(uid));
+    final bidOutList = ref.watch(bidOutsProvider(uid));
     if(bidOutList is AsyncLoading || bidOutList is AsyncError || (bidOutList.asData?.value == null)){
       return WaitPage();
     }
