@@ -8,16 +8,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
-import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
+// import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
-import 'ui/screens/setup_account/setup_account.dart';
-import 'ui/test_screen.dart';
+// import 'ui/screens/setup_account/setup_account.dart';
 // import 'ui/test_screen.dart';
+
+// DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
+// DEBUG
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
