@@ -83,11 +83,6 @@ class AppTheme{
         style: OutlinedButton.styleFrom(
             primary: secondaryColor,
             padding: EdgeInsets.all(kIsWeb?22:14),
-            textStyle: TextStyle(
-              fontFamily: 'SofiaPro',
-              fontSize: 17.0,
-              fontWeight: FontWeight.w400,
-            ),
             side:BorderSide(color: secondaryColor),
             shape:RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
@@ -214,12 +209,16 @@ class AppTheme{
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          primary: secondaryDarkColor,
-          padding: EdgeInsets.all(kIsWeb ? 22 : 14),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+              primary: secondaryDarkColor,
+              padding: EdgeInsets.all(kIsWeb?22:14),
+              side:BorderSide(color: secondaryDarkColor),
+              shape:RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              )
+          ),
         ),
-      ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           primary: secondaryDarkColor,
