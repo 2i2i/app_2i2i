@@ -3,7 +3,7 @@ import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -28,7 +28,7 @@ class AddBidPageViewModel {
 
   final String uid;
   final FirebaseFunctions functions;
-  final UserModel B;
+  final Hangout B;
   final AlgorandService algorand;
   final AccountService accountService;
   final List<AbstractAccount> accounts;
@@ -44,7 +44,7 @@ class AddBidPageViewModel {
 
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
-    required UserModel user,
+    required Hangout hangout,
     required AbstractAccount? account,
     required Quantity amount,
     required Quantity speed,
@@ -103,7 +103,7 @@ class AddBidPageViewModel {
         net: net,
         active: true,
         ts: DateTime.now().toUtc(),
-        rule: user.rule,
+        rule: hangout.rule,
         budget: amount.num,
         );
     final bidInPrivateRef = FirebaseFirestore.instance

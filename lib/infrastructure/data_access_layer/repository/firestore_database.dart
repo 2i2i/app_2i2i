@@ -4,7 +4,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../../models/bid_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
-import '../../models/user_model.dart';
+import '../../models/hangout_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -76,11 +76,11 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUser(UserModel user) async {
-    log('setUser - user=$user - map=${user.toMap()}');
+  Future<void> setUser(Hangout hangout) async {
+    log('setUser - user=$hangout - map=${hangout.toMap()}');
     _service.setData(
-      path: FirestorePath.user(user.id),
-      data: user.toMap(),
+      path: FirestorePath.user(hangout.id),
+      data: hangout.toMap(),
       merge: true,
     );
     log('setUser - done');
@@ -144,16 +144,16 @@ class FirestoreDatabase {
           data: userPrivate.toMap(),
           merge: true);
 
-  Stream<UserModel> userStream({required String uid}) =>
+  Stream<Hangout> userStream({required String uid}) =>
       _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
-          return UserModel.fromMap(data, documentId);
+          return Hangout.fromMap(data, documentId);
         },
       );
 
-  Future<UserModel?> getUser(String uid) async {
+  Future<Hangout?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
         await _service.getData(path: FirestorePath.user(uid));
     if (documentSnapshot.exists) {
@@ -161,7 +161,7 @@ class FirestoreDatabase {
       final data = documentSnapshot.data();
       if (data is Map) {
         try {
-          return UserModel.fromMap(data.cast<String, dynamic>(), id);
+          return Hangout.fromMap(data.cast<String, dynamic>(), id);
         } catch (e) {
           return null;
         }
@@ -177,11 +177,11 @@ class FirestoreDatabase {
             UserModelPrivate.fromMap(data, documentId),
       );
 
-  Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
+  Stream<List<Hangout>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
     return _service.collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) => UserModel.fromMap(data, documentId),
+      builder: (data, documentId) => Hangout.fromMap(data, documentId),
       queryBuilder: tags.isEmpty
           ? null
           : (query) => query.where('tags', arrayContainsAny: tags),

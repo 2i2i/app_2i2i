@@ -19,8 +19,8 @@ class AuthWidget extends ConsumerWidget {
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return authStateChanges.when(data: (user) {
-            if (user == null) {
+          return authStateChanges.when(data: (hangout) {
+            if (hangout == null) {
               final signUpViewModel = ref.read(setupUserViewModelProvider);
               if (!signUpViewModel.signUpInProcess) {
                 signUpViewModel.signInAnonymously();
@@ -34,13 +34,13 @@ class AuthWidget extends ConsumerWidget {
                   showAuthActionSwitch: false,
                   actions: [
                     AuthStateChangeAction<SignedIn>(
-                      (context, userModel) {
+                      (context, hangout) {
                         Future.delayed(Duration.zero).then(
                           (value) {
                             ref
                                 .read(setupUserViewModelProvider)
                                 .createAuthAndStartAlgoRand(
-                                    firebaseUserId: userModel.user?.uid);
+                                    firebaseUserId: hangout.hangout?.uid);
                           },
                         );
                       },

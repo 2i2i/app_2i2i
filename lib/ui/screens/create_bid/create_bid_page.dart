@@ -1,7 +1,8 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
@@ -16,7 +17,7 @@ import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 
 class CreateBidPage extends ConsumerStatefulWidget {
-  final UserModel user;
+  final Hangout hangout;
   final double sliderHeight;
   final int min;
   final int max;
@@ -25,7 +26,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   CreateBidPage(
       {this.sliderHeight = 48,
       this.max = 10,
-      required this.user,
+      required this.hangout,
       this.min = 0,
       this.fullWidth = false});
 
@@ -47,15 +48,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    if (myAccountPageViewModel is AsyncLoading ||
-        myAccountPageViewModel is AsyncError) {
+    if (haveToWait(myAccountPageViewModel)) {
       return WaitPage(
         isCupertino: true,
         height: MediaQuery.of(context).size.height / 2,
       );
     }
     final addBidPageViewModel =
-        ref.watch(addBidPageViewModelProvider(widget.user.id).state).state;
+        ref.watch(addBidPageViewModelProvider(widget.hangout.id).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0)
@@ -385,7 +385,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       return;
     }
     final addBidPageViewModel =
-        ref.read(addBidPageViewModelProvider(widget.user.id).state).state;
+        ref.read(addBidPageViewModelProvider(widget.hangout.id).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await connectCall(addBidPageViewModel: addBidPageViewModel);
@@ -425,7 +425,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future connectCall({required AddBidPageViewModel addBidPageViewModel}) async {
     CustomDialogs.loader(true, context);
     await addBidPageViewModel.addBid(
-      user: widget.user,
+      hangout: widget.hangout,
       account: account,
       amount: amount,
       speed: speed,

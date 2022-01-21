@@ -1,3 +1,6 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 String shortString(String string, {int maxLength = 10}) {
   if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
   return string;
@@ -83,4 +86,12 @@ String secondsToSensibleTimePeriod(num secs) {
 
   final bestNum = currentBestNum.round();
   return '~ $bestNum $currentBestTimePeriod';
+}
+
+bool haveToWait(var provider){
+  if(provider is AsyncError){
+
+    log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');
+  }
+  return provider == null || provider is AsyncLoading || provider is AsyncError;
 }

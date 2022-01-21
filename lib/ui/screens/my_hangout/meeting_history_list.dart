@@ -1,6 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,8 +39,8 @@ class _MeetingHistoryListState extends ConsumerState<MeetingHistoryList> {
     );
   }
 
-  Widget getCallTypeIcon(UserModel userModel, String currentUid) {
-    if (userModel.id == currentUid) {
+  Widget getCallTypeIcon(Hangout hangout, String currentUid) {
+    if (hangout.id == currentUid) {
       return Icon(Icons.call_received_rounded, color: AppTheme().red);
     }
     return Icon(Icons.call_made_rounded, color: AppTheme().green);

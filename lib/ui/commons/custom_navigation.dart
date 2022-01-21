@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CustomNavigation {
 
   /*
-    final locked = isUserLocked.value;
+    final locked = isHangoutLocked.value;
     final goingToLocked = pageName == Routes.LOCK;
 
 

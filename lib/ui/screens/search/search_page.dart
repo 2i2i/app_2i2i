@@ -1,4 +1,5 @@
 
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'widgtes/user_info_tile.dart';
 
@@ -27,11 +28,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   void initMethod() {
     Future.delayed(Duration(seconds: 3)).then((value) {
       final uid = ref.watch(myUIDProvider)!;
-      final user = ref.watch(userProvider(uid));
-      bool isLoaded = !(user is AsyncLoading && user is AsyncError);
-      if (isLoaded && user.asData?.value is UserModel) {
-        final UserModel myUser = user.asData!.value;
-        if (myUser.name.isEmpty) {
+      final hangoutProviderVal = ref.watch(hangoutProvider(uid));
+      bool isLoaded = !(haveToWait(hangoutProviderVal));
+      if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
+        final Hangout hangout = hangoutProviderVal.asData!.value;
+        if (hangout.name.isEmpty) {
           CustomAlertWidget.showBidAlert(
             context,
             WillPopScope(
@@ -40,8 +41,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: SetupBio(
-                  isFromDialog: true,
+                child: HangoutSetting(
+                  fromBottomSheet: true,
                 ),
               ),
             ),
@@ -85,7 +86,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
-  int usersSort(UserModel u1, UserModel u2, List<String> keywords) {
+  int usersSort(Hangout u1, Hangout u2, List<String> keywords) {
     if (u1.status == 'ONLINE' && u2.status != 'ONLINE') return -1;
     if (u1.status != 'ONLINE' && u2.status == 'ONLINE') return 1;
     // both ONLINE xor OFFLINE
@@ -94,8 +95,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     // both inMeeting xor not
 
     if (keywords.isNotEmpty) {
-      final u1Tags = UserModel.tagsFromBio(u1.bio).toSet();
-      final u2Tags = UserModel.tagsFromBio(u2.bio).toSet();
+      final u1Tags = Hangout.tagsFromBio(u1.bio).toSet();
+      final u2Tags = Hangout.tagsFromBio(u2.bio).toSet();
       final keywordsSet = keywords.toSet();
       final u1Match = keywordsSet.intersection(u1Tags).length;
       final u2Match = keywordsSet.intersection(u2Tags).length;
@@ -115,7 +116,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return StreamBuilder(
       stream: FirestoreDatabase().usersStream(tags: filter),
       builder:
-          (BuildContext contextMain, AsyncSnapshot<List<UserModel>> snapshot) {
+          (BuildContext contextMain, AsyncSnapshot<List<Hangout>> snapshot) {
         if (snapshot.hasData) {
           final users = snapshot.data!;
           users.sort((u1, u2) => usersSort(u1, u2, filter));
@@ -124,13 +125,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             itemCount: users.length,
             itemBuilder: (_, index) => UserInfoTile(
-              userModel: users[index],
+              hangout: users[index],
               myUIDProvider: mainUserID,
               isForBlockedUser: false,
             ),
             separatorBuilder: (BuildContext context, int index) {
-              final user = users[index];
-              if (user.id == mainUserID) {
+              final hangout = users[index];
+              if (hangout.id == mainUserID) {
                 return Container();
               }
               return Divider(

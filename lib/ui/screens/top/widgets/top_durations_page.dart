@@ -19,7 +19,9 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
   @override
   Widget build(BuildContext context) {
     final topMeetingsAsyncValue = ref.watch(topDurationsProvider);
-    if (topMeetingsAsyncValue is AsyncLoading || topMeetingsAsyncValue is AsyncError) return WaitPage();
+    if (haveToWait(topMeetingsAsyncValue)) {
+      return WaitPage();
+    }
     if(topMeetingsAsyncValue.value is List) {
       final topMeetings = topMeetingsAsyncValue.value!;
       return ListView.builder(

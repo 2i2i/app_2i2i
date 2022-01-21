@@ -1,25 +1,40 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/commons/theme.dart';
-import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/models/meeting_model.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 
-class BidInfoTile extends StatelessWidget {
+class MeetingHistoryTile extends ConsumerWidget {
   final GestureTapCallback? onTap;
-  final UserModel? userModel;
-  final String? bidSpeed;
+  final String currentUid;
+  final Meeting meetingModel;
 
-  const BidInfoTile({Key? key, this.onTap, this.userModel, this.bidSpeed}) : super(key: key);
+  const MeetingHistoryTile(
+      {Key? key, this.onTap,required this.currentUid,required this.meetingModel})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var statusColor = AppTheme().green;
-    if (userModel?.status == 'OFFLINE') {
+
+    bool isBidIn = meetingModel.A != currentUid;
+
+    final hangout = ref.watch(hangoutProvider(isBidIn ? meetingModel.A : meetingModel.B)).value;
+    if (haveToWait(hangout)) {
+      return CupertinoActivityIndicator();
+    }
+
+    if (hangout?.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
     }
-    if (userModel!.isInMeeting()) {
+    if (hangout?.isInMeeting() ?? false) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = userModel!.name;
+    String firstNameChar = hangout?.name ?? "";
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
@@ -48,10 +63,11 @@ class BidInfoTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                               width: 0.3,
-                              color: Theme.of(context).disabledColor),
+                              color: Theme.of(context).disabledColor,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Theme.of(context).iconTheme.color!.withOpacity(0.08),
                               blurRadius: 20,
                               spreadRadius: 0.5,
                             )
@@ -59,8 +75,7 @@ class BidInfoTile extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         firstNameChar,
-                        style: Theme.of(context).textTheme.headline6!.copyWith(
-                            fontWeight: FontWeight.w600, fontSize: 20),
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
                     Align(
@@ -79,57 +94,58 @@ class BidInfoTile extends StatelessWidget {
               ),
               SizedBox(width: 8),
               Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(hangout!.name,
+                        maxLines: 2,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle1,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      hangout.bio,
+                      maxLines: 2,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      userModel!.name,
-                      maxLines: 2,
+                      '${(meetingModel.budget ?? 0)} Algo'.toUpperCase(),
+                      maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     SizedBox(height: 4),
                     Text(
-                      userModel!.bio,
-                      maxLines: 2,
+                      'Settled',
+                      maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.caption?.copyWith(
-                            fontWeight: FontWeight.w400,
-                          ),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ],
                 ),
               ),
-              RichText(
-                text: TextSpan(
-                  text: bidSpeed,
-                  children: [
-                    TextSpan(
-                      text: ' μAlgo/s',
-                      children: [],
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1?.copyWith(
-                        color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
-                      ),
-                    )
-                  ],
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
-                  ),
-                ),
-              ),
-              // Text(bid.speed.num.toString() + ' μAlgo/s'),
               SizedBox(width: 8),
-              Image.asset(
-                'assets/algo_logo.png',
-                height: 34,
-                width: 34,
+              SvgPicture.asset(
+                isBidIn ? 'assets/icons/income.svg' : 'assets/icons/upward.svg',
+                height: 28,
+                width: 28,
               ),
               SizedBox(width: 4),
             ],

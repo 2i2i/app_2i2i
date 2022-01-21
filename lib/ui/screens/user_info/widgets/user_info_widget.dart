@@ -3,11 +3,11 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/commons/theme.dart';
-import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
-  final UserModel userModel;
+  final Hangout hangout;
   final GestureTapCallback onTapFav;
   final bool isFav;
 
@@ -15,7 +15,7 @@ class UserInfoWidget extends StatefulWidget {
 
   const UserInfoWidget(
       {Key? key,
-      required this.userModel,
+      required this.hangout,
       required this.onTapFav,
       required this.isFav, this.onTapRules})
       : super(key: key);
@@ -30,20 +30,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     final shortBio =
-        widget.userModel.bio; //user.bio.substring(shortBioStart, shortBioEnd);
+        widget.hangout.bio; //user.bio.substring(shortBioStart, shortBioEnd);
     var statusColor = AppTheme().green;
-    if (widget.userModel.status == 'OFFLINE') {
+    if (widget.hangout.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
-    } else if (widget.userModel.isInMeeting()) {
+    } else if (widget.hangout.isInMeeting()) {
       statusColor = AppTheme().red;
     }
-    final totalRating = removeDecimalZeroFormat(widget.userModel.rating * 5);
+    final totalRating = removeDecimalZeroFormat(widget.hangout.rating * 5);
     return Column(
       children: [
         Row(
           children: [
             ProfileWidget(
-              stringPath: widget.userModel.name,
+              stringPath: widget.hangout.name,
               statusColor: statusColor,
               radius: 80,
             ),
@@ -53,7 +53,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     Expanded(
                       child: Text(
-                        widget.userModel.name,
+                        widget.hangout.name,
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
@@ -75,7 +75,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         IgnorePointer(
                           ignoring: true,
                           child: RatingBar.builder(
-                            initialRating: widget.userModel.rating * 5,
+                            initialRating: widget.hangout.rating * 5,
                             minRating: 1,
                             direction: Axis.horizontal,
                             itemCount: 5,
@@ -137,7 +137,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           ],
         ),
         SizedBox(height: 20),
-        UserRulesWidget(user:widget.userModel,onTapRules: widget.onTapRules,),
+        UserRulesWidget(hangout:widget.hangout,onTapRules: widget.onTapRules,),
         SizedBox(height: 10),
       ],
     );
@@ -149,10 +149,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 }
 
 class UserRulesWidget extends StatelessWidget {
-  final UserModel user;
+  final Hangout hangout;
 
   final GestureTapCallback? onTapRules;
-  const UserRulesWidget({Key? key, required this.user, this.onTapRules}) : super(key: key);
+  const UserRulesWidget({Key? key, required this.hangout, this.onTapRules}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +168,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${user.rule.minSpeed}',
+                    '${hangout.rule.minSpeed}',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                       color: Theme.of(context).colorScheme.secondary
                     ),
@@ -202,7 +202,7 @@ class UserRulesWidget extends StatelessWidget {
                 children: [
                   Text(
                     getDuration(Duration(
-                        seconds: user.rule.maxMeetingDuration)),
+                        seconds: hangout.rule.maxMeetingDuration)),
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary
                     ),
@@ -236,7 +236,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${user.rule.importance[Lounge.highroller]}',
+                    '${hangout.rule.importance[Lounge.highroller]}',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary
                     ),
@@ -270,7 +270,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${user.rule.importance[Lounge.chrony]}',
+                    '${hangout.rule.importance[Lounge.chrony]}',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary
                     ),

@@ -89,9 +89,9 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (timer == null) {
         timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-          final userModelChanger = ref.watch(userModelChangerProvider);
-          if (userModelChanger == null) return;
-          await userModelChanger.updateHeartbeat();
+          final hangoutChanger = ref.watch(hangoutChangerProvider);
+          if (hangoutChanger == null) return;
+          await hangoutChanger.updateHeartbeat();
         });
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
