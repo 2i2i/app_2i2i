@@ -103,7 +103,9 @@ class AddBidPageViewModel {
         net: net,
         active: true,
         ts: DateTime.now().toUtc(),
-        rule: user.rule);
+        rule: user.rule,
+        budget: amount.num,
+        );
     final bidInPrivateRef = FirebaseFirestore.instance
         .collection(FirestorePath.bidInsPrivate(B.id))
         .doc(bidId);
@@ -114,7 +116,7 @@ class AddBidPageViewModel {
         addrA: addrA,
         comment: bidNote,
         txId: txId,
-        budget: amount.num);
+        );
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(bidInPublicRef, bidInPublic.toMap(), SetOptions(merge: false));

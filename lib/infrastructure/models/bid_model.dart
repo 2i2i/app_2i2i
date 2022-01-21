@@ -137,6 +137,7 @@ class BidInPublic extends Equatable {
     required this.net,
     required this.ts,
     required this.rule,
+    required this.budget,
   });
 
   final bool active;
@@ -145,6 +146,7 @@ class BidInPublic extends Equatable {
   final AlgorandNet net;
   final DateTime ts;
   final HangOutRule rule;
+  final int budget;
 
   @override
   List<Object> get props => [id];
@@ -164,6 +166,7 @@ class BidInPublic extends Equatable {
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final DateTime ts = data['ts'].toDate();
     final HangOutRule rule = HangOutRule.fromMap(data['rule']);
+    int budget = data['budget'];
 
     return BidInPublic(
       id: documentId,
@@ -172,6 +175,7 @@ class BidInPublic extends Equatable {
       net: net,
       ts: ts,
       rule: rule,
+      budget: budget,
     );
   }
 
@@ -182,6 +186,7 @@ class BidInPublic extends Equatable {
       'active': active,
       'ts': FieldValue.serverTimestamp(),
       'rule': rule.toMap(),
+      'budget': budget,
     };
   }
 
@@ -203,7 +208,6 @@ class BidInPrivate {
     required this.addrA,
     required this.comment,
     required this.txId,
-    required this.budget,
   });
 
   final String id;
@@ -212,7 +216,7 @@ class BidInPrivate {
   final String? addrA;
   final String? comment;
   final String? txId;
-  final int budget;
+  
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -224,7 +228,6 @@ class BidInPrivate {
     String A = data['A'];
     String? addrA = data['addrA'];
     String? comment = data['comment'];
-    int budget = data['budget'];
     bool active = data['active'];
 
     return BidInPrivate(
@@ -234,7 +237,6 @@ class BidInPrivate {
       A: A,
       addrA: addrA,
       comment: comment,
-      budget: budget,
     );
   }
 
@@ -245,7 +247,6 @@ class BidInPrivate {
       'A': A,
       'addrA': addrA,
       'comment': comment,
-      'budget': budget,
     };
   }
 }
