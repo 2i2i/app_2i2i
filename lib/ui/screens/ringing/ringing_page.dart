@@ -102,12 +102,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
     bool amA = ringingPageViewModel!.amA();
     String userId =
         amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
-    
-    final userAsyncValue = ref.read(userProvider(userId));
-    if (!(haveToWait(userAsyncValue))) {
-      callerName = userAsyncValue.asData!.value.name;
-      callerBio = userAsyncValue.asData!.value.bio;
-      callerRating = userAsyncValue.asData!.value.rating;
+
+    final hangoutAsyncValue = ref.read(hangoutProvider(userId));
+    if (!(haveToWait(hangoutAsyncValue))) {
+      callerName = hangoutAsyncValue.asData!.value.name;
+      callerBio = hangoutAsyncValue.asData!.value.bio;
+      callerRating = hangoutAsyncValue.asData!.value.rating;
     }
 
     log(F + 'RingingPage - scaffold');
