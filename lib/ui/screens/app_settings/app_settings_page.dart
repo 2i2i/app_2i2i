@@ -66,7 +66,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     SizedBox(height: 16),
                     QrWidget(
                       message: message,
-                      logoSize: 60,
+                      logoSize: 54,
                       imageSize: 180,
                     ),
                     SizedBox(height: 16),
