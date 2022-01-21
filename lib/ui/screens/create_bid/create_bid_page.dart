@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
@@ -15,7 +16,7 @@ import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 
 class CreateBidPage extends ConsumerStatefulWidget {
-  final String uid;
+  final UserModel user;
   final double sliderHeight;
   final int min;
   final int max;
@@ -24,7 +25,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   CreateBidPage(
       {this.sliderHeight = 48,
       this.max = 10,
-      required this.uid,
+      required this.user,
       this.min = 0,
       this.fullWidth = false});
 
@@ -41,7 +42,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   double _value = 0;
 
-
   final controller = PageController(initialPage: 0);
 
   @override
@@ -55,7 +55,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       );
     }
     final addBidPageViewModel =
-        ref.watch(addBidPageViewModelProvider(widget.uid).state).state;
+        ref.watch(addBidPageViewModelProvider(widget.user.id).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0)
@@ -199,21 +199,22 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               child: SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   activeTrackColor: Theme.of(context).cardColor,
-                                  inactiveTrackColor:  Theme.of(context).disabledColor,
+                                  inactiveTrackColor:
+                                      Theme.of(context).disabledColor,
                                   thumbShape: CustomSliderThumbRect(
-                                      mainContext: context,
-                                      thumbRadius: 15,
-                                      max: 0,
-                                      min: 100,
+                                    mainContext: context,
+                                    thumbRadius: 15,
+                                    max: 0,
+                                    min: 100,
                                   ),
                                 ),
                                 child: Slider(
-                                    value: _value,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _value = value;
-                                      });
-                                    },
+                                  value: _value,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _value = value;
+                                    });
+                                  },
                                 ),
                               ),
                             ),
@@ -231,7 +232,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                 ),
               ),
             ),
-
             Visibility(
                 visible: speed.num != 0,
                 child: Container(
@@ -327,10 +327,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                     ),
                     TextButton(
                       style: TextButton.styleFrom(
-                        primary: Theme.of(context).colorScheme.secondary
-                      ),
+                          primary: Theme.of(context).colorScheme.secondary),
                       onPressed: () => CustomAlertWidget.showBidAlert(
-                          context, AddAccountOptionsWidgets(),
+                        context,
+                        AddAccountOptionsWidgets(),
                       ),
                       child: Text(
                         Strings().addAccount,
@@ -340,7 +340,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               child: ElevatedButton(
@@ -386,7 +385,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       return;
     }
     final addBidPageViewModel =
-        ref.read(addBidPageViewModelProvider(widget.uid).state).state;
+        ref.read(addBidPageViewModelProvider(widget.user.id).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await connectCall(addBidPageViewModel: addBidPageViewModel);
@@ -426,6 +425,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future connectCall({required AddBidPageViewModel addBidPageViewModel}) async {
     CustomDialogs.loader(true, context);
     await addBidPageViewModel.addBid(
+      user: widget.user,
       account: account,
       amount: amount,
       speed: speed,

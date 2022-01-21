@@ -27,11 +27,13 @@ class UserBidOutsList extends ConsumerWidget {
   final void Function(BidOut bid)? onTrailingIconClick;
 
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidOutList = ref.watch(getBidOutsProvider(uid));
-    if(bidOutList is AsyncLoading || bidOutList is AsyncError || (bidOutList.asData?.value == null)){
+    final bidOutList = ref.watch(bidOutsProvider(uid));
+    if (bidOutList is AsyncLoading ||
+        bidOutList is AsyncError ||
+        (bidOutList.asData?.value == null)) {
       return WaitPage();
     }
-    List<BidOut> bids =  bidOutList.asData!.value;
+    List<BidOut> bids = bidOutList.asData!.value;
     return ListView.separated(
       primary: false,
       physics: NeverScrollableScrollPhysics(),
@@ -41,7 +43,7 @@ class UserBidOutsList extends ConsumerWidget {
         BidOut bid = bids[ix];
         final bUser = ref.watch(userProvider(bid.B));
 
-        if(bUser.asData?.value is UserModel) {
+        if (bUser.asData?.value is UserModel) {
           final userModel = bUser.asData!.value;
 
           return BidInfoTile(

@@ -4,6 +4,14 @@ import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum Lounge { lurker, chrony, highroller, eccentric }
+
+extension ParseToString on Lounge {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+}
+
 class UserModelChanger {
   UserModelChanger(this.database, this.uid);
 
@@ -19,18 +27,15 @@ class UserModelChanger {
 
   Future updateNameAndBio(String name, String bio) async {
     final tags = UserModel.tagsFromBio(bio);
-    final Map<String, dynamic> data = {
+    Map<String, dynamic> data = {
       'name': name,
       'bio': bio,
       'tags': [name, ...tags]
     };
     final user = await database.getUser(uid);
     if (user == null) {
-      data['status'] = 'ONLINE';
-      data['meeting'] = null;
-      data['rating'] = 1;
-      data['numRatings'] = 0;
-      data['heartbeat'] = DateTime.now().toUtc();
+      final newUser = UserModel(id: uid, name: name, bio: bio);
+      data = newUser.toMap();
     }
     return database.updateUserNameAndBio(uid, data);
   }
@@ -48,10 +53,66 @@ class UserModelChanger {
 }
 
 @immutable
+class HangOutRule extends Equatable {
+  static const defaultImportance = {
+    // set also in cloud function userCreated
+    Lounge.lurker: 0,
+    Lounge.chrony: 1,
+    Lounge.highroller: 5,
+    Lounge.eccentric: 0
+  };
+
+  const HangOutRule({
+    // set also in cloud function userCreated
+    this.maxMeetingDuration = 300,
+    this.minSpeed = 0,
+    this.importance = defaultImportance,
+  });
+
+  final int maxMeetingDuration;
+  final int minSpeed;
+  final Map<Lounge, int> importance;
+
+  factory HangOutRule.fromMap(Map<String, dynamic> data) {
+    final int maxMeetingDuration = data['maxMeetingDuration'];
+    final int minSpeed = data['minSpeed'];
+
+    final Map<Lounge, int> importance = {};
+    final Map<String, dynamic> x = data['importance'];
+    for (final k in x.keys) {
+      final lounge = Lounge.values.firstWhere((l) => l.toStringEnum() == k);
+      importance[lounge] = x[k]! as int;
+    }
+
+    return HangOutRule(
+      maxMeetingDuration: maxMeetingDuration,
+      minSpeed: minSpeed,
+      importance: importance,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'maxMeetingDuration': maxMeetingDuration,
+      'minSpeed': minSpeed,
+      'importance':
+          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+    };
+  }
+
+  int importanceSize() =>
+      importance.values.reduce((value, element) => value + element);
+
+  @override
+  List<Object> get props => [maxMeetingDuration, minSpeed, importance];
+}
+
+@immutable
 class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
   UserModel({
+    // set also in cloud function userCreated
     required this.id,
     this.status = 'ONLINE',
     this.meeting,
@@ -60,6 +121,7 @@ class UserModel extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeat,
+    this.rule = const HangOutRule(),
   }) {
     _tags = tagsFromBio(bio);
   }
@@ -73,6 +135,7 @@ class UserModel extends Equatable {
   final double rating;
   final int numRatings;
   final DateTime? heartbeat;
+  final HangOutRule rule;
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
@@ -108,6 +171,9 @@ class UserModel extends Equatable {
     final rating = double.tryParse(data['rating'].toString()) ?? 1;
     final numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
+    final HangOutRule rule = data['rule'] == null
+        ? HangOutRule()
+        : HangOutRule.fromMap(data['rule']);
 
     return UserModel(
       id: documentId,
@@ -118,6 +184,7 @@ class UserModel extends Equatable {
       rating: rating,
       numRatings: numRatings,
       heartbeat: heartbeat,
+      rule: rule,
     );
   }
 
@@ -131,6 +198,7 @@ class UserModel extends Equatable {
       'rating': rating,
       'numRatings': numRatings,
       'heartbeat': heartbeat,
+      'rule': rule.toMap(),
     };
   }
 

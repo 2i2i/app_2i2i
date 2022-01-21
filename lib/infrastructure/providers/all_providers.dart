@@ -3,11 +3,9 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/screens/my_user/user_bid_ins_list.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -239,21 +237,30 @@ final topDurationsProvider = FutureProvider((ref) async {
 });
 
 final meetingHistoryA =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.meetingHistoryA(id);
+  return database.meetingHistoryA(uid);
 });
 
 final meetingHistoryB =
-    StreamProvider.family<List<Meeting?>, String>((ref, id) {
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.meetingHistoryB(id);
+  return database.meetingHistoryB(uid);
 });
 
-final bidInProvider = StreamProvider.family<BidIn?, String>((ref, bidIn) {
+// class IntString {
+//   final int
+// }
+final meetingHistoryBLimited =
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.meetingHistoryB(uid);
+});
+
+final bidInProvider = StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
-  return database.getBidIn(uid: uid, bidId: bidIn);
+  return database.getBidInPublic(uid: uid, bidId: bidIn);
 });
 final bidInPrivateProvider =
     StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
@@ -262,40 +269,136 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-final bidAndUserProvider = Provider.family<BidAndUser?, BidIn>((ref, bidIn) {
-  // log(J + 'bidUserProvider - bidId=$bidId');
-  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidIn.id));
-  // log(J + 'bidUserProvider - bidInPrivateAsyncValue=$bidInPrivateAsyncValue');
-  if (bidInPrivateAsyncValue is AsyncLoading ||
-      bidInPrivateAsyncValue is AsyncError) {
-    return null;
-  }
-  final bidInPrivate = bidInPrivateAsyncValue.value!;
-  final A = bidInPrivate.A;
-  // log(J + 'bidUserProvider - uid=$uid');
+final bidInAndUserProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
+  final A = bidIn.private?.A;
+  if (A == null) return null;
   final userAsyncValue = ref.watch(userProvider(A));
-  // log(J + 'bidUserProvider - user=$user');
   if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
     return null;
   }
   final user = userAsyncValue.asData!.value;
-  return BidAndUser(
-    bidIn,
-    bidInPrivate,
-    user
-  );
+  return BidIn(public: bidIn.public, private: bidIn.private, user: user);
 });
 
-final getBidOutsProvider =
-    StreamProvider.family<List<BidOut>, String>((ref, uid) {
+final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidOutsStream(uid: uid);
 });
-
-final getBidInsProvider =
-    StreamProvider.family<List<BidIn>, String>((ref, uid) {
+final bidInsPublicProvider =
+    StreamProvider.family<List<BidInPublic>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.bidInsStream(uid: uid);
+  return database.bidInsPublicStream(uid: uid);
+});
+final bidInsPrivateProvider =
+    StreamProvider.family<List<BidInPrivate>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.bidInsPrivateStream(uid: uid);
+});
+
+final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
+  // my user
+  final userAsyncValue = ref.watch(userProvider(uid));
+  if (userAsyncValue is AsyncLoading ||
+      userAsyncValue is AsyncError ||
+      userAsyncValue.value == null) {
+    return null;
+  }
+  final UserModel user = userAsyncValue.value!;
+
+  // public bid ins
+  final bidInsPublicAsyncValue = ref.watch(bidInsPublicProvider(uid));
+  if (bidInsPublicAsyncValue is AsyncLoading ||
+      bidInsPublicAsyncValue is AsyncError ||
+      bidInsPublicAsyncValue.value == null) {
+    return null;
+  }
+  if (bidInsPublicAsyncValue.value?.isEmpty ?? false) {
+    return <BidIn>[];
+  }
+  List<BidInPublic> bidInsPublic = bidInsPublicAsyncValue.value!;
+
+  // private bid ins
+  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
+  if (bidInsPrivateAsyncValue is AsyncLoading ||
+      bidInsPrivateAsyncValue is AsyncError ||
+      bidInsPrivateAsyncValue.value == null) {
+    return null;
+  }
+  if (bidInsPrivateAsyncValue.value?.isEmpty ?? false) {
+    return <BidIn>[];
+  }
+  List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
+
+  // create bid ins
+  final bidIns = BidIn.createList(bidInsPublic, bidInsPrivate);
+  final bidInsWithUsersTrial =
+      bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
+  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
+  final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
+
+  return bidInsWithUsers;
+
+  // List<BidIn> bidInsChronies = bidIns
+  //     .where((bidIn) => bidIn.public.speed.num == user.rule.minSpeed)
+  //     .toList();
+  // List<BidIn> bidInsHighRollers = bidIns
+  //     .where((bidIn) => user.rule.minSpeed < bidIn.public.speed.num)
+  //     .toList();
+  // if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
+  //   throw Exception(
+  //       'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+
+  // bidInsHighRollers.sort((b1, b2) {
+  //   return b1.public.speed.num.compareTo(b2.public.speed.num);
+  // });
+
+  // List<BidIn> bidInsSorted = [];
+  // if (bidInsHighRollers.isEmpty)
+  //   bidInsSorted = bidInsChronies;
+  // else if (bidInsChronies.isEmpty)
+  //   bidInsSorted = bidInsHighRollers;
+  // else {
+  //   // meeting history
+  //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
+  //   if (meetingHistoryAsyncValue is AsyncLoading ||
+  //       meetingHistoryAsyncValue is AsyncError ||
+  //       meetingHistoryAsyncValue.value == null) {
+  //     return WaitPage();
+  //   }
+  //   final meetingHistory = meetingHistoryAsyncValue.value!;
+
+  //   // order bidIns
+  //   int N = user.rule.importanceSize();
+  //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
+  //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
+
+  //   int chronyIndex = 0;
+  //   int highRollerIndex = 0;
+  //   int historyIndex = min(N - 1, recentLounges.length); // -1 => do not use recentLounges
+
+  //   // mean lounge value
+
+  //   BidIn nextChrony = bidInsChronies[chronyIndex];
+  //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
+
+  //   // next rule comes from the earlier guest if different
+  //   HangOutRule nextRule =
+  //       nextChrony.public.rule == nextHighroller.public.rule
+  //           ? nextChrony.public.rule
+  //           : (nextChrony.public.ts.microsecondsSinceEpoch <
+  //                   nextHighroller.public.ts.microsecondsSinceEpoch
+  //               ? nextChrony.public.rule
+  //               : nextHighroller.public.rule);
+
+  //   // is nextChrony eligible according to nextRule
+  //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
+  //     // choose HighRoller
+  //     bidInsSorted.add(nextHighroller);
+
+  //     // next
+
+  //   }
+  // }
 });
 
 final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(

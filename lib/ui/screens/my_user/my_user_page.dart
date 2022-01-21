@@ -1,4 +1,3 @@
-
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -50,6 +49,36 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     final totalRating = (userModel.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
+      floatingActionButton: InkResponse(
+        onTap: () {
+          final bidInsWithUsers =
+              ref.watch(bidInsProvider(myUserPageViewModel.user.id));
+          if (bidInsWithUsers == null || bidInsWithUsers.isEmpty) return;
+          myUserPageViewModel.acceptBid(bidInsWithUsers.first);
+        },
+        child: Container(
+          width: kToolbarHeight * 1.15,
+          height: kToolbarHeight * 1.15,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 8,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .secondary // changes position of shadow
+                  ),
+            ],
+          ),
+          child: Icon(
+            Icons.add_rounded,
+            size: 30,
+            color: Theme.of(context).cardColor,
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Card(
@@ -74,7 +103,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     children: [
                       Expanded(
                         child: InkWell(
-                          onTap: () => CustomNavigation.push(context, RatingPage(userModel: userModel), Routes.RATING),
+                          onTap: () => CustomNavigation.push(context,
+                              RatingPage(userModel: userModel), Routes.RATING),
                           child: Column(
                             children: [
                               Text(
@@ -176,7 +206,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     noBidsText: Strings().noBidFound,
-                    onTap: myUserPageViewModel.acceptBid,
+                    onTap: (x) => {}, //myUserPageViewModel.acceptBid,
                   ),
                   UserBidOutsList(
                     uid: myUserPageViewModel.user.id,

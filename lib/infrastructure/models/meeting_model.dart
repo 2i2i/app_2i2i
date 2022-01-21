@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -160,10 +161,10 @@ class Meeting extends Equatable {
     required this.statusHistory,
     required this.net,
     required this.speed,
-    required this.bid,
     required this.room,
     required this.coinFlowsA,
     required this.coinFlowsB,
+    required this.lounge,
   });
 
   final String id;
@@ -189,11 +190,12 @@ class Meeting extends Equatable {
 
   final AlgorandNet net;
   final Quantity speed;
-  final String bid;
   final String? room;
 
   final List<Quantity> coinFlowsA;
   final List<Quantity> coinFlowsB;
+
+  final Lounge lounge;
 
   @override
   List<Object> get props => [id];
@@ -244,7 +246,6 @@ class Meeting extends Equatable {
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final Quantity speed = Quantity.fromMap(data['speed']);
-    final String bid = data['bid'];
     final String? room = data['room'];
 
     final List<Quantity> coinFlowsA = List<Quantity>.from(
@@ -252,8 +253,12 @@ class Meeting extends Equatable {
     final List<Quantity> coinFlowsB = List<Quantity>.from(
         data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
+    final Lounge lounge =
+        Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
+
     return Meeting(
       id: documentId,
+      lounge: lounge,
       active: active,
       settled: settled,
       A: A,
@@ -269,7 +274,6 @@ class Meeting extends Equatable {
       statusHistory: statusHistory,
       net: net,
       speed: speed,
-      bid: bid,
       room: room,
       coinFlowsA: coinFlowsA,
       coinFlowsB: coinFlowsB,
@@ -278,20 +282,23 @@ class Meeting extends Equatable {
 
   // used by acceptBid, as B
   factory Meeting.newMeeting({
+    required String id,
     required String uid,
     required String? addrB,
     required BidIn bidIn,
-    required BidInPrivate bidInPrivate,
   }) {
     return Meeting(
-      id: '',
+      id: id,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed
+          ? Lounge.chrony
+          : Lounge.highroller,
       active: true,
       settled: false,
-      A: bidInPrivate.A,
+      A: bidIn.private!.A,
       B: uid,
-      addrA: bidInPrivate.addrA,
+      addrA: bidIn.private!.addrA,
       addrB: addrB,
-      budget: bidInPrivate.budget,
+      budget: bidIn.private!.budget,
       start: null,
       end: null,
       duration: null,
@@ -301,9 +308,8 @@ class Meeting extends Equatable {
         MeetingStatusWithTS(
             value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())
       ],
-      net: bidIn.net,
-      speed: bidIn.speed,
-      bid: bidIn.id,
+      net: bidIn.public.net,
+      speed: bidIn.public.speed,
       room: null,
       coinFlowsA: [],
       coinFlowsB: [],
@@ -328,10 +334,10 @@ class Meeting extends Equatable {
       'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
-      'bid': bid,
       'room': room,
       'coinFlowsA': coinFlowsA,
       'coinFlowsB': coinFlowsB,
+      'lounge': lounge,
     };
   }
 }

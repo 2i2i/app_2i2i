@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -22,27 +23,34 @@ class MyUserPageViewModel {
   final UserModelChanger userModelChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn, BidInPrivate bidInPrivate) async {
+  Future acceptBid(BidIn bidIn) async {
     String? addrB;
-    if (bidIn.speed.num != 0) {
+    if (bidIn.public.speed.num != 0) {
       final account = await accountService.getMainAccount();
       addrB = account.address;
     }
-    final meeting = Meeting.newMeeting(
-        uid: user.id, addrB: addrB, bidIn: bidIn, bidInPrivate: bidInPrivate);
+    final meeting =
+        Meeting.newMeeting(id: bidIn.public.id ,uid: user.id, addrB: addrB, bidIn: bidIn);
     database.acceptBid(meeting);
   }
 
   // TODO clean separation into firestore_service and firestore_database
   Future cancelBid({required String bidId, required String B}) async {
     final bidOutRef = FirebaseFirestore.instance
-        .collection('users/${user.id}/bidOuts')
+        .collection(FirestorePath.bidOuts(user.id))
         .doc(bidId);
-    final bidInRef =
-        FirebaseFirestore.instance.collection('users/$B/bidIns').doc(bidId);
+    final bidInPublicRef = FirebaseFirestore.instance
+        .collection(FirestorePath.bidInsPublic(B))
+        .doc(bidId);
+    final bidInPrivateRef = FirebaseFirestore.instance
+        .collection(FirestorePath.bidInsPrivate(B))
+        .doc(bidId);
+    final obj = {'active': false};
+    final setOptions = SetOptions(merge: true);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, {'active': false}, SetOptions(merge: true));
-      transaction.set(bidInRef, {'active': false}, SetOptions(merge: true));
+      transaction.set(bidOutRef, obj, setOptions);
+      transaction.set(bidInPublicRef, obj, setOptions);
+      transaction.set(bidInPrivateRef, obj, setOptions);
     });
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
     await cancelBid({bidId: bidId});

@@ -30,10 +30,11 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-      final meetingDocRef =
-          _service.firestore.collection(FirestorePath.meetings()).doc();
 
-      final lockObj = {'meeting': meetingDocRef.id};
+      final meetingDocRef =
+          _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
+
+      final lockObj = {'meeting': meeting.id};
 
       // log(H + 'meeting.toMap()=${meeting.toMap()}');
       // log(H + 'lockObj()=$lockObj');
@@ -54,8 +55,7 @@ class FirestoreDatabase {
         data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
         merge: true,
       );
-  Future<void> unlockUser(String uid) =>
-      _service.setData(
+  Future<void> unlockUser(String uid) => _service.setData(
         path: FirestorePath.user(uid),
         data: {'meeting': null},
         merge: true,
@@ -69,8 +69,7 @@ class FirestoreDatabase {
     );
   }
 
-  Future<void> updateUserNameAndBio(
-          String uid, Map<String, dynamic> data) =>
+  Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: data,
@@ -208,12 +207,20 @@ class FirestoreDatabase {
     );
   }
 
-  Stream<List<BidIn>> bidInsStream({required String uid}) {
+  Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
     return _service.collectionStream(
-      path: FirestorePath.bidIns(uid),
-      builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      path: FirestorePath.bidInsPublic(uid),
+      builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true).orderBy('ts'),
+    );
+  }
+
+  Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidInsPrivate(uid),
+      builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
@@ -221,21 +228,21 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
   //<editor-fold desc="Meeting Module">\
-  Stream<BidIn?> getBidIn({required String uid, required String bidId}) =>
+  Stream<BidInPublic?> getBidInPublic(
+          {required String uid, required String bidId}) =>
       _service.documentStream(
-        path: FirestorePath.bidIn(uid, bidId),
-        builder: (data, documentId) => BidIn.fromMap(data, documentId),
+        path: FirestorePath.bidInPublic(uid, bidId),
+        builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       );
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(
-        path: FirestorePath.bidPrivate(uid, bidId),
+        path: FirestorePath.bidInPrivate(uid, bidId),
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
@@ -262,22 +269,23 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<List<Meeting?>> meetingHistoryA(String uid) =>
+  Stream<List<Meeting>> meetingHistoryA(String uid) =>
       _meetingHistoryX(uid, 'A');
 
-  Stream<List<Meeting?>> meetingHistoryB(String uid) =>
-      _meetingHistoryX(uid, 'B');
+  Stream<List<Meeting>> meetingHistoryB(String uid, {int? limit}) =>
+      _meetingHistoryX(uid, 'B', limit: limit);
 
-  Stream<List<Meeting?>> _meetingHistoryX(String uid, String field) {
-    return _service
-        .collectionStream(
+  Stream<List<Meeting>> _meetingHistoryX(String uid, String field,
+      {int? limit}) {
+    return _service.collectionStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
-      queryBuilder: (query) => query.where(field, isEqualTo: uid),
-    )
-        .handleError((value) {
-      log(value);
-    });
+      queryBuilder: (query) {
+        query = query.where(field, isEqualTo: uid).orderBy('end');
+        if (limit != null) query = query.limit(limit);
+        return query;
+      },
+    );
   }
 //</editor-fold>
 }
