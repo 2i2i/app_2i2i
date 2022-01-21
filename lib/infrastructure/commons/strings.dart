@@ -16,6 +16,10 @@ class Strings {
   String less = 'less';
 
   String forever = 'forever';
+
+  String minSpeed = 'Min Speed';
+
+  String maxDuration = 'Max Duration';
   Strings._internal();
 
   factory Strings() {

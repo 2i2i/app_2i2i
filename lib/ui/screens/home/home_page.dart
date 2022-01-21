@@ -383,6 +383,7 @@ class TabNavigator extends StatelessWidget {
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
               settings: settings, builder: (_) => tabItem!.tab);
-        });
+        },
+    );
   }
 }

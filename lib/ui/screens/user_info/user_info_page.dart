@@ -54,10 +54,11 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
-    final totalRating = (userModel.rating * 5).toStringAsFixed(1);
+    final totalRating = removeDecimalZeroFormat(userModel.rating * 5);
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
         actions: [
           PopupMenuButton<int>(
@@ -112,77 +113,20 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             margin: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(020),
+                  bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  UserInfoWidget(
-                    userModel: userModel,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 14),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: userModel), Routes.RATING),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '$totalRating',
-                                  maxLines: 2,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1,
-                                ),
-                                SizedBox(height: 4),
-                                IgnorePointer(
-                                  ignoring: true,
-                                  child: RatingBar.builder(
-                                    initialRating: userModel.rating * 5,
-                                    minRating: 1,
-                                    direction: Axis.horizontal,
-                                    itemCount: 5,
-                                    itemSize: 20,
-                                    tapOnlyMode: true,
-                                    updateOnDrag: false,
-                                    allowHalfRating: true,
-                                    glowColor: Colors.white,
-                                    unratedColor: Colors.grey.shade300,
-                                    itemBuilder: (context, _) => Icon(
-                                      Icons.star_rounded,
-                                      color: Colors.amber,
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      print(rating);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: FriendButtonWidget(
-                            value: isFriend,
-                            onTap: (value) => value
-                                ? userModelChanger.addFriend(widget.uid)
-                                : userModelChanger.removeFriend(widget.uid),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 16),
+              child: UserInfoWidget(
+                userModel: userModel, isFav: isFriend, onTapFav: () {
+                if (!isFriend) {
+                  userModelChanger.addFriend(widget.uid);
+                } else {
+                  userModelChanger.removeFriend(widget.uid);
+                }
+              },
               ),
             ),
           ),
@@ -208,8 +152,10 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         } else {
           userModelChanger.addBlocked(widget.uid);
         }
-
         break;
     }
+  }
+  String removeDecimalZeroFormat(double n) {
+    return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 2);
   }
 }

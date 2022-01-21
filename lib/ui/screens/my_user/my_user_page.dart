@@ -1,6 +1,7 @@
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
+import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -96,67 +97,23 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   SizedBox(height: 8),
                   UserInfoWidget(
                     userModel: userModel,
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => CustomNavigation.push(context,
-                              RatingPage(userModel: userModel), Routes.RATING),
-                          child: Column(
-                            children: [
-                              Text(
-                                '$totalRating',
-                                maxLines: 2,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Theme.of(context).disabledColor),
-                              ),
-                              SizedBox(height: 4),
-                              IgnorePointer(
-                                ignoring: true,
-                                child: RatingBar.builder(
-                                  initialRating: userModel.rating * 5,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  itemCount: 5,
-                                  itemSize: 20,
-                                  tapOnlyMode: true,
-                                  updateOnDrag: false,
-                                  allowHalfRating: true,
-                                  glowColor: Colors.white,
-                                  unratedColor: Colors.grey.shade300,
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
+                    onTapFav: () {
+                      CustomNavigation.push(
+                        context,
+                        FriendsListPage(
+                          isForBlockedUser: false,
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: OutlinedButton(
-                          onPressed: () => CustomNavigation.push(
-                              context,
-                              FriendsListPage(
-                                isForBlockedUser: false,
-                              ),
-                              Routes.FRIENDS),
-                          child: Text(Strings().friendList),
-                        ),
-                      ),
-                    ],
+                        Routes.FRIENDS,
+                      );
+                    },
+                    onTapRules: (){
+                      CustomNavigation.push(
+                        context,
+                        SetupBio(),
+                        Routes.USER,
+                      );
+                    },
+                    isFav: true,
                   ),
                   SizedBox(height: 14),
                   Container(
