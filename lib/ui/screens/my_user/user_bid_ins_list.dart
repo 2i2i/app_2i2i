@@ -1,6 +1,8 @@
 // order of bid ins: status (online->locked->offline), friends->non-friends, speed
 // do not show bid ins of blocked users
 
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -91,59 +93,69 @@ class UserBidInsList extends ConsumerWidget {
           .write(Keys.myReadBids, localBids.toSet().toList().join(','));
     });
 
-    List<BidIn> bidInsChronies = bidIns
-        .where((bidIn) => bidIn.public.speed.num == user.rule.minSpeed)
-        .toList();
-    List<BidIn> bidInsHighRollers = bidIns
-        .where((bidIn) => user.rule.minSpeed < bidIn.public.speed.num)
-        .toList();
-    if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
-      throw Exception(
-          'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+    // List<BidIn> bidInsChronies = bidIns
+    //     .where((bidIn) => bidIn.public.speed.num == user.rule.minSpeed)
+    //     .toList();
+    // List<BidIn> bidInsHighRollers = bidIns
+    //     .where((bidIn) => user.rule.minSpeed < bidIn.public.speed.num)
+    //     .toList();
+    // if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
+    //   throw Exception(
+    //       'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
-    bidInsHighRollers.sort((b1, b2) {
-      return b1.public.speed.num.compareTo(b2.public.speed.num);
-    });
+    // bidInsHighRollers.sort((b1, b2) {
+    //   return b1.public.speed.num.compareTo(b2.public.speed.num);
+    // });
 
-    List<BidIn> bidInsSorted;
-    if (bidInsHighRollers.isEmpty)
-      bidInsSorted = bidInsChronies;
-    else if (bidInsChronies.isEmpty)
-      bidInsSorted = bidInsHighRollers;
-    else {
-      // meeting history
-      final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
-      if (meetingHistoryAsyncValue is AsyncLoading ||
-          meetingHistoryAsyncValue is AsyncError ||
-          meetingHistoryAsyncValue.value == null) {
-        return WaitPage();
-      }
-      final meetingHistory = meetingHistoryAsyncValue.value!;
+    // List<BidIn> bidInsSorted = [];
+    // if (bidInsHighRollers.isEmpty)
+    //   bidInsSorted = bidInsChronies;
+    // else if (bidInsChronies.isEmpty)
+    //   bidInsSorted = bidInsHighRollers;
+    // else {
+    //   // meeting history
+    //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
+    //   if (meetingHistoryAsyncValue is AsyncLoading ||
+    //       meetingHistoryAsyncValue is AsyncError ||
+    //       meetingHistoryAsyncValue.value == null) {
+    //     return WaitPage();
+    //   }
+    //   final meetingHistory = meetingHistoryAsyncValue.value!;
 
-      // order bidIns
-      int N = user.rule.importanceSize();
-      final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
-      final recentLounges = recentMeetings.map((m) => m.lounge).toList();
+    //   // order bidIns
+    //   int N = user.rule.importanceSize();
+    //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
+    //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
 
-      int chronyIndex = 0;
-      int highRollerIndex = 0;
+    //   int chronyIndex = 0;
+    //   int highRollerIndex = 0;
+    //   int historyIndex = min(N - 1, recentLounges.length); // -1 => do not use recentLounges
 
-      BidIn nextChrony = bidInsChronies[chronyIndex];
-      BidIn nextHighroller = bidInsChronies[highRollerIndex];
+    //   // mean lounge value
 
-      // next rule comes from the earlier guest if different
-      HangOutRule nextRule =
-          nextChrony.public.rule == nextHighroller.public.rule
-              ? nextChrony.public.rule
-              : (nextChrony.public.ts.microsecondsSinceEpoch <
-                      nextHighroller.public.ts.microsecondsSinceEpoch
-                  ? nextChrony.public.rule
-                  : nextHighroller.public.rule);
 
-      // is nextChrony eligible according to nextRule
-      if (nextChrony.public.speed.num < nextRule
 
-    }
+    //   BidIn nextChrony = bidInsChronies[chronyIndex];
+    //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
+
+    //   // next rule comes from the earlier guest if different
+    //   HangOutRule nextRule =
+    //       nextChrony.public.rule == nextHighroller.public.rule
+    //           ? nextChrony.public.rule
+    //           : (nextChrony.public.ts.microsecondsSinceEpoch <
+    //                   nextHighroller.public.ts.microsecondsSinceEpoch
+    //               ? nextChrony.public.rule
+    //               : nextHighroller.public.rule);
+
+    //   // is nextChrony eligible according to nextRule
+    //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
+    //     // choose HighRoller
+    //     bidInsSorted.add(nextHighroller);
+
+    //     // next
+
+    //   }
+    // }
 
     return ListView.builder(
       primary: false,

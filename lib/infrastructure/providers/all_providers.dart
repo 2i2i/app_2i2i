@@ -250,6 +250,15 @@ final meetingHistoryB =
   return database.meetingHistoryB(uid);
 });
 
+// class IntString {
+//   final int 
+// }
+final meetingHistoryBLimited =
+    StreamProvider.family<List<Meeting>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.meetingHistoryB(uid);
+});
+
 final bidInProvider = StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
