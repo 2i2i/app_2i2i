@@ -8,7 +8,7 @@ class Ripples extends StatefulWidget {
     this.size = 80.0,
     this.color = Colors.pink,
     this.onPressed,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   final double size;
@@ -30,12 +30,12 @@ class _CirclePainter extends CustomPainter {
   final Animation<double> _animation;
 
   void circle(Canvas canvas, Rect rect, double value) {
-    final double opacity = (1.0 - (value / 4.0)).clamp(0.0, 1.0);
-    final Color _color = color.withOpacity(opacity);
+    final double opacity = (1.0 - (value / 2.0)).clamp(0.0, 3);
+    final Color _color = color.withOpacity(opacity*0.3);
 
-    final double size = rect.width / 2;
+    final double size = rect.height / 1.5;
     final double area = size * size;
-    final double radius = math.sqrt(area * value / 4);
+    final double radius = math.sqrt(area * value / 2);
 
     final Paint paint = Paint()..color = _color;
     canvas.drawCircle(rect.center, radius, paint);
@@ -81,12 +81,12 @@ class _RipplesState extends State<Ripples> with TickerProviderStateMixin {
             gradient: RadialGradient(
               colors: <Color>[
                 widget.color,
-                Color.lerp(widget.color, Colors.black, .05)!
+                Color.lerp(widget.color, Colors.black, 0.04)!
               ],
             ),
           ),
           child: ScaleTransition(
-            scale: Tween(begin: 0.8, end: 0.85 ).animate(
+            scale: Tween(begin: 0.9, end: 0.9).animate(
               CurvedAnimation(
                 parent: _controller!,
                 curve: const _PulsateCurve(),
@@ -121,7 +121,7 @@ class _PulsateCurve extends Curve {
   @override
   double transform(double t) {
     if (t == 0 || t == 1) {
-      return 0.01;
+      return 0.2;
     }
     return math.sin(t * math.pi);
   }

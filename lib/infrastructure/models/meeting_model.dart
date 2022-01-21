@@ -337,7 +337,7 @@ class Meeting extends Equatable {
       'room': room,
       'coinFlowsA': coinFlowsA,
       'coinFlowsB': coinFlowsB,
-      'lounge': lounge,
+      'lounge': lounge.toStringEnum(),
     };
   }
 }
