@@ -6,15 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/models/bid_model.dart';
-import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/models/hangout_model.dart';
 
 class BidDialogWidget extends ConsumerStatefulWidget {
   final BidInPublic bidIn;
   final GestureTapCallback? onTapTalk;
-  final UserModel? userModel;
+  final Hangout? hangout;
 
   const BidDialogWidget(
-      {Key? key, required this.bidIn, this.userModel, this.onTapTalk})
+      {Key? key, required this.bidIn, this.hangout, this.onTapTalk})
       : super(key: key);
 
   @override
@@ -92,7 +92,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
           children: [
             SizedBox(height: 8),
             Text(
-              widget.userModel!.name,
+              widget.hangout!.name,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.headline6,
@@ -182,7 +182,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('name: '),
-                Text(user.name),
+                Text(hangout.name),
               ],
             ),
             SizedBox(height: 4),

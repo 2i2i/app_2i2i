@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
@@ -18,7 +19,9 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
   @override
   Widget build(BuildContext context) {
     final topMeetingsAsyncValue = ref.watch(topSpeedsProvider);
-    if (topMeetingsAsyncValue is AsyncLoading || topMeetingsAsyncValue is AsyncError) return WaitPage();
+    if (haveToWait(topMeetingsAsyncValue)) {
+      return WaitPage();
+    }
     final topMeetings = topMeetingsAsyncValue.value!;
 
     return ListView.builder(

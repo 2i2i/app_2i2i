@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
@@ -28,8 +29,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
-    final user = ref.watch(userProvider(uid));
-    if (user is AsyncLoading || user is AsyncError) return WaitPage();
+    final hangout = ref.watch(hangoutProvider(uid));
+    if (haveToWait(hangout)) {
+      return WaitPage();
+    }
     final message = 'https://test.2i2i.app/user/$uid';
     var appSettingModel = ref.watch(appSettingProvider);
 
@@ -138,18 +141,23 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      showProfile();
+                      CustomNavigation.push(context, HangoutSetting(), '');
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          Strings().userName,
+                          Strings().userName+' ',
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
-                        Text(
-                          user.value?.name ?? '',
-                          style: Theme.of(context).textTheme.subtitle1,
+                        Flexible(
+                          child: Text(
+                            hangout.value?.name ?? '',
+                            style: Theme.of(context).textTheme.subtitle1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
                       ],
                     ),
@@ -159,7 +167,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      showProfile();
+                      CustomNavigation.push(context, HangoutSetting(), '');
                     },
                     title: Text(
                       Strings().bio,
@@ -401,9 +409,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SetupBio(
-            isFromDialog: true,
-          ),
+          child: HangoutSetting(),
         ),
       ),
       isDismissible: true,

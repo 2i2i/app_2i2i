@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
     final myId = ref.read(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
 
-    if (userPrivateAsyncValue is AsyncLoading) {
+    if (haveToWait(userPrivateAsyncValue)) {
       return WaitPage();
     }
 
@@ -65,18 +66,19 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
       shrinkWrap: true,
       primary: false,
       itemBuilder: (_, index) {
-        final user = ref.watch(userProvider(friendsList[index]));
-        if (user is AsyncLoading || user is AsyncError)
+        final hangout = ref.watch(hangoutProvider(friendsList[index]));
+        if (haveToWait(hangout)) {
           return CupertinoActivityIndicator();
+        }
         return UserInfoTile(
-          userModel: user.value!,
+          hangout: hangout.value!,
           myUIDProvider: myId,
           isForBlockedUser: widget.isForBlockedUser,
         );
       },
       separatorBuilder: (BuildContext context, int index) {
-        /*final user = users[index];
-        if (user.id == mainUserID) {
+        /*final hangout = users[index];
+        if (hangout.id == mainUserID) {
           return Container();
         }*/
         return Divider(

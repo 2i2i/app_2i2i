@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -8,15 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/bid_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../block_and_friends/friends_list_page.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'meeting_history_list.dart';
-import 'user_bid_ins_list.dart';
-import 'user_bid_outs_list.dart';
+import 'hangout_bid_ins_list.dart';
+import 'hangout_bid_outs_list.dart';
 
 class MyUserPage extends ConsumerStatefulWidget {
   const MyUserPage({Key? key}) : super(key: key);
@@ -43,19 +44,19 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
 
   @override
   Widget build(BuildContext context) {
-    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
-    if (myUserPageViewModel == null) return WaitPage();
+    final myHangoutPageViewModel = ref.watch(myHangoutPageViewModelProvider);
+    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.hangout == null) {
+      return WaitPage();
+    }
 
-    UserModel userModel = myUserPageViewModel.user;
-    final totalRating = (userModel.rating * 5).toStringAsFixed(1);
-
+    Hangout hangout = myHangoutPageViewModel!.hangout!;
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () {
           final bidInsWithUsers =
-              ref.watch(bidInsProvider(myUserPageViewModel.user.id));
+              ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
           if (bidInsWithUsers == null || bidInsWithUsers.isEmpty) return;
-          myUserPageViewModel.acceptBid(bidInsWithUsers.first);
+          myHangoutPageViewModel.acceptBid(bidInsWithUsers.first);
         },
         child: Container(
           width: kToolbarHeight * 1.15,
@@ -96,7 +97,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                 children: [
                   SizedBox(height: 8),
                   UserInfoWidget(
-                    userModel: userModel,
+                    hangout: hangout,
                     onTapFav: () {
                       CustomNavigation.push(
                         context,
@@ -109,7 +110,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     onTapRules: (){
                       CustomNavigation.push(
                         context,
-                        SetupBio(),
+                        HangoutSetting(),
                         Routes.USER,
                       );
                     },
@@ -157,7 +158,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                 controller: _tabController,
                 children: [
                   UserBidInsList(
-                    uid: myUserPageViewModel.user.id,
+                    uid: myHangoutPageViewModel.hangout!.id,
                     titleWidget: Text(
                       'Bids In',
                       style: Theme.of(context).textTheme.headline6,
@@ -166,7 +167,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     onTap: (x) => {}, //myUserPageViewModel.acceptBid,
                   ),
                   UserBidOutsList(
-                    uid: myUserPageViewModel.user.id,
+                    uid: myHangoutPageViewModel.hangout!.id,
                     titleWidget: Text(
                       'Bids Out',
                       style: Theme.of(context).textTheme.headline6,
@@ -178,7 +179,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                     ),
                     onTrailingIconClick: (BidOut bidOut) async {
                       CustomDialogs.loader(true, context);
-                      await myUserPageViewModel.cancelBid(
+                      await myHangoutPageViewModel.cancelBid(
                           bidId: bidOut.id, B: bidOut.B);
                       CustomDialogs.loader(false, context);
                     },

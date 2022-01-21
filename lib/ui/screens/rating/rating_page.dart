@@ -1,38 +1,39 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/models/meeting_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import 'widgets/rating_tile.dart';
 
 class RatingPage extends ConsumerStatefulWidget {
-  final UserModel? userModel;
+  final Hangout? hangout;
 
-  RatingPage({this.userModel});
+  RatingPage({this.hangout});
 
   @override
   _RatingPageState createState() => _RatingPageState();
 }
 
 class _RatingPageState extends ConsumerState<RatingPage> {
-  UserModel? userModel;
+  Hangout? hangout;
 
   @override
   Widget build(BuildContext context) {
     String uid;
-    if (widget.userModel != null) {
-      uid = widget.userModel!.id;
-      userModel = widget.userModel;
+    if (widget.hangout != null) {
+      uid = widget.hangout!.id;
+      hangout = widget.hangout;
     } else {
       uid = ref.watch(myUIDProvider)!;
-      userModel = ref.watch(userPageViewModelProvider(uid))?.user;
+      hangout = ref.watch(userPageViewModelProvider(uid))?.hangout;
     }
 
     final ratingListAsyncValue = ref.watch(ratingListProvider(uid));
 
-    if (ratingListAsyncValue is AsyncLoading || userModel is AsyncLoading) {
+    if (haveToWait(ratingListAsyncValue)) {
       return WaitPage();
     } else if (ratingListAsyncValue is AsyncError) {
       return Scaffold(
@@ -43,7 +44,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     }
 
     final ratingList = ratingListAsyncValue.asData!.value;
-    final totalRating = (userModel!.rating * 5).toStringAsFixed(1);
+    final totalRating = (hangout!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(),

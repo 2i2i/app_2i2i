@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,12 +97,12 @@ class BidIn extends Equatable {
   BidIn({
     required this.public,
     this.private,
-    this.user,
+    this.hangout,
   });
 
   final BidInPublic public;
   final BidInPrivate? private;
-  final UserModel? user;
+  final Hangout? hangout;
 
   @override
   List<Object> get props => [public.id];

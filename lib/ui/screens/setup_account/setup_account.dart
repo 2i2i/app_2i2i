@@ -1,25 +1,31 @@
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 
-class SetupBio extends ConsumerStatefulWidget {
-  final bool? isFromDialog;
+class HangoutSetting extends ConsumerStatefulWidget {
+  final bool? fromBottomSheet;
 
-  SetupBio({this.isFromDialog});
+  HangoutSetting({Key? key, this.fromBottomSheet}) : super(key: key);
 
   @override
-  _SetupBioState createState() => _SetupBioState();
+  _HangoutSettingState createState() => _HangoutSettingState();
 }
 
-class _SetupBioState extends ConsumerState<SetupBio> {
+class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   TextEditingController userNameEditController = TextEditingController();
+  TextEditingController minEditController = TextEditingController();
+  TextEditingController hourEditController = TextEditingController();
+  TextEditingController minuteEditController = TextEditingController();
   TextEditingController bioEditController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  ValueNotifier<bool> invalidTime = ValueNotifier(false);
 
   File? imageFile;
   String imageUrl = "";
@@ -28,12 +34,12 @@ class _SetupBioState extends ConsumerState<SetupBio> {
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       final uid = ref.watch(myUIDProvider)!;
-      final user = ref.watch(userProvider(uid));
-      bool isLoaded = !(user is AsyncLoading && user is AsyncError);
+      final hangout = ref.watch(hangoutProvider(uid));
+      bool isLoaded = !(haveToWait(hangout));
       if (isLoaded) {
-        userNameEditController.text = user.asData!.value.name;
-        bioEditController.text = user.asData!.value.bio;
-        imageUrl = user.asData!.value.name;
+        userNameEditController.text = hangout.asData!.value.name;
+        bioEditController.text = hangout.asData!.value.bio;
+        imageUrl = hangout.asData!.value.name;
       }
     });
     super.initState();
@@ -41,45 +47,28 @@ class _SetupBioState extends ConsumerState<SetupBio> {
 
   @override
   Widget build(BuildContext context) {
-    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+    final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
 
-    if (widget.isFromDialog ?? false) {
-      return SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            buildMainWidget(context, myUserPageViewModel),
-          ],
-        ),
-      );
-    }
-    return Scaffold(
-      appBar: (widget.isFromDialog ?? false) ? null : AppBar(elevation: 0),
-      body: buildMainWidget(context, myUserPageViewModel),
-    );
-  }
-
-  Padding buildMainWidget(
-      BuildContext context, MyUserPageViewModel? myUserPageViewModel) {
-    return Padding(
+    Widget body = SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Form(
         key: formKey,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: kRadialReactionRadius),
+            const SizedBox(height: 20),
             Text(
               Strings().setUpAccount,
               style: Theme.of(context).textTheme.headline4,
             ),
-            SizedBox(height: kRadialReactionRadius+8),
-            Text(Strings().userName,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1,
+            const SizedBox(height: 28),
+
+            Text(
+              Strings().userName,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             TextFormField(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: userNameEditController,
@@ -100,13 +89,13 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 hintText: Strings().yourNameHint,
               ),
             ),
-            SizedBox(height: kMinInteractiveDimension),
-            Text(Strings().bio,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1,
+            const SizedBox(height: 30),
+
+            Text(
+              Strings().bio,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             TextFormField(
               controller: bioEditController,
               textInputAction: TextInputAction.newline,
@@ -120,12 +109,139 @@ class _SetupBioState extends ConsumerState<SetupBio> {
                 hintText: Strings().bioExample,
               ),
             ),
-            SizedBox(height: kToolbarHeight),
+            const SizedBox(height: 30),
+
+            Text(
+              Strings().minSpeed,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            const SizedBox(height: 6),
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: minEditController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              autofocus: false,
+              validator: (value) {
+                value ??= '';
+                if (value.trim().isEmpty || int.tryParse(value) == null) {
+                  return Strings().enterValidData;
+                }
+              },
+              decoration: InputDecoration(
+                filled: true,
+                hintText: Strings().numberHint,
+                suffix: Text(Strings().algoPerSec),
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            Text(
+              Strings().maxDuration,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            const SizedBox(height: 6),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 150,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: hourEditController,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(2),
+                        ],
+                        autofocus: false,
+                        validator: (value) {
+                          value ??= '';
+                          if (value.trim().isEmpty ||
+                              int.tryParse(value) == null ||
+                              int.tryParse(value)! > 24) {
+                            invalidTime.value = true;
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: Strings().hh.toUpperCase(),
+                          // suffix: Text(Strings().algoPerSec),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      ':',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    SizedBox(
+                      width: 60,
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: minuteEditController,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(2),
+                        ],
+                        autofocus: false,
+                        validator: (value) {
+                          value ??= '';
+                          if (value.trim().isEmpty ||
+                              int.tryParse(value) == null ||
+                              int.tryParse(value)! > 60) {
+                            invalidTime.value = true;
+                          }
+                            return null;
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: Strings().mm.toUpperCase(),
+                          // suffix: Text(Strings().algoPerSec),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ValueListenableBuilder(
+              valueListenable: invalidTime,
+              builder: (BuildContext context, bool value, Widget? child) {
+                return Visibility(
+                  visible: value,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 12,top: 8),
+                    child: Text(
+                      Strings().enterValidData,
+                      style: Theme.of(context)
+                          .textTheme
+                          .caption
+                          ?.copyWith(color: Theme.of(context).errorColor),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 30),
+
+            // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 if (formKey.currentState?.validate() ?? false) {
                   myUserPageViewModel?.changeNameAndBio(
-                      userNameEditController.text, bioEditController.text);
+                      userNameEditController.text, bioEditController.text,);
                   Navigator.of(context).maybePop();
                 }
               },
@@ -134,6 +250,13 @@ class _SetupBioState extends ConsumerState<SetupBio> {
           ],
         ),
       ),
+    );
+    if (widget.fromBottomSheet ?? false) {
+      return body;
+    }
+    return Scaffold(
+      appBar: AppBar(elevation: 0),
+      body: body,
     );
   }
 }

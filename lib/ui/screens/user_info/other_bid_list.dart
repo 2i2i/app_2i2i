@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/bid_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 
 class OtherBidInList extends ConsumerWidget {
   OtherBidInList({required this.B});
-  final UserModel B;
+  final Hangout B;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

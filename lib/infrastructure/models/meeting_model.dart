@@ -1,6 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -1,3 +1,5 @@
+import 'package:flutter/src/widgets/framework.dart';
+
 class Strings {
   static final Strings _singleton = Strings._internal();
 
@@ -20,6 +22,15 @@ class Strings {
   String minSpeed = 'Min Speed';
 
   String maxDuration = 'Max Duration';
+
+  String numberHint = 'Enter real number like 12';
+
+  String algoPerSec = 'μALGO/Sec';
+
+  var hh = 'hh';
+  var mm = 'mm';
+
+  String invalid = 'Invalid';
   Strings._internal();
 
   factory Strings() {
@@ -83,6 +94,7 @@ class Strings {
   String bioExample = 'Ex: I like #cooking #basketball';
   String save = 'Save';
   String required = 'Required';
+  String enterValidData = 'Please enter valid data';
   String setUpAccount = 'Setup Account';
   String userName = 'Username';
   String bio = 'Bio';
