@@ -298,7 +298,7 @@ class Meeting extends Equatable {
       B: uid,
       addrA: bidIn.private!.addrA,
       addrB: addrB,
-      budget: bidIn.private!.budget,
+      budget: bidIn.public.budget,
       start: null,
       end: null,
       duration: null,
