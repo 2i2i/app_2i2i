@@ -1,17 +1,21 @@
 import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 // import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
 // import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
+import 'ui/screens/ringing/ringing_page.dart';
 // import 'ui/screens/setup_account/setup_account.dart';
 // import 'ui/test_screen.dart';
 
@@ -105,8 +109,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       // home:TestScreen(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
-      themeMode: appSettingModel.currentThemeMode,
-      // themeMode: ThemeMode.dark,
+      // themeMode: appSettingModel.currentThemeMode,
+      themeMode: ThemeMode.light,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
     );
@@ -124,8 +128,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
-              // homePageBuilder: (_) => MyUserPage(),
-              homePageBuilder: (_) => HomePage(),
+               homePageBuilder: (_) => HomePage(),
             ),
           ),
         ),
