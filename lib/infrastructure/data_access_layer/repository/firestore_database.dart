@@ -30,10 +30,11 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-      final meetingDocRef =
-          _service.firestore.collection(FirestorePath.meetings()).doc();
 
-      final lockObj = {'meeting': meetingDocRef.id};
+      final meetingDocRef =
+          _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
+
+      final lockObj = {'meeting': meeting.id};
 
       // log(H + 'meeting.toMap()=${meeting.toMap()}');
       // log(H + 'lockObj()=$lockObj');
@@ -219,8 +220,7 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidInsPrivate(uid),
       builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true).orderBy('ts'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
@@ -228,21 +228,21 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true).orderBy('ts'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
   //<editor-fold desc="Meeting Module">\
-  // Stream<BidInPublic?> getBidIn({required String uid, required String bidId}) =>
-  //     _service.documentStream(
-  //       path: FirestorePath.bidIn(uid, bidId),
-  //       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
-  //     );
+  Stream<BidInPublic?> getBidInPublic(
+          {required String uid, required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidInPublic(uid, bidId),
+        builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
+      );
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(
-        path: FirestorePath.bidPrivate(uid, bidId),
+        path: FirestorePath.bidInPrivate(uid, bidId),
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 

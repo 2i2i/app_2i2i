@@ -34,7 +34,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
     final estMaxDurationAsyncValue =
         ref.watch(estMaxDurationProvider(widget.bidIn.id));
     final isMainAccountEmptyAsyncValue = ref.watch(isMainAccountEmptyProvider);
-    String coins = widget.bidIn.speed.num.toString() + ' ${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s';
+    String coins = widget.bidIn.speed.num.toString() +
+        ' ${widget.bidIn.speed.assetId == 0 ? 'μALGO' : widget.bidIn.speed.assetId}/s';
     return AlertDialog(
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 0,
@@ -94,11 +95,8 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
               widget.userModel!.name,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6,
+              style: Theme.of(context).textTheme.headline6,
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: TextFormField(
@@ -124,7 +122,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
                 height: 35,
               ),
               title: Text(
-                  coins,
+                coins,
                 style: Theme.of(context).textTheme.subtitle1,
               ),
               isThreeLine: false,

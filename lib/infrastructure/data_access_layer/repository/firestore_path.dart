@@ -12,9 +12,9 @@ class FirestorePath {
   static String bidInsPublic(String uid) => 'users/$uid/bidInsPublic';
   static String bidInsPrivate(String uid) => 'users/$uid/bidInsPrivate';
   static String bidOuts(String uid) => 'users/$uid/bidOuts';
-  static String bidIn(String uid, String bidId) => 'users/$uid/bidIns/$bidId';
+  static String bidInPublic(String uid, String bidId) => 'users/$uid/bidInsPublic/$bidId';
   static String bidOut(String uid, String bidId) => 'users/$uid/bidOuts/$bidId';
-  static String bidPrivate(String uid, String bidId) => 'users/$uid/bidIns/$bidId/private/main';
+  static String bidInPrivate(String uid, String bidId) => 'users/$uid/bidInsPrivate/$bidId';
 
   static String ratings(String uid) => 'users/$uid/ratings/';
   static String newRating(String uid, String meetingId) => 'users/$uid/ratings/$meetingId';

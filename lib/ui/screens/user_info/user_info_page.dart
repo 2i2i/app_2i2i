@@ -83,7 +83,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomNavigation.push(context, CreateBidPage(uid: userModel.id), Routes.CreateBid),
+        onTap: () => CustomNavigation.push(context, CreateBidPage(user: userModel), Routes.CreateBid),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,

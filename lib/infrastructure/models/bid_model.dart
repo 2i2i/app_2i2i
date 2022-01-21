@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
@@ -124,11 +124,6 @@ class BidIn extends Equatable {
             'BidIn createList bidIn.public.id (${bidIn.public.id}) != bidIn.private!.id (${bidIn.private!.id})');
       bidIns.add(bidIn);
     }
-    final futures = [];
-    for (int i = 0; i < bidIns.length; i++) {
-      final uid = bidIns[i].private!.A;
-      
-    }
     return bidIns;
   }
 }
@@ -185,8 +180,8 @@ class BidInPublic extends Equatable {
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
       'active': active,
-      'ts': ts,
-      'rule': rule,
+      'ts': FieldValue.serverTimestamp(),
+      'rule': rule.toMap(),
     };
   }
 
@@ -203,6 +198,7 @@ class BidInPublic extends Equatable {
 class BidInPrivate {
   BidInPrivate({
     required this.id,
+    required this.active,
     required this.A,
     required this.addrA,
     required this.comment,
@@ -211,6 +207,7 @@ class BidInPrivate {
   });
 
   final String id;
+  final bool active;
   final String A;
   final String? addrA;
   final String? comment;
@@ -228,10 +225,12 @@ class BidInPrivate {
     String? addrA = data['addrA'];
     String? comment = data['comment'];
     int budget = data['budget'];
+    bool active = data['active'];
 
     return BidInPrivate(
       id: documentId,
       txId: txId,
+      active: active,
       A: A,
       addrA: addrA,
       comment: comment,
@@ -241,6 +240,7 @@ class BidInPrivate {
 
   Map<String, dynamic> toMap() {
     return {
+      'active': active,
       'txId': txId,
       'A': A,
       'addrA': addrA,

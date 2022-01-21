@@ -1,6 +1,7 @@
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
@@ -43,6 +44,7 @@ class AddBidPageViewModel {
 
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
+    required UserModel user,
     required AbstractAccount? account,
     required Quantity amount,
     required Quantity speed,
@@ -53,7 +55,7 @@ class AddBidPageViewModel {
 
     final net = AlgorandNet.testnet;
     final String? addrA = speed.num == 0 ? null : account!.address;
-    final bidId = database.newDocId(path: 'users/$uid/bidOuts');
+    final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
     String? txId;
@@ -67,12 +69,10 @@ class AddBidPageViewModel {
         final cause = ex.cause;
         if (cause is dio.DioError) {
           final message = cause.response?.data['message'];
-          if(context != null) {
+          if (context != null) {
             CustomAlertWidget.showErrorDialog(
-              context,
-              Strings().errorWhileAddBid,
-              errorStacktrace: '$message'
-            );
+                context, Strings().errorWhileAddBid,
+                errorStacktrace: '$message');
           }
           log('AlgorandException ' + message);
         }
@@ -81,8 +81,9 @@ class AddBidPageViewModel {
     }
 
     // TODO clean separation into firestore_service and firestore_database
-    final bidOutRef =
-        FirebaseFirestore.instance.collection('users/$uid/bidOuts').doc(bidId);
+    final bidOutRef = FirebaseFirestore.instance
+        .collection(FirestorePath.bidOuts(uid))
+        .doc(bidId);
     final bidOut = BidOut(
       id: bidId,
       B: B.id,
@@ -93,20 +94,30 @@ class AddBidPageViewModel {
       addrA: addrA,
       budget: amount.num,
     );
-    final bidInRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
+    final bidInPublicRef = FirebaseFirestore.instance
+        .collection(FirestorePath.bidInsPublic(B.id))
         .doc(bidId);
-    final bidIn = BidInPublic(id: bidId, speed: speed, net: net, active: true);
+    final bidInPublic = BidInPublic(
+        id: bidId,
+        speed: speed,
+        net: net,
+        active: true,
+        ts: DateTime.now().toUtc(),
+        rule: user.rule);
     final bidInPrivateRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
-        .doc(bidId)
-        .collection('private')
-        .doc('main');
+        .collection(FirestorePath.bidInsPrivate(B.id))
+        .doc(bidId);
     final bidInPrivate = BidInPrivate(
-        A: uid, addrA: addrA, comment: bidNote, txId: txId, budget: amount.num);
+        id: bidId,
+        active: true,
+        A: uid,
+        addrA: addrA,
+        comment: bidNote,
+        txId: txId,
+        budget: amount.num);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
-      transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
+      transaction.set(bidInPublicRef, bidInPublic.toMap(), SetOptions(merge: false));
       transaction.set(
           bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
     });

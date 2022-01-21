@@ -24,7 +24,7 @@ class HomePage extends ConsumerStatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>{
+class _HomePageState extends ConsumerState<HomePage> {
   var _tabSelectedIndex = 0;
   var _tabPopStack = false;
 
@@ -50,14 +50,13 @@ class _HomePageState extends ConsumerState<HomePage>{
     });
   }
 
-
   double rating = 1;
 
   @override
   Widget build(BuildContext context) {
-
     var lockUser = ref.watch(lockedUserViewModelProvider);
-    bool loading = lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
+    bool loading =
+        lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
     if (!loading) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
@@ -142,21 +141,24 @@ class _HomePageState extends ConsumerState<HomePage>{
               child: child,
             );
           },
-
           child: BottomSheet(
             backgroundColor: Theme.of(context).cardColor,
             elevation: 8,
-             shape: RoundedRectangleBorder(
-               borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
-             ),
-             onClosing: () {  }, builder: (BuildContext context) {
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            ),
+            onClosing: () {},
+            builder: (BuildContext context) {
               var otherUid = showRating.value['otherUid'];
               var meetingId = showRating.value['meetingId'];
               return Container(
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -196,12 +198,10 @@ class _HomePageState extends ConsumerState<HomePage>{
                       minLines: 5,
                       maxLines: 5,
                       decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey.shade50,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0)
-                        )
-                      ),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(0))),
                     ),
                     SizedBox(height: 10),
                     Row(
@@ -209,25 +209,29 @@ class _HomePageState extends ConsumerState<HomePage>{
                       children: [
                         TextButton(
                           onPressed: () => {
-                            showRating.value = {
-                              'show':false
-                            }
+                            showRating.value = {'show': false}
                           },
-                          child:
-                          Text(Strings().cancel,),
+                          child: Text(
+                            Strings().cancel,
+                          ),
                         ),
                         SizedBox(width: 10),
                         TextButton(
                           onPressed: () async {
-                            if(otherUid is String && meetingId is String) {
+                            if (otherUid is String && meetingId is String) {
                               final database = ref.watch(databaseProvider);
-                              database.addRating(otherUid, meetingId, RatingModel(rating: rating, comment: ratingFeedBack.text));
+                              database.addRating(
+                                  otherUid,
+                                  meetingId,
+                                  RatingModel(
+                                      rating: rating,
+                                      comment: ratingFeedBack.text));
                             }
-                            showRating.value = {
-                              'show':false
-                            };
+                            showRating.value = {'show': false};
                           },
-                          child: Text(Strings().appRatingSubmitButton,),
+                          child: Text(
+                            Strings().appRatingSubmitButton,
+                          ),
                           style: TextButton.styleFrom(
                             primary: Theme.of(context).colorScheme.secondary,
                           ),
@@ -264,12 +268,12 @@ class _HomePageState extends ConsumerState<HomePage>{
   }
 
   submitReview(otherUid, meetingId) {
-    if(mounted) {
+    if (mounted) {
       Future.delayed(Duration(milliseconds: 300)).then((value) {
         showRating.value = {
           'show': true,
-          'otherUid':otherUid,
-          'meetingId':meetingId
+          'otherUid': otherUid,
+          'meetingId': meetingId
         };
         /*CustomDialogs.inAppRatingDialog(
           context,
@@ -286,61 +290,57 @@ class _HomePageState extends ConsumerState<HomePage>{
 class ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final userId = ref.watch(myUIDProvider);
-        if (userId is String) {
-          final bidInList = ref.watch(bidInsPublicProvider(userId));
-          if (bidInList.asData?.value is List<BidInPublic>) {
-            List<BidInPublic> bids = bidInList.asData!.value;
-            if (bids.isNotEmpty) {
-              return FutureBuilder(
-                future: SecureStorage().read(Keys.myReadBids),
-                builder:
-                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                  if (snapshot.data is String) {
-                    List localIds = snapshot.data!.split(',').toSet().toList();
-                    List serverIds = bids.map((e) => e.id).toSet().toList();
-                    bool anyNew =
-                        serverIds.any((element) => !localIds.contains(element));
-                    if (anyNew) {
-                      return SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: Stack(
-                          children: [
-                            selectedIcon('assets/icons/person.svg',context),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Container(
-                                height: 15,
-                                width: 15,
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border:
-                                      Border.all(color: Colors.white, width: 2),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  }
-                  return selectedIcon('assets/icons/person.svg',context);
-                },
-              );
-            }
-          }
-        }
+    final normalReturn = selectedIcon('assets/icons/person.svg', context);
 
-        return selectedIcon('assets/icons/person.svg',context);
-      },
-    );
+    return Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+      final userId = ref.watch(myUIDProvider);
+      if (userId == null) return normalReturn;
+
+      final bidInList = ref.watch(bidInsPublicProvider(userId));
+      if (bidInList.value == null)
+        return selectedIcon('assets/icons/person.svg', context);
+      List<BidInPublic> bids = bidInList.asData!.value;
+      if (bids.isEmpty) return normalReturn;
+
+      return FutureBuilder(
+          future: SecureStorage().read(Keys.myReadBids),
+          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+            if (snapshot.data == null) return normalReturn;
+            log('snapshot.data=${snapshot.data}');
+            List<String> localIds = snapshot.data!.split(',').toSet().toList();
+            List serverIds = bids.map((e) => e.id).toSet().toList();
+            bool anyNew =
+                serverIds.any((element) => !localIds.contains(element));
+            if (!anyNew) return normalReturn;
+
+            return SizedBox(
+              height: 30,
+              width: 30,
+              child: Stack(
+                children: [
+                  selectedIcon('assets/icons/person.svg', context),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      height: 15,
+                      width: 15,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
+    });
   }
 
-  Widget selectedIcon(String iconPath, BuildContext context,{bool isSelected = false}) {
+  Widget selectedIcon(String iconPath, BuildContext context,
+      {bool isSelected = false}) {
     return Padding(
       padding: const EdgeInsets.all(6),
       child: SvgPicture.asset(iconPath,

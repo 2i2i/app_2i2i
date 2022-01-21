@@ -27,18 +27,15 @@ class UserModelChanger {
 
   Future updateNameAndBio(String name, String bio) async {
     final tags = UserModel.tagsFromBio(bio);
-    final Map<String, dynamic> data = {
+    Map<String, dynamic> data = {
       'name': name,
       'bio': bio,
       'tags': [name, ...tags]
     };
     final user = await database.getUser(uid);
     if (user == null) {
-      data['status'] = 'ONLINE';
-      data['meeting'] = null;
-      data['rating'] = 1;
-      data['numRatings'] = 0;
-      data['heartbeat'] = DateTime.now().toUtc();
+      final newUser = UserModel(id: uid, name: name, bio: bio);
+      data = newUser.toMap();
     }
     return database.updateUserNameAndBio(uid, data);
   }
@@ -56,8 +53,9 @@ class UserModelChanger {
 }
 
 @immutable
-class HangOutRule {
+class HangOutRule extends Equatable {
   static const defaultImportance = {
+    // set also in cloud function userCreated
     Lounge.lurker: 0,
     Lounge.chrony: 1,
     Lounge.highroller: 5,
@@ -65,6 +63,7 @@ class HangOutRule {
   };
 
   const HangOutRule({
+    // set also in cloud function userCreated
     this.maxMeetingDuration = 300,
     this.minSpeed = 0,
     this.importance = defaultImportance,
@@ -79,10 +78,10 @@ class HangOutRule {
     final int minSpeed = data['minSpeed'];
 
     final Map<Lounge, int> importance = {};
-    final Map<String, int> x = data['importance'];
+    final Map<String, dynamic> x = data['importance'];
     for (final k in x.keys) {
       final lounge = Lounge.values.firstWhere((l) => l.toStringEnum() == k);
-      importance[lounge] = x[k]!;
+      importance[lounge] = x[k]! as int;
     }
 
     return HangOutRule(
@@ -103,6 +102,9 @@ class HangOutRule {
 
   int importanceSize() =>
       importance.values.reduce((value, element) => value + element);
+
+  @override
+  List<Object> get props => [maxMeetingDuration, minSpeed, importance];
 }
 
 @immutable
@@ -110,6 +112,7 @@ class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
   UserModel({
+    // set also in cloud function userCreated
     required this.id,
     this.status = 'ONLINE',
     this.meeting,

@@ -6,7 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+// import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
 // import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -42,22 +42,29 @@ Future<void> main() async {
   //     ),
   //   );
   // });
-
   //endregion DEBUG
 
-  await SentryFlutter.init((options) {
-    options.dsn =
-        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  }, appRunner: () {
-    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-      return runApp(
-        ProviderScope(
-          child: MainWidget(themeMode: value ?? "AUTO"),
-        ),
-      );
-    });
-  }).onError((error, stackTrace) {
-    print(error);
+  // await SentryFlutter.init((options) {
+  //   options.dsn =
+  //       'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  // }, appRunner: () {
+  //   FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  //     return runApp(
+  //       ProviderScope(
+  //         child: MainWidget(themeMode: value ?? "AUTO"),
+  //       ),
+  //     );
+  //   });
+  // }).onError((error, stackTrace) {
+  //   print(error);
+  // });
+
+  return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+    return runApp(
+      ProviderScope(
+        child: MainWidget(themeMode: value ?? "AUTO"),
+      ),
+    );
   });
 }
 
