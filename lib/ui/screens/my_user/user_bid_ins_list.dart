@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_stor
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
@@ -51,7 +52,11 @@ class UserBidInsList extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemBuilder: (_, ix) {
         BidIn bidIn = bidInsWithUsers[ix];
-
+        var sum = 0;
+        for (int i = 0; i <= ix; i++) {
+          sum += bidInsWithUsers[i].public.budget;
+        }
+        print("YOUr SUM =----> $sum");
         return BidInfoTile(
           onTap: () {}, // TODO maybe go to user?
           bidSpeed: bidIn.public.speed.num.toString(),

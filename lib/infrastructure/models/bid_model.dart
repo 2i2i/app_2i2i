@@ -120,8 +120,7 @@ class BidIn extends Equatable {
     for (int i = 0; i < publics.length; i++) {
       BidIn bidIn = BidIn(public: publics[i], private: privates[i]);
       if (bidIn.public.id != bidIn.private!.id)
-        throw Exception(
-            'BidIn createList bidIn.public.id (${bidIn.public.id}) != bidIn.private!.id (${bidIn.private!.id})');
+        // throw Exception('BidIn createList bidIn.public.id (${bidIn.public.id}) != bidIn.private!.id (${bidIn.private!.id})');
       bidIns.add(bidIn);
     }
     return bidIns;
