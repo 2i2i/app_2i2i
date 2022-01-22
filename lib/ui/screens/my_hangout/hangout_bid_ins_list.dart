@@ -60,7 +60,7 @@ class UserBidInsList extends ConsumerWidget {
         return BidInfoTile(
           onTap: () {}, // TODO maybe go to user?
           bidSpeed: bidIn.public.speed.num.toString(),
-          userModel: bidIn.user,
+          hangout: bidIn.hangout,
         );
       },
     );

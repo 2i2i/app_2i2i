@@ -1,4 +1,5 @@
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,8 +29,7 @@ class UserBidOutsList extends ConsumerWidget {
 
   Widget build(BuildContext context, WidgetRef ref) {
     final bidOutList = ref.watch(bidOutsProvider(uid));
-    if (bidOutList is AsyncLoading ||
-        bidOutList is AsyncError ||
+    if (haveToWait(bidOutList) ||
         (bidOutList.asData?.value == null)) {
       return WaitPage();
     }
@@ -41,14 +41,14 @@ class UserBidOutsList extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemBuilder: (_, ix) {
         BidOut bid = bids[ix];
-        final bUser = ref.watch(userProvider(bid.B));
+        final bUser = ref.watch(hangoutProvider(bid.B));
 
-        if (bUser.asData?.value is UserModel) {
-          final userModel = bUser.asData!.value;
+        if (bUser.asData?.value is Hangout) {
+          final hangout = bUser.asData!.value;
 
           return BidInfoTile(
             bidSpeed: bid.speed.num.toString(),
-            userModel: userModel,
+            hangout: hangout,
           );
         }
         return Center(child: CupertinoActivityIndicator());

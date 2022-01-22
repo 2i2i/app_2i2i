@@ -12,8 +12,8 @@ extension ParseToString on Lounge {
   }
 }
 
-class UserModelChanger {
-  UserModelChanger(this.database, this.uid);
+class HangoutChanger {
+  HangoutChanger(this.database, this.uid);
 
   final FirestoreDatabase database;
   final String uid;
@@ -25,8 +25,15 @@ class UserModelChanger {
     return database.updateUserHeartbeat(uid, status);
   }
 
+  Future updateHangout(Hangout hangout){
+    final tags = Hangout.tagsFromBio(hangout.bio);
+    Map map = hangout.toMap();
+    map['tags'] = [hangout.name, ...tags];
+    return database.updateUserNameAndBio(uid, map.cast());
+  }
+
   Future updateNameAndBio(String name, String bio) async {
-    final tags = UserModel.tagsFromBio(bio);
+    final tags = Hangout.tagsFromBio(bio);
     Map<String, dynamic> data = {
       'name': name,
       'bio': bio,
@@ -34,7 +41,7 @@ class UserModelChanger {
     };
     final user = await database.getUser(uid);
     if (user == null) {
-      final newUser = UserModel(id: uid, name: name, bio: bio);
+      final newUser = Hangout(id: uid, name: name, bio: bio);
       data = newUser.toMap();
     }
     return database.updateUserNameAndBio(uid, data);
@@ -108,10 +115,10 @@ class HangOutRule extends Equatable {
 }
 
 @immutable
-class UserModel extends Equatable {
+class Hangout extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
-  UserModel({
+  Hangout({
     // set also in cloud function userCreated
     required this.id,
     this.status = 'ONLINE',
@@ -154,15 +161,15 @@ class UserModel extends Equatable {
   @override
   bool get stringify => true;
 
-  factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory Hangout.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
-      log('UserModel.fromMap - data == null');
+      log('Hangout.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('UserModel.fromMap - data=$data');
-    // log('UserModel.fromMap - data=${data['bidsIn']}');
-    // log('UserModel.fromMap - data=${data['bidsIn'].runtimeType}');
+    // log('Hangout.fromMap - data=$data');
+    // log('Hangout.fromMap - data=${data['bidsIn']}');
+    // log('Hangout.fromMap - data=${data['bidsIn'].runtimeType}');
 
     var status = data['status'];
     var meeting = data['meeting'];
@@ -175,7 +182,7 @@ class UserModel extends Equatable {
         ? HangOutRule()
         : HangOutRule.fromMap(data['rule']);
 
-    return UserModel(
+    return Hangout(
       id: documentId,
       status: status ?? '',
       meeting: meeting,
@@ -204,7 +211,7 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'Hangout{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 
   bool isInMeeting() => meeting != null;

@@ -1,4 +1,5 @@
 
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_navigation.dart';
@@ -34,30 +35,27 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     final mainUserID = ref.watch(myUIDProvider)!;
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
-    final userModelChanger = ref.watch(userModelChangerProvider)!;
+    final userModelChanger = ref.watch(hangoutChangerProvider)!;
 
-    if (userPageViewModel == null ||
-        userPageViewModel is AsyncError ||
-        userPageViewModel is AsyncLoading) {
+    if (haveToWait(userPageViewModel)) {
       return WaitPage();
     }
 
-    UserModel userModel = userPageViewModel.user;
+    Hangout hangout = userPageViewModel!.hangout;
 
-    final isFriend = !(userPrivateAsyncValue is AsyncError) &&
-        !(userPrivateAsyncValue is AsyncLoading) &&
+    final isFriend = !haveToWait(userPrivateAsyncValue) &&
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.friends.contains(widget.uid);
 
-    final isBlocked = !(userPrivateAsyncValue is AsyncError) &&
-        !(userPrivateAsyncValue is AsyncLoading) &&
+    final isBlocked = !haveToWait(userPrivateAsyncValue)&&
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
-    final totalRating = (userModel.rating * 5).toStringAsFixed(1);
+    final totalRating = removeDecimalZeroFormat(hangout.rating * 5);
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
         actions: [
           PopupMenuButton<int>(
@@ -83,7 +81,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomNavigation.push(context, CreateBidPage(user: userModel), Routes.CreateBid),
+        onTap: () => CustomNavigation.push(context, CreateBidPage(hangout: hangout), Routes.CreateBid),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
@@ -112,83 +110,26 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             margin: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(020),
+                  bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  UserInfoWidget(
-                    userModel: userModel,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 14),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => CustomNavigation.push(context, RatingPage(userModel: userModel), Routes.RATING),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '$totalRating',
-                                  maxLines: 2,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1,
-                                ),
-                                SizedBox(height: 4),
-                                IgnorePointer(
-                                  ignoring: true,
-                                  child: RatingBar.builder(
-                                    initialRating: userModel.rating * 5,
-                                    minRating: 1,
-                                    direction: Axis.horizontal,
-                                    itemCount: 5,
-                                    itemSize: 20,
-                                    tapOnlyMode: true,
-                                    updateOnDrag: false,
-                                    allowHalfRating: true,
-                                    glowColor: Colors.white,
-                                    unratedColor: Colors.grey.shade300,
-                                    itemBuilder: (context, _) => Icon(
-                                      Icons.star_rounded,
-                                      color: Colors.amber,
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      print(rating);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: FriendButtonWidget(
-                            value: isFriend,
-                            onTap: (value) => value
-                                ? userModelChanger.addFriend(widget.uid)
-                                : userModelChanger.removeFriend(widget.uid),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 16),
+              child: UserInfoWidget(
+                hangout: hangout, isFav: isFriend, onTapFav: () {
+                if (!isFriend) {
+                  userModelChanger.addFriend(widget.uid);
+                } else {
+                  userModelChanger.removeFriend(widget.uid);
+                }
+              },
               ),
             ),
           ),
           Expanded(
             child: OtherBidInList(
-              B: userModel,
+              B: hangout,
             ),
           ),
         ],
@@ -197,7 +138,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
   }
 
   void handleClick(
-      int item, UserModelChanger userModelChanger, bool isBlocked) {
+      int item, HangoutChanger userModelChanger, bool isBlocked) {
     switch (item) {
       case 0:
         // userModelChanger.addFriend(widget.uid);
@@ -208,8 +149,10 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         } else {
           userModelChanger.addBlocked(widget.uid);
         }
-
         break;
     }
+  }
+  String removeDecimalZeroFormat(double n) {
+    return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 2);
   }
 }

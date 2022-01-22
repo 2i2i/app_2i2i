@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,12 +97,12 @@ class BidIn extends Equatable {
   BidIn({
     required this.public,
     this.private,
-    this.user,
+    this.hangout,
   });
 
   final BidInPublic public;
   final BidInPrivate? private;
-  final UserModel? user;
+  final Hangout? hangout;
 
   @override
   List<Object> get props => [public.id];
@@ -118,9 +118,9 @@ class BidIn extends Equatable {
 
     List<BidIn> bidIns = [];
     for (int i = 0; i < publics.length; i++) {
-      BidIn bidIn = BidIn(public: publics[i], private: privates[i]);
-      if (bidIn.public.id != bidIn.private!.id)
-        // throw Exception('BidIn createList bidIn.public.id (${bidIn.public.id}) != bidIn.private!.id (${bidIn.private!.id})');
+      final bidInPublic = publics[i];
+      final bidInPrivate = privates.firstWhere((element) => element.id == bidInPublic.id);
+      BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
       bidIns.add(bidIn);
     }
     return bidIns;
@@ -215,7 +215,6 @@ class BidInPrivate {
   final String? addrA;
   final String? comment;
   final String? txId;
-  
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {

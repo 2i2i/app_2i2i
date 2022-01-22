@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.read(myUIDProvider)!;
-    final user = ref.watch(userProvider(uid));
+    final hangout = ref.watch(hangoutProvider(uid));
 
     return AppBar(
       backgroundColor: backgroundColor,
@@ -32,7 +33,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            !(user is AsyncLoading)
+            !(haveToWait(hangout))
                 ? RectangleBox(
                     onTap: () => CustomNavigation.push(
                         context, RatingPage(), Routes.RATING),
@@ -41,7 +42,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
                     icon: StarWidget(
                       width: 20,
                       height: 32,
-                      value: user.value?.rating ?? 1,
+                      value: hangout.value?.rating ?? 1,
                       startColor: Theme.of(context).colorScheme.secondary,
                     ),
                   )

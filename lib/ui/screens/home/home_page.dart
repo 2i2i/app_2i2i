@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -14,7 +15,7 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../faq/faq_page.dart';
 import '../locked_user/locked_user_page.dart';
 import '../my_account/my_account_page.dart';
-import '../my_user/my_user_page.dart';
+import '../my_hangout/my_hangout_page.dart';
 import '../search/search_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -54,10 +55,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var lockUser = ref.watch(lockedUserViewModelProvider);
-    bool loading =
-        lockUser == null || lockUser is AsyncLoading || lockUser is AsyncError;
-    if (!loading) {
+    var lockHangout = ref.watch(lockedHangoutViewModelProvider);
+    if (!(haveToWait(lockHangout))) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
           submitReview(uid, meetingId);
@@ -383,6 +382,7 @@ class TabNavigator extends StatelessWidget {
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
               settings: settings, builder: (_) => tabItem!.tab);
-        });
+        },
+    );
   }
 }

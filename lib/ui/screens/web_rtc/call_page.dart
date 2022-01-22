@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling.dart';
 import 'package:flutter/material.dart';
@@ -10,25 +11,25 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/web_rtc_provider/call_screen_provider.dart';
 import 'widgets/circle_button.dart';
 
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
-  final UserModel user;
+  final Hangout hangout;
   final Function onHangPhone;
   final MeetingChanger meetingChanger;
-  final UserModelChanger userModelChanger;
+  final HangoutChanger hangoutChanger;
 
   CallPage({
     Key? key,
     required this.meeting,
     required this.meetingChanger,
-    required this.userModelChanger,
+    required this.hangoutChanger,
     required this.onHangPhone,
-    required this.user,
+    required this.hangout,
   }) : super(key: key);
 
   @override
@@ -60,7 +61,7 @@ class _CallPageState extends ConsumerState<CallPage>
     signaling = Signaling(
       meeting: widget.meeting,
       meetingChanger: widget.meetingChanger,
-      userModelChanger: widget.userModelChanger,
+      hangoutChanger: widget.hangoutChanger,
       amA: amA,
       localVideo: _localRenderer,
       remoteVideo: _remoteRenderer,
@@ -122,7 +123,7 @@ class _CallPageState extends ConsumerState<CallPage>
   void initState() {
     _initBudgetTimer();
 
-    amA = widget.meeting.A == widget.user.id;
+    amA = widget.meeting.A == widget.hangout.id;
 
     super.initState();
   }
@@ -160,8 +161,8 @@ class _CallPageState extends ConsumerState<CallPage>
   Widget build(BuildContext context) {
     callScreenModel = ref.watch(callScreenProvider);
     final myUid = amA ? widget.meeting.A : widget.meeting.B;
-    final userModel = ref.watch(userProvider(myUid));
-    if (userModel is AsyncLoading || userModel is AsyncError) {
+    final hangout = ref.watch(hangoutProvider(myUid));
+    if (haveToWait(hangout)) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -177,7 +178,7 @@ class _CallPageState extends ConsumerState<CallPage>
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       renderer: _localRenderer,
-                      userModel: userModel.asData!.value)
+                      hangout: hangout.asData!.value)
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -195,7 +196,7 @@ class _CallPageState extends ConsumerState<CallPage>
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                              userModel: userModel.asData!.value)
+                              hangout: hangout.asData!.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -378,7 +379,7 @@ class _CallPageState extends ConsumerState<CallPage>
       {double? height,
       double? width,
       RTCVideoRenderer? renderer,
-      UserModel? userModel}) {
+      Hangout? hangout}) {
     return Container(
       width: width,
       height: height,
