@@ -24,6 +24,7 @@ class Strings {
   String maxDuration = 'Max Duration';
 
   String numberHint = 'Enter real number like 12';
+  String numberZeroHint = '0';
 
   String algoPerSec = 'μALGO/Sec';
 
