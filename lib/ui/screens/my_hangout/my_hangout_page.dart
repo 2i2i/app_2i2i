@@ -16,8 +16,8 @@ import '../block_and_friends/friends_list_page.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'meeting_history_list.dart';
-import 'hangout_bid_ins_list.dart';
-import 'hangout_bid_outs_list.dart';
+import 'hangout_bid_in_list.dart';
+import 'hangout_bid_out_list.dart';
 
 class MyUserPage extends ConsumerStatefulWidget {
   const MyUserPage({Key? key}) : super(key: key);
