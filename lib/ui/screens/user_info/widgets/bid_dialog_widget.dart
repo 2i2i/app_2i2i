@@ -29,8 +29,7 @@ class _BidDialogWidgetState extends ConsumerState<BidDialogWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final bidInPrivateAsyncValue =
-        ref.watch(bidInPrivateProvider(widget.bidIn.id));
+    final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(widget.bidIn.id));
     final estMaxDurationAsyncValue =
         ref.watch(estMaxDurationProvider(widget.bidIn.id));
     final isMainAccountEmptyAsyncValue = ref.watch(isMainAccountEmptyProvider);

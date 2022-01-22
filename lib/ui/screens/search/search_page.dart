@@ -38,6 +38,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             WillPopScope(
               onWillPop: () {
                 return Future.value(true);
+
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

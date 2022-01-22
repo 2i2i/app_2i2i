@@ -53,8 +53,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () {
-          final bidInsWithUsers =
-              ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
+          final bidInsWithUsers = ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
           if (bidInsWithUsers == null || bidInsWithUsers.isEmpty) return;
           myHangoutPageViewModel.acceptBid(bidInsWithUsers.first);
         },
