@@ -1,9 +1,10 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
@@ -209,7 +210,7 @@ class Meeting extends Equatable {
 
   int? maxDuration() {
     if (budget == null) return null;
-    return (budget! / speed.num).floor();
+    return (budget ?? 0 / speed.num).floor();
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {

@@ -88,6 +88,43 @@ String secondsToSensibleTimePeriod(num secs) {
   return '~ $bestNum $currentBestTimePeriod';
 }
 
+String getDuration(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  // String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
+}
+
+String prettyDuration(Duration duration) {
+  var components = <String>[];
+
+  var days = duration.inDays;
+  if (days != 0) {
+    components.add('${days}d ');
+  }
+  var hours = duration.inHours % 24;
+  if (hours != 0) {
+    components.add('${hours}h ');
+  }
+  var minutes = duration.inMinutes % 60;
+  if (minutes != 0) {
+    components.add('${minutes}m ');
+  }
+
+  var seconds = duration.inSeconds % 60;
+  var centiseconds =
+      (duration.inMilliseconds % 1000) ~/ 10;
+  if (components.isEmpty || seconds != 0 || centiseconds != 0) {
+    components.add('$seconds');
+    if (centiseconds != 0) {
+      components.add('.');
+      components.add(centiseconds.toString().padLeft(2, '0'));
+    }
+    components.add('s');
+  }
+  return components.join();
+}
+
 bool haveToWait(var provider){
   if(provider is AsyncError){
 

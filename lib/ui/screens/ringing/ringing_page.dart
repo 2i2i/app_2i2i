@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
@@ -49,12 +50,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void setTimer(RingingPageViewModel model) {
     if(timer == null) {
       if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
-      int duration = 30;
-
-      timer = Timer(Duration(seconds: duration), () async {
-        final finishFuture = finish();
-        final endMeetingFuture =
-        model.endMeeting(MeetingStatus.END_TIMER);
+      timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
+        var finishFuture = finish();
+        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
         await Future.wait([finishFuture, endMeetingFuture]);
       });
     }
@@ -96,22 +94,27 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
 
     ringingPageViewModel = _ringingPageViewModel;
-    if(ringingPageViewModel is RingingPageViewModel) {
+    if (ringingPageViewModel is RingingPageViewModel) {
       setTimer(ringingPageViewModel!);
     }
     String callerName = '';
     String callerBio = '';
     String bidNote = '';
+    int maxDuration = 0;
     double callerRating = 0.0;
 
     bool amA = ringingPageViewModel!.amA();
-    String userId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    String userId =
+        amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
     // String userId = amA ? "":widget.meeting.;
 
     final hangoutAsyncValue = ref.read(hangoutProvider(userId));
-    if(ringingPageViewModel?.meeting is Meeting) {
-      final bidInPrivateAsyncValue = ref.watch(getBidFromMeeting(ringingPageViewModel!.meeting));
-      if (!(haveToWait(hangoutAsyncValue) || !(haveToWait(bidInPrivateAsyncValue)))) {
+    if (ringingPageViewModel?.meeting is Meeting) {
+      maxDuration = ringingPageViewModel!.meeting.maxDuration()!;
+      final bidInPrivateAsyncValue =
+          ref.watch(getBidFromMeeting(ringingPageViewModel!.meeting));
+      if (!(haveToWait(hangoutAsyncValue) &&
+          (haveToWait(bidInPrivateAsyncValue)))) {
         callerName = hangoutAsyncValue.asData!.value.name;
         callerBio = hangoutAsyncValue.asData!.value.bio;
         callerRating = hangoutAsyncValue.asData!.value.rating;
@@ -172,15 +175,13 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     Visibility(
                       visible: !amA && bidNote.isNotEmpty,
                       child: Text(
-                        'Bid Note: $bidNote',
+                        'Note: $bidNote',
                         maxLines: 2,
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            ?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                            color: Theme.of(context).primaryColorDark),
                       ),
                     ),
                     SizedBox(height: 14),
@@ -234,7 +235,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '${ringingPageViewModel?.meeting.budget ?? 0 / (ringingPageViewModel?.meeting.speed.num ?? 0)} sec',
+                      '${prettyDuration(Duration(seconds: maxDuration))} (${ringingPageViewModel?.meeting.speed.num ?? 0} μAlgo/s)',
                       maxLines: 2,
                       softWrap: true,
                       textAlign: TextAlign.center,

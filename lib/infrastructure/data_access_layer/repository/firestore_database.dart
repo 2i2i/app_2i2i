@@ -64,11 +64,15 @@ class FirestoreDatabase {
       );
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
   }
 
   Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) =>

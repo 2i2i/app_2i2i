@@ -62,25 +62,23 @@ class _HomePageState extends ConsumerState<HomePage> {
           submitReview(uid, meetingId);
         },
       );
-    }
-    if (isUserLocked.value) {
+    } else if (isUserLocked.value) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
           submitReview(uid, meetingId);
         },
       );
-    }
-
-    return WillPopScope(
-      onWillPop: () async =>
-          !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          toolbarHeight: 20,
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          title: Text('testnet'),
-          titleTextStyle: Theme.of(context).textTheme.bodyText2,
+    } else {
+      return WillPopScope(
+        onWillPop: () async =>
+            !await _tabItems[_tabSelectedIndex].key.currentState!.maybePop(),
+        child: Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+            toolbarHeight: 20,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            title: Text('testnet'),
+            titleTextStyle: Theme.of(context).textTheme.bodyText2,
           centerTitle: true,
         ),
         body: Stack(
@@ -234,17 +232,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                           style: TextButton.styleFrom(
                             primary: Theme.of(context).colorScheme.secondary,
                           ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              );
-            },
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget selectedIcon(String iconPath, {bool isSelected = false}) {
