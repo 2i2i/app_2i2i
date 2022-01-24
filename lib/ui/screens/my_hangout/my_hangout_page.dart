@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
+import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/commons/strings.dart';
@@ -16,14 +16,14 @@ import 'meeting_history_list.dart';
 import 'hangout_bid_in_list.dart';
 import 'hangout_bid_out_list.dart';
 
-class MyUserPage extends ConsumerStatefulWidget {
-  const MyUserPage({Key? key}) : super(key: key);
+class MyHangoutPage extends ConsumerStatefulWidget {
+  const MyHangoutPage({Key? key}) : super(key: key);
 
   @override
-  _MyUserPageState createState() => _MyUserPageState();
+  _MyHangoutPageState createState() => _MyHangoutPageState();
 }
 
-class _MyUserPageState extends ConsumerState<MyUserPage>
+class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
@@ -109,6 +109,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                         context,
                         HangoutSetting(),
                         Routes.USER,
+                        rootNavigator: true,
                       );
                     },
                     isFav: true,

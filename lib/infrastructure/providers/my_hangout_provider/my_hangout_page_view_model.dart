@@ -64,6 +64,10 @@ class MyHangoutPageViewModel {
     await hangoutChanger.updateNameAndBio(name, bio);
   }
 
+  Future updateHangout(Hangout hangout) async {
+    await hangoutChanger.updateHangout(hangout);
+  }
+
   Future setUserPrivate(
       {required BuildContext context,
       required String uid,
