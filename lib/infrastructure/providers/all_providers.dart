@@ -1,5 +1,7 @@
 // TODO break up file into multiple files
 
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -71,7 +73,8 @@ final userPageViewModelProvider =
   final user = ref.watch(hangoutProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return HangoutPageViewModel(functions: functions, hangout: user.asData!.value);
+  return HangoutPageViewModel(
+      functions: functions, hangout: user.asData!.value);
 });
 
 final usersStreamProvider = StreamProvider.autoDispose<List<Hangout?>>((ref) {
@@ -178,11 +181,11 @@ final myHangoutPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - 2');
 
   return MyHangoutPageViewModel(
-      database: database,
-      functions: functions,
-      hangout: hangout.asData?.value,
-      accountService: accountService,
-      hangoutChanger: hangoutChanger,
+    database: database,
+    functions: functions,
+    hangout: hangout.asData?.value,
+    accountService: accountService,
+    hangoutChanger: hangoutChanger,
   );
 });
 
@@ -296,6 +299,13 @@ final bidInsPrivateProvider =
   return database.bidInsPrivateStream(uid: uid);
 });
 
+//
+void f(
+  List<int> historical,
+  List<int> future,
+  double zeroRatio,
+) {}
+
 final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
   // my user
   final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
@@ -337,13 +347,11 @@ final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
   if (bidInsWithUsersTrial.any((element) => element == null)) return null;
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
 
-  return bidInsWithUsers;
-
   // List<BidIn> bidInsChronies = bidIns
-  //     .where((bidIn) => bidIn.public.speed.num == user.rule.minSpeed)
+  //     .where((bidIn) => bidIn.public.speed.num == hangout.rule.minSpeed)
   //     .toList();
   // List<BidIn> bidInsHighRollers = bidIns
-  //     .where((bidIn) => user.rule.minSpeed < bidIn.public.speed.num)
+  //     .where((bidIn) => hangout.rule.minSpeed < bidIn.public.speed.num)
   //     .toList();
   // if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
   //   throw Exception(
@@ -353,53 +361,55 @@ final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
   //   return b1.public.speed.num.compareTo(b2.public.speed.num);
   // });
 
-  // List<BidIn> bidInsSorted = [];
-  // if (bidInsHighRollers.isEmpty)
-  //   bidInsSorted = bidInsChronies;
-  // else if (bidInsChronies.isEmpty)
-  //   bidInsSorted = bidInsHighRollers;
-  // else {
-  //   // meeting history
-  //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
-  //   if (meetingHistoryAsyncValue is AsyncLoading ||
-  //       meetingHistoryAsyncValue is AsyncError ||
-  //       meetingHistoryAsyncValue.value == null) {
-  //     return WaitPage();
-  //   }
-  //   final meetingHistory = meetingHistoryAsyncValue.value!;
+  // // List<BidIn> bidInsSorted = [];
+  // // if (bidInsHighRollers.isEmpty)
+  // //   bidInsSorted = bidInsChronies;
+  // // else if (bidInsChronies.isEmpty)
+  // //   bidInsSorted = bidInsHighRollers;
+  // // else {
+  // //   // meeting history
+  // //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
+  // //   if (meetingHistoryAsyncValue is AsyncLoading ||
+  // //       meetingHistoryAsyncValue is AsyncError ||
+  // //       meetingHistoryAsyncValue.value == null) {
+  // //     return null;
+  // //   }
+  // //   final meetingHistory = meetingHistoryAsyncValue.value!;
 
-  //   // order bidIns
-  //   int N = user.rule.importanceSize();
-  //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
-  //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
+  // //   // order bidIns
+  // //   int N = hangout.rule.importanceSize();
+  // //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
+  // //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
 
-  //   int chronyIndex = 0;
-  //   int highRollerIndex = 0;
-  //   int historyIndex = min(N - 1, recentLounges.length); // -1 => do not use recentLounges
+  // //   int chronyIndex = 0;
+  // //   int highRollerIndex = 0;
+  // //   int historyIndex =
+  // //       min(N - 1, recentLounges.length); // -1 => do not use recentLounges
 
-  //   // mean lounge value
+  // //   // mean lounge value
 
-  //   BidIn nextChrony = bidInsChronies[chronyIndex];
-  //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
+  // //   BidIn nextChrony = bidInsChronies[chronyIndex];
+  // //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
 
-  //   // next rule comes from the earlier guest if different
-  //   HangOutRule nextRule =
-  //       nextChrony.public.rule == nextHighroller.public.rule
-  //           ? nextChrony.public.rule
-  //           : (nextChrony.public.ts.microsecondsSinceEpoch <
-  //                   nextHighroller.public.ts.microsecondsSinceEpoch
-  //               ? nextChrony.public.rule
-  //               : nextHighroller.public.rule);
+  // //   // next rule comes from the earlier guest if different
+  // //   HangOutRule nextRule = nextChrony.public.rule == nextHighroller.public.rule
+  // //       ? nextChrony.public.rule
+  // //       : (nextChrony.public.ts.microsecondsSinceEpoch <
+  // //               nextHighroller.public.ts.microsecondsSinceEpoch
+  // //           ? nextChrony.public.rule
+  // //           : nextHighroller.public.rule);
 
-  //   // is nextChrony eligible according to nextRule
-  //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
-  //     // choose HighRoller
-  //     bidInsSorted.add(nextHighroller);
+  // //   // is nextChrony eligible according to nextRule
+  // //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
+  // //     // choose HighRoller
+  // //     bidInsSorted.add(nextHighroller);
 
-  //     // next
+  // //     // next
 
-  //   }
-  // }
+  // //   }
+  // // }
+
+  return bidInsWithUsers;
 });
 
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
