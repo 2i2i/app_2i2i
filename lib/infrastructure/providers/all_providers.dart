@@ -1,5 +1,7 @@
 // TODO break up file into multiple files
 
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -299,107 +301,168 @@ final bidInsPrivateProvider =
   return database.bidInsPrivateStream(uid: uid);
 });
 
-final bidInsProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
-  /*// my user
-  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
-  if (haveToWait(hangoutAsyncValue)||
-      hangoutAsyncValue.value == null) {
-    return null;
-  }*/
-
-  //private user
-  final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
-  if(haveToWait(userPrivateAsyncValue)) {
-    return null;
-  }
-
+final bidInsProvider =
+    Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   // public bid ins
   final bidInsPublicAsyncValue = ref.watch(bidInsPublicProvider(uid));
-  if (haveToWait(bidInsPublicAsyncValue) || bidInsPublicAsyncValue.value == null) {
+  if (haveToWait(bidInsPublicAsyncValue) ||
+      bidInsPublicAsyncValue.value == null) {
     return null;
   }
-  if (bidInsPublicAsyncValue.value?.isEmpty ?? false) {
+  if (bidInsPublicAsyncValue.value!.isEmpty) {
     return <BidIn>[];
   }
   List<BidInPublic> bidInsPublic = bidInsPublicAsyncValue.value!;
 
   // private bid ins
   final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
+  if (haveToWait(bidInsPrivateAsyncValue) ||
+      bidInsPrivateAsyncValue.value == null) {
     return null;
-  }
-  if (bidInsPrivateAsyncValue.value?.isEmpty ?? false) {
-    return <BidIn>[];
   }
   List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
 
   // create bid ins
   final bidIns = BidIn.createList(bidInsPublic, bidInsPrivate);
-  final bidInsWithUsersTrial = bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
+  final bidInsWithUsersTrial =
+      bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
   if (bidInsWithUsersTrial.any((element) => element == null)) return null;
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
 
-  // List<BidIn> bidInsChronies = bidIns
-  //     .where((bidIn) => bidIn.public.speed.num == hangout.rule.minSpeed)
-  //     .toList();
-  // List<BidIn> bidInsHighRollers = bidIns
-  //     .where((bidIn) => hangout.rule.minSpeed < bidIn.public.speed.num)
-  //     .toList();
-  // if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
-  //   throw Exception(
-  //       'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+  List<BidIn> bidInsChronies = bidInsWithUsers
+      .where((bidIn) => bidIn.public.speed.num == bidIn.public.rule.minSpeed)
+      .toList();
+  List<BidIn> bidInsHighRollers = bidInsWithUsers
+      .where((bidIn) => bidIn.public.rule.minSpeed < bidIn.public.speed.num)
+      .toList();
+  if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
+    throw Exception(
+        'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
-  // bidInsHighRollers.sort((b1, b2) {
-  //   return b1.public.speed.num.compareTo(b2.public.speed.num);
-  // });
+  bidInsHighRollers.sort((b1, b2) {
+    return b1.public.speed.num.compareTo(b2.public.speed.num);
+  });
 
-  // // List<BidIn> bidInsSorted = [];
-  // // if (bidInsHighRollers.isEmpty)
-  // //   bidInsSorted = bidInsChronies;
-  // // else if (bidInsChronies.isEmpty)
-  // //   bidInsSorted = bidInsHighRollers;
-  // // else {
-  // //   // meeting history
-  // //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
-  // //   if (meetingHistoryAsyncValue is AsyncLoading ||
-  // //       meetingHistoryAsyncValue is AsyncError ||
-  // //       meetingHistoryAsyncValue.value == null) {
-  // //     return null;
-  // //   }
-  // //   final meetingHistory = meetingHistoryAsyncValue.value!;
+  // if one side empty, return other side
+  if (bidInsHighRollers.isEmpty)
+    return bidInsChronies;
+  else if (bidInsChronies.isEmpty) return bidInsHighRollers;
 
-  // //   // order bidIns
-  // //   int N = hangout.rule.importanceSize();
-  // //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
-  // //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
+  bool loungeSumSet = false;
+  int loungeSum = 0;
+  int loungeSumCount = 0;
 
-  // //   int chronyIndex = 0;
-  // //   int highRollerIndex = 0;
-  // //   int historyIndex =
-  // //       min(N - 1, recentLounges.length); // -1 => do not use recentLounges
+  // my hangout
+  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
+  if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
+    return null;
+  }
+  final hangout = hangoutAsyncValue.value!;
+  final loungeHistory = hangout.loungeHistory
+      .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
+      .toList();
+  int loungeHistoryIndex = hangout.loungeHistoryIndex;
 
-  // //   // mean lounge value
+  List<BidIn> bidInsSorted = [];
+  int chronyIndex = 0;
+  int highRollerIndex = 0;
+  while (
+      bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
+    BidIn nextChrony = bidInsChronies[chronyIndex];
+    BidIn nextHighroller = bidInsHighRollers[highRollerIndex];
 
-  // //   BidIn nextChrony = bidInsChronies[chronyIndex];
-  // //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
+    // next rule comes from the earlier guest if different
+    HangOutRule nextRule = nextChrony.public.rule == nextHighroller.public.rule
+        ? nextChrony.public.rule
+        : (nextChrony.public.ts.microsecondsSinceEpoch <
+                nextHighroller.public.ts.microsecondsSinceEpoch
+            ? nextChrony.public.rule
+            : nextHighroller.public.rule);
+    final N = nextRule.importance.values
+        .fold(0, (int previousValue, int element) => previousValue + element);
+    double targetChronyRatio = nextRule.importance[Lounge.chrony]! / N;
 
-  // //   // next rule comes from the earlier guest if different
-  // //   HangOutRule nextRule = nextChrony.public.rule == nextHighroller.public.rule
-  // //       ? nextChrony.public.rule
-  // //       : (nextChrony.public.ts.microsecondsSinceEpoch <
-  // //               nextHighroller.public.ts.microsecondsSinceEpoch
-  // //           ? nextChrony.public.rule
-  // //           : nextHighroller.public.rule);
+    // is nextChrony eligible according to nextRule
+    if (nextChrony.public.speed.num < nextRule.minSpeed) {
+      // choose HighRoller
+      bidInsSorted.add(nextHighroller);
 
-  // //   // is nextChrony eligible according to nextRule
-  // //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
-  // //     // choose HighRoller
-  // //     bidInsSorted.add(nextHighroller);
+      // next
+      highRollerIndex += 1;
 
-  // //     // next
+      // if highrollers done, add remaining chronies and done
+      if (highRollerIndex == bidInsHighRollers.length) {
+        for (int i = chronyIndex; i < bidInsChronies.length; i++) {
+          bidInsSorted.add(bidInsChronies[i]);
+          return bidInsSorted;
+        }
+      }
 
-  // //   }
-  // // }
+      // move to next index
+      continue;
+    }
+
+    // first calc  of loungeSum
+    if (!loungeSumSet) {
+      if (loungeHistory.length < N - 1) {
+        loungeSum = loungeHistory.fold(
+            0, (int previousValue, int element) => previousValue + element);
+        loungeSumCount = loungeHistory.length;
+      } else {
+        int count = 0;
+        for (; count < N - 1; count++) {
+          loungeSum += loungeHistory[loungeHistoryIndex];
+          loungeHistoryIndex--;
+          loungeHistoryIndex %= loungeHistory.length;
+        }
+      }
+
+      loungeSumSet = true;
+    }
+
+    // update loungeSum
+    if (loungeSumCount == N) {
+      loungeSum -= loungeHistory[loungeHistoryIndex];
+      loungeSumCount--;
+    }
+    int loungeSumChrony = loungeSum + 0;
+    int loungeSumHighroller = loungeSum + 1;
+    loungeSumCount++;
+    double ifChronyRatio = loungeSumChrony / loungeSumCount;
+    double ifHighrollerRatio = loungeSumHighroller / loungeSumCount;
+    double ifChronyError = (ifChronyRatio - targetChronyRatio).abs();
+    double ifHighrollerError = (ifHighrollerRatio - targetChronyRatio).abs();
+    if (ifChronyError <= ifHighrollerError) {
+      // choose chrony
+      bidInsSorted.add(nextChrony);
+
+      // next
+      chronyIndex += 1;
+
+      // if chronies done, add remaining highrollers and done
+      if (chronyIndex == bidInsChronies.length) {
+        for (int i = highRollerIndex; i < bidInsHighRollers.length; i++) {
+          bidInsSorted.add(bidInsHighRollers[i]);
+          return bidInsSorted;
+        }
+      }
+    }
+    else {
+      // choose highroller
+      bidInsSorted.add(nextHighroller);
+
+      // next
+      highRollerIndex += 1;
+
+      // if highrollers done, add remaining chronies and done
+      if (highRollerIndex == bidInsHighRollers.length) {
+        for (int i = chronyIndex; i < bidInsChronies.length; i++) {
+          bidInsSorted.add(bidInsChronies[i]);
+          return bidInsSorted;
+        }
+      }
+    }
+  } // while
 
   return bidInsWithUsers;
 });
