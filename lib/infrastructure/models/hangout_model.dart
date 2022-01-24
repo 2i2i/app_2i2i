@@ -10,17 +10,10 @@ extension ParseToString on Lounge {
   String toStringEnum() {
     return this.toString().split('.').last;
   }
+
   String name() {
-    if(this == Lounge.chrony) {
-      return 'Chrony';
-    }else if(this == Lounge.highroller) {
-      return 'Highroller';
-    }else if(this == Lounge.lurker) {
-      return 'Lurker';
-    }else if(this == Lounge.eccentric) {
-      return 'Eccentric';
-    }
-    return this.toString();
+    final s = toStringEnum();
+    return "${s[0].toUpperCase()}${s.substring(1).toLowerCase()}";
   }
 }
 
@@ -37,7 +30,7 @@ class HangoutChanger {
     return database.updateUserHeartbeat(uid, status);
   }
 
-  Future updateHangout(Hangout hangout){
+  Future updateHangout(Hangout hangout) {
     final tags = Hangout.tagsFromBio(hangout.bio);
     Map map = hangout.toMap();
     map['tags'] = [hangout.name, ...tags];
