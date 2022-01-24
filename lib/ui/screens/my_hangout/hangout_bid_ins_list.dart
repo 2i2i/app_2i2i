@@ -33,16 +33,7 @@ class UserBidInsList extends ConsumerWidget {
     if (bidInsWithUsers.isEmpty) return NoBidPage(noBidsText: noBidsText);
 
     // store for notification
-    SecureStorage().read(Keys.myReadBids).then((String? value) {
-      List<String> localBids = [];
-      if (value?.isNotEmpty ?? false) {
-        localBids = value!.split(',').toList();
-      }
-      localBids.addAll(bidInsWithUsers.map((e) => e.public.id).toList());
-      String localBidIds = localBids.toSet().toList().join(',');
-      log('localBidIds=$localBidIds');
-      SecureStorage().write(Keys.myReadBids, localBidIds);
-    });
+    markAsRead(bidInsWithUsers);
 
     return ListView.builder(
       primary: false,
@@ -59,5 +50,18 @@ class UserBidInsList extends ConsumerWidget {
         );
       },
     );
+  }
+
+  void markAsRead(List<BidIn> bidInsWithUsers) {
+    SecureStorage().read(Keys.myReadBids).then((String? value) {
+      List<String> localBids = [];
+      if (value?.isNotEmpty ?? false) {
+        localBids = value!.split(',').toList();
+      }
+      localBids.addAll(bidInsWithUsers.map((e) => e.public.id).toList());
+      String localBidIds = localBids.toSet().toList().join(',');
+      log('localBidIds=$localBidIds');
+      SecureStorage().write(Keys.myReadBids, localBidIds);
+    });
   }
 }

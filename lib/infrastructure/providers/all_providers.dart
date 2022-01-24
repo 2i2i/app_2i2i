@@ -1,11 +1,13 @@
 // TODO break up file into multiple files
 
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -15,13 +17,13 @@ import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
+import 'hangout_bid_provider/hangout_page_view_model.dart';
 import 'history_provider/history_view_model.dart';
 import 'locked_hangout_provider/locked_hangout_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_hangout_provider/my_hangout_page_view_model.dart';
 import 'ringing_provider/ringing_page_view_model.dart';
 import 'setup_hangout_provider/setup_hangout_view_model.dart';
-import 'hangout_bid_provider/hangout_page_view_model.dart';
 import 'web_rtc_provider/call_screen_provider.dart';
 
 final firebaseAuthProvider =
@@ -296,21 +298,25 @@ final bidInsPrivateProvider =
   return database.bidInsPrivateStream(uid: uid);
 });
 
-final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
-  // my user
+final bidInsProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
+  /*// my user
   final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
-  if (hangoutAsyncValue is AsyncLoading ||
-      hangoutAsyncValue is AsyncError ||
+  if (haveToWait(hangoutAsyncValue)||
       hangoutAsyncValue.value == null) {
     return null;
+  }*/
+
+  //private user
+  final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
+  if(haveToWait(userPrivateAsyncValue)) {
+    return null;
   }
-  final Hangout hangout = hangoutAsyncValue.value!;
+  List<String> blockedHangouts = userPrivateAsyncValue.value?.blocked??[];
+  List<String> favoriteHangouts = userPrivateAsyncValue.value?.friends??[];
 
   // public bid ins
   final bidInsPublicAsyncValue = ref.watch(bidInsPublicProvider(uid));
-  if (bidInsPublicAsyncValue is AsyncLoading ||
-      bidInsPublicAsyncValue is AsyncError ||
-      bidInsPublicAsyncValue.value == null) {
+  if (haveToWait(bidInsPublicAsyncValue) || bidInsPublicAsyncValue.value == null) {
     return null;
   }
   if (bidInsPublicAsyncValue.value?.isEmpty ?? false) {
@@ -320,9 +326,7 @@ final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
 
   // private bid ins
   final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (bidInsPrivateAsyncValue is AsyncLoading ||
-      bidInsPrivateAsyncValue is AsyncError ||
-      bidInsPrivateAsyncValue.value == null) {
+  if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
     return null;
   }
   if (bidInsPrivateAsyncValue.value?.isEmpty ?? false) {
@@ -332,10 +336,23 @@ final bidInsProvider = Provider.family<List<BidIn>?, String>((ref, uid) {
 
   // create bid ins
   final bidIns = BidIn.createList(bidInsPublic, bidInsPrivate);
-  final bidInsWithUsersTrial =
-      bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
+  final bidInsWithUsersTrial = bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
   if (bidInsWithUsersTrial.any((element) => element == null)) return null;
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
+
+  bidInsWithUsers.removeWhere((element) {
+    return blockedHangouts.contains(element.hangout?.id);
+  });
+
+
+  bidInsWithUsers.sort(
+    (a, b) {
+      if (favoriteHangouts.contains(a.hangout?.id)) {
+        return 0;
+      }
+      return 1;
+    },
+  );
 
   return bidInsWithUsers;
 
