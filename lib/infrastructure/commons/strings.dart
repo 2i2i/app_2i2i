@@ -1,5 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-
 class Strings {
   static final Strings _singleton = Strings._internal();
 
@@ -45,6 +43,7 @@ class Strings {
   String talk = 'Talk';
   String cancel = 'Cancel';
   String copyMessage = 'Copied to Clipboard';
+  String userBusyMessage = 'User is Offline or Busy..';
 
   // Logout
   String logout = 'Logout';
