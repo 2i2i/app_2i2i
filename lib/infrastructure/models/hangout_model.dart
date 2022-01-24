@@ -10,6 +10,11 @@ extension ParseToString on Lounge {
   String toStringEnum() {
     return this.toString().split('.').last;
   }
+
+  String name() {
+    final s = toStringEnum();
+    return "${s[0].toUpperCase()}${s.substring(1).toLowerCase()}";
+  }
 }
 
 class HangoutChanger {
@@ -25,7 +30,7 @@ class HangoutChanger {
     return database.updateUserHeartbeat(uid, status);
   }
 
-  Future updateHangout(Hangout hangout){
+  Future updateHangout(Hangout hangout) {
     final tags = Hangout.tagsFromBio(hangout.bio);
     Map map = hangout.toMap();
     map['tags'] = [hangout.name, ...tags];
@@ -136,13 +141,13 @@ class Hangout extends Equatable {
   final String id;
   final String status;
   final String? meeting;
-  final String bio;
-  final String name;
-  late final List<String> _tags;
+  String bio;
+  String name;
+  late List<String> _tags;
   final double rating;
   final int numRatings;
-  final DateTime? heartbeat;
-  final HangOutRule rule;
+  DateTime? heartbeat;
+  HangOutRule rule;
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
