@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../infrastructure/commons/theme.dart';
@@ -25,7 +26,8 @@ class BidInTile extends StatelessWidget {
 
     for (int i = 0; i <= index; i++) {
       budgetCount += bidInList[i].public.budget;
-      totalDuration += bidInList[i].public.rule.maxMeetingDuration;
+      totalDuration += (bidInList[i].public.budget / bidInList[i].public.speed.num).floor();
+      print(totalDuration);
     }
 
     if (hangout.status == 'OFFLINE') {
@@ -105,8 +107,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -115,8 +117,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.caption?.copyWith(
-                              fontWeight: FontWeight.w400,
-                            ),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ],
                   ),
@@ -129,21 +131,21 @@ class BidInTile extends StatelessWidget {
                         text: ' μAlgo/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.color
-                                  ?.withOpacity(0.7),
-                            ),
-                      )
-                    ],
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
                           color: Theme.of(context)
                               .textTheme
                               .headline6
                               ?.color
                               ?.withOpacity(0.7),
                         ),
+                      )
+                    ],
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.color
+                          ?.withOpacity(0.7),
+                    ),
                   ),
                 ),
                 // Text(bid.speed.num.toString() + ' μAlgo/s'),
@@ -185,9 +187,9 @@ class BidInTile extends StatelessWidget {
                         text: 'Start After:',
                         children: [
                           TextSpan(
-                              text: ' $totalDuration',
-                              style: Theme.of(context).textTheme.bodyText2
-                          )
+                              text:
+                                  ' ${secondsToSensibleTimePeriod(totalDuration)}',
+                              style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
