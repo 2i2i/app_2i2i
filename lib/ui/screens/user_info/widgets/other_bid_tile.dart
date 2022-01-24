@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,9 +13,13 @@ import '../../../../infrastructure/providers/all_providers.dart';
 class OtherBidTile extends ConsumerWidget {
   final List<BidInPublic> otherBidList;
   final int index;
+  final Hangout hangout;
 
   const OtherBidTile(
-      {Key? key, required this.otherBidList, required this.index})
+      {Key? key,
+      required this.otherBidList,
+      required this.index,
+      required this.hangout})
       : super(key: key);
 
   @override
@@ -28,8 +35,13 @@ class OtherBidTile extends ConsumerWidget {
 
     bidSpeed = otherBid.speed.num.toString();
     for (int i = 0; i <= index; i++) {
-      var sum = getMaxDuration(budget: otherBidList[i].budget, speed: otherBidList[i].speed.num);
-      startAfter += sum;
+      int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
+      if (0 < otherBidList[i].speed.num) {
+        final thisBidMaxDurationTmp =
+            (otherBidList[i].budget / otherBidList[i].speed.num).floor();
+        thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
+      }
+      startAfter += thisBidMaxDuration;
     }
 
     return Card(

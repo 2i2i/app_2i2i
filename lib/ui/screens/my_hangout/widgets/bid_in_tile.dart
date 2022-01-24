@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
@@ -21,13 +21,17 @@ class BidInTile extends StatelessWidget {
     Hangout hangout = bidInList[index].hangout!;
 
     var budgetCount = 0;
-
     var totalDuration = 0;
-
     for (int i = 0; i <= index; i++) {
       budgetCount += bidInList[i].public.budget;
-      totalDuration += (bidInList[i].public.budget / bidInList[i].public.speed.num).floor();
-      print(totalDuration);
+      int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
+      if (0 < bidInList[i].public.speed.num) {
+        final thisBidMaxDurationTmp =
+            (bidInList[i].public.budget / bidInList[i].public.speed.num)
+                .floor();
+        thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
+      }
+      totalDuration += thisBidMaxDuration;
     }
 
     if (hangout.status == 'OFFLINE') {
@@ -64,7 +68,8 @@ class BidInTile extends StatelessWidget {
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                                width: 0.3, color: Theme.of(context).disabledColor),
+                                width: 0.3,
+                                color: Theme.of(context).disabledColor),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.08),
@@ -78,7 +83,8 @@ class BidInTile extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .headline6!
-                              .copyWith(fontWeight: FontWeight.w600, fontSize: 20),
+                              .copyWith(
+                                  fontWeight: FontWeight.w600, fontSize: 20),
                         ),
                       ),
                       Align(
@@ -89,7 +95,8 @@ class BidInTile extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: statusColor,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white, width: 2)),
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
                         ),
                       ),
                     ],
@@ -107,8 +114,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -117,8 +124,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.caption?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
+                              fontWeight: FontWeight.w400,
+                            ),
                       ),
                     ],
                   ),
@@ -131,21 +138,21 @@ class BidInTile extends StatelessWidget {
                         text: ' μAlgo/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.color
+                                  ?.withOpacity(0.7),
+                            ),
+                      )
+                    ],
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
                           color: Theme.of(context)
                               .textTheme
                               .headline6
                               ?.color
                               ?.withOpacity(0.7),
                         ),
-                      )
-                    ],
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.color
-                          ?.withOpacity(0.7),
-                    ),
                   ),
                 ),
                 // Text(bid.speed.num.toString() + ' μAlgo/s'),
@@ -172,14 +179,16 @@ class BidInTile extends StatelessWidget {
                           TextSpan(
                               text: ' $budgetCount',
                               children: [],
-                              style: Theme.of(context).textTheme.bodyText2
-                          )
+                              style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
                   ),
-                  Container(child: VerticalDivider(),height: 20,),
+                  Container(
+                    child: VerticalDivider(),
+                    height: 20,
+                  ),
                   Expanded(
                     child: RichText(
                       textAlign: TextAlign.center,
