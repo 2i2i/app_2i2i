@@ -145,9 +145,9 @@ class Hangout extends Equatable {
   final String status;
 
   final String? meeting;
-  final HangOutRule rule;
-  final String name;
-  final String bio;
+  HangOutRule rule;
+  String name;
+  String bio;
   late final List<String> _tags;
 
   final double rating;
