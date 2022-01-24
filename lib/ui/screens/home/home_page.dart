@@ -207,32 +207,56 @@ class _HomePageState extends ConsumerState<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () => {
-                            showRating.value = {'show': false}
+                          style: TextButton.styleFrom(
+                            primary: Theme.of(context).errorColor,
+                          ),
+                          onPressed: ()  {
+                            showRating.value = {'show': false};
+                            if(otherUid is String) {
+                              final userModelChanger = ref.read(hangoutChangerProvider)!;
+                              if (!haveToWait(userModelChanger)) {
+                                userModelChanger.addBlocked(otherUid);
+                              }
+                            }
                           },
                           child: Text(
-                            Strings().cancel,
+                            Strings().block,
                           ),
                         ),
-                        SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () async {
-                            if (otherUid is String && meetingId is String) {
-                              final database = ref.watch(databaseProvider);
-                              database.addRating(
-                                  otherUid,
-                                  meetingId,
-                                  RatingModel(
-                                      rating: rating,
-                                      comment: ratingFeedBack.text));
-                            }
-                            showRating.value = {'show': false};
-                          },
-                          child: Text(
-                            Strings().appRatingSubmitButton,
-                          ),
-                          style: TextButton.styleFrom(
-                            primary: Theme.of(context).colorScheme.secondary,
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () => {
+                                  showRating.value = {'show': false}
+                                },
+                                child: Text(
+                                  Strings().cancel,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              TextButton(
+                                onPressed: () async {
+                                  if (otherUid is String && meetingId is String) {
+                                    final database = ref.watch(databaseProvider);
+                                    database.addRating(
+                                        otherUid,
+                                        meetingId,
+                                        RatingModel(
+                                            rating: rating,
+                                            comment: ratingFeedBack.text));
+                                  }
+                                  showRating.value = {'show': false};
+                                },
+                                child: Text(
+                                  Strings().appRatingSubmitButton,
+                                ),
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       ],
