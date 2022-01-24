@@ -31,7 +31,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   static final List<TabItem> _tabItems = [
     TabItem(GlobalKey<NavigatorState>(), SearchPage()),
-    TabItem(GlobalKey<NavigatorState>(), MyUserPage()),
+    TabItem(GlobalKey<NavigatorState>(), MyHangoutPage()),
     TabItem(GlobalKey<NavigatorState>(), MyAccountPage()),
     TabItem(GlobalKey<NavigatorState>(), FAQPage()),
     TabItem(GlobalKey<NavigatorState>(), AppSettingPage()),
