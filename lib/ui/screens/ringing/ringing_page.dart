@@ -258,7 +258,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   ?.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color:
-                                          Theme.of(context).primaryColorDark),
+                                          Theme.of(context).colorScheme.secondary),
                             )),
                       ),
                     )

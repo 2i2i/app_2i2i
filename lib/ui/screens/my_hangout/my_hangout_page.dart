@@ -1,12 +1,9 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/models/hangout_model.dart';
@@ -16,8 +13,8 @@ import '../block_and_friends/friends_list_page.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'meeting_history_list.dart';
-import 'hangout_bid_ins_list.dart';
-import 'hangout_bid_outs_list.dart';
+import 'hangout_bid_in_list.dart';
+import 'hangout_bid_out_list.dart';
 
 class MyUserPage extends ConsumerStatefulWidget {
   const MyUserPage({Key? key}) : super(key: key);
