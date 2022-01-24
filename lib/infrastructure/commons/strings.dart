@@ -44,6 +44,7 @@ class Strings {
   String talk = 'Talk';
   String cancel = 'Cancel';
   String copyMessage = 'Copied to Clipboard';
+  String userBusyMessage = 'User is Offline or Busy..';
 
   // Logout
   String logout = 'Logout';
