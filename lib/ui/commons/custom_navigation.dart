@@ -23,43 +23,40 @@ class CustomNavigation {
     if (locked){
      return LockedUserPage();
     }*/
-  static push(BuildContext context, Widget page, String pageName) {
+  static push(BuildContext context, Widget page, String pageName,{bool rootNavigator = false}) {
     if (kIsWeb) {
       var pageRouteBuilder = PageRouteBuilder(
         pageBuilder: (context, animation1, animation2) => page,
-        transitionsBuilder: (_, anim, __, child) =>
-            FadeTransition(opacity: anim, child: child),
+        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
       );
-      Navigator.push(context, pageRouteBuilder);
+      Navigator.of(context,rootNavigator: rootNavigator).push( pageRouteBuilder);
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      Navigator.of(context,rootNavigator: rootNavigator).push(MaterialPageRoute(builder: (context) => page));
     }
   }
 
-  static pushReplacement(BuildContext context, Widget page, String pageName) {
+  static pushReplacement(BuildContext context, Widget page, String pageName,{bool rootNavigator = false}) {
     if(kIsWeb) {
       var pageRouteBuilder = PageRouteBuilder(
         pageBuilder: (context, animation1, animation2) => page,
-
         transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
       );
-      Navigator.pushReplacement(context, pageRouteBuilder);
+      Navigator.of(context,rootNavigator: rootNavigator).pushReplacement(pageRouteBuilder);
     } else{
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
+      Navigator.of(context,rootNavigator: rootNavigator).pushReplacement( MaterialPageRoute(builder: (context) => page));
     }
   }
 
-  static pushAndRemoveUntil(BuildContext context, Widget page, String pageName) {
+  static pushAndRemoveUntil(BuildContext context, Widget page, String pageName,{bool rootNavigator = false}) {
     if(kIsWeb) {
       var pageRouteBuilder = PageRouteBuilder(
         pageBuilder: (context, animation1, animation2) => page,
 
         transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
       );
-      Navigator.pushAndRemoveUntil(context, pageRouteBuilder, (Route<dynamic> route) => false);
+      Navigator.of(context,rootNavigator: rootNavigator).pushAndRemoveUntil( pageRouteBuilder, (Route<dynamic> route) => false);
     }else {
-      Navigator.pushAndRemoveUntil(
-          context,
+      Navigator.of(context,rootNavigator: rootNavigator).pushAndRemoveUntil(
           MaterialPageRoute(builder: (BuildContext context) => page),
               (Route<dynamic> route) => false);
     }

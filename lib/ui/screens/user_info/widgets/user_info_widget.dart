@@ -180,6 +180,7 @@ class UserRulesWidget extends StatelessWidget {
                       Icon(
                         Icons.bolt,
                         size: 17,
+                        color: Theme.of(context).textTheme.caption?.color,
                       ),
                       SizedBox(width: 2),
                       Text(
@@ -252,7 +253,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        '${Lounge.highroller.name}',
+                        '${Lounge.highroller.name()}',
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -286,7 +287,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        Lounge.highroller.name,
+                        Lounge.chrony.name(),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],

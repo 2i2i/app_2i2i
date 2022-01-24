@@ -6,11 +6,12 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_stor
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/no_bid_page.dart';
-import 'widgets/bid_info_tile.dart';
+import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerWidget {
   UserBidInsList({
@@ -33,6 +34,24 @@ class UserBidInsList extends ConsumerWidget {
     if (bidInsWithUsers.isEmpty) return NoBidPage(noBidsText: noBidsText);
 
     // store for notification
+    markAsRead(bidInsWithUsers);
+
+    return ListView.builder(
+      primary: false,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: bidInsWithUsers.length,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      itemBuilder: (_, ix) {
+
+        return BidInTile(
+          bidInList: bidInsWithUsers,
+          index: ix,
+        );
+      },
+    );
+  }
+
+  void markAsRead(List<BidIn> bidInsWithUsers) {
     SecureStorage().read(Keys.myReadBids).then((String? value) {
       List<String> localBids = [];
       if (value?.isNotEmpty ?? false) {
@@ -43,21 +62,5 @@ class UserBidInsList extends ConsumerWidget {
       log('localBidIds=$localBidIds');
       SecureStorage().write(Keys.myReadBids, localBidIds);
     });
-
-    return ListView.builder(
-      primary: false,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: bidInsWithUsers.length,
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      itemBuilder: (_, ix) {
-        BidIn bidIn = bidInsWithUsers[ix];
-
-        return BidInfoTile(
-          onTap: () {}, // TODO maybe go to user?
-          bidSpeed: bidIn.public.speed.num.toString(),
-          hangout: bidIn.hangout,
-        );
-      },
-    );
   }
 }
