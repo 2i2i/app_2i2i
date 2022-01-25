@@ -43,29 +43,25 @@ class MyHangoutPageViewModel {
 
   // TODO clean separation into firestore_service and firestore_database
   Future cancelBid({required String bidId, required String B}) async {
-    try {
-      if(hangout is Hangout) {
-            final bidOutRef = FirebaseFirestore.instance
-                .collection(FirestorePath.bidOuts(hangout!.id))
-                .doc(bidId);
-            final bidInPublicRef = FirebaseFirestore.instance
-                .collection(FirestorePath.bidInsPublic(B))
-                .doc(bidId);
-            final bidInPrivateRef = FirebaseFirestore.instance
-                .collection(FirestorePath.bidInsPrivate(B))
-                .doc(bidId);
-            final obj = {'active': false};
-            final setOptions = SetOptions(merge: true);
-            await FirebaseFirestore.instance.runTransaction((transaction) async {
-              transaction.set(bidOutRef, obj, setOptions);
-              transaction.set(bidInPublicRef, obj, setOptions);
-              transaction.set(bidInPrivateRef, obj, setOptions);
-            });
-            final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-            await cancelBid({bidId: bidId});
-          }
-    } catch (e) {
-      print(e);
+    if (hangout is Hangout) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(hangout!.id))
+          .doc(bidId);
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(B))
+          .doc(bidId);
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(B))
+          .doc(bidId);
+      final obj = {'active': false};
+      final setOptions = SetOptions(merge: true);
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(bidOutRef, obj, setOptions);
+        transaction.set(bidInPublicRef, obj, setOptions);
+        transaction.set(bidInPrivateRef, obj, setOptions);
+      });
+      final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+      await cancelBid({bidId: bidId});
     }
   }
 
