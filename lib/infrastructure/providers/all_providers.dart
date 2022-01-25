@@ -1,5 +1,6 @@
 // TODO break up file into multiple files
 
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
@@ -352,17 +353,6 @@ final bidInsProvider =
   int loungeSum = 0;
   int loungeSumCount = 0;
 
-  // my hangout
-  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
-  if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
-    return null;
-  }
-  final hangout = hangoutAsyncValue.value!;
-  final loungeHistory = hangout.loungeHistory
-      .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
-      .toList();
-  int loungeHistoryIndex = hangout.loungeHistoryIndex;
-
   List<BidIn> bidInsSorted = [];
   int chronyIndex = 0;
   int highRollerIndex = 0;
@@ -404,8 +394,30 @@ final bidInsProvider =
 
     // first calc  of loungeSum
     if (!loungeSumSet) {
-      if (loungeHistory.length < N - 1) {
-        loungeSum = loungeHistory.fold(
+      // my hangout
+      final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
+      if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
+        return null;
+      }
+      final hangout = hangoutAsyncValue.value!;
+      final loungeHistoryList = hangout.loungeHistory
+          .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
+          .toList();
+      final loungeHistoryIndex = hangout.loungeHistoryIndex;
+      final end = loungeHistoryIndex;
+      final start = (end - N + 1) % loungeHistoryList.length;
+      Queue<int> recentLoungesHistory = Queue();
+      final N_tile = min(loungeHistoryList.length, N);
+      int i = start;
+      while (recentLoungesHistory.length < N_tile) {
+        recentLoungesHistory.addLast(loungeHistoryList[i]);
+      }
+
+      // calc
+      loungeSum = recentLoungesHistory.fold(
+          0, (int previousValue, int element) => previousValue + element);
+      if (recentLoungesHistory.length < N - 1) {
+        loungeSum = recentLoungesHistory.fold(
             0, (int previousValue, int element) => previousValue + element);
         loungeSumCount = loungeHistory.length;
       } else {
@@ -443,11 +455,10 @@ final bidInsProvider =
       if (chronyIndex == bidInsChronies.length) {
         for (int i = highRollerIndex; i < bidInsHighRollers.length; i++) {
           bidInsSorted.add(bidInsHighRollers[i]);
-          return bidInsSorted;
         }
+        return bidInsSorted;
       }
-    }
-    else {
+    } else {
       // choose highroller
       bidInsSorted.add(nextHighroller);
 
@@ -458,8 +469,8 @@ final bidInsProvider =
       if (highRollerIndex == bidInsHighRollers.length) {
         for (int i = chronyIndex; i < bidInsChronies.length; i++) {
           bidInsSorted.add(bidInsChronies[i]);
-          return bidInsSorted;
         }
+        return bidInsSorted;
       }
     }
   } // while
