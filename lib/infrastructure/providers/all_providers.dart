@@ -412,6 +412,8 @@ final bidInsProvider =
         int i = start;
         while (recentLoungesHistory.length < N_tile) {
           recentLoungesHistory.addLast(loungeHistoryList[i]);
+          i--;
+          i %= loungeHistoryList.length;
         }
 
         loungeSum = recentLoungesHistory.fold(
