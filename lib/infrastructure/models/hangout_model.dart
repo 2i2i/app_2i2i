@@ -33,7 +33,7 @@ class HangoutChanger {
   Future updateHangout(Hangout hangout) {
     final tags = Hangout.tagsFromBio(hangout.bio);
     Map map = hangout.toMap();
-    map['tags'] = [hangout.name, ...tags];
+    map['tags'] = [hangout.name.toLowerCase(), ...tags];
     return database.updateUserNameAndBio(uid, map.cast());
   }
 
@@ -42,7 +42,7 @@ class HangoutChanger {
     Map<String, dynamic> data = {
       'name': name,
       'bio': bio,
-      'tags': [name, ...tags]
+      'tags': [name.toLowerCase(), ...tags]
     };
     final user = await database.getUser(uid);
     if (user == null) {
@@ -135,7 +135,7 @@ class Hangout extends Equatable {
     this.heartbeat,
     this.rule = const HangOutRule(),
   }) {
-    _tags = tagsFromBio(bio);
+    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
 
   final String id;
@@ -154,7 +154,7 @@ class Hangout extends Equatable {
     final matches = r.allMatches(bio).toList();
     final List<String> tags = [];
     for (final m in matches) {
-      final t = bio.substring(m.start, m.end);
+      final t = bio.substring(m.start, m.end).toLowerCase();
       tags.add(t);
     }
     return tags;
