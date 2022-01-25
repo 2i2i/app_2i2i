@@ -349,13 +349,11 @@ final bidInsProvider =
     return bidInsChronies;
   else if (bidInsChronies.isEmpty) return bidInsHighRollers;
 
-  bool loungeSumSet = false;
-  int loungeSum = 0;
-  int loungeSumCount = 0;
-
   List<BidIn> bidInsSorted = [];
+  Queue<int> recentLoungesHistory = Queue();
   int chronyIndex = 0;
   int highRollerIndex = 0;
+  int loungeSum = 0;
   while (
       bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
     BidIn nextChrony = bidInsChronies[chronyIndex];
@@ -393,62 +391,51 @@ final bidInsProvider =
     }
 
     // first calc  of loungeSum
-    if (!loungeSumSet) {
+    if (recentLoungesHistory.isEmpty) {
+      // should only arrive here first time
+
       // my hangout
       final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
       if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
         return null;
       }
       final hangout = hangoutAsyncValue.value!;
-      final loungeHistoryList = hangout.loungeHistory
-          .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
-          .toList();
-      final loungeHistoryIndex = hangout.loungeHistoryIndex;
-      final end = loungeHistoryIndex;
-      final start = (end - N + 1) % loungeHistoryList.length;
-      Queue<int> recentLoungesHistory = Queue();
-      final N_tile = min(loungeHistoryList.length, N);
-      int i = start;
-      while (recentLoungesHistory.length < N_tile) {
-        recentLoungesHistory.addLast(loungeHistoryList[i]);
-      }
+      if (hangout.loungeHistory.isNotEmpty) {
+        final loungeHistoryList = hangout.loungeHistory
+            .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
+            .toList();
+        final loungeHistoryIndex = hangout.loungeHistoryIndex;
+        final end = loungeHistoryIndex;
+        final start = (end - N + 1) % loungeHistoryList.length;
 
-      // calc
-      loungeSum = recentLoungesHistory.fold(
-          0, (int previousValue, int element) => previousValue + element);
-      if (recentLoungesHistory.length < N - 1) {
+        final N_tile = min(loungeHistoryList.length, N);
+        int i = start;
+        while (recentLoungesHistory.length < N_tile) {
+          recentLoungesHistory.addLast(loungeHistoryList[i]);
+        }
+
         loungeSum = recentLoungesHistory.fold(
             0, (int previousValue, int element) => previousValue + element);
-        loungeSumCount = loungeHistory.length;
-      } else {
-        int count = 0;
-        for (; count < N - 1; count++) {
-          loungeSum += loungeHistory[loungeHistoryIndex];
-          loungeHistoryIndex--;
-          loungeHistoryIndex %= loungeHistory.length;
-        }
       }
-
-      loungeSumSet = true;
     }
 
     // update loungeSum
-    if (loungeSumCount == N) {
-      loungeSum -= loungeHistory[loungeHistoryIndex];
-      loungeSumCount--;
+    if (recentLoungesHistory.length == N) {
+      loungeSum -= recentLoungesHistory.removeFirst();
     }
+    final M = recentLoungesHistory.length + 1;
     int loungeSumChrony = loungeSum + 0;
     int loungeSumHighroller = loungeSum + 1;
-    loungeSumCount++;
-    double ifChronyRatio = loungeSumChrony / loungeSumCount;
-    double ifHighrollerRatio = loungeSumHighroller / loungeSumCount;
+    double ifChronyRatio = 1.0 - loungeSumChrony / M;
+    double ifHighrollerRatio = 1.0 - loungeSumHighroller / M;
     double ifChronyError = (ifChronyRatio - targetChronyRatio).abs();
     double ifHighrollerError = (ifHighrollerRatio - targetChronyRatio).abs();
     if (ifChronyError <= ifHighrollerError) {
       // choose chrony
       bidInsSorted.add(nextChrony);
-
-      // next
+      final value = 0;
+      recentLoungesHistory.addLast(value);
+      // loungeSum += value;
       chronyIndex += 1;
 
       // if chronies done, add remaining highrollers and done
@@ -461,8 +448,9 @@ final bidInsProvider =
     } else {
       // choose highroller
       bidInsSorted.add(nextHighroller);
-
-      // next
+      final value = 1;
+      recentLoungesHistory.addLast(value);
+      loungeSum += value;
       highRollerIndex += 1;
 
       // if highrollers done, add remaining chronies and done

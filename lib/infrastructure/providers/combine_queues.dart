@@ -1,30 +1,40 @@
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) {
+  final t = Timestamp.fromMicrosecondsSinceEpoch(ts);
+  log('ts=$ts - t.microsecondsSinceEpoch=${t.microsecondsSinceEpoch}');
+  final x = BidInPublic.fromMap({
+    'speed': Quantity.fromMap({
+      'num': speed,
+      'assetId': 0,
+    }).toMap(),
+    'rule': HangOutRule.fromMap({
+      'maxMeetingDuration': 300,
+      'minSpeed': minSpeed,
+      'importance': {
+        'chrony': importChrony,
+        'highroller': importHighroller,
+      },
+    }).toMap(),
+    'net': AlgorandNet.testnet.toStringEnum(),
+    'active': true,
+    'ts': Timestamp.fromMicrosecondsSinceEpoch(ts),
+    'budget': 50,
+  }, (speed == minSpeed ? 'C' : 'H') + '_' + ts.toString());
+  return x;
+}
+
 // expect id1
 Map combineQueuesTestCreate_1() {
   List<BidInPublic> bidInsPublic = [
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 0,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 0,
-        'importance': {
-          'chrony': 1,
-          'highroller': 5,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromDate(DateTime.now().toUtc()),
-      'budget': 50,
-    }, 'id'),
+    bTest(0, 0, 1, 5, 10),
   ];
   return {
     'public': bidInsPublic,
@@ -36,42 +46,8 @@ Map combineQueuesTestCreate_1() {
 // expect id2, id1
 Map combineQueuesTestCreate_2() {
   List<BidInPublic> bidInsPublic = [
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 0,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 0,
-        'importance': {
-          'chrony': 1,
-          'highroller': 5,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(10),
-      'budget': 50,
-    }, 'id1'),
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 1,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 0,
-        'importance': {
-          'chrony': 1,
-          'highroller': 5,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(11),
-      'budget': 50,
-    }, 'id2'),
+    bTest(0, 0, 1, 5, 10),
+    bTest(1, 0, 1, 5, 11),
   ];
   return {
     'public': bidInsPublic,
@@ -80,81 +56,125 @@ Map combineQueuesTestCreate_2() {
   };
 }
 
-// expect id2, id4, id3, id2
+// expect id2, id3, id4, id2
 Map combineQueuesTestCreate_3() {
   List<BidInPublic> bidInsPublic = [
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 5,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 5,
-        'importance': {
-          'chrony': 2,
-          'highroller': 1,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(10),
-      'budget': 50,
-    }, 'id1'),
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 10,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 5,
-        'importance': {
-          'chrony': 2,
-          'highroller': 1,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(11),
-      'budget': 50,
-    }, 'id2'),
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 15,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 5,
-        'importance': {
-          'chrony': 2,
-          'highroller': 1,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(12),
-      'budget': 50,
-    }, 'id3'),
-    BidInPublic.fromMap({
-      'speed': Quantity.fromMap({
-        'num': 5,
-        'assetId': 0,
-      }).toMap(),
-      'rule': HangOutRule.fromMap({
-        'maxMeetingDuration': 300,
-        'minSpeed': 5,
-        'importance': {
-          'chrony': 2,
-          'highroller': 1,
-        },
-      }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
-      'active': true,
-      'ts': Timestamp.fromMicrosecondsSinceEpoch(13),
-      'budget': 50,
-    }, 'id4'),
+    bTest(5, 5, 2, 1, 10),
+    bTest(10, 5, 2, 1, 11),
+    bTest(15, 5, 2, 1, 12),
+    bTest(5, 5, 2, 1, 13),
+  ];
+  return {
+    'public': bidInsPublic,
+    'loungeHistory': <int>[],
+    'loungeHistoryIndex': 0,
+  };
+}
+
+// expect id2, id3, id4, id2
+Map combineQueuesTestCreate_4() {
+  List<BidInPublic> bidInsPublic = [
+    // bTest(speed, minSpeed, importChrony, importHighroller, ts)
+    bTest(5, 5, 5, 1, 10),
+    bTest(5, 5, 5, 1, 11),
+    bTest(5, 5, 5, 1, 12),
+    bTest(5, 5, 5, 1, 13),
+    bTest(5, 5, 5, 1, 13),
+    bTest(5, 5, 5, 1, 13),
+    bTest(5, 5, 5, 1, 13),
+    bTest(10, 5, 5, 1, 13),
+    bTest(5, 5, 5, 1, 13),
+    bTest(7, 5, 5, 1, 13),
+  ];
+  return {
+    'public': bidInsPublic,
+    'loungeHistory': <int>[],
+    'loungeHistoryIndex': 0,
+  };
+}
+
+Map combineQueuesTestCreate_5() {
+  int c = 3;
+  int hr = 1;
+
+  List<BidInPublic> bidInsPublic = [
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+  ];
+  return {
+    'public': bidInsPublic,
+    'loungeHistory': <int>[],
+    'loungeHistoryIndex': 0,
+  };
+}
+
+Map combineQueuesTestCreate_6() {
+  int c = 3;
+  int hr = 5;
+
+  List<BidInPublic> bidInsPublic = [
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(5, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+    bTest(6, 5, c, hr, 10),
+  ];
+  return {
+    'public': bidInsPublic,
+    'loungeHistory': <int>[],
+    'loungeHistoryIndex': 0,
+  };
+}
+
+Map combineQueuesTestCreate_7() {
+  List<BidInPublic> bidInsPublic = [
+    bTest(5, 5, 10, 1, 10000),
+    bTest(5, 5, 10, 1, 11000),
+    bTest(5, 5, 10, 1, 12000),
+    bTest(5, 5, 10, 1, 13000),
+    bTest(5, 5, 10, 1, 14000),
+    bTest(5, 5, 1, 3, 15000),
+    bTest(5, 5, 1, 3, 16000),
+    bTest(5, 5, 1, 3, 17000),
+    bTest(5, 5, 1, 3, 18000),
+    bTest(7, 5, 1, 3, 19000),
+    bTest(5, 5, 1, 3, 20000),
+    bTest(6, 5, 1, 3, 21000),
+    bTest(5, 5, 1, 3, 22000),
+    bTest(8, 5, 1, 3, 23000),
   ];
   return {
     'public': bidInsPublic,
@@ -164,13 +184,22 @@ Map combineQueuesTestCreate_3() {
 }
 
 void combineQueuesTestRun() {
-  final testData = combineQueuesTestCreate_3();
+  final testData = combineQueuesTestCreate_7();
   final bidInsPublic = testData['public'];
   final loungeHistory = testData['loungeHistory'];
   final loungeHistoryIndex = testData['loungeHistoryIndex'];
   final bidIns =
       combineQueuesCore(bidInsPublic, loungeHistory, loungeHistoryIndex);
-  bidIns.forEach((x) => log(x.toString()));
+  log('C: ${bidIns.where((e) => e.public.speed.num == e.public.rule.minSpeed).length}');
+  log('H: ${bidIns.where((e) => e.public.speed.num != e.public.rule.minSpeed).length}');
+  log('bidIns: ${bidIns.length}');
+  final result = bidIns
+      .map((e) =>
+          (e.public.speed.num == e.public.rule.minSpeed ? 'C' : 'H') +
+          '_' +
+          e.public.ts.microsecondsSinceEpoch.toString())
+      .join(' ');
+  log(result);
 }
 
 List<BidIn> combineQueuesCore(List<BidInPublic> bidInsPublic,
@@ -198,14 +227,11 @@ List<BidIn> combineQueuesCore(List<BidInPublic> bidInsPublic,
     return bidInsChronies;
   else if (bidInsChronies.isEmpty) return bidInsHighRollers;
 
-  bool loungeSumSet = false;
-  int loungeSum = 0;
-  int loungeSumCount = 0;
-  int tailLounge = 0;
-
   List<BidIn> bidInsSorted = [];
+  Queue<int> recentLoungesHistory = Queue(); // need size?
   int chronyIndex = 0;
   int highRollerIndex = 0;
+  int loungeSum = 0;
   while (
       bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
     BidIn nextChrony = bidInsChronies[chronyIndex];
@@ -243,48 +269,46 @@ List<BidIn> combineQueuesCore(List<BidInPublic> bidInsPublic,
     }
 
     // first calc  of loungeSum
-    if (!loungeSumSet) {
-      if (loungeHistory.length < N - 1) {
-        loungeSum = loungeHistory.fold(
-            0, (int previousValue, int element) => previousValue + element);
-        loungeSumCount = loungeHistory.length;
-      } else {
-        int count = 0;
-        for (; count < N - 1; count++) {
-          loungeSum += loungeHistory[loungeHistoryIndex];
-          loungeHistoryIndex--;
-          loungeHistoryIndex %= loungeHistory.length;
-        }
-        tailLounge = loungeHistory[(loungeHistoryIndex + 1) % loungeHistory.length];
-      }
+    if (recentLoungesHistory.isEmpty) {
+      // should only arrive here first time
 
-      loungeSumSet = true;
+      // my hangout
+      if (loungeHistory.isNotEmpty) {
+        final loungeHistoryList = loungeHistory;
+        // .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
+        // .toList();
+        // final loungeHistoryIndex = hangout.loungeHistoryIndex;
+        final end = loungeHistoryIndex;
+        final start = (end - N + 1) % loungeHistoryList.length;
+
+        final N_tile = min(loungeHistoryList.length, N);
+        int i = start;
+        while (recentLoungesHistory.length < N_tile) {
+          recentLoungesHistory.addLast(loungeHistoryList[i]);
+        }
+
+        loungeSum = recentLoungesHistory.fold(
+            0, (int previousValue, int element) => previousValue + element);
+      }
     }
 
     // update loungeSum
-    if (loungeSumCount == N) {
-      loungeSum -= tailLounge;
-      loungeSumCount--;
+    if (recentLoungesHistory.length == N) {
+      loungeSum -= recentLoungesHistory.removeFirst();
     }
+    final M = recentLoungesHistory.length + 1;
     int loungeSumChrony = loungeSum + 0;
     int loungeSumHighroller = loungeSum + 1;
-    loungeSumCount++;
-    
-    // calculate tailLounge
-    if (bidInsSorted.length < loungeHistory.length) {
-      tailLounge = 
-    }
-
-
-    double ifChronyRatio = 1 - loungeSumChrony / loungeSumCount;
-    double ifHighrollerRatio = 1 - loungeSumHighroller / loungeSumCount;
+    double ifChronyRatio = 1.0 - loungeSumChrony / M;
+    double ifHighrollerRatio = 1.0 - loungeSumHighroller / M;
     double ifChronyError = (ifChronyRatio - targetChronyRatio).abs();
     double ifHighrollerError = (ifHighrollerRatio - targetChronyRatio).abs();
     if (ifChronyError <= ifHighrollerError) {
       // choose chrony
       bidInsSorted.add(nextChrony);
-
-      // next
+      final value = 0;
+      recentLoungesHistory.addLast(value);
+      // loungeSum += value;
       chronyIndex += 1;
 
       // if chronies done, add remaining highrollers and done
@@ -297,8 +321,9 @@ List<BidIn> combineQueuesCore(List<BidInPublic> bidInsPublic,
     } else {
       // choose highroller
       bidInsSorted.add(nextHighroller);
-
-      // next
+      final value = 1;
+      recentLoungesHistory.addLast(value);
+      loungeSum += value;
       highRollerIndex += 1;
 
       // if highrollers done, add remaining chronies and done
