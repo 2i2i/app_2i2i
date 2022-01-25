@@ -349,6 +349,13 @@ final bidInsProvider =
     return bidInsChronies;
   else if (bidInsChronies.isEmpty) return bidInsHighRollers;
 
+  // my hangout
+  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
+  if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
+    return null;
+  }
+  final hangout = hangoutAsyncValue.value!;
+
   List<BidIn> bidInsSorted = [];
   Queue<int> recentLoungesHistory = Queue();
   int chronyIndex = 0;
@@ -374,8 +381,9 @@ final bidInsProvider =
     if (nextChrony.public.speed.num < nextRule.minSpeed) {
       // choose HighRoller
       bidInsSorted.add(nextHighroller);
-
-      // next
+      final value = 1;
+      recentLoungesHistory.addLast(value);
+      loungeSum += value;
       highRollerIndex += 1;
 
       // if highrollers done, add remaining chronies and done
@@ -391,15 +399,8 @@ final bidInsProvider =
     }
 
     // first calc  of loungeSum
-    if (recentLoungesHistory.isEmpty) {
+    if (recentLoungesHistory.length < N) {
       // should only arrive here first time
-
-      // my hangout
-      final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
-      if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
-        return null;
-      }
-      final hangout = hangoutAsyncValue.value!;
       if (hangout.loungeHistory.isNotEmpty) {
         final loungeHistoryList = hangout.loungeHistory
             .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
