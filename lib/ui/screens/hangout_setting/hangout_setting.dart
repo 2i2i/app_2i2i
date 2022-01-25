@@ -149,201 +149,204 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               ),
             ),
             const SizedBox(height: 30),
-
-            Text(
-              Strings().minSpeed,
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            const SizedBox(height: 6),
-            TextFormField(
-
-              controller: speedEditController,
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.next,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              autofocus: false,
-              validator: (value) {
-                value ??= '';
-                if (value.trim().isEmpty || int.tryParse(value) == null) {
-                  return Strings().enterValidData;
-                }
-              },
-              decoration: InputDecoration(
-                filled: true,
-                hintText: Strings().numberHint,
-                suffix: Text(Strings().algoPerSec),
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            Text(
-              Strings().maxDuration,
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            const SizedBox(height: 6),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: SizedBox(
-                width: 150,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 60,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-
-                        controller: hourEditController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(2),
-                        ],
-                        autofocus: false,
-                        validator: (value) {
-                          value ??= '';
-                          if ((int.tryParse(value)??0) > 24) {
-                            invalidTime.value = true;
-                          }else{
-                            invalidTime.value = false;
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: Strings().hh.toUpperCase(),
-                          // suffix: Text(Strings().algoPerSec),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      ':',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    SizedBox(
-                      width: 60,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-
-                        controller: minuteEditController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(2),
-                        ],
-                        autofocus: false,
-                        validator: (value) {
-                          value ??= '';
-                          if ((int.tryParse(value)??0) > 60) {
-                            invalidTime.value = true;
-                          }else{
-                            invalidTime.value = false;
-                          }
-                            return null;
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: Strings().mm.toUpperCase(),
-                          // suffix: Text(Strings().algoPerSec),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ValueListenableBuilder(
-              valueListenable: invalidTime,
-              builder: (BuildContext context, bool value, Widget? child) {
-                return Visibility(
-                  visible: value,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 12,top: 8),
-                    child: Text(
-                      Strings().enterValidData,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption
-                          ?.copyWith(color: Theme.of(context).errorColor),
+            Visibility(
+              visible: !(widget.fromBottomSheet ?? false),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    Strings().minSpeed,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: speedEditController,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    autofocus: false,
+                    validator: (value) {
+                      value ??= '';
+                      if (value.trim().isEmpty || int.tryParse(value) == null) {
+                        return Strings().enterValidData;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: Strings().numberHint,
+                      suffix: Text(Strings().algoPerSec),
                     ),
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 30),
-
-            Row(
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      Lounge.highroller.name(),
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    const SizedBox(height: 6),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        width: 60,
-                        child: TextFormField(
-                          controller: highRollerController,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            filled: true,
-                            hintText: Strings().numberZeroHint,
+                  const SizedBox(height: 30),
+                  Text(
+                    Strings().maxDuration,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  const SizedBox(height: 6),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 150,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            child: TextFormField(
+                              textAlign: TextAlign.center,
+                              controller: hourEditController,
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              autofocus: false,
+                              validator: (value) {
+                                value ??= '';
+                                if (value.isEmpty ||
+                                    (int.tryParse(value) ?? 0) > 24) {
+                                  invalidTime.value = true;
+                                } else {
+                                  invalidTime.value = false;
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                filled: true,
+                                hintText: Strings().hh.toUpperCase(),
+                                // suffix: Text(Strings().algoPerSec),
+                              ),
+                            ),
                           ),
-                        ),
+                          Text(
+                            ':',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          SizedBox(
+                            width: 60,
+                            child: TextFormField(
+                              textAlign: TextAlign.center,
+                              controller: minuteEditController,
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              autofocus: false,
+                              validator: (value) {
+                                value ??= '';
+                                if ((int.tryParse(value) ?? 0) > 60) {
+                                  invalidTime.value = true;
+                                } else {
+                                  invalidTime.value = false;
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                filled: true,
+                                hintText: Strings().mm.toUpperCase(),
+                                // suffix: Text(Strings().algoPerSec),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(width: 30),
-                Column(
-                  children: [
-                    Text(
-                      Lounge.chrony.name(),
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    const SizedBox(height: 6),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        width: 60,
-                        child: TextFormField(
-                          controller: chronyController,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            filled: true,
-                            hintText: Strings().numberZeroHint,
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: invalidTime,
+                    builder: (BuildContext context, bool value, Widget? child) {
+                      return Visibility(
+                        visible: value,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 12, top: 8),
+                          child: Text(
+                            Strings().enterValidData,
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption
+                                ?.copyWith(color: Theme.of(context).errorColor),
                           ),
                         ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            Lounge.highroller.name(),
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          const SizedBox(height: 6),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: SizedBox(
+                              width: 60,
+                              child: TextFormField(
+                                controller: highRollerController,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.next,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(2),
+                                ],
+                                autofocus: false,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  hintText: Strings().numberZeroHint,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      SizedBox(width: 30),
+                      Column(
+                        children: [
+                          Text(
+                            Lounge.chrony.name(),
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          const SizedBox(height: 6),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: SizedBox(
+                              width: 60,
+                              child: TextFormField(
+                                controller: chronyController,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.next,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(2),
+                                ],
+                                autofocus: false,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  hintText: Strings().numberZeroHint,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
-            const SizedBox(height: 30),
-
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -366,24 +369,26 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   void onClickSave(MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) {
     bool validate = formKey.currentState?.validate() ?? false;
-    if (validate && !invalidTime.value) {
-      Hangout? hangout = myUserPageViewModel?.hangout;
-      if(hangout is Hangout) {
-        int minutes = (int.parse(hourEditController.text)*60)+int.parse(minuteEditController.text);
+    Hangout? hangout = myUserPageViewModel?.hangout;
+    if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
+      if (hangout is Hangout && !(widget.fromBottomSheet ?? false)) {
+        int minutes = ((int.tryParse(hourEditController.text) ?? 0) * 60) + (int.tryParse(minuteEditController.text) ?? 0);
         hangout.name = userNameEditController.text;
         hangout.bio = bioEditController.text;
         HangOutRule rule = HangOutRule(
-          minSpeed: int.parse(speedEditController.text),
-          maxMeetingDuration: minutes*60,
-          importance: {
-            Lounge.chrony:int.tryParse(chronyController.text)??1,
-            Lounge.highroller:int.tryParse(highRollerController.text)??5,
-          }
-        );
+            minSpeed: int.parse(speedEditController.text),
+            maxMeetingDuration: minutes * 60,
+            importance: {
+              Lounge.chrony: int.tryParse(chronyController.text) ?? 1,
+              Lounge.highroller: int.tryParse(highRollerController.text) ?? 5,
+            });
         hangout.rule = rule;
-        myUserPageViewModel?.updateHangout(hangout);
-        Navigator.of(context).maybePop();
+      } else {
+        hangout!.name = userNameEditController.text;
+        hangout.bio = bioEditController.text;
       }
+      myUserPageViewModel?.updateHangout(hangout);
+      Navigator.of(context).maybePop();
     }
   }
 }
