@@ -1,10 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateLocalAccount extends ConsumerStatefulWidget {
+
   const CreateLocalAccount({Key? key}) : super(key: key);
 
   @override
@@ -85,11 +84,16 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                 if (perhaps.isNotEmpty) {
                                   Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
                                   CustomDialogs.showToastMessage(context, Strings().copyMessage);
-                                  context.push(Routes.verifyPerhaps.nameFromPath(),
-                                  extra: {
-                                    'perhaps':perhaps,
-                                    'account':account,
+                                  Future.delayed(Duration.zero).then((value) {
+                                    context.pushNamed(
+                                        Routes.verifyPerhaps.nameFromPath(),
+                                        extra: {
+                                          'perhaps': perhaps,
+                                          'account': account,
+                                        });
                                   });
+
+                                  context.pop();
                                 }
                               },
                               child: Text(Strings().copyAndNext),

@@ -56,7 +56,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     var lockHangout = ref.watch(lockedHangoutViewModelProvider);
-    if (!(haveToWait(lockHangout))) {
+    /*if (!(haveToWait(lockHangout))) {
       return LockedUserPage(
         onHangPhone: (uid, meetingId) {
           submitReview(uid, meetingId);
@@ -69,7 +69,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           submitReview(uid, meetingId);
         },
       );
-    }
+    }*/
 
     return WillPopScope(
       onWillPop: () async =>

@@ -51,7 +51,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
               width: 10,
             ),
             RectangleBox(
-              onTap: () => context.pushNamed(Routes.top),
+              onTap: () => context.pushNamed(Routes.top.nameFromPath()),
               radius: 46,
               icon: SvgPicture.asset(
                 'assets/icons/crown.svg',

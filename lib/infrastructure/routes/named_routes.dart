@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
@@ -18,28 +19,29 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_routes.dart';
-
 class NamedRoutes {
-  static const INITIAL = Routes.root;
-
   static GoRouter router = GoRouter(
-    urlPathStrategy: UrlPathStrategy.path,
+    urlPathStrategy: UrlPathStrategy.hash,
     // refreshListenable: isUserLocked,
-    refreshListenable: ValueNotifier(false),
+    refreshListenable: isUserLocked,
     redirect: (state) {
-      // final locked = isUserLocked.value;
-      final locked = false;
+      final locked = isUserLocked.value;
+
       final goingToLocked = state.location == Routes.lock;
 
-      // if (!locked && goingToLocked) return '/home';
-      if (!locked && goingToLocked) return Routes.root;
-      if (locked && goingToLocked) return null;
-      if (locked) return Routes.lock;
+      if (locked && goingToLocked) {
+        return null;
+      } else if (!locked && goingToLocked) {
+        return Routes.root;
+      } else if (locked) {
+        return Routes.lock;
+      }
       return null;
     },
+    initialLocation: Routes.root,
     routes: [
       GoRoute(
-        path: INITIAL,
+        path: Routes.root,
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: getView(
@@ -154,8 +156,9 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return MaterialPage<void>(
             key: state.pageKey,
-            child: getView( CreateLocalAccount()),
+            child: getView(CreateLocalAccount()),
           );
+
         },
       ),
 
@@ -163,6 +166,7 @@ class NamedRoutes {
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
+          print('state ${state.extra}');
           if(state.extra is Map){
             Map map = state.extra as Map;
             List<String> perhaps = map['perhaps'];

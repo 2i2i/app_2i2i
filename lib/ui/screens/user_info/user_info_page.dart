@@ -30,10 +30,17 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final mainUserID = ref.watch(myUIDProvider)!;
+    final mainUserID = ref.watch(myUIDProvider);
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
-    final userModelChanger = ref.watch(hangoutChangerProvider)!;
+    var isFriend = false;
+    var isBlocked = false;
+    final userModelChanger = ref.watch(hangoutChangerProvider);
+    if(mainUserID != null) {
+      final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
+
+      isFriend = !haveToWait(userPrivateAsyncValue) && userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.friends.contains(widget.uid);
+      isBlocked = !haveToWait(userPrivateAsyncValue)&& userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.blocked.contains(widget.uid);
+    }
 
     if (haveToWait(userPageViewModel)) {
       return WaitPage();
@@ -41,27 +48,21 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     Hangout hangout = userPageViewModel!.hangout;
 
-    final isFriend = !haveToWait(userPrivateAsyncValue) &&
-        userPrivateAsyncValue.value != null &&
-        userPrivateAsyncValue.value!.friends.contains(widget.uid);
 
-    final isBlocked = !haveToWait(userPrivateAsyncValue)&&
-        userPrivateAsyncValue.value != null &&
-        userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
         actions: [
+          if(userModelChanger != null)
           PopupMenuButton<int>(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(8.0),
               ),
             ),
-            onSelected: (item) =>
-                handleClick(item, userModelChanger, isBlocked),
+            onSelected: (item) => handleClick(item, userModelChanger, isBlocked),
             itemBuilder: (context) => [
               PopupMenuItem<int>(value: 0, child: Text(Strings().report)),
               PopupMenuItem<int>(
@@ -114,11 +115,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 16),
               child: UserInfoWidget(
                 hangout: hangout, isFav: isFriend, onTapFav: () {
-                if (!isFriend) {
-                  userModelChanger.addFriend(widget.uid);
-                } else {
-                  userModelChanger.removeFriend(widget.uid);
-                }
+                  if(userModelChanger != null) {
+                    if (!isFriend) {
+                      userModelChanger.addFriend(widget.uid);
+                    } else {
+                      userModelChanger.removeFriend(widget.uid);
+                    }
+                  }
               },
               ),
             ),

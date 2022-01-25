@@ -426,14 +426,25 @@ final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
     log('lockedUserViewModelProvider - user=$hangout');
     if (hangout is AsyncLoading || hangout is AsyncError) return null;
 
-    if (hangout.asData!.value.meeting == null) return null;
+    if (hangout.asData!.value.meeting == null) {
+      isUserLocked.value = false;
+      return null;
+    }
     final String userMeeting = hangout.asData!.value.meeting!;
     log('lockedHangoutViewModelProvider - userMeeting=$userMeeting');
     final meeting = ref.watch(meetingProvider(userMeeting));
+
     log('lockedHangoutViewModelProvider - meeting=$meeting');
-    if (meeting is AsyncLoading || meeting is AsyncError) return null;
-    return LockedHangoutViewModel(
-        hangout: hangout.asData!.value, meeting: meeting.asData!.value);
+    if (meeting is AsyncLoading || meeting is AsyncError) {
+      isUserLocked.value = false;
+      return null;
+    }
+    if(meeting.value?.active??false){
+      isUserLocked.value = true;
+    }else{
+      isUserLocked.value = false;
+    }
+    return LockedHangoutViewModel(hangout: hangout.asData!.value, meeting: meeting.asData!.value);
   },
 );
 

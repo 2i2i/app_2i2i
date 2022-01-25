@@ -1,4 +1,7 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,9 +15,7 @@ import '../../../../infrastructure/data_access_layer/accounts/walletconnect_acco
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import '../../../commons/custom_navigation.dart';
-import '../create_local_account.dart';
-import '../recover_account.dart';
+import 'keys_widget.dart';
 import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
@@ -33,9 +34,10 @@ class _AddAccountOptionsWidgetsState
 
   bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
       defaultTargetPlatform == TargetPlatform.android;
-
+  late BuildContext buildContext;
   @override
   Widget build(BuildContext context) {
+    buildContext = context;
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -120,10 +122,8 @@ class _AddAccountOptionsWidgetsState
           ),
           ListTile(
             onTap: () async {
-              Navigator.of(context).maybePop();
-              Future.delayed(Duration.zero).then((value) {
-                context.pushNamed(Routes.createLocalAccount.nameFromPath());
-              });
+                Navigator.of(context).maybePop();
+               context.push(Routes.createLocalAccount);
             },
             leading: Container(
               height: 50,
@@ -155,9 +155,21 @@ class _AddAccountOptionsWidgetsState
       ),
     );
   }
+  var val;
+  onClickVerify(Map value){
+    Navigator.of(context,rootNavigator: true).pop();
+    val = value;
+    print('value before $value');
+    Future.delayed(Duration(seconds: 2)).then((value) {
+      print('value after $val');
+      buildContext.pushNamed(
+        Routes.verifyPerhaps.nameFromPath(),
+        extra:value,
+      );
+    });
+  }
 
-  Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+  Future _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
