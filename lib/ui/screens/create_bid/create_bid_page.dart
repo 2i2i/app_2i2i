@@ -4,8 +4,10 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_se
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/user_info/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,64 +64,50 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       account = myAccountPageViewModel.accounts!.first;
 
     return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              Strings().createABid,
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      title: Strings().speed,
-                      hintText: "0",
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              '${Strings().algoSec}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .iconTheme
-                                        .color
-                                        ?.withOpacity(0.5),
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                            ),
-                          ),
-                          SizedBox(width: 8)
-                        ],
+      body: Column(
+        children: [
+          Container(
+            decoration: Custom.getBoxDecoration(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppBar(
+                  backgroundColor: Colors.transparent,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        Strings().createABid,
+                        style: Theme.of(context).textTheme.headline5,
                       ),
-                      onChanged: (String value) {
-                        final num = int.tryParse(value) ?? 0;
-                        speed = Quantity(num: num, assetId: speed.assetId);
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      },
-                    ),
+                      SizedBox(height: 25),
+                      UserRulesWidget(
+                        hangout: widget.hangout,
+                        onTapRules: null,
+                      ),
+                    ],
                   ),
-                  Visibility(
-                      visible: speed.num != 0,
-                      child: Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
                           child: CustomTextField(
-                            title: Strings().bidAmount,
+                            title: Strings().speed,
                             hintText: "0",
                             suffixIcon: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -145,235 +133,277 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             ),
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
-                              amount =
-                                  Quantity(num: num, assetId: amount.assetId);
+                              speed = Quantity(num: num, assetId: speed.assetId);
                               if (mounted) {
                                 setState(() {});
                               }
                             },
                           ),
                         ),
-                      )),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: CustomTextField(
-                title: Strings().note,
-                hintText: Strings().bidNote,
-                onChanged: (String value) {
-                  note = value;
-                },
-              ),
-            ),
-            Visibility(
-              visible: speed.num != 0,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      Strings().estMaxDuration,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    SizedBox(height: 4),
-                    Container(
-                      decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).shadowColor.withOpacity(0.20),
-                          borderRadius: BorderRadius.circular(10)),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Row(
-                        children: [
-                          SizedBox(width: 6),
-                          Text(
-                            '0 secs',
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  activeTrackColor: Theme.of(context).cardColor,
-                                  inactiveTrackColor:
-                                      Theme.of(context).disabledColor,
-                                  thumbShape: CustomSliderThumbRect(
-                                    mainContext: context,
-                                    thumbRadius: 15,
-                                    max: 0,
-                                    min: 100,
+                        Visibility(
+                            visible: speed.num != 0,
+                            child: Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: CustomTextField(
+                                  title: Strings().bidAmount,
+                                  hintText: "0",
+                                  suffixIcon: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          '${Strings().algoSec}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2
+                                              ?.copyWith(
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color
+                                                    ?.withOpacity(0.5),
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 8)
+                                    ],
                                   ),
-                                ),
-                                child: Slider(
-                                  value: _value,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _value = value;
-                                    });
+                                  onChanged: (String value) {
+                                    final num = int.tryParse(value) ?? 0;
+                                    amount =
+                                        Quantity(num: num, assetId: amount.assetId);
+                                    if (mounted) {
+                                      setState(() {});
+                                    }
                                   },
                                 ),
                               ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CustomTextField(
+                      title: Strings().note,
+                      hintText: Strings().bidNote,
+                      onChanged: (String value) {
+                        note = value;
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: speed.num != 0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            Strings().estMaxDuration,
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                          SizedBox(height: 4),
+                          Container(
+                            decoration: BoxDecoration(
+                                color:
+                                    Theme.of(context).shadowColor.withOpacity(0.20),
+                                borderRadius: BorderRadius.circular(10)),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 6),
+                                Text(
+                                  '0 secs',
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 8),
+                                    child: SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                        activeTrackColor: Theme.of(context).cardColor,
+                                        inactiveTrackColor:
+                                            Theme.of(context).disabledColor,
+                                        thumbShape: CustomSliderThumbRect(
+                                          mainContext: context,
+                                          thumbRadius: 15,
+                                          max: 0,
+                                          min: 100,
+                                        ),
+                                      ),
+                                      child: Slider(
+                                        value: _value,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _value = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Text('100 secs',
+                                    style: Theme.of(context).textTheme.subtitle1),
+                                SizedBox(width: 6),
+                              ],
                             ),
                           ),
-                          Text('100 secs',
-                              style: Theme.of(context).textTheme.subtitle1),
-                          SizedBox(width: 6),
+                          SizedBox(
+                            height: 10,
+                          )
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Visibility(
-                visible: speed.num != 0,
-                child: Container(
-                  constraints:
-                      (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                          ? BoxConstraints(
-                              minHeight: 150,
-                              maxHeight: 200,
-                            )
-                          : null,
-                  child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                      ? PageView.builder(
-                          controller: controller,
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              myAccountPageViewModel.accounts?.length ?? 0,
-                          itemBuilder: (_, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AccountInfo(
-                                false,
-                                key: ObjectKey(myAccountPageViewModel
-                                    .accounts![index].address),
-                                account:
-                                    myAccountPageViewModel.accounts![index],
-                              ),
-                            );
-                          },
-                          onPageChanged: (int val) {
-                            account =
-                                myAccountPageViewModel.accounts?.elementAt(val);
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                        )
-                      : Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(height: 12),
-                              Text(
-                                'No account added',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ),
-                              SizedBox(height: 8),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 10),
-                                child: IconButton(
-                                  onPressed: () =>
-                                      CustomAlertWidget.showBidAlert(
-                                          context, AddAccountOptionsWidgets()),
-                                  iconSize: 30,
-                                  icon: Icon(
-                                    Icons.add_circle_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ) /*ElevatedButton(
-                                  child: Text(Strings().addAccount),
-                                )*/
-                                ,
+                  ),
+                  Visibility(
+                      visible: speed.num != 0,
+                      child: Container(
+                        constraints:
+                            (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                                ? BoxConstraints(
+                                    minHeight: 150,
+                                    maxHeight: 200,
+                                  )
+                                : null,
+                        child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                            ? PageView.builder(
+                                controller: controller,
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    myAccountPageViewModel.accounts?.length ?? 0,
+                                itemBuilder: (_, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: AccountInfo(
+                                      false,
+                                      key: ObjectKey(myAccountPageViewModel
+                                          .accounts![index].address),
+                                      account:
+                                          myAccountPageViewModel.accounts![index],
+                                    ),
+                                  );
+                                },
+                                onPageChanged: (int val) {
+                                  account =
+                                      myAccountPageViewModel.accounts?.elementAt(val);
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
+                                },
                               )
-                            ],
+                            : Container(
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).shadowColor.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'No account added',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.subtitle1,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 50, vertical: 10),
+                                      child: IconButton(
+                                        onPressed: () =>
+                                            CustomAlertWidget.showBidAlert(
+                                                context, AddAccountOptionsWidgets()),
+                                        iconSize: 30,
+                                        icon: Icon(
+                                          Icons.add_circle_rounded,
+                                          color:
+                                              Theme.of(context).colorScheme.secondary,
+                                        ),
+                                      ) /*ElevatedButton(
+                                        child: Text(Strings().addAccount),
+                                      )*/
+                                      ,
+                                    )
+                                  ],
+                                ),
+                              ),
+                      )),
+                  Visibility(
+                    visible: speed.num != 0 &&
+                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              Strings().swipeAndChangeAccount,
+                              maxLines: 2,
+                              textAlign: TextAlign.start,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           ),
-                        ),
-                )),
-            Visibility(
-              visible: speed.num != 0 &&
-                  (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        Strings().swipeAndChangeAccount,
-                        maxLines: 2,
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.caption,
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Theme.of(context).colorScheme.secondary),
+                            onPressed: () => CustomAlertWidget.showBidAlert(
+                              context,
+                              AddAccountOptionsWidgets(),
+                            ),
+                            child: Text(
+                              Strings().addAccount,
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          primary: Theme.of(context).colorScheme.secondary),
-                      onPressed: () => CustomAlertWidget.showBidAlert(
-                        context,
-                        AddAccountOptionsWidgets(),
-                      ),
-                      child: Text(
-                        Strings().addAccount,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              child: ElevatedButton(
-                onPressed: isInsufficient() ? null : () => onAddBid(),
-                child: Text(getConfirmSliderText()),
-              ),
-            ),
-            /*Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: ConfirmationSlider(
-                  onConfirmation: () {
-                    onAddBid();
-                  },
-                  height: 50,
-                  width: getWidthForSlider(context),
-                  backgroundShape: BorderRadius.circular(12),
-                  backgroundColor: Color(0xffD2D2DF),
-                  thumbColor: isInsufficient(account)?Theme.of(context).errorColor:Theme.of(context).primaryColorDark,
-                  shadow: BoxShadow(
-                    blurRadius: 0,
-                    spreadRadius: 0,
                   ),
-                  text: getConfirmSliderText(),
-                  textStyle: isInsufficient(account)
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Theme.of(context).errorColor)
-                      : null,
-                ),
-              ),*/
-            SizedBox(height: 8),
-          ],
-        ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                    child: ElevatedButton(
+                      onPressed: isInsufficient() ? null : () => onAddBid(),
+                      child: Text(getConfirmSliderText()),
+                    ),
+                  ),
+                  /*Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      child: ConfirmationSlider(
+                        onConfirmation: () {
+                          onAddBid();
+                        },
+                        height: 50,
+                        width: getWidthForSlider(context),
+                        backgroundShape: BorderRadius.circular(12),
+                        backgroundColor: Color(0xffD2D2DF),
+                        thumbColor: isInsufficient(account)?Theme.of(context).errorColor:Theme.of(context).primaryColorDark,
+                        shadow: BoxShadow(
+                          blurRadius: 0,
+                          spreadRadius: 0,
+                        ),
+                        text: getConfirmSliderText(),
+                        textStyle: isInsufficient(account)
+                            ? Theme.of(context)
+                                .textTheme
+                                .bodyText2
+                                ?.copyWith(color: Theme.of(context).errorColor)
+                            : null,
+                      ),
+                    ),*/
+                  SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
