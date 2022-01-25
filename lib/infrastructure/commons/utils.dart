@@ -16,7 +16,6 @@ String ordinalIndicator(int x) {
 
 String microALGOToLargerUnit(int microALGO, {int maxDigits = 2}) {
   final N = microALGO.toString().length;
-  log(X + 'microALGOToLargerUnit - microALGO=$microALGO - N=$N');
   if (N <= maxDigits) return '$microALGO μALGO';
   if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} mALGO';
   if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} cALGO';
