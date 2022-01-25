@@ -13,6 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'infrastructure/commons/strings.dart';
 // import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
+import 'infrastructure/routes/named_routes.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
 import 'ui/screens/ringing/ringing_page.dart';
@@ -103,6 +104,17 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
+    return MaterialApp.router(
+      scrollBehavior: AppScrollBehavior(),
+      title: Strings().appName,
+      debugShowCheckedModeBanner: false,
+      themeMode: appSettingModel.currentThemeMode,
+      theme: AppTheme().mainTheme(context),
+      darkTheme: AppTheme().darkTheme(context),
+
+      routeInformationParser: NamedRoutes.router.routeInformationParser,
+      routerDelegate: NamedRoutes.router.routerDelegate,
+    );
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       home: getView(),

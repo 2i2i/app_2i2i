@@ -1,7 +1,9 @@
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
@@ -82,8 +84,7 @@ class _AddAccountOptionsWidgetsState
               Navigator.of(context).maybePop();
               Future.delayed(Duration.zero).then(
                 (value) {
-                  CustomNavigation.push(
-                      context, RecoverAccountPage(), 'recover');
+                  context.pushNamed(Routes.recover.nameFromPath());
                 },
               );
             },
@@ -121,8 +122,7 @@ class _AddAccountOptionsWidgetsState
             onTap: () async {
               Navigator.of(context).maybePop();
               Future.delayed(Duration.zero).then((value) {
-                CustomNavigation.push(
-                    context, CreateLocalAccount(), 'CreateLocalAccount');
+                context.pushNamed(Routes.createLocalAccount.nameFromPath());
               });
             },
             leading: Container(

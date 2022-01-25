@@ -11,6 +11,7 @@ import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/strings.dart';
@@ -141,7 +142,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +168,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
                       Strings().bio,
@@ -236,39 +237,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 );
               },
             ),
-            Visibility(
-              visible: false,
-              child: Container(
-                decoration: Custom.getBoxDecoration(context),
-                child: ListTile(
-                  onTap: () {
-                    CustomNavigation.push(
-                        context, ThemeModeScreen(), 'ThemeModeScreen');
-                  },
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        getThemeModeName(appSettingModel.currentThemeMode),
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      if (appSettingModel.currentThemeMode == ThemeMode.system)
-                        Text(
-                          'System Defaults',
-                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                  trailing: Icon(
-                    Icons.navigate_next,
-                  ),
-                ),
-              ),
-            ),
             SizedBox(height: 20),
 
             //others
@@ -283,26 +251,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     title: Text(
-                      'Friends',
+                      'Favorites',
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
                     ),
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: false,
-                        ),
-                        Routes.FRIENDS),
+                    onTap: () => context.pushNamed(Routes.favorites.nameFromPath()),
                   ),
                   ListTile(
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: true,
-                        ),
-                        Routes.FRIENDS),
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
                       'Blocked users',
                       style: Theme.of(context).textTheme.subtitle1,

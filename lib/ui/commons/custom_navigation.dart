@@ -23,7 +23,7 @@ class CustomNavigation {
     if (locked){
      return LockedUserPage();
     }*/
-  static push(BuildContext context, Widget page, String pageName,{bool rootNavigator = false}) {
+  /*static push(BuildContext context, Widget page, String pageName,{bool rootNavigator = false}) {
     if (kIsWeb) {
       var pageRouteBuilder = PageRouteBuilder(
         pageBuilder: (context, animation1, animation2) => page,
@@ -60,5 +60,5 @@ class CustomNavigation {
           MaterialPageRoute(builder: (BuildContext context) => page),
               (Route<dynamic> route) => false);
     }
-  }
+  }*/
 }
