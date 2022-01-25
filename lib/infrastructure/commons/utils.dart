@@ -2,8 +2,35 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 String shortString(String string, {int maxLength = 10}) {
-  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
+  if (maxLength < string.length)
+    return string.substring(0, maxLength - 3) + '...';
   return string;
+}
+
+String ordinalIndicator(int x) {
+  if (x == 1) return 'st';
+  if (x == 2) return 'nd';
+  if (x == 3) return 'rd';
+  return 'th';
+}
+
+String microALGOToLargerUnit(int microALGO, {int maxDigits = 2}) {
+  final N = microALGO.toString().length;
+  log(X + 'microALGOToLargerUnit - microALGO=$microALGO - N=$N');
+  if (N <= maxDigits) return '$microALGO μALGO';
+  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} mALGO';
+  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} cALGO';
+  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} dALGO';
+  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} ALGO';
+  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} decaALGO';
+  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hectoALGO';
+  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} kALGO';
+  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} MALGO';
+  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} GALGO';
+  if (N <= maxDigits + 12)
+    return '~${(microALGO / 1000000000000).round()} MALGO';
+  throw Exception(
+      'microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
 }
 
 int epochSecsNow() {
@@ -94,6 +121,7 @@ num getMaxDuration({required num budget, required num speed}) {
   }
   return (budget / speed).floor();
 }
+
 String getDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
