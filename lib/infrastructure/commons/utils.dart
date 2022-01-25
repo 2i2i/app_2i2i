@@ -14,18 +14,18 @@ String ordinalIndicator(int x) {
   return 'th';
 }
 
-String microALGOToLargerUnit(int microALGO, {int maxDigits = 2}) {
+String microALGOToLargerUnit(int microALGO, {int maxDigits = 2, String unitALGO = 'ALGO'}) {
   final N = microALGO.toString().length;
-  if (N <= maxDigits) return '$microALGO μALGO';
-  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} mALGO';
-  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} cALGO';
-  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} dALGO';
-  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} ALGO';
-  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} decaALGO';
-  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hectoALGO';
-  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} kALGO';
-  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} MALGO';
-  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} GALGO';
+  if (N <= maxDigits) return '$microALGO μ$unitALGO';
+  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} m$unitALGO';
+  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} c$unitALGO';
+  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} d$unitALGO';
+  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} $unitALGO';
+  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} deca$unitALGO';
+  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hecto$unitALGO';
+  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} k$unitALGO';
+  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} M$unitALGO';
+  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} G$unitALGO';
   if (N <= maxDigits + 12)
     return '~${(microALGO / 1000000000000).round()} MALGO';
   throw Exception(
