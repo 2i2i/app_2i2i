@@ -464,7 +464,7 @@ final bidInsProvider =
     }
   } // while
 
-  return bidInsWithUsers;
+  return bidInsSorted;
 });
 
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(

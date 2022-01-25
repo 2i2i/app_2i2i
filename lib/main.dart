@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -26,26 +27,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb) {
-    await Firebase.initializeApp();
-  }
+  combineQueuesTestRun();
+
+  // WidgetsFlutterBinding.ensureInitialized();
+  // if (!kIsWeb) {
+  //   await Firebase.initializeApp();
+  // }
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   //region DEBUG
-  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-    return runApp(
-      ProviderScope(
-        child: MainWidget(themeMode: value ?? "AUTO"),
-      ),
-    );
-  });
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  //   return runApp(
+  //     ProviderScope(
+  //       child: MainWidget(themeMode: value ?? "AUTO"),
+  //     ),
+  //   );
+  // });
   //endregion DEBUG
 
   // await SentryFlutter.init((options) {
@@ -128,7 +131,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
-               homePageBuilder: (_) => HomePage(),
+              homePageBuilder: (_) => HomePage(),
             ),
           ),
         ),

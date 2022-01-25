@@ -4,7 +4,7 @@ import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum Lounge { lurker, chrony, highroller, eccentric }
+enum Lounge { chrony, highroller, eccentric, lurker }
 
 extension ParseToString on Lounge {
   String toStringEnum() {
@@ -185,7 +185,7 @@ class Hangout extends Equatable {
     // log('Hangout.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final String status = data['status'];
-    final String meeting = data['meeting'];
+    final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
