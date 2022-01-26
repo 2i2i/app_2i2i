@@ -46,7 +46,6 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              Navigator.of(context).maybePop();
               final myAccountPageViewModel =
                   ref.read(myAccountPageViewModelProvider);
               await _createSession(myAccountPageViewModel,
@@ -184,8 +183,9 @@ class _AddAccountOptionsWidgetsState
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       _displayUri = '';
-      if (isDialogOpen && mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+      if (isDialogOpen) {
+        Navigator.of(context,rootNavigator: true).pop();
+        Navigator.of(context).pop();
       }
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');

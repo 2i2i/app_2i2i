@@ -10,14 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
 // import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/screens/app/auth_widget.dart';
 import 'ui/screens/home/home_page.dart';
-import 'ui/screens/ringing/ringing_page.dart';
 // import 'ui/screens/setup_account/setup_account.dart';
 // import 'ui/test_screen.dart';
 
@@ -50,28 +49,28 @@ Future<void> main() async {
   // });
   //endregion DEBUG
 
-  // await SentryFlutter.init((options) {
-  //   options.dsn =
-  //       'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  // }, appRunner: () {
-  //   FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //     return runApp(
-  //       ProviderScope(
-  //         child: MainWidget(themeMode: value ?? "AUTO"),
-  //       ),
-  //     );
-  //   });
-  // }).onError((error, stackTrace) {
-  //   print(error);
-  // });
-
-  return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-    return runApp(
-      ProviderScope(
-        child: MainWidget(themeMode: value ?? "AUTO"),
-      ),
-    );
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  }, appRunner: () {
+    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+      return runApp(
+        ProviderScope(
+          child: MainWidget(themeMode: value ?? "AUTO"),
+        ),
+      );
+    });
+  }).onError((error, stackTrace) {
+    print(error);
   });
+
+  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  //   return runApp(
+  //     ProviderScope(
+  //       child: MainWidget(themeMode: value ?? "AUTO"),
+  //     ),
+  //   );
+  // });
 }
 
 class MainWidget extends ConsumerStatefulWidget {
@@ -135,7 +134,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AuthWidget(
-               homePageBuilder: (_) => HomePage(),
+              homePageBuilder: (_) => HomePage(),
             ),
           ),
         ),

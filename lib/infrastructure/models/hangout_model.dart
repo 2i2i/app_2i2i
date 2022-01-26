@@ -4,7 +4,7 @@ import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum Lounge { lurker, chrony, highroller, eccentric }
+enum Lounge { chrony, highroller, eccentric, lurker }
 
 extension ParseToString on Lounge {
   String toStringEnum() {
@@ -33,7 +33,7 @@ class HangoutChanger {
   Future updateHangout(Hangout hangout) {
     final tags = Hangout.tagsFromBio(hangout.bio);
     Map map = hangout.toMap();
-    map['tags'] = [hangout.name, ...tags];
+    map['tags'] = [hangout.name.toLowerCase(), ...tags];
     return database.updateUserNameAndBio(uid, map.cast());
   }
 
@@ -42,7 +42,7 @@ class HangoutChanger {
     Map<String, dynamic> data = {
       'name': name,
       'bio': bio,
-      'tags': [name, ...tags]
+      'tags': [name.toLowerCase(), ...tags]
     };
     final user = await database.getUser(uid);
     if (user == null) {
@@ -134,27 +134,35 @@ class Hangout extends Equatable {
     this.numRatings = 0,
     this.heartbeat,
     this.rule = const HangOutRule(),
+    this.loungeHistory = const <Lounge>[],
+    this.loungeHistoryIndex = -1,
   }) {
-    _tags = tagsFromBio(bio);
+    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
 
   final String id;
+  final DateTime? heartbeat;
   final String status;
+
   final String? meeting;
-  String bio;
+  HangOutRule rule;
   String name;
-  late List<String> _tags;
+  String bio;
+  late final List<String> _tags;
+
   final double rating;
   final int numRatings;
-  DateTime? heartbeat;
-  HangOutRule rule;
+
+  final List<Lounge>
+      loungeHistory; // actually circular array containing recent 100 lounges
+  final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
     final matches = r.allMatches(bio).toList();
     final List<String> tags = [];
     for (final m in matches) {
-      final t = bio.substring(m.start, m.end);
+      final t = bio.substring(m.start, m.end).toLowerCase();
       tags.add(t);
     }
     return tags;
@@ -176,20 +184,24 @@ class Hangout extends Equatable {
     // log('Hangout.fromMap - data=${data['bidsIn']}');
     // log('Hangout.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    var status = data['status'];
-    var meeting = data['meeting'];
-    var name = data['name'] ?? '';
-    var bio = data['bio'] ?? '';
-    final rating = double.tryParse(data['rating'].toString()) ?? 1;
-    final numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
+    final String status = data['status'];
+    final String? meeting = data['meeting'];
+    final String name = data['name'] ?? '';
+    final String bio = data['bio'] ?? '';
+    final double rating = double.tryParse(data['rating'].toString()) ?? 1;
+    final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
     final HangOutRule rule = data['rule'] == null
         ? HangOutRule()
         : HangOutRule.fromMap(data['rule']);
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
+        .map((item) => Lounge.values
+            .firstWhere((e) => e.toStringEnum() == item)));
+    final int loungeHistoryIndex = data['loungeHistoryIndex'];
 
     return Hangout(
       id: documentId,
-      status: status ?? '',
+      status: status,
       meeting: meeting,
       name: name,
       bio: bio,
@@ -197,6 +209,8 @@ class Hangout extends Equatable {
       numRatings: numRatings,
       heartbeat: heartbeat,
       rule: rule,
+      loungeHistory: loungeHistory,
+      loungeHistoryIndex: loungeHistoryIndex,
     );
   }
 
@@ -211,6 +225,8 @@ class Hangout extends Equatable {
       'numRatings': numRatings,
       'heartbeat': heartbeat,
       'rule': rule.toMap(),
+      'loungeHistory': loungeHistory,
+      'loungeHistoryIndex': loungeHistoryIndex,
     };
   }
 

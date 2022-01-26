@@ -29,7 +29,7 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref.watch(bidInsProvider(uid));
+    final bidInsWithUsers = ref.watch(bidInsWithHangoutsProvider(uid));
     if (bidInsWithUsers == null) return WaitPage();
     if (bidInsWithUsers.isEmpty) return NoBidPage(noBidsText: noBidsText);
 
