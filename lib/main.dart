@@ -113,30 +113,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       routerDelegate: NamedRoutes.router.routerDelegate,
     );
   }
-
-  Widget getView() {
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
-    if (kIsWeb && !isMobile) {
-      return FittedBox(
-        fit: BoxFit.scaleDown,
-        child: SizedBox(
-          width: 500,
-          height: 844,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AuthWidget(
-              homePageBuilder: (_) => HomePage(),
-            ),
-          ),
-        ),
-      );
-    }
-    return AuthWidget(
-      homePageBuilder: (_) => HomePage(),
-      // homePageBuilder: (_) => SetupBio(),
-    );
-  }
 }
 
 class AppScrollBehavior extends MaterialScrollBehavior {

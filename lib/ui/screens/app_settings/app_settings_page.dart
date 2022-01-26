@@ -1,6 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+
 import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
 import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';

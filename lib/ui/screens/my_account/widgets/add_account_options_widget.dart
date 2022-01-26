@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -10,7 +10,6 @@ import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
-import '../../../commons/custom_navigation.dart';
 import '../../../commons/custom_profile_image_view.dart';
 import '../../user_info/user_info_page.dart';
 
