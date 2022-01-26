@@ -36,7 +36,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
           children: [
             !(haveToWait(hangout))
                 ? RectangleBox(
-                    onTap: () => CustomNavigation.push(context,Routes.ratings,arguments: {'uid':uid}),
+                    onTap: () => CustomNavigation.push(context,Routes.ratings,arguments: uid),
                     // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
                     radius: 46,
                     icon: StarWidget(

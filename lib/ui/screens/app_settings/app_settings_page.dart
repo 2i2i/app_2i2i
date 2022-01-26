@@ -33,8 +33,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     if (haveToWait(hangout)) {
       return WaitPage();
     }
-    final message = 'https://test.2i2i.app/user/$uid';
-    // final message = '${Uri.base.toString()}user/?uid=$uid';
+    final message = 'https://test.2i2i.app/#/user?uid=$uid';
     var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(

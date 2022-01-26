@@ -12,6 +12,7 @@ import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,12 @@ class NamedRoutes {
 
     if (name?.contains(Routes.user) ?? false) {
       if (userId.isNotEmpty) {
-        widget = UserInfoPage(uid: userId);
+        String firebaseId = FirebaseAuth.instance.currentUser?.uid??'';
+        if(firebaseId.isNotEmpty){
+          widget = UserInfoPage(uid: userId);
+        }else {
+          widget = AuthWidget(homePageBuilder: (_) => UserInfoPage(uid: userId));
+        }
       }
     } else if (name?.contains(Routes.ratings) ?? false) {
       if (userId.isNotEmpty) {
@@ -126,7 +132,9 @@ class NamedRoutes {
         }
         break;
     }
-    return NotFound();
+    return AuthWidget(
+      homePageBuilder: (_) => HomePage(),
+    );
   }
 }
 

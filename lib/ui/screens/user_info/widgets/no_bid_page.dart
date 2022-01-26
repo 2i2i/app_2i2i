@@ -17,8 +17,7 @@ class NoBidPage extends ConsumerWidget {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
 
-    // final message = 'https://test.2i2i.app/user/$uid';
-    final message = '${Uri.base.toString()}user?uid=$uid';
+    final message = 'https://test.2i2i.app/#/user?uid=$uid';
     return Container(
       width: double.infinity,
       child: Column(
