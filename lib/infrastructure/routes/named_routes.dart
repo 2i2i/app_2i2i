@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -12,10 +13,12 @@ import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
+import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_routes.dart';
@@ -46,7 +49,7 @@ class NamedRoutes {
           key: state.pageKey,
           child: getView(
             AuthWidget(
-              homePageBuilder: (_) => HomePage(),
+              homePageBuilder: (_) => SearchPage(),
             ),
           ),
           // child: Scaffold(),
@@ -157,7 +160,6 @@ class NamedRoutes {
             key: state.pageKey,
             child: getView(CreateLocalAccount()),
           );
-
         },
       ),
 
@@ -188,12 +190,12 @@ class NamedRoutes {
         name: Routes.createBid.nameFromPath(),
         path: Routes.createBid,
         pageBuilder: (context, state) {
-            if(state.extra is Hangout) {
-              return MaterialPage<void>(
-                key: state.pageKey,
-                child: getView( CreateBidPage(hangout:state.extra as Hangout)),
-              );
-            }
+          if (state.extra is Hangout) {
+            return MaterialPage<void>(
+              key: state.pageKey,
+              child: getView(CreateBidPage(hangout: state.extra as Hangout)),
+            );
+          }
           return MaterialPage<void>(
             key: state.pageKey,
             child: NotFound(),
@@ -205,7 +207,7 @@ class NamedRoutes {
       print('state.error ${state.error}');
       return MaterialPage<void>(
         key: state.pageKey,
-        child: getView( Scaffold(body: ErrorPage(state.error))),
+        child: getView(Scaffold(body: ErrorPage(state.error))),
       );
     },
     errorBuilder: (context, state) {
@@ -213,6 +215,8 @@ class NamedRoutes {
       return getView(Scaffold(body: ErrorPage(state.error)));
     },
   );
+
+  static ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   static Widget getView(Widget page) {
     bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
@@ -225,7 +229,63 @@ class NamedRoutes {
           height: 844,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: page,
+            child: Scaffold(
+              body: page,
+              bottomNavigationBar: Container(
+                padding: const EdgeInsets.all(4.0),
+                child: ValueListenableBuilder(
+                  valueListenable: currentIndex,
+                  builder: (BuildContext context, int value, Widget? child) {
+                    return BottomNavigationBar(
+                      type: BottomNavigationBarType.fixed,
+                      currentIndex: value,
+                      onTap: (i) {
+                        currentIndex.value = i;
+                        switch (i) {
+                          case 0:
+                            context.go(Routes.root);
+                            break;
+                          case 1:
+                            context.go(Routes.favorites);
+                            break;
+                          case 2:
+                            context.go(Routes.blocks);
+                            break;
+                          case 3:
+                            context.go(Routes.user);
+                            break;
+                          case 4:
+                            context.go(Routes.root);
+                            break;
+                        }
+                      },
+                      items: [
+                        BottomNavigationBarItem(
+                          label: Strings().home,
+                          icon: SvgPicture.asset('assets/icons/house.svg'),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().profile,
+                          icon: ProfileIcon(),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().account,
+                          icon: SvgPicture.asset('assets/icons/account.svg'),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().faq,
+                          icon: SvgPicture.asset('assets/icons/help.svg'),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().settings,
+                          icon: SvgPicture.asset('assets/icons/setting.svg'),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ),
       );
