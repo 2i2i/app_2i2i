@@ -7,6 +7,141 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// bidInsPublic comes sorted by ts
+List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
+    List<int> loungeHistory, int loungeHistoryIndex) {
+  List<List<BidInPublic>> sections = _splitByRules(bidInsPublic);
+  final sortedSections = sections
+      .map((e) => _combineQueuesCore(e, loungeHistory, loungeHistoryIndex))
+      .toList();
+  final bidInsPublicSorted =
+      sortedSections.expand((element) => element).toList();
+  return bidInsPublicSorted;
+}
+
+List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
+  List<List<BidInPublic>> bidInsPublicSections = [];
+
+  HangOutRule currentRule = bidInsPublic.first.rule;
+  List<BidInPublic> currentSection = [];
+  for (final bidIn in bidInsPublic) {
+    if (bidIn.rule == currentRule)
+      currentSection.add(bidIn);
+    else {
+      bidInsPublicSections.add(currentSection);
+      currentSection = [bidIn];
+      currentRule = bidIn.rule;
+    }
+  }
+  if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
+
+  return bidInsPublicSections;
+}
+
+List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
+    List<int> loungeHistory, int loungeHistoryIndex) {
+  // split into chronies and highrollers
+  List<BidInPublic> bidInsChronies = bidInsPublic
+      .where((bidIn) => bidIn.speed.num == bidIn.rule.minSpeed)
+      .toList();
+  List<BidInPublic> bidInsHighRollers = bidInsPublic
+      .where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num)
+      .toList();
+  if (bidInsChronies.length + bidInsHighRollers.length != bidInsPublic.length)
+    throw Exception(
+        'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+
+  HangOutRule rule = bidInsPublic.first.rule; // same for all bids
+  // if one side empty, return other side
+  if (bidInsHighRollers.isEmpty || rule.importance[Lounge.highroller]! == 0)
+    return bidInsChronies;
+  else if (bidInsChronies.isEmpty || rule.importance[Lounge.chrony]! == 0)
+    return bidInsHighRollers;
+  final N = rule.importance.values
+      .fold(0, (int previousValue, int element) => previousValue + element);
+  double targetChronyRatio = rule.importance[Lounge.chrony]! / N;
+
+  // sort highrollers by speed
+  bidInsHighRollers.sort((b1, b2) {
+    return b2.speed.num.compareTo(b1.speed.num);
+  });
+
+  // loop
+  List<BidInPublic> bidInsSorted = [];
+  Queue<int> recentLoungesHistory = Queue(); // need size?
+  int chronyIndex = 0;
+  int highRollerIndex = 0;
+  int loungeSum = 0;
+  while (
+      bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
+    BidInPublic nextChrony = bidInsChronies[chronyIndex];
+    BidInPublic nextHighroller = bidInsHighRollers[highRollerIndex];
+
+    // first calc  of loungeSum
+    if (recentLoungesHistory.isEmpty && loungeHistory.isNotEmpty) {
+      final end = loungeHistoryIndex;
+      final N_tile = min(loungeHistory.length, N - 1);
+      int i = end;
+      while (recentLoungesHistory.length < N_tile) {
+        recentLoungesHistory.addFirst(loungeHistory[i]);
+        i--;
+        i %= loungeHistory.length;
+      }
+
+      loungeSum = recentLoungesHistory.fold(
+          0, (int previousValue, int element) => previousValue + element);
+    }
+
+    // update loungeSum
+    if (recentLoungesHistory.length == N) {
+      // print('recentLoungesHistory=$recentLoungesHistory');
+      loungeSum -= recentLoungesHistory.removeFirst();
+    }
+    final M = recentLoungesHistory.length + 1;
+    int loungeSumChrony = loungeSum + 0;
+    int loungeSumHighroller = loungeSum + 1;
+    double ifChronyRatio = 1.0 - loungeSumChrony / M;
+    double ifHighrollerRatio = 1.0 - loungeSumHighroller / M;
+    double ifChronyError = (ifChronyRatio - targetChronyRatio).abs();
+    double ifHighrollerError = (ifHighrollerRatio - targetChronyRatio).abs();
+    if (ifChronyError <= ifHighrollerError) {
+      // choose chrony
+      bidInsSorted.add(nextChrony);
+      final value = 0;
+      recentLoungesHistory.addLast(value);
+      // loungeSum += value;
+      chronyIndex += 1;
+
+      // if chronies done, add remaining highrollers and done
+      if (chronyIndex == bidInsChronies.length) {
+        for (int i = highRollerIndex; i < bidInsHighRollers.length; i++) {
+          bidInsSorted.add(bidInsHighRollers[i]);
+        }
+        return bidInsSorted;
+      }
+    } else {
+      // choose highroller
+      bidInsSorted.add(nextHighroller);
+      final value = 1;
+      recentLoungesHistory.addLast(value);
+      loungeSum += value;
+      highRollerIndex += 1;
+
+      // if highrollers done, add remaining chronies and done
+      if (highRollerIndex == bidInsHighRollers.length) {
+        for (int i = chronyIndex; i < bidInsChronies.length; i++) {
+          bidInsSorted.add(bidInsChronies[i]);
+        }
+        return bidInsSorted;
+      }
+    }
+  } // while
+
+  return bidInsSorted;
+}
+
+// TESTS
+
 BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) =>
     BidInPublic.fromMap({
       'speed': Quantity.fromMap({
@@ -194,167 +329,70 @@ Map combineQueuesTestCreate_8() {
   ];
   return {
     'public': bidInsPublic,
-    'loungeHistory': <int>[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    'loungeHistoryIndex': 9,
+    'loungeHistory': <int>[0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    'loungeHistoryIndex': 5,
     // 'loungeHistory': <int>[],
     // 'loungeHistoryIndex': 0,
   };
 }
 
+Map combineQueuesTestCreate_random_single(double changeRuleProb,
+    double highRollerProb, List<int> loungeHistory, int loungeHistoryIndex) {
+  final rng = new Random();
+  final N = rng.nextInt(1000);
+  log('N=$N');
+  List<BidInPublic> bidInsPublic = [];
+  int c = rng.nextInt(10);
+  int h = rng.nextInt(10);
+  int minSpeed = 0;
+  List<String> rulesStrings = ['c=$c - h=$h'];
+  List<String> speedsStrings = [];
+
+  for (int i = 0; i < N; i++) {
+    final changeRule = rng.nextDouble() <= changeRuleProb;
+    if (changeRule) {
+      c = rng.nextInt(10);
+      h = rng.nextInt(10);
+      if (c + h == 0) continue;
+      rulesStrings.add('i=$i - c=$c - h=$h');
+    }
+
+    bool highRoller = rng.nextDouble() <= highRollerProb;
+    if (c == 0)
+      highRoller = true;
+    else if (h == 0) highRoller = false;
+    int speed = minSpeed + (highRoller ? rng.nextInt(10) : 0);
+    speedsStrings.add('i=$i - speed=$speed');
+
+    final b = bTest(speed, minSpeed, c, h, 10000 + i * 1000);
+    bidInsPublic.add(b);
+  }
+  print('${rulesStrings.join(',')}');
+  print('${speedsStrings.join(',')}');
+  return {
+    'public': bidInsPublic,
+    'loungeHistory': loungeHistory,
+    'loungeHistoryIndex': loungeHistoryIndex,
+  };
+}
+
+Map combineQueuesTestCreate_9() =>
+    combineQueuesTestCreate_random_single(0.1, 0.2, [1,1,1,0,0,0,1,0], 4);
+
 void combineQueuesTestRun() {
-  final testData = combineQueuesTestCreate_8();
+  final testData = combineQueuesTestCreate_9();
   final bidInsPublic = testData['public'];
   final loungeHistory = testData['loungeHistory']; // 0: chrony, 1: highroller
   final loungeHistoryIndex = testData['loungeHistoryIndex'];
-  final bidIns =
-      combineQueuesCore(bidInsPublic, loungeHistory, loungeHistoryIndex);
-  log('C: ${bidIns.where((e) => e.public.speed.num == e.public.rule.minSpeed).length}');
-  log('H: ${bidIns.where((e) => e.public.speed.num != e.public.rule.minSpeed).length}');
+  final bidIns = combineQueues(bidInsPublic, loungeHistory, loungeHistoryIndex);
+  log('C: ${bidIns.where((e) => e.speed.num == e.rule.minSpeed).length}');
+  log('H: ${bidIns.where((e) => e.speed.num != e.rule.minSpeed).length}');
   log('bidIns: ${bidIns.length}');
   final result = bidIns
       .map((e) =>
-          (e.public.speed.num == e.public.rule.minSpeed ? 'C' : 'H') +
+          (e.speed.num == e.rule.minSpeed ? 'C' : 'H') +
           '_' +
-          e.public.ts.microsecondsSinceEpoch.toString())
+          e.ts.microsecondsSinceEpoch.toString())
       .join(' ');
   log(result);
-}
-
-List<BidIn> combineQueuesCore(List<BidInPublic> bidInsPublic,
-    List<int> loungeHistory, int loungeHistoryIndex) {
-  // create bid ins
-  List<BidIn> bidIns =
-      bidInsPublic.map((e) => BidIn(public: e, private: null)).toList();
-
-  List<BidIn> bidInsChronies = bidIns
-      .where((bidIn) => bidIn.public.speed.num == bidIn.public.rule.minSpeed)
-      .toList();
-  List<BidIn> bidInsHighRollers = bidIns
-      .where((bidIn) => bidIn.public.rule.minSpeed < bidIn.public.speed.num)
-      .toList();
-  if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
-    throw Exception(
-        'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
-
-  bidInsHighRollers.sort((b1, b2) {
-    return b2.public.speed.num.compareTo(b1.public.speed.num);
-  });
-
-  // if one side empty, return other side
-  if (bidInsHighRollers.isEmpty)
-    return bidInsChronies;
-  else if (bidInsChronies.isEmpty) return bidInsHighRollers;
-
-  List<BidIn> bidInsSorted = [];
-  Queue<int> recentLoungesHistory = Queue(); // need size?
-  int chronyIndex = 0;
-  int highRollerIndex = 0;
-  int loungeSum = 0;
-  while (
-      bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
-    BidIn nextChrony = bidInsChronies[chronyIndex];
-    BidIn nextHighroller = bidInsHighRollers[highRollerIndex];
-
-    // next rule comes from the earlier guest if different
-    HangOutRule nextRule = nextChrony.public.rule == nextHighroller.public.rule
-        ? nextChrony.public.rule
-        : (nextChrony.public.ts.microsecondsSinceEpoch <
-                nextHighroller.public.ts.microsecondsSinceEpoch
-            ? nextChrony.public.rule
-            : nextHighroller.public.rule);
-    final N = nextRule.importance.values
-        .fold(0, (int previousValue, int element) => previousValue + element);
-    double targetChronyRatio = nextRule.importance[Lounge.chrony]! / N;
-
-    // is nextChrony eligible according to nextRule
-    if (nextChrony.public.speed.num < nextRule.minSpeed) {
-      // choose HighRoller
-      bidInsSorted.add(nextHighroller);
-
-      // next
-      highRollerIndex += 1;
-
-      // if highrollers done, add remaining chronies and done
-      if (highRollerIndex == bidInsHighRollers.length) {
-        for (int i = chronyIndex; i < bidInsChronies.length; i++) {
-          bidInsSorted.add(bidInsChronies[i]);
-          return bidInsSorted;
-        }
-      }
-
-      // move to next index
-      continue;
-    }
-
-    // first calc  of loungeSum
-    if (recentLoungesHistory.isEmpty) {
-      // should only arrive here first time
-
-      // my hangout
-      if (loungeHistory.isNotEmpty) {
-        final loungeHistoryList = loungeHistory;
-        // .map((l) => Lounge.values.indexWhere((e) => e.toStringEnum() == l))
-        // .toList();
-        // final loungeHistoryIndex = hangout.loungeHistoryIndex;
-        final end = loungeHistoryIndex;
-        final start = (end - N + 1) % loungeHistoryList.length;
-
-        final N_tile = min(loungeHistoryList.length, N);
-        int i = start;
-        while (recentLoungesHistory.length < N_tile) {
-          recentLoungesHistory.addLast(loungeHistoryList[i]);
-          i--;
-          i %= loungeHistoryList.length;
-        }
-
-        loungeSum = recentLoungesHistory.fold(
-            0, (int previousValue, int element) => previousValue + element);
-      }
-    }
-
-    // update loungeSum
-    if (recentLoungesHistory.length == N) {
-      loungeSum -= recentLoungesHistory.removeFirst();
-    }
-    final M = recentLoungesHistory.length + 1;
-    int loungeSumChrony = loungeSum + 0;
-    int loungeSumHighroller = loungeSum + 1;
-    double ifChronyRatio = 1.0 - loungeSumChrony / M;
-    double ifHighrollerRatio = 1.0 - loungeSumHighroller / M;
-    double ifChronyError = (ifChronyRatio - targetChronyRatio).abs();
-    double ifHighrollerError = (ifHighrollerRatio - targetChronyRatio).abs();
-    if (ifChronyError <= ifHighrollerError) {
-      // choose chrony
-      bidInsSorted.add(nextChrony);
-      final value = 0;
-      recentLoungesHistory.addLast(value);
-      // loungeSum += value;
-      chronyIndex += 1;
-
-      // if chronies done, add remaining highrollers and done
-      if (chronyIndex == bidInsChronies.length) {
-        for (int i = highRollerIndex; i < bidInsHighRollers.length; i++) {
-          bidInsSorted.add(bidInsHighRollers[i]);
-        }
-        return bidInsSorted;
-      }
-    } else {
-      // choose highroller
-      bidInsSorted.add(nextHighroller);
-      final value = 1;
-      recentLoungesHistory.addLast(value);
-      loungeSum += value;
-      highRollerIndex += 1;
-
-      // if highrollers done, add remaining chronies and done
-      if (highRollerIndex == bidInsHighRollers.length) {
-        for (int i = chronyIndex; i < bidInsChronies.length; i++) {
-          bidInsSorted.add(bidInsChronies[i]);
-        }
-        return bidInsSorted;
-      }
-    }
-  } // while
-
-  return bidInsSorted;
 }
