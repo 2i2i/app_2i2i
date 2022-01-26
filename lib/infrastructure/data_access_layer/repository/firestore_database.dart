@@ -287,5 +287,4 @@ class FirestoreDatabase {
       },
     );
   }
-//</editor-fold>
 }

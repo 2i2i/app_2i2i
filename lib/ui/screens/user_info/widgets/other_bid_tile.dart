@@ -1,14 +1,10 @@
 import 'dart:math';
-
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/models/bid_model.dart';
-import '../../../../infrastructure/providers/all_providers.dart';
 
 class OtherBidTile extends ConsumerWidget {
   final List<BidInPublic> otherBidList;
@@ -27,11 +23,6 @@ class OtherBidTile extends ConsumerWidget {
     num startAfter = 0;
     String bidSpeed = "0";
     BidInPublic otherBid = otherBidList[index];
-
-    final userAsyncValue = ref.watch(hangoutProvider(otherBid.id));
-    if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
-      return CupertinoActivityIndicator();
-    }
 
     bidSpeed = otherBid.speed.num.toString();
     for (int i = 0; i <= index; i++) {
