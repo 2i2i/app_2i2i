@@ -9,10 +9,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // bidInsPublic comes sorted by ts
 List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
-    List<int> loungeHistory, int loungeHistoryIndex) {
+    List<Lounge> loungeHistory, int loungeHistoryIndex) {
+  final loungeHistoryAsInts = loungeHistory
+      .map((e) => Lounge.values.indexWhere((element) => element == e))
+      .toList();
   List<List<BidInPublic>> sections = _splitByRules(bidInsPublic);
   final sortedSections = sections
-      .map((e) => _combineQueuesCore(e, loungeHistory, loungeHistoryIndex))
+      .map((e) => _combineQueuesCore(e, loungeHistoryAsInts, loungeHistoryIndex))
       .toList();
   final bidInsPublicSorted =
       sortedSections.expand((element) => element).toList();
@@ -376,8 +379,8 @@ Map combineQueuesTestCreate_random_single(double changeRuleProb,
   };
 }
 
-Map combineQueuesTestCreate_9() =>
-    combineQueuesTestCreate_random_single(0.1, 0.2, [1,1,1,0,0,0,1,0], 4);
+Map combineQueuesTestCreate_9() => combineQueuesTestCreate_random_single(
+    0.1, 0.2, [1, 1, 1, 0, 0, 0, 1, 0], 4);
 
 void combineQueuesTestRun() {
   final testData = combineQueuesTestCreate_9();

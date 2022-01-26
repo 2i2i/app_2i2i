@@ -27,28 +27,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG
 
 Future<void> main() async {
-  combineQueuesTestRun();
-
-  // WidgetsFlutterBinding.ensureInitialized();
-  // if (!kIsWeb) {
-  //   await Firebase.initializeApp();
-  // }
+  WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   //region DEBUG
-  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
+  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+    return runApp(
+      ProviderScope(
+        child: MainWidget(themeMode: value ?? "AUTO"),
+      ),
+    );
+  });
   //endregion DEBUG
 
   // await SentryFlutter.init((options) {
