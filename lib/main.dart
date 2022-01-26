@@ -14,6 +14,7 @@ import 'infrastructure/commons/strings.dart';
 // import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'ui/screens/app/auth_widget.dart';
+import 'ui/screens/create_bid/create_bid_page.dart';
 import 'ui/screens/home/home_page.dart';
 import 'ui/screens/ringing/ringing_page.dart';
 // import 'ui/screens/setup_account/setup_account.dart';

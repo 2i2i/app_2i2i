@@ -43,6 +43,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   double _value = 0;
 
+  double bid_amount = 0.0;
+
   final controller = PageController(initialPage: 0);
 
   @override
@@ -76,85 +78,38 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      title: Strings().speed,
-                      hintText: "0",
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              '${Strings().algoSec}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .iconTheme
-                                        .color
-                                        ?.withOpacity(0.5),
-                                    fontWeight: FontWeight.normal,
-                                  ),
+              child: CustomTextField(
+                title: Strings().speed,
+                hintText: "0",
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        '${Strings().algoSec}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle2
+                            ?.copyWith(
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color
+                                  ?.withOpacity(0.5),
+                              fontWeight: FontWeight.normal,
                             ),
-                          ),
-                          SizedBox(width: 8)
-                        ],
                       ),
-                      onChanged: (String value) {
-                        final num = int.tryParse(value) ?? 0;
-                        speed = Quantity(num: num, assetId: speed.assetId);
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      },
                     ),
-                  ),
-                  Visibility(
-                      visible: speed.num != 0,
-                      child: Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: CustomTextField(
-                            title: Strings().bidAmount,
-                            hintText: "0",
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    '${Strings().algoSec}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle2
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .iconTheme
-                                              .color
-                                              ?.withOpacity(0.5),
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                  ),
-                                ),
-                                SizedBox(width: 8)
-                              ],
-                            ),
-                            onChanged: (String value) {
-                              final num = int.tryParse(value) ?? 0;
-                              amount =
-                                  Quantity(num: num, assetId: amount.assetId);
-                              if (mounted) {
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        ),
-                      )),
-                ],
+                    SizedBox(width: 8)
+                  ],
+                ),
+                onChanged: (String value) {
+                  final num = int.tryParse(value) ?? 0;
+                  speed = Quantity(num: num, assetId: speed.assetId);
+                  if (mounted) {
+                    setState(() {});
+                  }
+                },
               ),
             ),
             Padding(
@@ -204,8 +159,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   thumbShape: CustomSliderThumbRect(
                                     mainContext: context,
                                     thumbRadius: 15,
-                                    max: 0,
-                                    min: 100,
+                                    max: 100,
+                                    min: 0,
                                   ),
                                 ),
                                 child: Slider(
@@ -340,13 +295,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              child: ElevatedButton(
-                onPressed: isInsufficient() ? null : () => onAddBid(),
-                child: Text(getConfirmSliderText()),
-              ),
-            ),
             /*Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ConfirmationSlider(
@@ -372,6 +320,35 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                 ),
               ),*/
             SizedBox(height: 8),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            RichText(
+              text: TextSpan(
+                text: '$bid_amount',
+                children: [
+                  TextSpan(
+                    text: ' Bid Amount',
+                    children: [],
+                    style: Theme.of(context).textTheme.caption,
+                  )
+                ],
+                style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context).primaryColorLight,
+                    ),
+              ),
+            ),
+            Spacer(),
+            ElevatedButton(
+              child: Text(getConfirmSliderText()),
+              style: ElevatedButton.styleFrom(shape: StadiumBorder()),
+              onPressed: isInsufficient() ? null : () => onAddBid(),
+            )
           ],
         ),
       ),
