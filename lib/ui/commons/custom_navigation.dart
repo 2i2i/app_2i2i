@@ -1,20 +1,27 @@
 
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/infrastructure/routes/named_routes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
 class CustomNavigation {
 
   static push(BuildContext context, String pageName,{dynamic arguments,Widget? page,bool rootNavigator = false}) {
-    page ??= NamedRoutes.getWidgetFromName(name: pageName,arg: arguments);
-    if (kIsWeb) {
-      var pageRouteBuilder = PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => page!,
-        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
-      );
-      Navigator.of(context,rootNavigator: rootNavigator).push( pageRouteBuilder);
-    } else {
-      Navigator.of(context,rootNavigator: rootNavigator).push(MaterialPageRoute(builder: (context) => page!));
+    if(page == null){
+      context.pushNamed(pageName.nameFromPath(),extra: arguments);
+    }else {
+      if (kIsWeb) {
+        var pageRouteBuilder = PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => page,
+          transitionsBuilder: (_, anim, __, child) =>
+              FadeTransition(opacity: anim, child: child),
+        );
+        Navigator.of(context, rootNavigator: rootNavigator).push(
+            pageRouteBuilder);
+      } else {
+        context.pushNamed(pageName, extra: arguments);
+        // Navigator.of(context,rootNavigator: rootNavigator).push(MaterialPageRoute(builder: (context) => page!));
+      }
     }
   }
 
