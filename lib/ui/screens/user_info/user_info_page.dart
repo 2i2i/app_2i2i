@@ -2,9 +2,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
@@ -15,7 +13,6 @@ import '../../commons/custom_navigation.dart';
 import '../create_bid/create_bid_page.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
-import 'widgets/friend_button_widget.dart';
 import 'widgets/user_info_widget.dart';
 
 class UserInfoPage extends ConsumerStatefulWidget {
@@ -51,8 +48,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     final isBlocked = !haveToWait(userPrivateAsyncValue)&&
         userPrivateAsyncValue.value != null &&
         userPrivateAsyncValue.value!.blocked.contains(widget.uid);
-
-    final totalRating = removeDecimalZeroFormat(hangout.rating * 5);
 
     return Scaffold(
       appBar: AppBar(

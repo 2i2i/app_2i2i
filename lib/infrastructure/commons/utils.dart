@@ -2,8 +2,34 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 String shortString(String string, {int maxLength = 10}) {
-  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
+  if (maxLength < string.length)
+    return string.substring(0, maxLength - 3) + '...';
   return string;
+}
+
+String ordinalIndicator(int x) {
+  if (x == 1) return 'st';
+  if (x == 2) return 'nd';
+  if (x == 3) return 'rd';
+  return 'th';
+}
+
+String microALGOToLargerUnit(int microALGO, {int maxDigits = 2, String unitALGO = 'ALGO'}) {
+  final N = microALGO.toString().length;
+  if (N <= maxDigits) return '$microALGO μ$unitALGO';
+  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} m$unitALGO';
+  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} c$unitALGO';
+  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} d$unitALGO';
+  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} $unitALGO';
+  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} deca$unitALGO';
+  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hecto$unitALGO';
+  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} k$unitALGO';
+  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} M$unitALGO';
+  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} G$unitALGO';
+  if (N <= maxDigits + 12)
+    return '~${(microALGO / 1000000000000).round()} MALGO';
+  throw Exception(
+      'microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
 }
 
 int epochSecsNow() {
@@ -88,9 +114,22 @@ String secondsToSensibleTimePeriod(num secs) {
   return '~ $bestNum $currentBestTimePeriod';
 }
 
-bool haveToWait(var provider){
-  if(provider is AsyncError){
+num getMaxDuration({required num budget, required num speed}) {
+  if (speed <= 0) {
+    return double.infinity;
+  }
+  return (budget / speed).floor();
+}
 
+String getDuration(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  // String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
+}
+
+bool haveToWait(var provider) {
+  if (provider is AsyncError) {
     log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;

@@ -1,12 +1,11 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
 import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
+import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -141,7 +140,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '');
+                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +166,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '');
+                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
                     },
                     title: Text(
                       Strings().bio,
@@ -398,21 +397,5 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       return 'Dark Mode';
     }
     return 'Light Mode';
-  }
-
-  void showProfile() {
-    CustomAlertWidget.showBidAlert(
-      context,
-      WillPopScope(
-        onWillPop: () {
-          return Future.value(true);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: HangoutSetting(),
-        ),
-      ),
-      isDismissible: true,
-    );
   }
 }

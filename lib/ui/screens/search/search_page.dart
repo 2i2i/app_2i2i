@@ -1,8 +1,7 @@
-
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
+import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
