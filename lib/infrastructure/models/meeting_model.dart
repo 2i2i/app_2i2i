@@ -381,6 +381,8 @@ class MeetingTxns {
       this.unlock,
       this.optIn});
   String? group;
+      
+  String? group;
   String? lockALGO;
   String? lockASA;
   String? state;
