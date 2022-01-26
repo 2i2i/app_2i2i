@@ -17,10 +17,12 @@ class UserInfoTile extends ConsumerWidget {
   final Hangout hangout;
   final String myUIDProvider;
   final bool isForBlockedUser;
+  final double? marginBottom;
 
   const UserInfoTile(
       {Key? key,
       required this.hangout,
+        this.marginBottom,
       required this.myUIDProvider,
       required this.isForBlockedUser})
       : super(key: key);
@@ -42,6 +44,7 @@ class UserInfoTile extends ConsumerWidget {
 
 
     return Container(
+      margin: EdgeInsets.only(bottom: marginBottom??0),
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
         onTap: () => CustomNavigation.push(context,Routes.user,arguments: {'uid':hangout.id,}),

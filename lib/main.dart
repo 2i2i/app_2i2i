@@ -3,6 +3,12 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
+import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
+import 'package:app_2i2i/ui/test_screen_2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -125,7 +131,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   Widget getView() {
     bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.android;
-    if (kIsWeb && !isMobile) {
+    if (false&&kIsWeb && !isMobile) {
       return FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(

@@ -62,7 +62,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkWell(
                       onTap: widget.onTapFav,
                       child: Icon(
-                        widget.isFav ? Icons.favorite : Icons.favorite_border,
+                        widget.isFav
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: widget.isFav ? Colors.red : Colors.grey,
                       ),
                     )
                   ],

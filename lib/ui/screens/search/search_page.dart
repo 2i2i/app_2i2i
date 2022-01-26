@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -112,35 +113,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget _buildContents(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
-    return StreamBuilder(
-      stream: FirestoreDatabase().usersStream(tags: filter),
-      builder:
-          (BuildContext contextMain, AsyncSnapshot<List<Hangout>> snapshot) {
-        if (snapshot.hasData) {
-          final users = snapshot.data!;
-          users.sort((u1, u2) => usersSort(u1, u2, filter));
-          users.removeWhere((element) => element.id == mainUserID);
-          return ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-            itemCount: users.length,
-            itemBuilder: (_, index) => UserInfoTile(
-              hangout: users[index],
-              myUIDProvider: mainUserID,
-              isForBlockedUser: false,
-            ),
-            separatorBuilder: (BuildContext context, int index) {
-              final hangout = users[index];
-              if (hangout.id == mainUserID) {
-                return Container();
-              }
-              return Divider(
-                color: Colors.transparent,
-              );
-            },
-          );
-        }
-        return Center(child: CupertinoActivityIndicator());
-      },
+    var hangoutListProvider = ref.watch(searchUsersStreamProvider);
+    if(haveToWait(hangoutListProvider)){
+      return WaitPage(isCupertino: true);
+    }
+    List<Hangout?> hangoutList = hangoutListProvider.value!;
+    hangoutList.removeWhere((element) => element == null);
+    hangoutList.removeWhere((element) => element?.id == mainUserID);
+    hangoutList.sort((u1, u2) => usersSort(u1!, u2!, filter));
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      itemCount: hangoutList.length,
+      itemBuilder: (_, index) => UserInfoTile(
+        hangout: hangoutList[index]!,
+        myUIDProvider: mainUserID,
+        isForBlockedUser: false,
+        marginBottom: 10,
+      ),
     );
   }
 }
