@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
+import 'package:app_2i2i/ui/test_screen_2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -107,6 +111,25 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       scrollBehavior: AppScrollBehavior(),
       home: getView(),
       // home:TestScreen(),
+      onGenerateRoute: (settings) {
+        if(settings.name?.contains('user')??false){
+          var query = Uri.parse(settings.name!).queryParameters;
+          if(query['uid'] == 'chandresh'){
+            return MaterialPageRoute(
+              builder: (context) {
+                String firebaseId = FirebaseAuth.instance.currentUser?.uid??'';
+                print('Firebase user $firebaseId');
+                if(firebaseId.isEmpty) {
+                  return AuthWidget(
+                    homePageBuilder: (_) => FriendsListPage(isForBlockedUser: false),
+                  );
+                }
+                return FriendsListPage(isForBlockedUser: false);
+              },
+            );
+          }
+        }
+      },
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       // themeMode: appSettingModel.currentThemeMode,

@@ -32,6 +32,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('url-------------- \n ${Uri.base.toString()}');
     final mainUserID = ref.watch(myUIDProvider)!;
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
