@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -104,27 +105,21 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
-    return MaterialApp.router(
-      scrollBehavior: AppScrollBehavior(),
-      title: Strings().appName,
-      debugShowCheckedModeBanner: false,
-      themeMode: appSettingModel.currentThemeMode,
-      theme: AppTheme().mainTheme(context),
-      darkTheme: AppTheme().darkTheme(context),
-
-      routeInformationParser: NamedRoutes.router.routeInformationParser,
-      routerDelegate: NamedRoutes.router.routerDelegate,
-    );
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
-      home: getView(),
-      // home:TestScreen(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       themeMode: appSettingModel.currentThemeMode,
-      // themeMode: ThemeMode.light,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
+      // home: AuthWidget(
+      //   homePageBuilder: (_) => HomePage(),
+      // ),
+      initialRoute: Routes.root,
+      // routes: NamedRoutes.namedRoutes,
+      onGenerateRoute: (setting){
+        return NamedRoutes.namedRoutePage(setting);
+      },
     );
   }
 

@@ -11,7 +11,7 @@ import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/strings.dart';
@@ -35,6 +35,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       return WaitPage();
     }
     final message = 'https://test.2i2i.app/user/$uid';
+    // final message = '${Uri.base.toString()}user/?uid=$uid';
     var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
@@ -142,7 +143,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                      CustomNavigation.push(context,Routes.hangoutSetting);
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,7 +169,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                      CustomNavigation.push(context,Routes.hangoutSetting);
                     },
                     title: Text(
                       Strings().bio,
@@ -257,10 +258,11 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     trailing: Icon(
                       Icons.navigate_next,
                     ),
-                    onTap: () => context.pushNamed(Routes.favorites.nameFromPath()),
+                    // onTap: () => CustomNavigation.push(context,Routes.favorites),
+                    onTap: () => CustomNavigation.push(context,Routes.favorites),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    onTap: () => CustomNavigation.push(context,Routes.blocks),
                     title: Text(
                       'Blocked users',
                       style: Theme.of(context).textTheme.subtitle1,

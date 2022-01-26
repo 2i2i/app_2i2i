@@ -5,7 +5,7 @@ import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 
 class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
@@ -116,7 +116,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                     print(e);
                   }
                   CustomDialogs.loader(false, context);
-                  context.pop();
+                  Navigator.of(context).pop();
                   // Navigator.of(context).pop();
                 }
               : null,

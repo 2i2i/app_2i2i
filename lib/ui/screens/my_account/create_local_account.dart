@@ -3,11 +3,12 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 
 class CreateLocalAccount extends ConsumerStatefulWidget {
 
@@ -85,15 +86,16 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
                                   CustomDialogs.showToastMessage(context, Strings().copyMessage);
                                   Future.delayed(Duration.zero).then((value) {
-                                    context.pushNamed(
-                                        Routes.verifyPerhaps.nameFromPath(),
-                                        extra: {
+                                    CustomNavigation.push(context,
+                                        Routes.verifyPerhaps,
+                                        arguments: {
                                           'perhaps': perhaps,
                                           'account': account,
-                                        });
+                                        },
+                                    );
                                   });
 
-                                  context.pop();
+                                  Navigator.of(context).pop();
                                 }
                               },
                               child: Text(Strings().copyAndNext),

@@ -7,7 +7,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 
 class TopDurationsPage extends ConsumerStatefulWidget {
   const TopDurationsPage({Key? key}) : super(key: key);
@@ -34,7 +34,7 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
             child: ListTile(
               contentPadding: EdgeInsets.all(8),
               onTap: () {
-                context.pushNamed(Routes.user.nameFromPath(),params: {'uid':meeting.B});
+                CustomNavigation.push(context,Routes.user,arguments: {'uid':meeting.B});
               },
               title: Row(
                 children: [

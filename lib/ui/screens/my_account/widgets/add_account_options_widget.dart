@@ -1,12 +1,13 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
@@ -86,7 +87,7 @@ class _AddAccountOptionsWidgetsState
               Navigator.of(context).maybePop();
               Future.delayed(Duration.zero).then(
                 (value) {
-                  context.pushNamed(Routes.recover.nameFromPath());
+                  CustomNavigation.push(context,Routes.recover);
                 },
               );
             },
@@ -123,7 +124,7 @@ class _AddAccountOptionsWidgetsState
           ListTile(
             onTap: () async {
                 Navigator.of(context).maybePop();
-               context.push(Routes.createLocalAccount);
+                CustomNavigation.push(context,Routes.createLocalAccount);
             },
             leading: Container(
               height: 50,
@@ -162,9 +163,9 @@ class _AddAccountOptionsWidgetsState
     print('value before $value');
     Future.delayed(Duration(seconds: 2)).then((value) {
       print('value after $val');
-      buildContext.pushNamed(
-        Routes.verifyPerhaps.nameFromPath(),
-        extra:value,
+      Navigator.of(buildContext).pushNamed(
+        Routes.verifyPerhaps,
+        arguments:value,
       );
     });
   }
