@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 
 import '../../../../infrastructure/commons/theme.dart';
@@ -47,7 +48,7 @@ class UserInfoTile extends ConsumerWidget {
       margin: EdgeInsets.only(bottom: marginBottom??0),
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
-        onTap: () => CustomNavigation.push(context,Routes.user,arguments: {'uid':hangout.id,}),
+        onTap: () => context.pushNamed(Routes.user.nameFromPath(),params: {'uid':hangout.id,}),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(

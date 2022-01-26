@@ -4,6 +4,7 @@ import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/bid_model.dart';
@@ -97,10 +98,10 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   UserInfoWidget(
                     hangout: hangout,
                     onTapFav: () {
-                      CustomNavigation.push(context,Routes.favorites);
+                      context.pushNamed(Routes.favorites.nameFromPath());
                     },
                     onTapRules: (){
-                      CustomNavigation.push(context,Routes.hangoutSetting);
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     isFav: true,
                   ),

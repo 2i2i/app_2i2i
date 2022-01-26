@@ -225,7 +225,6 @@ class NamedRoutes {
           if(state.extra is Map){
             userId = (state.extra as Map)['uid']??'';
           }
-          print('state ===== > ${state.params}');
           if (state.params['uid'] is String) {
             userId = state.params['uid']!;
           }
@@ -346,15 +345,12 @@ class NamedRoutes {
         name: Routes.createBid.nameFromPath(),
         path: Routes.createBid,
         pageBuilder: (context, state) {
-          if( state.extra is Map ) {
-            Map map = state.extra as Map;
-            if(map['hangout'] is Hangout) {
+            if(state.extra is Hangout) {
               return MaterialPage<void>(
                 key: state.pageKey,
-                child: getView( CreateBidPage(hangout:map['hangout'],)),
+                child: getView( CreateBidPage(hangout:state.extra as Hangout)),
               );
             }
-          }
           return MaterialPage<void>(
             key: state.pageKey,
             child: NotFound(),

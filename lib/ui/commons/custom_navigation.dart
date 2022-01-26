@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 class CustomNavigation {
 
-  static push(BuildContext context, String pageName,{dynamic arguments,Widget? page,bool rootNavigator = false}) {
+  /*static push(BuildContext context, String pageName,{dynamic arguments,Widget? page,bool rootNavigator = false}) {
     if(page == null){
-      context.pushNamed(pageName.nameFromPath(),extra: arguments);
+      context.pushNamed(pageName.nameFromPath(),params:arguments,extra: arguments);
     }else {
       if (kIsWeb) {
         var pageRouteBuilder = PageRouteBuilder(
@@ -23,7 +23,7 @@ class CustomNavigation {
         // Navigator.of(context,rootNavigator: rootNavigator).push(MaterialPageRoute(builder: (context) => page!));
       }
     }
-  }
+  }*/
 
   /*
     final locked = isHangoutLocked.value;

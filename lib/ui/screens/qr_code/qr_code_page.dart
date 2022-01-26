@@ -15,7 +15,7 @@ class QRCodePage extends ConsumerWidget {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
 
-    final message = 'https://test.2i2i.app/#/user?uid=$uid';
+    final message = 'https://test.2i2i.app/$uid';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

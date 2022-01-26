@@ -7,6 +7,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 
 class TopSpeedsPage extends ConsumerStatefulWidget {
@@ -35,7 +36,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
           child: ListTile(
             contentPadding: EdgeInsets.all(8),
             onTap: () {
-              CustomNavigation.push(context,Routes.user,arguments: {'uid':meeting.B});
+              context.pushNamed(Routes.user.nameFromPath(),params: {'uid':meeting.B});
             },
             title: Row(
               children: [

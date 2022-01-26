@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -86,7 +87,7 @@ class _AddAccountOptionsWidgetsState
               Navigator.of(context).maybePop();
               Future.delayed(Duration.zero).then(
                 (value) {
-                  CustomNavigation.push(context,Routes.recover);
+                  context.pushNamed(Routes.recover.nameFromPath());
                 },
               );
             },
@@ -123,7 +124,7 @@ class _AddAccountOptionsWidgetsState
           ListTile(
             onTap: () async {
                 Navigator.of(context).maybePop();
-                CustomNavigation.push(context,Routes.createLocalAccount);
+                context.pushNamed(Routes.createLocalAccount.nameFromPath());
             },
             leading: Container(
               height: 50,

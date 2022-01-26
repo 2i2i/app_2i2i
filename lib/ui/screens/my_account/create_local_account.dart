@@ -8,6 +8,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 
 class CreateLocalAccount extends ConsumerStatefulWidget {
@@ -86,9 +87,9 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
                                   CustomDialogs.showToastMessage(context, Strings().copyMessage);
                                   Future.delayed(Duration.zero).then((value) {
-                                    CustomNavigation.push(context,
+                                    context.pushNamed(
                                         Routes.verifyPerhaps,
-                                        arguments: {
+                                        extra: {
                                           'perhaps': perhaps,
                                           'account': account,
                                         },

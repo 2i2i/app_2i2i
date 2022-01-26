@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 
 import '../../../infrastructure/commons/strings.dart';
@@ -79,7 +80,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomNavigation.push(context,Routes.createBid,arguments: hangout),
+        onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),extra: hangout),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
