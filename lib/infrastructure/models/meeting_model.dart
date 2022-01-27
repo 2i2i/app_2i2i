@@ -62,6 +62,7 @@ class TopMeeting extends Equatable {
     required this.name,
     required this.duration,
     required this.speed,
+    required this.ts,
   });
 
   final String id;
@@ -69,6 +70,7 @@ class TopMeeting extends Equatable {
   final String name;
   final int duration;
   final Quantity speed;
+  final DateTime ts;
 
   @override
   List<Object> get props => [id];
@@ -76,14 +78,21 @@ class TopMeeting extends Equatable {
   @override
   bool get stringify => true;
 
-  factory TopMeeting.fromMap(Map<String, dynamic> data) {
-    final id = data['id'] as String;
+  factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('TopMeeting.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final id = documentId;
     final B = data['B'] as String;
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
+    final DateTime ts = data['ts'].toDate();
+
     return TopMeeting(
-        id: id, B: B, name: name, duration: duration, speed: speed);
+        id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
 }
 

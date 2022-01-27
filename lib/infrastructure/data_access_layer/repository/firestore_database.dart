@@ -253,10 +253,19 @@ class FirestoreDatabase {
             return Meeting.fromMap(data, documentId);
           });
 
-  Stream<List<Meeting?>> topMeetingStream() => _service
+  Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(
-        path: FirestorePath.topMeetings(),
-        builder: (data, documentId) => Meeting.fromMap(data, documentId),
+        path: FirestorePath.topSpeeds(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+      )
+          .handleError((onError) {
+        print(onError);
+        return [];
+      });
+  Stream<List<TopMeeting>> topDurationsStream() => _service
+          .collectionStream(
+        path: FirestorePath.topDurations(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
       )
           .handleError((onError) {
         print(onError);

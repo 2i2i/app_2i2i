@@ -223,25 +223,15 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final topSpeedsProvider = FutureProvider((ref) async {
-  final functions = ref.watch(firebaseFunctionsProvider);
-  final HttpsCallable topSpeedMeetings =
-      functions.httpsCallable('topSpeedMeetings');
-  final topMeetingsData = await topSpeedMeetings();
-  final topMeetings = topMeetingsData.data as List;
-  return topMeetings
-      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
-      .toList();
+final topSpeedsProvider =
+    StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topSpeedsStream();
 });
-final topDurationsProvider = FutureProvider((ref) async {
-  final functions = ref.watch(firebaseFunctionsProvider);
-  final HttpsCallable topDurationMeetings =
-      functions.httpsCallable('topDurationMeetings');
-  final topMeetingsData = await topDurationMeetings();
-  final topMeetings = topMeetingsData.data as List;
-  return topMeetings
-      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
-      .toList();
+final topDurationsProvider =
+    StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topDurationsStream();
 });
 
 final meetingHistoryA =
