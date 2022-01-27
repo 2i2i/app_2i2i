@@ -86,22 +86,24 @@ class AuthWidget extends ConsumerWidget {
                 final Hangout hangout = hangoutProviderVal.asData!.value;
                 if (hangout.name.trim().isEmpty && !showed) {
                   showed = true;
-                  
-                  CustomAlertWidget.showBidAlert(
-                    context,
-                    WillPopScope(
-                      onWillPop: () {
-                        return Future.value(true);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: HangoutSetting(
-                          fromBottomSheet: true,
+
+                  Future.delayed(Duration(seconds: 1)).then((value) {
+                    CustomAlertWidget.showBidAlert(
+                      context,
+                      WillPopScope(
+                        onWillPop: () {
+                          return Future.value(true);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: HangoutSetting(
+                            fromBottomSheet: true,
+                          ),
                         ),
                       ),
-                    ),
-                    isDismissible: false,
-                  );
+                      isDismissible: false,
+                    );
+                  });
                 }
               }
             }
