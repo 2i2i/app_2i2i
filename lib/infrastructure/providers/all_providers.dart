@@ -352,7 +352,10 @@ final bidInsProvider =
 
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
   (ref) {
-    final uid = ref.watch(myUIDProvider)!;
+    final uid = ref.watch(myUIDProvider);
+    if(uid == null){
+      return null;
+    }
     final hangout = ref.watch(hangoutProvider(uid));
     log('lockedUserViewModelProvider - user=$hangout');
     if (hangout is AsyncLoading || hangout is AsyncError) return null;

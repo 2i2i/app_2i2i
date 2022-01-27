@@ -22,6 +22,7 @@ import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -258,124 +259,138 @@ class NamedRoutes {
 
   static Widget getView(Widget page) {
     bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
-
     Widget widget = AuthWidget(
       homePageBuilder: (_) => Scaffold(
         body: page,
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.all(4.0),
-          child: ValueListenableBuilder(
-            valueListenable: currentIndex,
-            builder: (BuildContext context, int value, Widget? child) {
-              return BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: value,
-                onTap: (i) {
-                  currentIndex.value = i;
-                  switch (i) {
-                      case 0:
-                        context.go(Routes.root);
-                        break;
-                      case 1:
-                        context.go(Routes.myHangout);
-                        break;
-                      case 2:
-                        context.go(Routes.account);
-                        break;
-                      case 3:
-                        context.go(Routes.faq);
-                        break;
-                      case 4:
-                        context.go(Routes.setting);
-                        break;
-                    }
-                },
-                items: [
-                  BottomNavigationBarItem(
-                    label: Strings().home,
-                    activeIcon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset(
-                          'assets/icons/house.svg',
-                          color: Theme.of(context).colorScheme.secondary
-                      ),
-                    ),
-                    icon: SvgPicture.asset('assets/icons/house.svg'),
-                  ),
-                  BottomNavigationBarItem(
-                    label: Strings().profile,
-                    activeIcon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset(
-                          'assets/icons/person.svg',
-                          color: Theme.of(context).colorScheme.secondary
-                      ),
-                    ),
-                    icon: ProfileIcon(),
-                  ),
-                  BottomNavigationBarItem(
-                    label: Strings().account,
-                    activeIcon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset(
-                          'assets/icons/account.svg',
-                          color: Theme.of(context).colorScheme.secondary
-                      ),
-                    ),
-                    icon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset('assets/icons/account.svg'),
-                    ),
-                  ),
-                  BottomNavigationBarItem(
-                    label: Strings().faq,
-                    activeIcon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset(
-                          'assets/icons/help.svg',
-                          color: Theme.of(context).colorScheme.secondary
-                      ),
-                    ),
-                    icon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset('assets/icons/help.svg'),
-                    ),
-                  ),
-                  BottomNavigationBarItem(
-                    label: Strings().settings,
-                    activeIcon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset(
-                          'assets/icons/setting.svg',
-                          color: Theme.of(context).colorScheme.secondary
-                      ),
-                    ),
-                    icon: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: SvgPicture.asset('assets/icons/setting.svg'),
-                    ),
-                  ),
-                ],
+        bottomNavigationBar: ValueListenableBuilder(
+          valueListenable: isUserLocked,
+          builder: (BuildContext context, value, Widget? child) {
+            if(value == false){
+              return Container(
+                padding: const EdgeInsets.all(4.0),
+                child: ValueListenableBuilder(
+                  valueListenable: currentIndex,
+                  builder: (BuildContext context, int value, Widget? child) {
+                    return BottomNavigationBar(
+                      type: BottomNavigationBarType.fixed,
+                      currentIndex: value,
+                      onTap: (i) {
+                        currentIndex.value = i;
+                        switch (i) {
+                          case 0:
+                            context.go(Routes.root);
+                            break;
+                          case 1:
+                            context.go(Routes.myHangout);
+                            break;
+                          case 2:
+                            context.go(Routes.account);
+                            break;
+                          case 3:
+                            context.go(Routes.faq);
+                            break;
+                          case 4:
+                            context.go(Routes.setting);
+                            break;
+                        }
+                      },
+                      items: [
+                        BottomNavigationBarItem(
+                          label: Strings().home,
+                          activeIcon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset(
+                                'assets/icons/house.svg',
+                                color: Theme.of(context).colorScheme.secondary
+                            ),
+                          ),
+                          icon: SvgPicture.asset('assets/icons/house.svg'),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().profile,
+                          activeIcon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset(
+                                'assets/icons/person.svg',
+                                color: Theme.of(context).colorScheme.secondary
+                            ),
+                          ),
+                          icon: ProfileIcon(),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().account,
+                          activeIcon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset(
+                                'assets/icons/account.svg',
+                                color: Theme.of(context).colorScheme.secondary
+                            ),
+                          ),
+                          icon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset('assets/icons/account.svg'),
+                          ),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().faq,
+                          activeIcon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset(
+                                'assets/icons/help.svg',
+                                color: Theme.of(context).colorScheme.secondary
+                            ),
+                          ),
+                          icon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset('assets/icons/help.svg'),
+                          ),
+                        ),
+                        BottomNavigationBarItem(
+                          label: Strings().settings,
+                          activeIcon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset(
+                                'assets/icons/setting.svg',
+                                color: Theme.of(context).colorScheme.secondary
+                            ),
+                          ),
+                          icon: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: SvgPicture.asset('assets/icons/setting.svg'),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               );
-            },
-          ),
+            }
+            return Container(
+              height: 0,
+            );
+          },
         ),
       ),
     );
-    if (kIsWeb && !isMobile) {
-      return FittedBox(
-        fit: BoxFit.scaleDown,
-        child: SizedBox(
-          width: 500,
-          height: 844,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: widget,
-          ),
-        ),
-      );
-    }
-    return widget;
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        var lockHangout = ref.watch(lockedHangoutViewModelProvider);
+        if (kIsWeb && !isMobile) {
+          return FittedBox(
+            fit: BoxFit.scaleDown,
+            child: SizedBox(
+              width: 500,
+              height: 844,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: widget,
+              ),
+            ),
+          );
+        }
+        return widget;
+      },
+    );
   }
 }
 
