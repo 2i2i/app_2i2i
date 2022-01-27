@@ -178,7 +178,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                     onTrailingIconClick: (BidOut bidOut) async {
                       CustomDialogs.loader(true, context);
                       await myHangoutPageViewModel.cancelBid(
-                          bidId: bidOut.id, B: bidOut.B);
+                          bidId: bidOut.id, B: bidOut.B, speed: bidOut.speed);
                       CustomDialogs.loader(false, context);
                     },
                   ),

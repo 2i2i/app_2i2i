@@ -55,7 +55,9 @@ class AddBidPageViewModel {
 
     final net = AlgorandNet.testnet;
     final String? addrA = speed.num == 0 ? null : account!.address;
-    final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
+    final bidId = database.newDocId(
+        path: FirestorePath
+            .meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
     String? txId;
@@ -89,7 +91,7 @@ class AddBidPageViewModel {
       B: B.id,
       speed: speed,
       net: net,
-      txId: txId,
+      txns: txId == null ? {} : {'lock': txId},
       active: true,
       addrA: addrA,
       budget: amount.num,
@@ -98,28 +100,29 @@ class AddBidPageViewModel {
         .collection(FirestorePath.bidInsPublic(B.id))
         .doc(bidId);
     final bidInPublic = BidInPublic(
-        id: bidId,
-        speed: speed,
-        net: net,
-        active: true,
-        ts: DateTime.now().toUtc(),
-        rule: hangout.rule,
-        budget: amount.num,
-        );
+      id: bidId,
+      speed: speed,
+      net: net,
+      active: true,
+      ts: DateTime.now().toUtc(),
+      rule: hangout.rule,
+      budget: amount.num,
+    );
     final bidInPrivateRef = FirebaseFirestore.instance
         .collection(FirestorePath.bidInsPrivate(B.id))
         .doc(bidId);
     final bidInPrivate = BidInPrivate(
-        id: bidId,
-        active: true,
-        A: uid,
-        addrA: addrA,
-        comment: bidNote,
-        txId: txId,
-        );
+      id: bidId,
+      active: true,
+      A: uid,
+      addrA: addrA,
+      comment: bidNote,
+      txId: txId,
+    );
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
-      transaction.set(bidInPublicRef, bidInPublic.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPublicRef, bidInPublic.toMap(), SetOptions(merge: false));
       transaction.set(
           bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
     });
