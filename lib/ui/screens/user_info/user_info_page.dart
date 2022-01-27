@@ -86,7 +86,8 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           visible: !isBlocked,
           child: InkResponse(
             onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),
-                extra: CreateBidPageRouterObject(hangout: hangout, bidIns: bidIns)),
+                extra: CreateBidPageRouterObject(
+                    hangout: hangout, bidIns: bidIns)),
             child: Container(
               width: kToolbarHeight * 1.15,
               height: kToolbarHeight * 1.15,
