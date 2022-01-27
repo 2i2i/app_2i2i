@@ -92,7 +92,6 @@ class NamedRoutes {
           // child: Scaffold(),
         ),
       ),
-
       GoRoute(
         name: Routes.lock.nameFromPath(),
         path: Routes.lock,
@@ -106,13 +105,13 @@ class NamedRoutes {
         path: Routes.user,
         pageBuilder: (context, state) {
           String userId = '';
-          if(state.extra is Map){
-            userId = (state.extra as Map)['uid']??'';
+          if (state.extra is Map) {
+            userId = (state.extra as Map)['uid'] ?? '';
           }
           if (state.params['uid'] is String) {
             userId = state.params['uid']!;
           }
-          if(userId.trim().isNotEmpty){
+          if (userId.trim().isNotEmpty) {
             return NoTransitionPage<void>(
               key: state.pageKey,
               child: getView(UserInfoPage(uid: userId)),
@@ -130,7 +129,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView( HangoutSetting(fromBottomSheet: false)),
+            child: getView(HangoutSetting(fromBottomSheet: false)),
           );
         },
       ),
@@ -140,7 +139,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView( RecoverAccountPage()),
+            child: getView(RecoverAccountPage()),
           );
         },
       ),
@@ -151,12 +150,12 @@ class NamedRoutes {
           if (state.params['uid'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView( RatingPage(uid: state.params['uid']!)),
+              child: getView(RatingPage(uid: state.params['uid']!)),
             );
           }
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView( NotFound()),
+            child: getView(NotFound()),
           );
         },
       ),
@@ -166,7 +165,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView( TopPage()),
+            child: getView(TopPage()),
           );
         },
       ),
@@ -176,7 +175,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView( FriendsListPage(isForBlockedUser: true)),
+            child: getView(FriendsListPage(isForBlockedUser: true)),
           );
         },
       ),
@@ -200,16 +199,15 @@ class NamedRoutes {
           );
         },
       ),
-
       GoRoute(
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
           print('state ${state.extra}');
-          if(state.extra is Map){
+          if (state.extra is Map) {
             Map map = state.extra as Map;
             List<String> perhaps = map['perhaps'];
-            if(map['account'] is LocalAccount) {
+            if (map['account'] is LocalAccount) {
               LocalAccount account = map['account'];
               return NoTransitionPage<void>(
                 key: state.pageKey,
@@ -223,7 +221,6 @@ class NamedRoutes {
           );
         },
       ),
-
       GoRoute(
         name: Routes.createBid.nameFromPath(),
         path: Routes.createBid,
@@ -257,14 +254,15 @@ class NamedRoutes {
   static ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   static Widget getView(Widget page) {
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
+    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android;
     Widget widget = AuthWidget(
       homePageBuilder: (_) => Scaffold(
         body: page,
         bottomNavigationBar: ValueListenableBuilder(
           valueListenable: isUserLocked,
           builder: (BuildContext context, value, Widget? child) {
-            if(value == false){
+            if (value == false) {
               return Container(
                 padding: const EdgeInsets.all(4.0),
                 child: ValueListenableBuilder(
@@ -298,10 +296,8 @@ class NamedRoutes {
                           label: Strings().home,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset(
-                                'assets/icons/house.svg',
-                                color: Theme.of(context).colorScheme.secondary
-                            ),
+                            child: SvgPicture.asset('assets/icons/house.svg',
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: SvgPicture.asset('assets/icons/house.svg'),
                         ),
@@ -309,10 +305,8 @@ class NamedRoutes {
                           label: Strings().profile,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset(
-                                'assets/icons/person.svg',
-                                color: Theme.of(context).colorScheme.secondary
-                            ),
+                            child: SvgPicture.asset('assets/icons/person.svg',
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: ProfileIcon(),
                         ),
@@ -320,10 +314,8 @@ class NamedRoutes {
                           label: Strings().account,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset(
-                                'assets/icons/account.svg',
-                                color: Theme.of(context).colorScheme.secondary
-                            ),
+                            child: SvgPicture.asset('assets/icons/account.svg',
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: Padding(
                             padding: const EdgeInsets.all(6),
@@ -334,10 +326,8 @@ class NamedRoutes {
                           label: Strings().faq,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset(
-                                'assets/icons/help.svg',
-                                color: Theme.of(context).colorScheme.secondary
-                            ),
+                            child: SvgPicture.asset('assets/icons/help.svg',
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: Padding(
                             padding: const EdgeInsets.all(6),
@@ -348,10 +338,8 @@ class NamedRoutes {
                           label: Strings().settings,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset(
-                                'assets/icons/setting.svg',
-                                color: Theme.of(context).colorScheme.secondary
-                            ),
+                            child: SvgPicture.asset('assets/icons/setting.svg',
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: Padding(
                             padding: const EdgeInsets.all(6),
@@ -373,6 +361,7 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        ref.watch(lockedHangoutViewModelProvider); // lockedHangoutViewModelProvider just needs to run
         if (kIsWeb && !isMobile) {
           return FittedBox(
             fit: BoxFit.scaleDown,
