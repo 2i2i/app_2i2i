@@ -15,7 +15,7 @@ class UserBidOutsList extends ConsumerWidget {
     required this.noBidsText,
     // required this.onTap,
     this.trailingIcon,
-    this.onTrailingIconClick,
+    required this.onTrailingIconClick,
   });
 
   final String uid;
@@ -24,7 +24,7 @@ class UserBidOutsList extends ConsumerWidget {
 
   // final void Function(Bid bid) onTap;
   final Icon? trailingIcon;
-  final void Function(BidOut bid)? onTrailingIconClick;
+  final void Function(BidOut bid) onTrailingIconClick;
 
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers = ref.watch(bidOutsProvider(uid));
@@ -40,10 +40,10 @@ class UserBidOutsList extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemBuilder: (_, ix) {
         return BidOutTile(
-          bidOutList: bidOutList,
-          index: ix,
+          bidOut: bidOutList[ix],
+          onCancelClick: onTrailingIconClick,
         );
-      }, 
+      },
     );
   }
 }
