@@ -11,13 +11,13 @@ import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 
 class MyHangoutPageViewModel {
-  MyHangoutPageViewModel(
-      {required this.database,
-      required this.functions,
-      required this.hangout,
-      required this.accountService,
-      required this.hangoutChanger,
-      });
+  MyHangoutPageViewModel({
+    required this.database,
+    required this.functions,
+    required this.hangout,
+    required this.accountService,
+    required this.hangoutChanger,
+  });
   final Hangout? hangout;
   final FirestoreDatabase database;
   final FirebaseFunctions functions;
@@ -30,15 +30,19 @@ class MyHangoutPageViewModel {
       final account = await accountService.getMainAccount();
       addrB = account.address;
     }
-    if(hangout is Hangout) {
-      final meeting = Meeting.newMeeting(id: bidIn.public.id, uid: hangout!.id, addrB: addrB, bidIn: bidIn);
+    if (hangout is Hangout) {
+      final meeting = Meeting.newMeeting(
+          id: bidIn.public.id, uid: hangout!.id, addrB: addrB, bidIn: bidIn);
       database.acceptBid(meeting);
     }
   }
 
   // TODO clean separation into firestore_service and firestore_database
-  Future cancelBid({required String bidId, required String B}) async {
-    if(hangout is Hangout) {
+  Future cancelBid(
+      {required String bidId,
+      required String B,
+      required Quantity speed}) async {
+    if (hangout != null && speed.num == 0) {
       final bidOutRef = FirebaseFirestore.instance
           .collection(FirestorePath.bidOuts(hangout!.id))
           .doc(bidId);
@@ -50,14 +54,16 @@ class MyHangoutPageViewModel {
           .doc(bidId);
       final obj = {'active': false};
       final setOptions = SetOptions(merge: true);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
+      return FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(bidOutRef, obj, setOptions);
         transaction.set(bidInPublicRef, obj, setOptions);
         transaction.set(bidInPrivateRef, obj, setOptions);
       });
-      final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-      await cancelBid({bidId: bidId});
     }
+
+    // 0 < speed
+    final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+    await cancelBid({'bidId': bidId});
   }
 
   Future changeNameAndBio(String name, String bio) async {

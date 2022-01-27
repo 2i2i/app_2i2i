@@ -49,31 +49,19 @@ class AlgorandLib {
 }
 
 class AlgorandService {
-  // static const Map<AlgorandNet, int> SYSTEM_ID = {
-  //   AlgorandNet.mainnet: -1,
-  //   AlgorandNet.testnet: 32969536,
-  //   AlgorandNet.betanet: 419713242,
-  // };
+  static const Map<AlgorandNet, int> SYSTEM_ID = {
+    AlgorandNet.mainnet: 67119462,
+    AlgorandNet.testnet: 67119462,
+    AlgorandNet.betanet: 67119462,
+  };
   static const Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet: '',
+    AlgorandNet.mainnet:
+        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
     AlgorandNet.testnet:
-        'KTNEHVYFHJIWSTWZ7SQJSSA24JHTX3KXUABO64ZQTRCBFIM3EMCXVMBD6M',
+        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
     AlgorandNet.betanet:
-        'KTNEHVYFHJIWSTWZ7SQJSSA24JHTX3KXUABO64ZQTRCBFIM3EMCXVMBD6M',
+        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
   };
-  static const Map<AlgorandNet, String> CREATOR = {
-    AlgorandNet.mainnet: '',
-    AlgorandNet.testnet:
-        'KTNEHVYFHJIWSTWZ7SQJSSA24JHTX3KXUABO64ZQTRCBFIM3EMCXVMBD6M',
-    AlgorandNet.betanet:
-        'KTNEHVYFHJIWSTWZ7SQJSSA24JHTX3KXUABO64ZQTRCBFIM3EMCXVMBD6M',
-  };
-  static const Map<AlgorandNet, int> NOVALUE_ASSET_ID = {
-    AlgorandNet.mainnet: -1,
-    AlgorandNet.testnet: 29147319,
-    AlgorandNet.betanet: 430512768,
-  };
-  // static const String STORAGE_ACCOUNT_KEY = 'account_1';
   static const int MIN_TXN_FEE = 1000;
 
   AlgorandService(
@@ -105,30 +93,35 @@ class AlgorandService {
     required Quantity amount,
     required String note,
   }) async {
+    final List<RawTransaction> txns = [];
+
     final params =
         await algorandLib.client[net]!.getSuggestedTransactionParams();
-    final lockTxn = amount.assetId == 0
-        ? await (PaymentTransactionBuilder()
-              ..sender = Address.fromAlgorandAddress(address: account.address)
-              ..receiver =
-                  Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-              ..amount = amount.num + 2 * MIN_TXN_FEE
-              ..suggestedParams = params
-              ..noteText = note)
-            .build()
-        : throw Exception('No ASA yet');
-    // TODO for ASA, need to combine with ALGO payment to cover SYSTEM costs
-    // : await (AssetTransferTransactionBuilder()
-    //       ..sender = Address.fromAlgorandAddress(address: account.address)
-    //       ..receiver =
-    //           Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-    //       ..amount = amount.num
-    //       ..assetId = amount.assetId
-    //       ..suggestedParams = params
-    //       ..noteText = note
-    //     )
-    //     .build();
-    final signedTxnsBytes = await account.sign([lockTxn]);
+
+    final lockTxn = await (PaymentTransactionBuilder()
+          ..sender = Address.fromAlgorandAddress(address: account.address)
+          ..receiver =
+              Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..amount = amount.num + 4 * MIN_TXN_FEE
+          ..suggestedParams = params
+          ..noteText = note)
+        .build();
+    txns.add(lockTxn);
+
+    final arguments = 'str:LOCK'.toApplicationArguments();
+    final appCallTxn = await (ApplicationCallTransactionBuilder()
+          ..sender = Address.fromAlgorandAddress(address: account.address)
+          ..applicationId = SYSTEM_ID[net]!
+          ..arguments = arguments
+          ..suggestedParams = params)
+        .build();
+    txns.add(appCallTxn);
+
+    AtomicTransfer.group(txns);
+    log(J + 'lockALGO - grouped');
+
+    final signedTxnsBytes = await account.sign(txns);
+    log(J + 'lockALGO - signed');
 
     try {
       return algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
