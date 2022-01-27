@@ -1,18 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../block_and_friends/friends_list_page.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'meeting_history_list.dart';

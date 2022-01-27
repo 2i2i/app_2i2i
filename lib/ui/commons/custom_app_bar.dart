@@ -8,9 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../infrastructure/providers/all_providers.dart';
 import '../../infrastructure/routes/app_routes.dart';
-import '../screens/rating/rating_page.dart';
 import '../screens/search/widgtes/star_widget.dart';
-import '../screens/top/top_page.dart';
 
 class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   final List<Widget>? actions;

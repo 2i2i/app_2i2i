@@ -1,20 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-
-import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
-import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/foundation.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:share_plus/share_plus.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -36,7 +30,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       return WaitPage();
     }
     final message = 'https://test.2i2i.app/user/$uid';
-    var appSettingModel = ref.watch(appSettingProvider);
+    // var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
 

@@ -194,11 +194,9 @@ class Hangout extends Equatable {
     final HangOutRule rule = data['rule'] == null
         ? HangOutRule()
         : HangOutRule.fromMap(data['rule']);
-    List list = [];
-    if(data['loungeHistory'] is List && data['loungeHistory'].isNotEmpty) {
-      list = data['loungeHistory']?.map((item) => Lounge.values.firstWhere((e) => e.toStringEnum() == item)) ?? [];
-    }
-    final List<Lounge> loungeHistory = List<Lounge>.from(list);
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
+        .map((item) => Lounge.values
+            .firstWhere((e) => e.toStringEnum() == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex']??0;
 
     return Hangout(

@@ -11,7 +11,6 @@ import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../create_bid/create_bid_page.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/user_info_widget.dart';

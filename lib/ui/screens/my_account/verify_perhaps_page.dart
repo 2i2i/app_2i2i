@@ -1,11 +1,9 @@
 import 'dart:math';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 
 class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
@@ -59,25 +57,24 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                         String text = options[index];
                         return Expanded(
                           child: InkResponse(
-                            onTap: (){
+                            onTap: () {
                               question.selected = text;
                               setState(() {});
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              margin: EdgeInsets.only(left: 5, right: 5, top: 20),
+                              margin:
+                                  EdgeInsets.only(left: 5, right: 5, top: 20),
                               padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: question.selected == text
-                                      ? Theme.of(context).colorScheme.secondary
-                                      : Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                                color: question.selected == text
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).cardColor,
                               ),
                               child: Text(
                                 text,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1,
+                                style: Theme.of(context).textTheme.bodyText1,
                               ),
                             ),
                           ),
@@ -117,7 +114,6 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                   }
                   CustomDialogs.loader(false, context);
                   Navigator.of(context).pop();
-                  // Navigator.of(context).pop();
                 }
               : null,
           child: Text('Complete'),

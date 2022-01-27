@@ -10,9 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 class CreateLocalAccount extends ConsumerStatefulWidget {
-
   const CreateLocalAccount({Key? key}) : super(key: key);
 
   @override
@@ -62,39 +60,42 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                 padding: EdgeInsets.all(8),
                                 children:
                                     List.generate(perhaps.length, (index) {
-                                      return ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor:
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor:
                                           Theme.of(context).primaryColor,
-                                          radius: 10,
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: Theme.of(context).textTheme.caption,
-                                          ),
-                                        ),
-                                        minLeadingWidth: 10,
-                                        title: Text(
-                                          '${perhaps[index]}',
-                                          style: Theme.of(context).textTheme.bodyText2,
-                                        ),
-                                      );
+                                      radius: 10,
+                                      child: Text(
+                                        '${index + 1}',
+                                        style:
+                                            Theme.of(context).textTheme.caption,
+                                      ),
+                                    ),
+                                    minLeadingWidth: 10,
+                                    title: Text(
+                                      '${perhaps[index]}',
+                                      style:
+                                          Theme.of(context).textTheme.bodyText2,
+                                    ),
+                                  );
                                 }),
                               ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 if (perhaps.isNotEmpty) {
-                                  Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                                  CustomDialogs.showToastMessage(context, Strings().copyMessage);
-                                  Future.delayed(Duration.zero).then((value) {
-                                    context.pushNamed(
-                                        Routes.verifyPerhaps,
-                                        extra: {
-                                          'perhaps': perhaps,
-                                          'account': account,
-                                        },
-                                    );
-                                  });
+                                  Clipboard.setData(
+                                      ClipboardData(text: perhaps.join(' ')));
+                                  CustomDialogs.showToastMessage(
+                                      context, Strings().copyMessage);
+                                      
+                                  context.pushNamed(
+                                    Routes.verifyPerhaps,
+                                    extra: {
+                                      'perhaps': perhaps,
+                                      'account': account,
+                                    },
+                                  );
 
                                   Navigator.of(context).pop();
                                 }

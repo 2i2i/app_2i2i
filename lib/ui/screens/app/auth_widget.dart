@@ -10,7 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
+
 bool showed = false;
+
 class AuthWidget extends ConsumerWidget {
   AuthWidget({required this.homePageBuilder});
 
@@ -77,30 +79,29 @@ class AuthWidget extends ConsumerWidget {
             }
 
             final uid = ref.watch(myUIDProvider);
-            if(uid != null) {
+            if (uid != null) {
               final hangoutProviderVal = ref.watch(hangoutProvider(uid));
               bool isLoaded = !(haveToWait(hangoutProviderVal));
               if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
                 final Hangout hangout = hangoutProviderVal.asData!.value;
                 if (hangout.name.trim().isEmpty && !showed) {
                   showed = true;
-                  Future.delayed(Duration(seconds: 1)).then((value){
-                    CustomAlertWidget.showBidAlert(
-                      context,
-                      WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: HangoutSetting(
-                            fromBottomSheet: true,
-                          ),
+                  
+                  CustomAlertWidget.showBidAlert(
+                    context,
+                    WillPopScope(
+                      onWillPop: () {
+                        return Future.value(true);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: HangoutSetting(
+                          fromBottomSheet: true,
                         ),
                       ),
-                      isDismissible: false,
-                    );
-                  });
+                    ),
+                    isDismissible: false,
+                  );
                 }
               }
             }

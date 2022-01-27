@@ -1,8 +1,5 @@
 // TODO break up file into multiple files
 
-import 'dart:collection';
-import 'dart:math';
-
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
