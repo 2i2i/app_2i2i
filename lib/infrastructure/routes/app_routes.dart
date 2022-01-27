@@ -1,5 +1,12 @@
 class Routes {
   static const root = '/';
+
+  static const search = '/search';
+  static const myHangout = '/myHangout';
+  static const account = '/account';
+  static const faq = '/faq';
+  static const setting = '/setting';
+
   static const login = '/login';
   static const lock = '/lock';
   static const top = '/top';

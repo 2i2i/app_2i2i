@@ -6,6 +6,7 @@ import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,7 +41,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     return Scaffold(
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

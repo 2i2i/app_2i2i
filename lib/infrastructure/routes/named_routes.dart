@@ -3,15 +3,19 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
+import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
+import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/home/home_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
+import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
+import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
@@ -44,21 +48,55 @@ class NamedRoutes {
     initialLocation: Routes.root,
     routes: [
       GoRoute(
+        name: Routes.root.nameFromPath(),
         path: Routes.root,
-        pageBuilder: (context, state) => MaterialPage<void>(
+        pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(
-            AuthWidget(
-              homePageBuilder: (_) => SearchPage(),
-            ),
-          ),
+          child: getView(SearchPage()),
           // child: Scaffold(),
         ),
       ),
       GoRoute(
+        name: Routes.myHangout.nameFromPath(),
+        path: Routes.myHangout,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(MyHangoutPage()),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.account.nameFromPath(),
+        path: Routes.account,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(MyAccountPage()),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.faq.nameFromPath(),
+        path: Routes.faq,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(FAQPage()),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.setting.nameFromPath(),
+        path: Routes.setting,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(AppSettingPage()),
+          // child: Scaffold(),
+        ),
+      ),
+
+      GoRoute(
         name: Routes.lock.nameFromPath(),
         path: Routes.lock,
-        pageBuilder: (context, state) => MaterialPage<void>(
+        pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage()),
         ),
@@ -75,12 +113,12 @@ class NamedRoutes {
             userId = state.params['uid']!;
           }
           if(userId.trim().isNotEmpty){
-            return MaterialPage<void>(
+            return NoTransitionPage<void>(
               key: state.pageKey,
               child: getView(UserInfoPage(uid: userId)),
             );
           }
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(NotFound()),
           );
@@ -90,7 +128,7 @@ class NamedRoutes {
         name: Routes.hangoutSetting.nameFromPath(),
         path: Routes.hangoutSetting,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView( HangoutSetting(fromBottomSheet: false)),
           );
@@ -100,7 +138,7 @@ class NamedRoutes {
         name: Routes.recover.nameFromPath(),
         path: Routes.recover,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView( RecoverAccountPage()),
           );
@@ -111,12 +149,12 @@ class NamedRoutes {
         path: Routes.ratings,
         pageBuilder: (context, state) {
           if (state.params['uid'] is String) {
-            return MaterialPage<void>(
+            return NoTransitionPage<void>(
               key: state.pageKey,
               child: getView( RatingPage(uid: state.params['uid']!)),
             );
           }
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView( NotFound()),
           );
@@ -126,7 +164,7 @@ class NamedRoutes {
         name: Routes.top.nameFromPath(),
         path: Routes.top,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView( TopPage()),
           );
@@ -136,7 +174,7 @@ class NamedRoutes {
         name: Routes.blocks.nameFromPath(),
         path: Routes.blocks,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView( FriendsListPage(isForBlockedUser: true)),
           );
@@ -146,7 +184,7 @@ class NamedRoutes {
         name: Routes.favorites.nameFromPath(),
         path: Routes.favorites,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(FriendsListPage(isForBlockedUser: false)),
           );
@@ -156,7 +194,7 @@ class NamedRoutes {
         name: Routes.createLocalAccount.nameFromPath(),
         path: Routes.createLocalAccount,
         pageBuilder: (context, state) {
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(CreateLocalAccount()),
           );
@@ -173,13 +211,13 @@ class NamedRoutes {
             List<String> perhaps = map['perhaps'];
             if(map['account'] is LocalAccount) {
               LocalAccount account = map['account'];
-              return MaterialPage<void>(
+              return NoTransitionPage<void>(
                 key: state.pageKey,
                 child: getView(VerifyPerhapsPage(perhaps, account)),
               );
             }
           }
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(NotFound()),
           );
@@ -191,12 +229,12 @@ class NamedRoutes {
         path: Routes.createBid,
         pageBuilder: (context, state) {
           if (state.extra is Hangout) {
-            return MaterialPage<void>(
+            return NoTransitionPage<void>(
               key: state.pageKey,
               child: getView(CreateBidPage(hangout: state.extra as Hangout)),
             );
           }
-          return MaterialPage<void>(
+          return NoTransitionPage<void>(
             key: state.pageKey,
             child: NotFound(),
           );
@@ -205,7 +243,7 @@ class NamedRoutes {
     ],
     errorPageBuilder: (context, state) {
       print('state.error ${state.error}');
-      return MaterialPage<void>(
+      return NoTransitionPage<void>(
         key: state.pageKey,
         child: getView(Scaffold(body: ErrorPage(state.error))),
       );
@@ -219,8 +257,111 @@ class NamedRoutes {
   static ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   static Widget getView(Widget page) {
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
+    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
+
+    Widget widget = AuthWidget(
+      homePageBuilder: (_) => Scaffold(
+        body: page,
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(4.0),
+          child: ValueListenableBuilder(
+            valueListenable: currentIndex,
+            builder: (BuildContext context, int value, Widget? child) {
+              return BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                currentIndex: value,
+                onTap: (i) {
+                  currentIndex.value = i;
+                  switch (i) {
+                      case 0:
+                        context.go(Routes.root);
+                        break;
+                      case 1:
+                        context.go(Routes.myHangout);
+                        break;
+                      case 2:
+                        context.go(Routes.account);
+                        break;
+                      case 3:
+                        context.go(Routes.faq);
+                        break;
+                      case 4:
+                        context.go(Routes.setting);
+                        break;
+                    }
+                },
+                items: [
+                  BottomNavigationBarItem(
+                    label: Strings().home,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset(
+                          'assets/icons/house.svg',
+                          color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    icon: SvgPicture.asset('assets/icons/house.svg'),
+                  ),
+                  BottomNavigationBarItem(
+                    label: Strings().profile,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset(
+                          'assets/icons/person.svg',
+                          color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    icon: ProfileIcon(),
+                  ),
+                  BottomNavigationBarItem(
+                    label: Strings().account,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset(
+                          'assets/icons/account.svg',
+                          color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    icon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset('assets/icons/account.svg'),
+                    ),
+                  ),
+                  BottomNavigationBarItem(
+                    label: Strings().faq,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset(
+                          'assets/icons/help.svg',
+                          color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    icon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset('assets/icons/help.svg'),
+                    ),
+                  ),
+                  BottomNavigationBarItem(
+                    label: Strings().settings,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset(
+                          'assets/icons/setting.svg',
+                          color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    icon: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: SvgPicture.asset('assets/icons/setting.svg'),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
     if (kIsWeb && !isMobile) {
       return FittedBox(
         fit: BoxFit.scaleDown,
@@ -229,68 +370,12 @@ class NamedRoutes {
           height: 844,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Scaffold(
-              body: page,
-              bottomNavigationBar: Container(
-                padding: const EdgeInsets.all(4.0),
-                child: ValueListenableBuilder(
-                  valueListenable: currentIndex,
-                  builder: (BuildContext context, int value, Widget? child) {
-                    return BottomNavigationBar(
-                      type: BottomNavigationBarType.fixed,
-                      currentIndex: value,
-                      onTap: (i) {
-                        currentIndex.value = i;
-                        switch (i) {
-                          case 0:
-                            context.go(Routes.root);
-                            break;
-                          case 1:
-                            context.go(Routes.favorites);
-                            break;
-                          case 2:
-                            context.go(Routes.blocks);
-                            break;
-                          case 3:
-                            context.go(Routes.user);
-                            break;
-                          case 4:
-                            context.go(Routes.root);
-                            break;
-                        }
-                      },
-                      items: [
-                        BottomNavigationBarItem(
-                          label: Strings().home,
-                          icon: SvgPicture.asset('assets/icons/house.svg'),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().profile,
-                          icon: ProfileIcon(),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().account,
-                          icon: SvgPicture.asset('assets/icons/account.svg'),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().faq,
-                          icon: SvgPicture.asset('assets/icons/help.svg'),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().settings,
-                          icon: SvgPicture.asset('assets/icons/setting.svg'),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ),
+            child: widget,
           ),
         ),
       );
     }
-    return page;
+    return widget;
   }
 }
 

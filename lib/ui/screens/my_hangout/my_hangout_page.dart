@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -91,7 +92,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   bottomRight: Radius.circular(12)),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: EdgeInsets.only(right: 20,left: 20, bottom: 8,top: kIsWeb?8:31),
               child: Column(
                 children: [
                   SizedBox(height: 8),
