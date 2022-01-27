@@ -71,7 +71,9 @@ class _CallPageState extends ConsumerState<CallPage>
       if (signaling?.localStream != null) {
         ref.read(callScreenProvider).getInitialValue(signaling!.localStream!);
       }
-      setState(() {});
+      // if(mounted) {
+      //   setState(() {});
+      // }
     });
 
     // no timer for free call

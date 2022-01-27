@@ -9,6 +9,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';

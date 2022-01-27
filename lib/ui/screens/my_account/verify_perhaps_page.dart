@@ -57,25 +57,24 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                         String text = options[index];
                         return Expanded(
                           child: InkResponse(
-                            onTap: (){
+                            onTap: () {
                               question.selected = text;
                               setState(() {});
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              margin: EdgeInsets.only(left: 5, right: 5, top: 20),
+                              margin:
+                                  EdgeInsets.only(left: 5, right: 5, top: 20),
                               padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: question.selected == text
-                                      ? Theme.of(context).colorScheme.secondary
-                                      : Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                                color: question.selected == text
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).cardColor,
                               ),
                               child: Text(
                                 text,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1,
+                                style: Theme.of(context).textTheme.bodyText1,
                               ),
                             ),
                           ),

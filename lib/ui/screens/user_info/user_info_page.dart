@@ -1,16 +1,16 @@
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../../commons/custom_navigation.dart';
-import '../create_bid/create_bid_page.dart';
 import '../home/wait_page.dart';
 import 'other_bid_list.dart';
 import 'widgets/user_info_widget.dart';
@@ -29,10 +29,18 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final mainUserID = ref.watch(myUIDProvider)!;
+    print('url-------------- \n ${Uri.base.toString()}');
+    final mainUserID = ref.watch(myUIDProvider);
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
-    final userModelChanger = ref.watch(hangoutChangerProvider)!;
+    var isFriend = false;
+    var isBlocked = false;
+    final userModelChanger = ref.watch(hangoutChangerProvider);
+    if(mainUserID != null) {
+      final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
+
+      isFriend = !haveToWait(userPrivateAsyncValue) && userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.friends.contains(widget.uid);
+      isBlocked = !haveToWait(userPrivateAsyncValue)&& userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.blocked.contains(widget.uid);
+    }
 
     if (haveToWait(userPageViewModel)) {
       return WaitPage();
@@ -40,27 +48,21 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     Hangout hangout = userPageViewModel!.hangout;
 
-    final isFriend = !haveToWait(userPrivateAsyncValue) &&
-        userPrivateAsyncValue.value != null &&
-        userPrivateAsyncValue.value!.friends.contains(widget.uid);
 
-    final isBlocked = !haveToWait(userPrivateAsyncValue)&&
-        userPrivateAsyncValue.value != null &&
-        userPrivateAsyncValue.value!.blocked.contains(widget.uid);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
         actions: [
+          if(userModelChanger != null)
           PopupMenuButton<int>(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(8.0),
               ),
             ),
-            onSelected: (item) =>
-                handleClick(item, userModelChanger, isBlocked),
+            onSelected: (item) => handleClick(item, userModelChanger, isBlocked),
             itemBuilder: (context) => [
               PopupMenuItem<int>(value: 0, child: Text(Strings().report)),
               PopupMenuItem<int>(
@@ -76,7 +78,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: InkResponse(
-        onTap: () => CustomNavigation.push(context, CreateBidPage(hangout: hangout), Routes.CreateBid),
+        onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),extra: hangout),
         child: Container(
           width: kToolbarHeight * 1.15,
           height: kToolbarHeight * 1.15,
@@ -113,11 +115,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 16),
               child: UserInfoWidget(
                 hangout: hangout, isFav: isFriend, onTapFav: () {
-                if (!isFriend) {
-                  userModelChanger.addFriend(widget.uid);
-                } else {
-                  userModelChanger.removeFriend(widget.uid);
-                }
+                  if(userModelChanger != null) {
+                    if (!isFriend) {
+                      userModelChanger.addFriend(widget.uid);
+                    } else {
+                      userModelChanger.removeFriend(widget.uid);
+                    }
+                  }
               },
               ),
             ),

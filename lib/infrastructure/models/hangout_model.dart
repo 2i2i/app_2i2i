@@ -197,7 +197,7 @@ class Hangout extends Equatable {
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values
             .firstWhere((e) => e.toStringEnum() == item)));
-    final int loungeHistoryIndex = data['loungeHistoryIndex'];
+    final int loungeHistoryIndex = data['loungeHistoryIndex']??0;
 
     return Hangout(
       id: documentId,

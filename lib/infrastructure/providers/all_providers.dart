@@ -1,8 +1,5 @@
 // TODO break up file into multiple files
 
-import 'dart:collection';
-import 'dart:math';
-
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -342,19 +339,33 @@ final bidInsProvider =
 
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
   (ref) {
-    final uid = ref.watch(myUIDProvider)!;
+    final uid = ref.watch(myUIDProvider);
+    if(uid == null){
+      return null;
+    }
     final hangout = ref.watch(hangoutProvider(uid));
     log('lockedUserViewModelProvider - user=$hangout');
     if (hangout is AsyncLoading || hangout is AsyncError) return null;
 
-    if (hangout.asData!.value.meeting == null) return null;
+    if (hangout.asData!.value.meeting == null) {
+      isUserLocked.value = false;
+      return null;
+    }
     final String userMeeting = hangout.asData!.value.meeting!;
     log('lockedHangoutViewModelProvider - userMeeting=$userMeeting');
     final meeting = ref.watch(meetingProvider(userMeeting));
+
     log('lockedHangoutViewModelProvider - meeting=$meeting');
-    if (meeting is AsyncLoading || meeting is AsyncError) return null;
-    return LockedHangoutViewModel(
-        hangout: hangout.asData!.value, meeting: meeting.asData!.value);
+    if (meeting is AsyncLoading || meeting is AsyncError) {
+      isUserLocked.value = false;
+      return null;
+    }
+    if(meeting.value?.active??false){
+      isUserLocked.value = true;
+    }else{
+      isUserLocked.value = false;
+    }
+    return LockedHangoutViewModel(hangout: hangout.asData!.value, meeting: meeting.asData!.value);
   },
 );
 

@@ -1,17 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
-import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -33,12 +30,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       return WaitPage();
     }
     final message = 'https://test.2i2i.app/user/$uid';
-    var appSettingModel = ref.watch(appSettingProvider);
+    // var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -140,7 +138,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,7 +164,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '',rootNavigator: true);
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
                       Strings().bio,
@@ -235,39 +233,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 );
               },
             ),
-            Visibility(
-              visible: false,
-              child: Container(
-                decoration: Custom.getBoxDecoration(context),
-                child: ListTile(
-                  onTap: () {
-                    CustomNavigation.push(
-                        context, ThemeModeScreen(), 'ThemeModeScreen');
-                  },
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        getThemeModeName(appSettingModel.currentThemeMode),
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      if (appSettingModel.currentThemeMode == ThemeMode.system)
-                        Text(
-                          'System Defaults',
-                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                  trailing: Icon(
-                    Icons.navigate_next,
-                  ),
-                ),
-              ),
-            ),
             SizedBox(height: 20),
 
             //others
@@ -282,26 +247,17 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     title: Text(
-                      'Friends',
+                      'Favorites',
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
                     ),
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: false,
-                        ),
-                        Routes.FRIENDS),
+                    // onTap: () => context.pushNamed(Routes.favorites),
+                    onTap: () => context.pushNamed(Routes.favorites.nameFromPath()),
                   ),
                   ListTile(
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: true,
-                        ),
-                        Routes.FRIENDS),
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
                       'Blocked users',
                       style: Theme.of(context).textTheme.subtitle1,
