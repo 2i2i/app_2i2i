@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_se
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
@@ -15,19 +16,45 @@ import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 
-class CreateBidPage extends ConsumerStatefulWidget {
+class CreateBidPageRouterObject {
+  CreateBidPageRouterObject(
+      {required this.bidIns,
+      required this.hangout,
+      this.sliderHeight,
+      this.min,
+      this.max,
+      this.fullWidth});
   final Hangout hangout;
-  final double sliderHeight;
-  final int min;
-  final int max;
-  final fullWidth;
+  final List<BidInPublic> bidIns;
+  final double? sliderHeight;
+  final int? min;
+  final int? max;
+  final bool? fullWidth;
+}
+
+class CreateBidPage extends ConsumerStatefulWidget {
+  late final Hangout hangout;
+  late final List<BidInPublic> bidIns;
+  late final double sliderHeight;
+  late final int min;
+  late final int max;
+  late final fullWidth;
 
   CreateBidPage(
       {this.sliderHeight = 48,
       this.max = 10,
       required this.hangout,
+      required this.bidIns,
       this.min = 0,
       this.fullWidth = false});
+  CreateBidPage.fromObject(CreateBidPageRouterObject obj) {
+    hangout = obj.hangout;
+    bidIns = obj.bidIns;
+    sliderHeight = obj.sliderHeight ?? 48;
+    min = obj.min ?? 0;
+    max = obj.max ?? 10;
+    fullWidth = obj.fullWidth ?? false;
+  }
 
   @override
   _CreateBidPageState createState() => _CreateBidPageState();
@@ -40,7 +67,34 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? note;
 
-  double _value = 0;
+  String calcWaitTime() {
+    if (amount.assetId != speed.assetId)
+      throw Exception('amount.assetId != speed.assetId');
+
+    final now = DateTime.now().toUtc();
+    final tmpBidIn = BidInPublic(
+        active: false,
+        id: now.microsecondsSinceEpoch.toString(),
+        speed: speed,
+        net: AlgorandNet.testnet,
+        ts: now,
+        budget: amount.num,
+        rule: widget.hangout.rule);
+
+    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
+        widget.hangout.loungeHistory, widget.hangout.loungeHistoryIndex);
+
+    int waitTime = 0;
+    for (final bidIn in sortedBidIns) {
+      if (bidIn.id == tmpBidIn.id) break;
+      waitTime += (bidIn.budget / bidIn.speed.num).round();
+    }
+
+    final waitTimeString = secondsToSensibleTimePeriod(waitTime);
+    return waitTimeString;
+  }
+
+  double _speedSliderValue = 0;
 
   final controller = PageController(initialPage: 0);
 
@@ -208,10 +262,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   ),
                                 ),
                                 child: Slider(
-                                  value: _value,
+                                  value: _speedSliderValue,
                                   onChanged: (value) {
                                     setState(() {
-                                      _value = value;
+                                      _speedSliderValue = value;
                                     });
                                   },
                                 ),

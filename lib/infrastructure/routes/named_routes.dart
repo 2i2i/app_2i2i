@@ -225,10 +225,10 @@ class NamedRoutes {
         name: Routes.createBid.nameFromPath(),
         path: Routes.createBid,
         pageBuilder: (context, state) {
-          if (state.extra is Hangout) {
+          if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage(hangout: state.extra as Hangout)),
+              child: getView(CreateBidPage.fromObject(state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(
