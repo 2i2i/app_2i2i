@@ -30,9 +30,9 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-
-      final meetingDocRef =
-          _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
+      final meetingDocRef = _service.firestore
+          .collection(FirestorePath.meetings())
+          .doc(meeting.id);
 
       final lockObj = {'meeting': meeting.id};
 
@@ -144,8 +144,7 @@ class FirestoreDatabase {
           data: userPrivate.toMap(),
           merge: true);
 
-  Stream<Hangout> userStream({required String uid}) =>
-      _service.documentStream(
+  Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
@@ -257,6 +256,7 @@ class FirestoreDatabase {
           .collectionStream(
         path: FirestorePath.topSpeeds(),
         builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('speed.num', descending: true),
       )
           .handleError((onError) {
         print(onError);
@@ -266,6 +266,7 @@ class FirestoreDatabase {
           .collectionStream(
         path: FirestorePath.topDurations(),
         builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('duration', descending: true),
       )
           .handleError((onError) {
         print(onError);
