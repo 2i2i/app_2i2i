@@ -15,7 +15,8 @@ List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
       .toList();
   List<List<BidInPublic>> sections = _splitByRules(bidInsPublic);
   final sortedSections = sections
-      .map((e) => _combineQueuesCore(e, loungeHistoryAsInts, loungeHistoryIndex))
+      .map(
+          (e) => _combineQueuesCore(e, loungeHistoryAsInts, loungeHistoryIndex))
       .toList();
   final bidInsPublicSorted =
       sortedSections.expand((element) => element).toList();
@@ -23,22 +24,23 @@ List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
 }
 
 List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
-  List<List<BidInPublic>> bidInsPublicSections = [];
+  final List<List<BidInPublic>> bidInsPublicSections = [];
 
-  if(bidInsPublic.isNotEmpty) {
-    HangOutRule currentRule = bidInsPublic.first.rule;
-    List<BidInPublic> currentSection = [];
-    for (final bidIn in bidInsPublic) {
-      if (bidIn.rule == currentRule)
-        currentSection.add(bidIn);
-      else {
-        bidInsPublicSections.add(currentSection);
-        currentSection = [bidIn];
-        currentRule = bidIn.rule;
-      }
+  if (bidInsPublic.isEmpty) return bidInsPublicSections;
+
+  HangOutRule currentRule = bidInsPublic.first.rule;
+  List<BidInPublic> currentSection = [];
+  for (final bidIn in bidInsPublic) {
+    if (bidIn.rule == currentRule)
+      currentSection.add(bidIn);
+    else {
+      bidInsPublicSections.add(currentSection);
+      currentSection = [bidIn];
+      currentRule = bidIn.rule;
     }
-    if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
   }
+  if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
+
   return bidInsPublicSections;
 }
 

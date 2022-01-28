@@ -1,13 +1,5 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutterfire_ui/auth.dart';
-
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 

@@ -1,4 +1,3 @@
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +23,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     });
     super.initState();
   }
-  ValueNotifier<bool> shoeBottomSheet = ValueNotifier(false);
+  ValueNotifier<bool> showBottomSheet = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
@@ -53,7 +52,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       floatingActionButton: FloatingActionButton(
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
         onPressed: () {
-          shoeBottomSheet.value = true;
+          showBottomSheet.value = true;
         },
         child: Icon(
           Icons.add,
@@ -66,11 +65,11 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         ),
       ),
       bottomSheet: ValueListenableBuilder(
-        valueListenable: shoeBottomSheet,
+        valueListenable: showBottomSheet,
         builder: (BuildContext context, bool value, Widget? child) {
           return Visibility(
             visible: value,
-            child: AddAccountOptionsWidgets(showBottom: shoeBottomSheet),
+            child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
           );
         },
       ),
