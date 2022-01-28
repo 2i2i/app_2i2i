@@ -22,11 +22,11 @@ class FirestoreDatabase {
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
-  Future<void> setTestA() => _service.setData(
-        path: FirestorePath.testA(),
-        data: {},
-        merge: true,
-      );
+  // Future<void> setTestA() => _service.setData(
+  //       path: FirestorePath.testA(),
+  //       data: {},
+  //       merge: true,
+  //     );
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
@@ -104,6 +104,7 @@ class FirestoreDatabase {
         }, // TODO move dependency
         merge: true,
       );
+  
   Future<void> unlockUser(String uid) => _service.setData(
         path: FirestorePath.user(uid),
         data: {'meeting': null},
@@ -125,17 +126,16 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUser(Hangout hangout) async {
-    log('setUser - user=$hangout - map=${hangout.toMap()}');
-    _service.setData(
-      path: FirestorePath.user(hangout.id),
-      data: hangout.toMap(),
-      merge: true,
-    );
-    log('setUser - done');
-  }
+  // Future<void> setUser(Hangout hangout) async {
+  //   log('setUser - user=$hangout - map=${hangout.toMap()}');
+  //   _service.setData(
+  //     path: FirestorePath.user(hangout.id),
+  //     data: hangout.toMap(),
+  //     merge: true,
+  //   );
+  //   log('setUser - done');
+  // }
 
-  //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
       _service.setData(
         path: FirestorePath.newRating(uid, meetingId),
@@ -186,12 +186,12 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUserPrivate(
-          {required String uid, required UserModelPrivate userPrivate}) =>
-      _service.setData(
-          path: FirestorePath.userPrivate(uid),
-          data: userPrivate.toMap(),
-          merge: true);
+  // Future<void> setUserPrivate(
+  //         {required String uid, required UserModelPrivate userPrivate}) =>
+  //     _service.setData(
+  //         path: FirestorePath.userPrivate(uid),
+  //         data: userPrivate.toMap(),
+  //         merge: true);
 
   Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
@@ -322,11 +322,11 @@ class FirestoreDatabase {
         return [];
       });
 
-  Future<void> setMeeting(Meeting meeting) => _service.setData(
-        path: FirestorePath.meeting(meeting.id),
-        data: meeting.toMap(),
-        merge: true,
-      );
+  // Future<void> setMeeting(Meeting meeting) => _service.setData(
+  //       path: FirestorePath.meeting(meeting.id),
+  //       data: meeting.toMap(),
+  //       merge: true,
+  //     );
 
   Stream<List<Meeting>> meetingHistoryA(String uid) =>
       _meetingHistoryX(uid, 'A');

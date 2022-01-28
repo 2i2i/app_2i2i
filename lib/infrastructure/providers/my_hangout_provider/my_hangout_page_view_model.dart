@@ -51,13 +51,4 @@ class MyHangoutPageViewModel {
   Future updateHangout(Hangout hangout) async {
     await hangoutChanger.updateHangout(hangout);
   }
-
-  Future setUserPrivate(
-      {required BuildContext context,
-      required String uid,
-      required UserModelPrivate userPrivate}) async {
-    CustomDialogs.loader(true, context);
-    await database.setUserPrivate(uid: uid, userPrivate: userPrivate);
-    CustomDialogs.loader(false, context);
-  }
 }

@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database_tests.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,10 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
           children: [
             !(haveToWait(hangout))
                 ? RectangleBox(
-                    onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':uid}),
+                    // DEBUG - test db rules
+                    onTap: () => runTests(hangout.value!.id),
+                    // DEBUG - test db rules
+                    // onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':uid}),
                     radius: 46,
                     icon: StarWidget(
                       width: 20,

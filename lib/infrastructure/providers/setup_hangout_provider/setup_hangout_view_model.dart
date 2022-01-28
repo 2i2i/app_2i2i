@@ -15,9 +15,10 @@ class SetupUserViewModel with ChangeNotifier {
       required this.algorandLib,
       required this.accountService,
       required this.algorand,
-      required this.storage}) {
-    database.setTestA();
-  }
+      required this.storage});
+  // {
+  // database.setTestA();
+  // }
 
   final FirebaseAuth auth;
   final FirestoreDatabase database;
