@@ -25,7 +25,6 @@ List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
 
 List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   final List<List<BidInPublic>> bidInsPublicSections = [];
-
   if (bidInsPublic.isEmpty) return bidInsPublicSections;
 
   HangOutRule currentRule = bidInsPublic.first.rule;

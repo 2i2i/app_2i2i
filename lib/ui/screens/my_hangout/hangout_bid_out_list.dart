@@ -34,10 +34,10 @@ class UserBidOutsList extends ConsumerWidget {
     }
     List<BidOut> bidOutList = bidInsWithUsers.asData!.value;
     return ListView.builder(
-      primary: false,
-      physics: NeverScrollableScrollPhysics(),
+      // primary: false,
+      // physics: NeverScrollableScrollPhysics(),
       itemCount: bidOutList.length,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 10,bottom: 80),
       itemBuilder: (_, ix) {
         return BidOutTile(
           bidOut: bidOutList[ix],
