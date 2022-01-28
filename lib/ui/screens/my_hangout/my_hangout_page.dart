@@ -1,5 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,9 +82,9 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                 color: Theme.of(context).cardColor,
               ),
               SizedBox(height: 2),
-              Text(Strings().talk,style: Theme.of(context).textTheme.button?.copyWith(
-                color: Colors.white
-              ),)
+              Text(Strings().talk,style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                color: Theme.of(context).cardColor,
+              ))
             ],
           ),
         ),
@@ -108,6 +111,9 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                     },
                     onTapRules: (){
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                    },
+                    onTapQr: (){
+                      showBottomSheet(context: context, builder: (context)=>QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'));
                     },
                     isFav: true,
                   ),
