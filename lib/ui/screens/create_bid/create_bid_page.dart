@@ -9,6 +9,7 @@ import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/strings.dart';
@@ -77,6 +78,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   @override
   void initState() {
+    ref.read(myAccountPageViewModelProvider).initMethod();
     speed = Quantity(num: widget.hangout.rule.minSpeed, assetId: 0);
     updateAccountBalance();
     super.initState();

@@ -19,9 +19,9 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 2)).then((value) {
+    // Future.delayed(Duration(seconds: 2)).then((value) {
       ref.read(myAccountPageViewModelProvider).initMethod();
-    });
+    // });
     super.initState();
   }
 
