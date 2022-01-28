@@ -1,13 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
-import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
+
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateLocalAccount extends ConsumerStatefulWidget {
   const CreateLocalAccount({Key? key}) : super(key: key);
@@ -59,22 +60,24 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                 padding: EdgeInsets.all(8),
                                 children:
                                     List.generate(perhaps.length, (index) {
-                                      return ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor:
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor:
                                           Theme.of(context).primaryColor,
-                                          radius: 10,
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: Theme.of(context).textTheme.caption,
-                                          ),
-                                        ),
-                                        minLeadingWidth: 10,
-                                        title: Text(
-                                          '${perhaps[index]}',
-                                          style: Theme.of(context).textTheme.bodyText2,
-                                        ),
-                                      );
+                                      radius: 10,
+                                      child: Text(
+                                        '${index + 1}',
+                                        style:
+                                            Theme.of(context).textTheme.caption,
+                                      ),
+                                    ),
+                                    minLeadingWidth: 10,
+                                    title: Text(
+                                      '${perhaps[index]}',
+                                      style:
+                                          Theme.of(context).textTheme.bodyText2,
+                                    ),
+                                  );
                                 }),
                               ),
                             ),
@@ -85,10 +88,16 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                       ClipboardData(text: perhaps.join(' ')));
                                   CustomDialogs.showToastMessage(
                                       context, Strings().copyMessage);
-                                  CustomNavigation.pushReplacement(
-                                      context,
-                                      VerifyPerhapsPage(perhaps, account),
-                                      'VerifyPerhapsPage');
+                                      
+                                  context.pushNamed(
+                                    Routes.verifyPerhaps,
+                                    extra: {
+                                      'perhaps': perhaps,
+                                      'account': account,
+                                    },
+                                  );
+
+                                  Navigator.of(context).pop();
                                 }
                               },
                               child: Text(Strings().copyAndNext),

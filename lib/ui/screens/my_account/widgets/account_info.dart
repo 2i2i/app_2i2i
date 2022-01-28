@@ -13,10 +13,12 @@ import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
-  AccountInfo(this.shrinkwrap, {Key? key, required this.account})
+  AccountInfo(this.shrinkwrap,
+      {Key? key, required this.account, this.afterRefresh})
       : super(key: key);
 
   final AbstractAccount account;
+  final void Function()? afterRefresh;
 
   @override
   _AccountInfoState createState() => _AccountInfoState();
@@ -82,9 +84,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           assetName,
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle1?.copyWith(
-                            color: AppTheme().lightSecondaryTextColor
-                          ),
+                              .subtitle1
+                              ?.copyWith(
+                                  color: AppTheme().lightSecondaryTextColor),
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -121,9 +123,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         Text(
                           widget.account.address,
                           maxLines: 4,
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption,
+                          style: Theme.of(context).textTheme.caption,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -144,6 +144,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       onPressed: () async {
                         CustomDialogs.loader(true, context);
                         await widget.account.updateBalances();
+                        if (widget.afterRefresh != null) widget.afterRefresh!();
                         CustomDialogs.loader(false, context);
                         setState(() {});
                       },
@@ -206,7 +207,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 
-  Color? iconColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark?Theme.of(context).colorScheme.secondary:null;
+  Color? iconColor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).colorScheme.secondary
+          : null;
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(

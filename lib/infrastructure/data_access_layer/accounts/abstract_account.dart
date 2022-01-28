@@ -168,6 +168,21 @@ abstract class AbstractAccount {
       waitForConfirmation = true});
   Future<List<Uint8List>> sign(List<RawTransaction> txns);
 
+  int balanceALGO() {
+    for (final b in balances) {
+      if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
+    }
+    throw Exception('balanceALGO - b.assetHolding.assetId == 0 not found');
+  }
+
+  int minBalance() {
+    int asaCount = 0;
+    for (final b in balances) {
+      if (b.assetHolding.assetId != 0) asaCount++;
+    }
+    return 100000 * (1 + asaCount);
+  }
+
   Future<void> updateBalances() async {
     log('updateBalances');
     // final mainnetAssetHoldings = await accountService.getAssetHoldings(

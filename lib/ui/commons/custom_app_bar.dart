@@ -1,15 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+
 
 import '../../infrastructure/providers/all_providers.dart';
 import '../../infrastructure/routes/app_routes.dart';
-import '../screens/rating/rating_page.dart';
 import '../screens/search/widgtes/star_widget.dart';
-import '../screens/top/top_page.dart';
 
 class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
@@ -35,9 +34,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
           children: [
             !(haveToWait(hangout))
                 ? RectangleBox(
-                    onTap: () => CustomNavigation.push(
-                        context, RatingPage(), Routes.RATING),
-                    // onTap: () => AlertWidget.showBidAlert(context, CreateBidWidget()),
+                    onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':uid}),
                     radius: 46,
                     icon: StarWidget(
                       width: 20,
@@ -51,8 +48,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
               width: 10,
             ),
             RectangleBox(
-              onTap: () =>
-                  CustomNavigation.push(context, TopPage(), Routes.TOPPAGE),
+              onTap: () => context.pushNamed(Routes.top.nameFromPath()),
               radius: 46,
               icon: SvgPicture.asset(
                 'assets/icons/crown.svg',

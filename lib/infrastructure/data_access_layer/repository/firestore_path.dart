@@ -6,7 +6,8 @@ class FirestorePath {
   static String users() => 'users';
 
   static String meetings() => 'meetings';
-  static String topMeetings() => 'topMeetings';
+  static String topSpeeds() => 'topSpeeds';
+  static String topDurations() => 'topDurations';
   static String meeting(String meetingId) => 'meetings/$meetingId';
 
   static String bidInsPublic(String uid) => 'users/$uid/bidInsPublic';

@@ -71,7 +71,9 @@ class _CallPageState extends ConsumerState<CallPage>
       if (signaling?.localStream != null) {
         ref.read(callScreenProvider).getInitialValue(signaling!.localStream!);
       }
-      setState(() {});
+      // if(mounted) {
+      //   setState(() {});
+      // }
     });
 
     // no timer for free call
@@ -153,8 +155,8 @@ class _CallPageState extends ConsumerState<CallPage>
     budgetTimer?.cancel();
     progressTimer?.cancel();
 
-    // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
-    // await widget.onHangPhone(otherUid, widget.meeting.id);
+    final otherUid = amA ? widget.meeting.B : widget.meeting.A;
+    widget.onHangPhone(otherUid, widget.meeting.id);
   }
 
   @override

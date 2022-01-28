@@ -63,6 +63,7 @@ class TopMeeting extends Equatable {
     required this.name,
     required this.duration,
     required this.speed,
+    required this.ts,
   });
 
   final String id;
@@ -70,6 +71,7 @@ class TopMeeting extends Equatable {
   final String name;
   final int duration;
   final Quantity speed;
+  final DateTime ts;
 
   @override
   List<Object> get props => [id];
@@ -77,14 +79,21 @@ class TopMeeting extends Equatable {
   @override
   bool get stringify => true;
 
-  factory TopMeeting.fromMap(Map<String, dynamic> data) {
-    final id = data['id'] as String;
+  factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('TopMeeting.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final id = documentId;
     final B = data['B'] as String;
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
+    final DateTime ts = data['ts'].toDate();
+
     return TopMeeting(
-        id: id, B: B, name: name, duration: duration, speed: speed);
+        id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
 }
 
@@ -183,8 +192,7 @@ class Meeting extends Equatable {
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
 
-  // null in free call
-  final MeetingTxns txns;
+  final Map<String, String> txns;
 
   final MeetingStatus status;
   final List<MeetingStatusWithTS> statusHistory;
@@ -232,7 +240,10 @@ class Meeting extends Equatable {
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
-    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
+    final Map<String, String> txns = {};
+    for (final String k in data['txns'].keys) {
+      txns[k] = data['txns'][k] as String;
+    }
 
     final MeetingStatus status = MeetingStatus.values
         .firstWhere((e) => e.toStringEnum() == data['status']);
@@ -303,7 +314,7 @@ class Meeting extends Equatable {
       start: null,
       end: null,
       duration: null,
-      txns: MeetingTxns(),
+      txns: {},
       status: MeetingStatus.ACCEPTED_B,
       statusHistory: [
         MeetingStatusWithTS(
@@ -330,7 +341,7 @@ class Meeting extends Equatable {
       'start': start,
       'end': end,
       'duration': duration,
-      'txns': txns.toMap(),
+      'txns': txns,
       'status': status.toStringEnum(),
       'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
@@ -371,48 +382,4 @@ class RatingModel {
       'comment': comment,
     };
   }
-}
-
-class MeetingTxns {
-  MeetingTxns(
-      {this.group,
-      this.lockALGO,
-      this.lockASA,
-      this.state,
-      this.unlock,
-      this.optIn});
-  String? group;
-  String? lockALGO;
-  String? lockASA;
-  String? state;
-  String? unlock;
-  String? optIn;
-  factory MeetingTxns.fromMap(Map<String, dynamic> data) {
-    final String? group = data['group'];
-    final String? lockALGO = data['lockALGO'];
-    final String? lockASA = data['lockASA'];
-    final String? state = data['state'];
-    final String? unlock = data['unlock'];
-    final String? optIn = data['optIn'];
-    return MeetingTxns(
-      group: group,
-      lockALGO: lockALGO,
-      lockASA: lockASA,
-      state: state,
-      unlock: unlock,
-      optIn: optIn,
-    );
-  }
-  Map<String, dynamic> toMap() {
-    return {
-      'group': group,
-      'lockALGO': lockALGO,
-      'lockASA': lockASA,
-      'state': state,
-      'unlock': unlock,
-      'optIn': optIn,
-    };
-  }
-
-  String? lockId({required bool isALGO}) => isALGO ? lockALGO : lockASA;
 }

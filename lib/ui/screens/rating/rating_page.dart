@@ -9,9 +9,9 @@ import '../home/wait_page.dart';
 import 'widgets/rating_tile.dart';
 
 class RatingPage extends ConsumerStatefulWidget {
-  final Hangout? hangout;
+  final String uid;
 
-  RatingPage({this.hangout});
+  RatingPage({required this.uid});
 
   @override
   _RatingPageState createState() => _RatingPageState();
@@ -22,16 +22,10 @@ class _RatingPageState extends ConsumerState<RatingPage> {
 
   @override
   Widget build(BuildContext context) {
-    String uid;
-    if (widget.hangout != null) {
-      uid = widget.hangout!.id;
-      hangout = widget.hangout;
-    } else {
-      uid = ref.watch(myUIDProvider)!;
-      hangout = ref.watch(userPageViewModelProvider(uid))?.hangout;
-    }
 
-    final ratingListAsyncValue = ref.watch(ratingListProvider(uid));
+    hangout = ref.watch(userPageViewModelProvider(widget.uid))?.hangout;
+
+    final ratingListAsyncValue = ref.watch(ratingListProvider(widget.uid));
 
     if (haveToWait(ratingListAsyncValue)) {
       return WaitPage();

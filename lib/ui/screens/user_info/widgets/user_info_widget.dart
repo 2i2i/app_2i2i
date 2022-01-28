@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -17,7 +18,8 @@ class UserInfoWidget extends StatefulWidget {
       {Key? key,
       required this.hangout,
       required this.onTapFav,
-      required this.isFav, this.onTapRules})
+      required this.isFav,
+      this.onTapRules})
       : super(key: key);
 
   @override
@@ -60,7 +62,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkWell(
                       onTap: widget.onTapFav,
                       child: Icon(
-                        widget.isFav ? Icons.favorite : Icons.favorite_border,
+                        widget.isFav
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: widget.isFav ? Colors.red : Colors.grey,
                       ),
                     )
                   ],
@@ -137,7 +142,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           ],
         ),
         SizedBox(height: 20),
-        UserRulesWidget(hangout:widget.hangout,onTapRules: widget.onTapRules,),
+        UserRulesWidget(
+          hangout: widget.hangout,
+          onTapRules: widget.onTapRules,
+        ),
         SizedBox(height: 10),
       ],
     );
@@ -152,13 +160,25 @@ class UserRulesWidget extends StatelessWidget {
   final Hangout hangout;
 
   final GestureTapCallback? onTapRules;
-  const UserRulesWidget({Key? key, required this.hangout, this.onTapRules}) : super(key: key);
+  const UserRulesWidget({Key? key, required this.hangout, this.onTapRules})
+      : super(key: key);
+
+  String importanceString() {
+    final c = hangout.rule.importance[Lounge.chrony]!;
+    final h = hangout.rule.importance[Lounge.highroller]!;
+    final N = c + h;
+    final isChrony = c <= h;
+    final lounge = isChrony ? Lounge.chrony : Lounge.highroller;
+    final ratio = (isChrony ? N / c : N / h).round();
+    final postfix = ordinalIndicator(ratio);
+    return '~ every $ratio$postfix is a ${lounge.name()}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: InkWell(
-        onTap: ()=>onTapRules?.call(),
+        onTap: () => onTapRules?.call(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: ListTile.divideTiles(
@@ -168,10 +188,9 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${hangout.rule.minSpeed}',
+                    '${microALGOToLargerUnit(hangout.rule.minSpeed, maxDigits: 2, unitALGO: 'A')}/s',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary
-                    ),
+                        color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
@@ -180,6 +199,7 @@ class UserRulesWidget extends StatelessWidget {
                       Icon(
                         Icons.bolt,
                         size: 17,
+                        color: Theme.of(context).textTheme.caption?.color,
                       ),
                       SizedBox(width: 2),
                       Text(
@@ -195,17 +215,15 @@ class UserRulesWidget extends StatelessWidget {
                 width: 1,
                 color: Theme.of(context).dividerColor,
               ),
-
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    getDuration(Duration(
-                        seconds: hangout.rule.maxMeetingDuration)),
+                    secondsToSensibleTimePeriod(
+                        hangout.rule.maxMeetingDuration),
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary
-                    ),
+                        color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
@@ -230,16 +248,14 @@ class UserRulesWidget extends StatelessWidget {
                 width: 1,
                 color: Theme.of(context).dividerColor,
               ),
-
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${hangout.rule.importance[Lounge.highroller]}',
+                    '${importanceString()}',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary
-                    ),
+                        color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
@@ -252,41 +268,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        '${Lounge.highroller.name}',
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Container(
-                height: 25,
-                width: 1,
-                color: Theme.of(context).dividerColor,
-              ),
-
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '${hangout.rule.importance[Lounge.chrony]}',
-                    style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.arrow_upward,
-                        size: 17,
-                        color: Theme.of(context).textTheme.caption?.color,
-                      ),
-                      SizedBox(width: 2),
-                      Text(
-                        Lounge.highroller.name,
+                        'Importance',
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
