@@ -17,10 +17,8 @@ class OtherBidInList extends ConsumerWidget {
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
     if (bidIns.isEmpty) return Container();
     return ListView.builder(
-      primary: false,
-      physics: NeverScrollableScrollPhysics(),
       itemCount: bidIns.length,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 10,left: 10,right: 10,bottom: kToolbarHeight),
       itemBuilder: (_, ix) {
         return OtherBidTile(
           bidIn: bidIns[ix],

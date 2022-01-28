@@ -1,4 +1,3 @@
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +23,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     // });
     super.initState();
   }
-
+  ValueNotifier<bool> showBottomSheet = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
@@ -51,7 +50,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        onPressed: () {
+          showBottomSheet.value = true;
+        },
         child: Icon(
           Icons.add,
           color: Theme.of(context).cardColor,
@@ -61,6 +63,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+      ),
+      bottomSheet: ValueListenableBuilder(
+        valueListenable: showBottomSheet,
+        builder: (BuildContext context, bool value, Widget? child) {
+          return Visibility(
+            visible: value,
+            child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
+          );
+        },
       ),
     );
   }
