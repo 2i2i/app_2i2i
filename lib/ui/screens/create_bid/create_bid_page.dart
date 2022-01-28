@@ -99,8 +99,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
           ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
               .floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+      maxDuration = min(maxDuration, maxMaxDuration.toDouble());
     }
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    setState(() {});
   }
 
   String calcWaitTime() {
@@ -123,7 +126,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     int waitTime = 0;
     for (final bidIn in sortedBidIns) {
       if (bidIn.id == tmpBidIn.id) break;
-      waitTime += (bidIn.budget / bidIn.speed.num).round();
+      int bidDuration = widget.hangout.rule.maxMeetingDuration;
+      if (bidIn.speed.num != 0)
+        bidDuration =
+            min((bidIn.budget / bidIn.speed.num).round(), bidDuration);
+      waitTime += bidDuration;
     }
 
     final waitTimeString = secondsToSensibleTimePeriod(waitTime);
@@ -266,9 +273,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         final num = int.tryParse(value) ?? 0;
                         speed = Quantity(num: num, assetId: speed.assetId);
                         update();
-                        if (mounted) {
-                          setState(() {});
-                        }
                       },
                     ),
                   ),
@@ -329,14 +333,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                 child: Slider(
                                   min: minMaxDuration.toDouble(),
                                   max: maxMaxDuration.toDouble(),
-                                  divisions:
-                                      min(100, maxMaxDuration - minMaxDuration),
+                                  divisions: maxMaxDuration == minMaxDuration
+                                      ? null
+                                      : min(
+                                          100, maxMaxDuration - minMaxDuration),
                                   value: maxDuration,
                                   onChanged: (value) {
-                                    setState(() {
-                                      maxDuration = value;
-                                      update();
-                                    });
+                                    maxDuration = value;
+                                    update();
                                   },
                                 ),
                               ),
@@ -380,6 +384,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     .accounts![index].address),
                                 account:
                                     myAccountPageViewModel.accounts![index],
+                                afterRefresh: updateAccountBalance,
                               ),
                             );
                           },
@@ -390,7 +395,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             account = newAccount;
                             if (mounted) {
                               updateAccountBalance();
-                              setState(() {});
                             }
                           },
                         )

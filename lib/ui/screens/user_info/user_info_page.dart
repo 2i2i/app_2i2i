@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 
@@ -53,6 +54,8 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.uid));
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
     final bidIns = bidInsAsyncValue.value!;
+    final bidInsSorted = combineQueues(
+        bidIns, hangout.loungeHistory, hangout.loungeHistoryIndex);
 
     return Scaffold(
       appBar: AppBar(
@@ -87,7 +90,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           child: InkResponse(
             onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),
                 extra: CreateBidPageRouterObject(
-                    hangout: hangout, bidIns: bidIns)),
+                    hangout: hangout, bidIns: bidInsSorted)),
             child: Container(
               width: kToolbarHeight * 1.15,
               height: kToolbarHeight * 1.15,
@@ -143,7 +146,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           Expanded(
             child: OtherBidInList(
               hangout: hangout,
-              bidIns: bidIns,
+              bidIns: bidInsSorted,
             ),
           ),
         ],

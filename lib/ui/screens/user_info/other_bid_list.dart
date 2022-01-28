@@ -23,8 +23,7 @@ class OtherBidInList extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       itemBuilder: (_, ix) {
         return OtherBidTile(
-          otherBidList: bidIns,
-          index: ix,
+          bidIn: bidIns[ix],
           hangout: hangout,
         );
       },
