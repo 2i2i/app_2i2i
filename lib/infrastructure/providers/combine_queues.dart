@@ -37,8 +37,8 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
       currentSection = [bidIn];
       currentRule = bidIn.rule;
     }
-    if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
   }
+  if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
 
   return bidInsPublicSections;
 }
