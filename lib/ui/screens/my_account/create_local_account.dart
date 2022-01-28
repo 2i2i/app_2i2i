@@ -84,11 +84,10 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                             ElevatedButton(
                               onPressed: () {
                                 if (perhaps.isNotEmpty) {
-                                  Clipboard.setData(
-                                      ClipboardData(text: perhaps.join(' ')));
-                                  CustomDialogs.showToastMessage(
-                                      context, Strings().copyMessage);
-                                      
+                                  Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
+                                  CustomDialogs.showToastMessage(context, Strings().copyMessage);
+                                  context.pop();
+
                                   context.pushNamed(
                                     Routes.verifyPerhaps,
                                     extra: {
@@ -97,7 +96,6 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                     },
                                   );
 
-                                  Navigator.of(context).pop();
                                 }
                               },
                               child: Text(Strings().copyAndNext),
