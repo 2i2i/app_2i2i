@@ -27,6 +27,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 10),
             Text(
               Strings().fav,
               style: Theme.of(context).textTheme.headline5,

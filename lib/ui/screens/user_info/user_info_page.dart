@@ -146,9 +146,17 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                 hangout: hangout,
                 isFav: isFriend,
                 onTapQr: (){
-                  showBottomSheet(
-                      context: context,
-                      builder: (context)=>QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'));
+                  showDialog(
+                    context: context,
+                    builder: (context)=>FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: SizedBox(
+                        height: 400,
+                        width: 350,
+                        child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),
+                      ),
+                    ),
+                  );
                 },
                 onTapFav: () {
                   if (userModelChanger != null) {

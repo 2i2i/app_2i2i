@@ -18,6 +18,7 @@ import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
+import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
@@ -213,6 +214,16 @@ class NamedRoutes {
         },
       ),
       GoRoute(
+        name: Routes.meetingHistory.nameFromPath(),
+        path: Routes.meetingHistory,
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(MeetingHistoryList()),
+          );
+        },
+      ),
+      GoRoute(
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
@@ -279,20 +290,35 @@ class NamedRoutes {
               if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
                 final Hangout hangout = hangoutProviderVal.asData!.value;
                 if (hangout.name.trim().isEmpty) {
-                  return WillPopScope(
-                    onWillPop: () {
-                      return Future.value(true);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: HangoutSetting(
-                        fromBottomSheet: true,
+                  return BottomSheet(
+                    enableDrag: true,
+                    backgroundColor: Theme.of(context).cardColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
                       ),
                     ),
+                    elevation: 12,
+                    builder: (BuildContext context) {
+                      return WillPopScope(
+                        onWillPop: () {
+                          return Future.value(true);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: HangoutSetting(
+                            fromBottomSheet: true,
+                          ),
+                        ),
+                      );
+                    },
+                    onClosing: () {},
                   );
                 }
               }
             }
+
             return Container(height: 0);
           },
         ),

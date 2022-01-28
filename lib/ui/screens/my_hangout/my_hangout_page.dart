@@ -106,66 +106,39 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   SizedBox(height: 8),
                   UserInfoWidget(
                     hangout: hangout,
-                    onTapFav: () {
-                      context.pushNamed(Routes.favorites.nameFromPath());
-                    },
                     onTapRules: (){
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     onTapQr: (){
-                      showBottomSheet(context: context, builder: (context)=>QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'));
+                      showDialog(
+                          context: context,
+                          builder: (context)=>FittedBox(
+                            fit: BoxFit.scaleDown,
+                              child: SizedBox(
+                                height: 400,
+                                  width: 350,
+                                  child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),
+                              ),
+                          ),
+                      );
                     },
                     isFav: true,
                   ),
-                  SizedBox(height: 14),
-                  Container(
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(118, 118, 128, 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TabBar(
-                      controller: _tabController,
-                      indicatorPadding: EdgeInsets.all(3),
-                      indicator: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      unselectedLabelColor:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor,
-                      labelColor:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor,
-                      tabs: [
-                        Tab(
-                          text: Strings().bidIn,
-                        ),
-                        Tab(
-                          text: Strings().history,
-                        ),
-                      ],
-                    ),
-                  )
                 ],
               ),
             ),
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  UserBidInsList(
-                    uid: myHangoutPageViewModel.hangout!.id,
-                    titleWidget: Text(
-                      'Bids In',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    noBidsText: Strings().noBidFound,
-                    onTap: (x) => {}, //myUserPageViewModel.acceptBid,
-                  ),
-                  MeetingHistoryList(),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+              child: UserBidInsList(
+                uid: myHangoutPageViewModel.hangout!.id,
+                titleWidget: Text(
+                  'Bids In',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                noBidsText: Strings().noBidFound,
+                onTap: (x) => {}, //myUserPageViewModel.acceptBid,
               ),
             ),
           ),

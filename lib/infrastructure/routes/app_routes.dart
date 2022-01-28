@@ -14,7 +14,7 @@ class Routes {
   static const blocks = '/blocks';
   static const favorites = '/favorites';
   static const hangoutSetting = '/hangoutSetting';
-  static const recover ='/recover';
+  static const recover = '/recover';
   static const createLocalAccount = '/createLocalAccount';
 
   static const user = '/user/:uid';
@@ -23,13 +23,20 @@ class Routes {
 
   static const verifyPerhaps = '/verifyPerhaps';
 
+  static const meetingHistory = '/meetingHistory';
 }
 
 extension name on String{
   String nameFromPath(){
-    switch (this){
+    switch (this) {
       case Routes.root:
         return 'root';
+      case Routes.search:
+        return 'search';
+      case Routes.myHangout:
+        return 'myHangout';
+      case Routes.bidOut:
+        return 'bidOut';
       case Routes.login:
         return 'login';
       case Routes.lock:
@@ -40,6 +47,8 @@ extension name on String{
         return 'blocks';
       case Routes.favorites:
         return 'favorites';
+      case Routes.setting:
+        return 'setting';
       case Routes.hangoutSetting:
         return 'hangoutSetting';
       case Routes.recover:
@@ -52,6 +61,12 @@ extension name on String{
         return 'rating';
       case Routes.createLocalAccount:
         return 'createLocalAccount';
+      case Routes.account:
+        return 'account';
+      case Routes.faq:
+        return 'faq';
+      case Routes.meetingHistory:
+        return 'meetingHistory';
       default:
         return this;
     }

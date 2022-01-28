@@ -25,35 +25,40 @@ class UserBidOut extends ConsumerWidget {
     }
     List<BidOut> bidOutList = bidInsWithUsers.asData!.value;
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+      body: Padding(
+        padding: EdgeInsets.only(bottom: 10,top: kIsWeb?10:31),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 5),
-            Text(
-              Strings().bidOut,
-              style: Theme.of(context).textTheme.headline5,
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 30,left: 30),
+              child: Text(
+                Strings().bidOut,
+                style: Theme.of(context).textTheme.headline5,
+              ),
             ),
             SizedBox(height: 15),
 
-            ListView.builder(
-              //primary: false,
-              //physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: bidOutList.length,
-              padding: const EdgeInsets.only(top: 10,bottom: 80),
-              itemBuilder: (_, ix) {
-                return BidOutTile(
-                  bidOut: bidOutList[ix],
-                  onCancelClick: (bidOut) async{
-                    CustomDialogs.loader(true, context);
-                    final myHangoutPageViewModel = ref.read(myHangoutPageViewModelProvider);
-                    await myHangoutPageViewModel?.cancelBid(bidId: bidOut.id, B: bidOut.B, speed: bidOut.speed);
-                    CustomDialogs.loader(false, context);
-                  },
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                //primary: false,
+                //physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: bidOutList.length,
+                itemBuilder: (_, ix) {
+                  return BidOutTile(
+                    bidOut: bidOutList[ix],
+                    onCancelClick: (bidOut) async{
+                      CustomDialogs.loader(true, context);
+                      final myHangoutPageViewModel = ref.read(myHangoutPageViewModelProvider);
+                      await myHangoutPageViewModel?.cancelBid(bidId: bidOut.id, B: bidOut.B, speed: bidOut.speed);
+                      CustomDialogs.loader(false, context);
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

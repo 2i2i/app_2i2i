@@ -12,7 +12,7 @@ class QrCodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: Custom.getBoxDecoration(context, radius: 0),
+      decoration: Custom.getBoxDecoration(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20.0),
         child: Column(

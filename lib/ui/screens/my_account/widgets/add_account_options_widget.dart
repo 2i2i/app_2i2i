@@ -80,7 +80,6 @@ class _AddAccountOptionsWidgetsState
           ListTile(
             onTap: () {
               widget.showBottom?.value = false;
-              Navigator.of(context).maybePop();
               context.pushNamed(Routes.recover.nameFromPath());
             },
             leading: Container(
@@ -116,7 +115,6 @@ class _AddAccountOptionsWidgetsState
           ListTile(
             onTap: () async {
               widget.showBottom?.value = false;
-              Navigator.of(context).maybePop();
               context.pushNamed(Routes.createLocalAccount.nameFromPath());
             },
             leading: Container(

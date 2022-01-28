@@ -9,7 +9,7 @@ import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
   final Hangout hangout;
-  final GestureTapCallback onTapFav;
+  final GestureTapCallback? onTapFav;
   final bool isFav;
 
   final onTapQr;
@@ -19,7 +19,7 @@ class UserInfoWidget extends StatefulWidget {
   const UserInfoWidget(
       {Key? key,
       required this.hangout,
-      required this.onTapFav,
+        this.onTapFav,
       required this.isFav,
       this.onTapRules,
       this.onTapQr,
@@ -69,6 +69,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         Icons.qr_code
                       ),
                     ),
+                    if(widget.onTapFav != null)
                     IconButton(
                       onPressed: widget.onTapFav,
                       icon: Icon(

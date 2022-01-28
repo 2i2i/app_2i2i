@@ -1,9 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import 'widgets/account_info.dart';
@@ -33,11 +32,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
       body: Padding(
-        padding: EdgeInsets.only(right: 15,left: 15, bottom: 10,top: kIsWeb?10:31),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 5),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Text(
@@ -73,26 +71,45 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       floatingActionButton: FloatingActionButton(
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
         onPressed: () {
-          showBottomSheet.value = true;
+          showBottomSheet.value = !showBottomSheet.value;
         },
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).cardColor,
-          size: 35,
+        child: ValueListenableBuilder(
+          valueListenable: showBottomSheet,
+          builder: (BuildContext context, bool value, Widget? child) {
+            return Icon(
+              value?Icons.close:Icons.add,
+              color: Theme.of(context).cardColor,
+              size: 35,
+            );
+          },
         ),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      bottomSheet: ValueListenableBuilder(
-        valueListenable: showBottomSheet,
-        builder: (BuildContext context, bool value, Widget? child) {
-          return Visibility(
-            visible: value,
-            child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
+      bottomSheet: BottomSheet(
+        onClosing: () {},
+        builder: (BuildContext context) {
+          return ValueListenableBuilder(
+            valueListenable: showBottomSheet,
+            builder: (BuildContext context, bool value, Widget? child) {
+              return Visibility(
+                visible: value,
+                child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
+              );
+            },
           );
         },
+        elevation: 12,
+        enableDrag: true,
+        backgroundColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
       ),
     );
   }

@@ -22,7 +22,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: EdgeInsets.only(right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 31),
+        padding: EdgeInsets.only(right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

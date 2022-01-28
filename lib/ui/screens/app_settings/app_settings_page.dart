@@ -40,7 +40,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             Text(
               'Settings',
               style: Theme.of(context).textTheme.headline5,
@@ -119,15 +119,29 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 12),
             Container(
               decoration: Custom.getBoxDecoration(context),
-              child: ListTile(
-                onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
-                title: Text(
-                  Strings().blockList,
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-                trailing: Icon(
-                  Icons.navigate_next,
-                ),
+              child: Column(
+                children: [
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    title: Text(
+                      Strings().blockList,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    title: Text(
+                      Strings().meetingsHistory,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
