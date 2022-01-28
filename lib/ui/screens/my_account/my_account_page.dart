@@ -1,5 +1,7 @@
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -29,26 +31,44 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     return Scaffold(
-      appBar: CustomAppbar(),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Visibility(
-            visible: myAccountPageViewModel.isLoading,
-            child: WaitPage(),
-          ),
-          ListView.builder(
-            itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            itemBuilder: (BuildContext context, int index) {
-              return AccountInfo(
-                true,
-                key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                account: myAccountPageViewModel.accounts![index],
-              );
-            },
-          )
-        ],
+      appBar: AppBar(backgroundColor: Colors.transparent),
+      body: Padding(
+        padding: EdgeInsets.only(right: 15,left: 15, bottom: 10,top: kIsWeb?10:31),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Text(
+                Strings().wallet,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+            ),
+            SizedBox(height: 15),
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  if(myAccountPageViewModel.isLoading){
+                    return WaitPage(isCupertino: true,);
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    itemBuilder: (BuildContext context, int index) {
+                      return AccountInfo(
+                        true,
+                        key: ObjectKey(myAccountPageViewModel.accounts![index].address),
+                        account: myAccountPageViewModel.accounts![index],
+                      );
+                    },
+                  );
+                }
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),

@@ -48,7 +48,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 15),
             //profile
             Text(
-              'Profile',
+              Strings().account,
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -94,11 +94,43 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                     trailing: Icon(Icons.navigate_next),
                   ),
+                  ListTile(
+                    onTap: (){
+                      context.pushNamed(Routes.account.nameFromPath());
+                    },
+                    title: Text(
+                      Strings().wallet,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: 20),
 
+            //others
+            Text(
+              'Others',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: ListTile(
+                onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                title: Text(
+                  Strings().blockList,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
 
             //theme
             Text(
@@ -153,42 +185,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                 );
               },
-            ),
-            SizedBox(height: 20),
-
-            //others
-            Text(
-              'Others',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'Favorites',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                    // onTap: () => context.pushNamed(Routes.favorites),
-                    onTap: () => context.pushNamed(Routes.favorites.nameFromPath()),
-                  ),
-                  ListTile(
-                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
-                    title: Text(
-                      'Blocked users',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                  ),
-                ],
-              ),
             ),
             SizedBox(height: 20),
 

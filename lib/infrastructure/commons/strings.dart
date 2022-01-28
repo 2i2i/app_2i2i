@@ -33,6 +33,16 @@ class Strings {
   String invalid = 'Invalid';
 
   String join = 'Join';
+
+  var favorites = 'Favorites';
+
+  String wallet = 'Wallet';
+
+  String blockList = 'Blocked list';
+
+  String favList = 'Favorite List';
+  String fav = 'Favorites';
+
   Strings._internal();
 
   factory Strings() {

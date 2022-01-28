@@ -31,7 +31,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -140,9 +140,6 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                           text: Strings().bidIn,
                         ),
                         Tab(
-                          text: Strings().bidOut,
-                        ),
-                        Tab(
                           text: Strings().history,
                         ),
                       ],
@@ -166,24 +163,6 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                     ),
                     noBidsText: Strings().noBidFound,
                     onTap: (x) => {}, //myUserPageViewModel.acceptBid,
-                  ),
-                  UserBidOutsList(
-                    uid: myHangoutPageViewModel.hangout!.id,
-                    titleWidget: Text(
-                      'Bids Out',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    noBidsText: Strings().noBidFound,
-                    trailingIcon: Icon(
-                      Icons.cancel,
-                      color: Color.fromRGBO(104, 160, 242, 1),
-                    ),
-                    onTrailingIconClick: (BidOut bidOut) async {
-                      CustomDialogs.loader(true, context);
-                      await myHangoutPageViewModel.cancelBid(
-                          bidId: bidOut.id, B: bidOut.B, speed: bidOut.speed);
-                      CustomDialogs.loader(false, context);
-                    },
                   ),
                   MeetingHistoryList(),
                 ],
