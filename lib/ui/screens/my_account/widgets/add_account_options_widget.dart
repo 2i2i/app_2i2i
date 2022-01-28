@@ -16,7 +16,8 @@ import '../../../../infrastructure/providers/my_account_provider/my_account_page
 import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
-  const AddAccountOptionsWidgets({Key? key}) : super(key: key);
+  final ValueNotifier? showBottom;
+  const AddAccountOptionsWidgets({Key? key,this.showBottom}) : super(key: key);
 
   @override
   _AddAccountOptionsWidgetsState createState() =>
@@ -42,10 +43,9 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel =
-                  ref.read(myAccountPageViewModelProvider);
-              await _createSession(myAccountPageViewModel,
-                  myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+              _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+              widget.showBottom?.value = false;
             },
             leading: Container(
               height: 50,
@@ -79,12 +79,9 @@ class _AddAccountOptionsWidgetsState
           ),
           ListTile(
             onTap: () {
+              widget.showBottom?.value = false;
               Navigator.of(context).maybePop();
-              Future.delayed(Duration.zero).then(
-                (value) {
-                  context.pushNamed(Routes.recover.nameFromPath());
-                },
-              );
+              context.pushNamed(Routes.recover.nameFromPath());
             },
             leading: Container(
               height: 50,
@@ -118,6 +115,7 @@ class _AddAccountOptionsWidgetsState
           ),
           ListTile(
             onTap: () async {
+              widget.showBottom?.value = false;
               Navigator.of(context).maybePop();
               context.pushNamed(Routes.createLocalAccount.nameFromPath());
             },
