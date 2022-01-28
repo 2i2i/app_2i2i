@@ -43,6 +43,8 @@ class Strings {
   String favList = 'Favorite List';
   String fav = 'Favorites';
 
+  String scanQr = 'Scan QR';
+
   Strings._internal();
 
   factory Strings() {

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
@@ -28,11 +27,12 @@ class _AddAccountOptionsWidgetsState
     extends ConsumerState<AddAccountOptionsWidgets> {
   String _displayUri = '';
 
-  bool isDialogOpen = false;
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
       defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
+
   @override
   Widget build(BuildContext context) {
     buildContext = context;
@@ -163,10 +163,7 @@ class _AddAccountOptionsWidgetsState
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       _displayUri = '';
-      if (isDialogOpen) {
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.of(context).pop();
-      }
+      isDialogOpen.value = false;
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
     }
@@ -181,11 +178,20 @@ class _AddAccountOptionsWidgetsState
     if (isMobile) {
       await launch(uri);
     } else {
-      isDialogOpen = true;
+      isDialogOpen.value = true;
       await showDialog(
         context: context,
-        builder: (context) => QrImagePage(imageUrl: _displayUri),
-        barrierDismissible: false,
+        builder: (context) => ValueListenableBuilder(
+            valueListenable: isDialogOpen,
+            builder: (BuildContext context, bool value, Widget? child) {
+              if(!value){
+                Navigator.of(context).pop();
+              }
+              return QrImagePage(imageUrl: _displayUri);
+            },
+
+        ),
+        barrierDismissible: true,
       );
     }
   }
