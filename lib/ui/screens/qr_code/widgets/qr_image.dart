@@ -10,11 +10,13 @@ class QrWidget extends ConsumerWidget {
   final imageSize;
   final logoSize;
   final message;
+  final bool? hideLogo;
 
   const QrWidget({
     Key? key,
     this.imageSize,
     this.logoSize,
+    this.hideLogo,
     required this.message,
   }) : super(key: key);
 
@@ -58,7 +60,7 @@ class QrWidget extends ConsumerWidget {
                 // color: Theme.of(context).colorScheme.secondary,
                 color: Theme.of(context).iconTheme.color,
               ),
-              embeddedImage: snapshot.data,
+              embeddedImage: (hideLogo??false)?null:snapshot.data,
               embeddedImageStyle: QrEmbeddedImageStyle(
                   size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
             ),

@@ -6,9 +6,10 @@ import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
-import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
+import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
+import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
@@ -16,6 +17,8 @@ import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
+import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
+import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
@@ -91,6 +94,15 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(AppSettingPage()),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.bidOut.nameFromPath(),
+        path: Routes.bidOut,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(UserBidOut()),
           // child: Scaffold(),
         ),
       ),
@@ -177,7 +189,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(FriendsListPage(isForBlockedUser: true)),
+            child: getView(BlockListPage()),
           );
         },
       ),
@@ -187,7 +199,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(FriendsListPage(isForBlockedUser: false)),
+            child: getView(FavoriteListPage()),
           );
         },
       ),
@@ -198,6 +210,16 @@ class NamedRoutes {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(CreateLocalAccount()),
+          );
+        },
+      ),
+      GoRoute(
+        name: Routes.meetingHistory.nameFromPath(),
+        path: Routes.meetingHistory,
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(MeetingHistoryList()),
           );
         },
       ),
@@ -268,20 +290,35 @@ class NamedRoutes {
               if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
                 final Hangout hangout = hangoutProviderVal.asData!.value;
                 if (hangout.name.trim().isEmpty) {
-                  return WillPopScope(
-                    onWillPop: () {
-                      return Future.value(true);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: HangoutSetting(
-                        fromBottomSheet: true,
+                  return BottomSheet(
+                    enableDrag: true,
+                    backgroundColor: Theme.of(context).cardColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
                       ),
                     ),
+                    elevation: 12,
+                    builder: (BuildContext context) {
+                      return WillPopScope(
+                        onWillPop: () {
+                          return Future.value(true);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: HangoutSetting(
+                            fromBottomSheet: true,
+                          ),
+                        ),
+                      );
+                    },
+                    onClosing: () {},
                   );
                 }
               }
             }
+
             return Container(height: 0);
           },
         ),
@@ -307,10 +344,10 @@ class NamedRoutes {
                             context.go(Routes.myHangout);
                             break;
                           case 2:
-                            context.go(Routes.account);
+                            context.go(Routes.bidOut);
                             break;
                           case 3:
-                            context.go(Routes.faq);
+                            context.go(Routes.favorites);
                             break;
                           case 4:
                             context.go(Routes.setting);
@@ -337,27 +374,27 @@ class NamedRoutes {
                           icon: ProfileIcon(),
                         ),
                         BottomNavigationBarItem(
-                          label: Strings().account,
+                          label: Strings().bidOut,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/account.svg',
+                            child: Icon(Icons.call_made,
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/account.svg'),
+                            child: Icon(Icons.call_made),
                           ),
                         ),
                         BottomNavigationBarItem(
-                          label: Strings().faq,
+                          label: Strings().favorites,
                           activeIcon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/help.svg',
+                            child: Icon(Icons.favorite,
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                           icon: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/help.svg'),
+                            child: Icon(Icons.favorite),
                           ),
                         ),
                         BottomNavigationBarItem(

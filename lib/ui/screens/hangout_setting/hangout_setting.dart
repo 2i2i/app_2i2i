@@ -168,19 +168,19 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Form(
         key: formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Text(
               widget.fromBottomSheet ?? false
                   ? Strings().setUpAccount
                   : Strings().hangoutSettings,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
 

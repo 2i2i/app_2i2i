@@ -1,7 +1,10 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
+import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -104,16 +107,27 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .secondary // changes position of shadow
-                      ),
+                  ),
                 ],
               ),
-              child: Icon(
-                Icons.add_rounded,
-                size: 30,
-                color: Theme.of(context).cardColor,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.call_merge,
+                    size: 30,
+                    color: Theme.of(context).cardColor,
+                  ),
+                  SizedBox(height: 2),
+                  Text(Strings().join,style: Theme.of(context).textTheme.button?.copyWith(
+                      color: Theme.of(context).cardColor
+                  ),)
+                ],
               ),
             ),
-          )),
+          ),
+      ),
       body: Column(
         children: [
           Card(
@@ -131,6 +145,19 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               child: UserInfoWidget(
                 hangout: hangout,
                 isFav: isFriend,
+                onTapQr: (){
+                  showDialog(
+                    context: context,
+                    builder: (context)=>FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: SizedBox(
+                        height: 400,
+                        width: 350,
+                        child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),
+                      ),
+                    ),
+                  );
+                },
                 onTapFav: () {
                   if (userModelChanger != null) {
                     if (!isFriend) {

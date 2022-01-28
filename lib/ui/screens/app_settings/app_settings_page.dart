@@ -40,94 +40,15 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             Text(
               'Settings',
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 15),
-            Text(
-              'QR code',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20.0),
-                child: Column(
-                  children: [
-                    Text(
-                      Strings().shareQr,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    QrWidget(
-                      message: message,
-                      logoSize: 54,
-                      imageSize: 180,
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        // color: Color(0xffF3F3F7),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          width: 0.5,
-                          color: Theme.of(context).iconTheme.color??Colors.transparent
-                        )
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(
-                                  text: message,
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Copied Link!')),
-                              );
-                            },
-                            child: Text('Copy'),
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Share.share(
-                                  'Your friend and invite for join 2i2i\n$message');
-                            },
-                            child: Text('Share'),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-
             //profile
             Text(
-              'Profile',
+              Strings().account,
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -173,11 +94,57 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                     trailing: Icon(Icons.navigate_next),
                   ),
+                  ListTile(
+                    onTap: (){
+                      context.pushNamed(Routes.account.nameFromPath());
+                    },
+                    title: Text(
+                      Strings().wallet,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: 20),
 
+            //others
+            Text(
+              'Others',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: Column(
+                children: [
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    title: Text(
+                      Strings().blockList,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    title: Text(
+                      Strings().meetingsHistory,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
 
             //theme
             Text(
@@ -232,42 +199,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                 );
               },
-            ),
-            SizedBox(height: 20),
-
-            //others
-            Text(
-              'Others',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'Favorites',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                    // onTap: () => context.pushNamed(Routes.favorites),
-                    onTap: () => context.pushNamed(Routes.favorites.nameFromPath()),
-                  ),
-                  ListTile(
-                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
-                    title: Text(
-                      'Blocked users',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                  ),
-                ],
-              ),
             ),
             SizedBox(height: 20),
 

@@ -1,5 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +31,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -49,8 +52,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () {
-          final bidInsWithUsers =
-              ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
+          final bidInsWithUsers = ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
           if (bidInsWithUsers == null || bidInsWithUsers.isEmpty) return;
           myHangoutPageViewModel.acceptBid(bidInsWithUsers.first);
         },
@@ -70,10 +72,20 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   ),
             ],
           ),
-          child: Icon(
-            Icons.add_rounded,
-            size: 30,
-            color: Theme.of(context).cardColor,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.play_arrow,
+                size: 30,
+                color: Theme.of(context).cardColor,
+              ),
+              SizedBox(height: 2),
+              Text(Strings().talk,style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                color: Theme.of(context).cardColor,
+              ))
+            ],
           ),
         ),
       ),
@@ -94,84 +106,39 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   SizedBox(height: 8),
                   UserInfoWidget(
                     hangout: hangout,
-                    onTapFav: () {
-                      context.pushNamed(Routes.favorites.nameFromPath());
-                    },
                     onTapRules: (){
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
+                    onTapQr: (){
+                      showDialog(
+                          context: context,
+                          builder: (context)=>FittedBox(
+                            fit: BoxFit.scaleDown,
+                              child: SizedBox(
+                                height: 400,
+                                  width: 350,
+                                  child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),
+                              ),
+                          ),
+                      );
+                    },
                     isFav: true,
                   ),
-                  SizedBox(height: 14),
-                  Container(
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(118, 118, 128, 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TabBar(
-                      controller: _tabController,
-                      indicatorPadding: EdgeInsets.all(3),
-                      indicator: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      unselectedLabelColor:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor,
-                      labelColor:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor,
-                      tabs: [
-                        Tab(
-                          text: Strings().bidIn,
-                        ),
-                        Tab(
-                          text: Strings().bidOut,
-                        ),
-                        Tab(
-                          text: Strings().history,
-                        ),
-                      ],
-                    ),
-                  )
                 ],
               ),
             ),
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  UserBidInsList(
-                    uid: myHangoutPageViewModel.hangout!.id,
-                    titleWidget: Text(
-                      'Bids In',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    noBidsText: Strings().noBidFound,
-                    onTap: (x) => {}, //myUserPageViewModel.acceptBid,
-                  ),
-                  UserBidOutsList(
-                    uid: myHangoutPageViewModel.hangout!.id,
-                    titleWidget: Text(
-                      'Bids Out',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    noBidsText: Strings().noBidFound,
-                    trailingIcon: Icon(
-                      Icons.cancel,
-                      color: Color.fromRGBO(104, 160, 242, 1),
-                    ),
-                    onTrailingIconClick: (BidOut bidOut) async {
-                      CustomDialogs.loader(true, context);
-                      await myHangoutPageViewModel.cancelBid(
-                          bidId: bidOut.id, B: bidOut.B, speed: bidOut.speed);
-                      CustomDialogs.loader(false, context);
-                    },
-                  ),
-                  MeetingHistoryList(),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+              child: UserBidInsList(
+                uid: myHangoutPageViewModel.hangout!.id,
+                titleWidget: Text(
+                  'Bids In',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                noBidsText: Strings().noBidFound,
+                onTap: (x) => {}, //myUserPageViewModel.acceptBid,
               ),
             ),
           ),
