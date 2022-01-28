@@ -68,7 +68,29 @@ class FirestoreDatabase {
           bidInPublicRef, bidIn.public.toMap(), SetOptions(merge: false));
       transaction.set(
           bidInPrivateRef, bidIn.private!.toMap(), SetOptions(merge: false));
-      
+
+      return Future.value();
+    });
+  }
+
+  Future cancelBid(BidOut bidOut, String myUid) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(myUid))
+          .doc(bidOut.id);
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(bidOut.B))
+          .doc(bidOut.id);
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(bidOut.B))
+          .doc(bidOut.id);
+      final obj = {'active': false};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(bidOutRef, obj, setOptions);
+      transaction.set(bidInPublicRef, obj, setOptions);
+      transaction.set(bidInPrivateRef, obj, setOptions);
+
       return Future.value();
     });
   }

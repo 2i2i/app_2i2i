@@ -5,7 +5,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_p
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';

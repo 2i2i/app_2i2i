@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
