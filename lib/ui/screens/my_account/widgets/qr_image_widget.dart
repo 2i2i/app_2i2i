@@ -34,6 +34,7 @@ class QrImagePage extends StatelessWidget {
               message: imageUrl,
               logoSize: 60,
               imageSize: 280,
+              hideLogo: true,
             ),
             IconButton(
                 padding: EdgeInsets.zero,

@@ -31,6 +31,8 @@ class Strings {
   var ss = 'ss';
 
   String invalid = 'Invalid';
+
+  String join = 'Join';
   Strings._internal();
 
   factory Strings() {

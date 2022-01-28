@@ -104,16 +104,27 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .secondary // changes position of shadow
-                      ),
+                  ),
                 ],
               ),
-              child: Icon(
-                Icons.add_rounded,
-                size: 30,
-                color: Theme.of(context).cardColor,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.call_merge,
+                    size: 30,
+                    color: Theme.of(context).cardColor,
+                  ),
+                  SizedBox(height: 2),
+                  Text(Strings().join,style: Theme.of(context).textTheme.button?.copyWith(
+                      color: Colors.white
+                  ),)
+                ],
               ),
             ),
-          )),
+          ),
+      ),
       body: Column(
         children: [
           Card(

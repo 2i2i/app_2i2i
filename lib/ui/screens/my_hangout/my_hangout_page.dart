@@ -49,8 +49,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () {
-          final bidInsWithUsers =
-              ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
+          final bidInsWithUsers = ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
           if (bidInsWithUsers == null || bidInsWithUsers.isEmpty) return;
           myHangoutPageViewModel.acceptBid(bidInsWithUsers.first);
         },
@@ -70,10 +69,20 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                   ),
             ],
           ),
-          child: Icon(
-            Icons.add_rounded,
-            size: 30,
-            color: Theme.of(context).cardColor,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.play_arrow,
+                size: 30,
+                color: Theme.of(context).cardColor,
+              ),
+              SizedBox(height: 2),
+              Text(Strings().talk,style: Theme.of(context).textTheme.button?.copyWith(
+                color: Colors.white
+              ),)
+            ],
           ),
         ),
       ),
