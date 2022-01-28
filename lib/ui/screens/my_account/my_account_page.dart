@@ -24,7 +24,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
     });
     super.initState();
   }
-
+  ValueNotifier<bool> shoeBottomSheet = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
@@ -51,7 +51,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        onPressed: () {
+          shoeBottomSheet.value = true;
+        },
         child: Icon(
           Icons.add,
           color: Theme.of(context).cardColor,
@@ -61,6 +64,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+      ),
+      bottomSheet: ValueListenableBuilder(
+        valueListenable: shoeBottomSheet,
+        builder: (BuildContext context, bool value, Widget? child) {
+          return Visibility(
+            visible: value,
+            child: AddAccountOptionsWidgets(showBottom: shoeBottomSheet),
+          );
+        },
       ),
     );
   }

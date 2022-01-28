@@ -78,35 +78,7 @@ class AuthWidget extends ConsumerWidget {
               return WaitPage();
             }
 
-            final uid = ref.watch(myUIDProvider);
-            if (uid != null) {
-              final hangoutProviderVal = ref.watch(hangoutProvider(uid));
-              bool isLoaded = !(haveToWait(hangoutProviderVal));
-              if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
-                final Hangout hangout = hangoutProviderVal.asData!.value;
-                if (hangout.name.trim().isEmpty && !showed) {
-                  showed = true;
 
-                  Future.delayed(Duration(seconds: 1)).then((value) {
-                    CustomAlertWidget.showBidAlert(
-                      context,
-                      WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: HangoutSetting(
-                            fromBottomSheet: true,
-                          ),
-                        ),
-                      ),
-                      isDismissible: false,
-                    );
-                  });
-                }
-              }
-            }
 
             return homePageBuilder(context);
           }, loading: () {

@@ -25,19 +25,20 @@ List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
 List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   List<List<BidInPublic>> bidInsPublicSections = [];
 
-  HangOutRule currentRule = bidInsPublic.first.rule;
-  List<BidInPublic> currentSection = [];
-  for (final bidIn in bidInsPublic) {
-    if (bidIn.rule == currentRule)
-      currentSection.add(bidIn);
-    else {
-      bidInsPublicSections.add(currentSection);
-      currentSection = [bidIn];
-      currentRule = bidIn.rule;
+  if(bidInsPublic.isNotEmpty) {
+    HangOutRule currentRule = bidInsPublic.first.rule;
+    List<BidInPublic> currentSection = [];
+    for (final bidIn in bidInsPublic) {
+      if (bidIn.rule == currentRule)
+        currentSection.add(bidIn);
+      else {
+        bidInsPublicSections.add(currentSection);
+        currentSection = [bidIn];
+        currentRule = bidIn.rule;
+      }
     }
+    if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
   }
-  if (currentSection.isNotEmpty) bidInsPublicSections.add(currentSection);
-
   return bidInsPublicSections;
 }
 
