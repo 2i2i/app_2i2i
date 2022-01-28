@@ -35,10 +35,10 @@ class UserBidInsList extends ConsumerWidget {
     markAsRead(bidInsWithUsers);
 
     return ListView.builder(
-      primary: false,
-      physics: NeverScrollableScrollPhysics(),
+      // primary: false,
+      // physics: NeverScrollableScrollPhysics(),
       itemCount: bidInsWithUsers.length,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 10,bottom: 80),
       itemBuilder: (_, ix) {
 
         return BidInTile(

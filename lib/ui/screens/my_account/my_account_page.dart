@@ -21,12 +21,12 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 2)).then((value) {
+    // Future.delayed(Duration(seconds: 2)).then((value) {
       ref.read(myAccountPageViewModelProvider).initMethod();
-    });
+    // });
     super.initState();
   }
-
+  ValueNotifier<bool> showBottomSheet = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
@@ -71,7 +71,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
+        onPressed: () {
+          showBottomSheet.value = true;
+        },
         child: Icon(
           Icons.add,
           color: Theme.of(context).cardColor,
@@ -81,6 +84,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+      ),
+      bottomSheet: ValueListenableBuilder(
+        valueListenable: showBottomSheet,
+        builder: (BuildContext context, bool value, Widget? child) {
+          return Visibility(
+            visible: value,
+            child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
+          );
+        },
       ),
     );
   }

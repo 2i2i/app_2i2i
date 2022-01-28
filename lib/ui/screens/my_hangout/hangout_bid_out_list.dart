@@ -38,11 +38,11 @@ class UserBidOut extends ConsumerWidget {
             SizedBox(height: 15),
 
             ListView.builder(
-              primary: false,
-              physics: NeverScrollableScrollPhysics(),
+              //primary: false,
+              //physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: bidOutList.length,
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.only(top: 10,bottom: 80),
               itemBuilder: (_, ix) {
                 return BidOutTile(
                   bidOut: bidOutList[ix],
