@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -25,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -254,11 +256,35 @@ class NamedRoutes {
   static ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   static Widget getView(Widget page) {
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
     Widget widget = AuthWidget(
       homePageBuilder: (_) => Scaffold(
         body: page,
+        bottomSheet: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final uid = ref.watch(myUIDProvider);
+            if (uid != null) {
+              final hangoutProviderVal = ref.watch(hangoutProvider(uid));
+              bool isLoaded = !(haveToWait(hangoutProviderVal));
+              if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
+                final Hangout hangout = hangoutProviderVal.asData!.value;
+                if (hangout.name.trim().isEmpty) {
+                  return WillPopScope(
+                    onWillPop: () {
+                      return Future.value(true);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: HangoutSetting(
+                        fromBottomSheet: true,
+                      ),
+                    ),
+                  );
+                }
+              }
+            }
+            return Container(height: 0);
+          },
+        ),
         bottomNavigationBar: ValueListenableBuilder(
           valueListenable: isUserLocked,
           builder: (BuildContext context, value, Widget? child) {
@@ -362,7 +388,7 @@ class NamedRoutes {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.watch(lockedHangoutViewModelProvider); // lockedHangoutViewModelProvider just needs to run
-        if (kIsWeb && !isMobile) {
+        if (kIsWeb) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

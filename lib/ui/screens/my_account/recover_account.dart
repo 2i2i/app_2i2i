@@ -3,6 +3,7 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RecoverAccountPage extends ConsumerStatefulWidget {
   const RecoverAccountPage({Key? key}) : super(key: key);
@@ -227,7 +228,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
     try {
       final account = await myAccountPageViewModel.recoverAccount(keys);
       await account.setMainAccount();
-      Navigator.of(context).maybePop();
+      context.pop();
     } catch (e) {
       print(e.toString());
     }
