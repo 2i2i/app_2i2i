@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,33 +6,17 @@ import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 
 class OtherBidTile extends ConsumerWidget {
-  final List<BidInPublic> otherBidList;
-  final int index;
+  final BidInPublic bidIn;
   final Hangout hangout;
 
-  const OtherBidTile(
-      {Key? key,
-      required this.otherBidList,
-      required this.index,
-      required this.hangout})
+  const OtherBidTile({Key? key, required this.bidIn, required this.hangout})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    num startAfter = 0;
-    String bidSpeed = "0";
-    BidInPublic otherBid = otherBidList[index];
-
-    bidSpeed = otherBid.speed.num.toString();
-    for (int i = 0; i <= index; i++) {
-      int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
-      if (0 < otherBidList[i].speed.num) {
-        final thisBidMaxDurationTmp =
-            (otherBidList[i].budget / otherBidList[i].speed.num).floor();
-        thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
-      }
-      startAfter += thisBidMaxDuration;
-    }
+    int duration = bidIn.speed.num == 0
+        ? hangout.rule.maxMeetingDuration
+        : (bidIn.budget / bidIn.speed.num).round();
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -49,7 +32,7 @@ class OtherBidTile extends ConsumerWidget {
             ),
             title: RichText(
               text: TextSpan(
-                text: bidSpeed,
+                text: bidIn.speed.num.toString(),
                 children: [
                   TextSpan(
                     text: ' μAlgo/s',
@@ -77,10 +60,10 @@ class OtherBidTile extends ConsumerWidget {
               child: RichText(
                 textAlign: TextAlign.start,
                 text: TextSpan(
-                  text: 'Start After:',
+                  text: 'Duration:',
                   children: [
                     TextSpan(
-                        text: ' ${secondsToSensibleTimePeriod(startAfter)}',
+                        text: ' ${secondsToSensibleTimePeriod(duration)}',
                         children: [],
                         style: Theme.of(context).textTheme.bodyText2)
                   ],

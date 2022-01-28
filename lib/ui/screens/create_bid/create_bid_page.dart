@@ -1,15 +1,16 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -17,19 +18,45 @@ import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 
-class CreateBidPage extends ConsumerStatefulWidget {
+class CreateBidPageRouterObject {
+  CreateBidPageRouterObject(
+      {required this.bidIns,
+      required this.hangout,
+      this.sliderHeight,
+      this.min,
+      this.max,
+      this.fullWidth});
   final Hangout hangout;
-  final double sliderHeight;
-  final int min;
-  final int max;
-  final fullWidth;
+  final List<BidInPublic> bidIns;
+  final double? sliderHeight;
+  final int? min;
+  final int? max;
+  final bool? fullWidth;
+}
+
+class CreateBidPage extends ConsumerStatefulWidget {
+  late final Hangout hangout;
+  late final List<BidInPublic> bidIns;
+  late final double sliderHeight;
+  late final int min;
+  late final int max;
+  late final fullWidth;
 
   CreateBidPage(
       {this.sliderHeight = 48,
       this.max = 10,
       required this.hangout,
+      required this.bidIns,
       this.min = 0,
       this.fullWidth = false});
+  CreateBidPage.fromObject(CreateBidPageRouterObject obj) {
+    hangout = obj.hangout;
+    bidIns = obj.bidIns;
+    sliderHeight = obj.sliderHeight ?? 48;
+    min = obj.min ?? 0;
+    max = obj.max ?? 10;
+    fullWidth = obj.fullWidth ?? false;
+  }
 
   @override
   _CreateBidPageState createState() => _CreateBidPageState();
@@ -41,8 +68,74 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? note;
+  double maxDuration = 300;
+  int maxMaxDuration = 300;
+  int minMaxDuration = 10;
 
-  double _value = 0;
+  int _minAccountBalance = 0;
+  int _accountBalance = 0;
+
+  @override
+  void initState() {
+    speed = Quantity(num: widget.hangout.rule.minSpeed, assetId: 0);
+    updateAccountBalance();
+    super.initState();
+  }
+
+  void updateAccountBalance() {
+    if (account != null) {
+      _minAccountBalance = account!.minBalance();
+      _accountBalance = account!.balanceALGO();
+    }
+    update();
+  }
+
+  void update() {
+    final availableBalance = _accountBalance - _minAccountBalance;
+    maxMaxDuration = widget.hangout.rule.maxMeetingDuration;
+    if (speed.num != 0) {
+      final availableMaxDuration = max(
+          0,
+          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
+              .floor());
+      maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+      maxDuration = min(maxDuration, maxMaxDuration.toDouble());
+    }
+    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    setState(() {});
+  }
+
+  String calcWaitTime() {
+    if (amount.assetId != speed.assetId)
+      throw Exception('amount.assetId != speed.assetId');
+
+    final now = DateTime.now().toUtc();
+    final tmpBidIn = BidInPublic(
+        active: false,
+        id: now.microsecondsSinceEpoch.toString(),
+        speed: speed,
+        net: AlgorandNet.testnet,
+        ts: now,
+        budget: amount.num,
+        rule: widget.hangout.rule);
+
+    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
+        widget.hangout.loungeHistory, widget.hangout.loungeHistoryIndex);
+
+    int waitTime = 0;
+    for (final bidIn in sortedBidIns) {
+      if (bidIn.id == tmpBidIn.id) break;
+      int bidDuration = widget.hangout.rule.maxMeetingDuration;
+      if (bidIn.speed.num != 0)
+        bidDuration =
+            min((bidIn.budget / bidIn.speed.num).round(), bidDuration);
+      waitTime += bidDuration;
+    }
+
+    final waitTimeString = secondsToSensibleTimePeriod(waitTime);
+    return waitTimeString;
+  }
 
   final controller = PageController(initialPage: 0);
 
@@ -59,8 +152,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         ref.watch(addBidPageViewModelProvider(widget.hangout.id).state).state;
     if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
-    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0)
+    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       account = myAccountPageViewModel.accounts!.first;
+      updateAccountBalance();
+    }
 
     return Scaffold(
       appBar: AppBar(),
@@ -75,6 +170,75 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: ListTile.divideTiles(
+                tiles: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        calcWaitTime(),
+                        style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.bolt,
+                            size: 17,
+                            color: Theme.of(context).textTheme.caption?.color,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'Est. Wait Time',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 25,
+                    width: 1,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${(amount.num / 1000000).toString()} A',
+                        style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            size: 17,
+                            color: Theme.of(context).textTheme.caption?.color,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'Amount',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+                color: Colors.transparent,
+                context: context,
+              ).toList(),
+            ),
+            SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Row(
@@ -108,53 +272,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       onChanged: (String value) {
                         final num = int.tryParse(value) ?? 0;
                         speed = Quantity(num: num, assetId: speed.assetId);
-                        if (mounted) {
-                          setState(() {});
-                        }
+                        update();
                       },
                     ),
                   ),
-                  Visibility(
-                      visible: speed.num != 0,
-                      child: Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: CustomTextField(
-                            title: Strings().bidAmount,
-                            hintText: "0",
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    '${Strings().algoSec}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle2
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .iconTheme
-                                              .color
-                                              ?.withOpacity(0.5),
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                  ),
-                                ),
-                                SizedBox(width: 8)
-                              ],
-                            ),
-                            onChanged: (String value) {
-                              final num = int.tryParse(value) ?? 0;
-                              amount =
-                                  Quantity(num: num, assetId: amount.assetId);
-                              if (mounted) {
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        ),
-                      )),
                 ],
               ),
             ),
@@ -190,7 +311,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         children: [
                           SizedBox(width: 6),
                           Text(
-                            '0 secs',
+                            '$minMaxDuration secs',
                             style: Theme.of(context).textTheme.subtitle1,
                           ),
                           Expanded(
@@ -205,22 +326,27 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   thumbShape: CustomSliderThumbRect(
                                     mainContext: context,
                                     thumbRadius: 15,
-                                    max: 0,
-                                    min: 100,
+                                    min: minMaxDuration,
+                                    max: maxMaxDuration,
                                   ),
                                 ),
                                 child: Slider(
-                                  value: _value,
+                                  min: minMaxDuration.toDouble(),
+                                  max: maxMaxDuration.toDouble(),
+                                  divisions: maxMaxDuration == minMaxDuration
+                                      ? null
+                                      : min(
+                                          100, maxMaxDuration - minMaxDuration),
+                                  value: maxDuration,
                                   onChanged: (value) {
-                                    setState(() {
-                                      _value = value;
-                                    });
+                                    maxDuration = value;
+                                    update();
                                   },
                                 ),
                               ),
                             ),
                           ),
-                          Text('100 secs',
+                          Text('$maxMaxDuration secs',
                               style: Theme.of(context).textTheme.subtitle1),
                           SizedBox(width: 6),
                         ],
@@ -258,14 +384,17 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     .accounts![index].address),
                                 account:
                                     myAccountPageViewModel.accounts![index],
+                                afterRefresh: updateAccountBalance,
                               ),
                             );
                           },
                           onPageChanged: (int val) {
-                            account =
+                            final newAccount =
                                 myAccountPageViewModel.accounts?.elementAt(val);
+                            if (account == newAccount) return;
+                            account = newAccount;
                             if (mounted) {
-                              setState(() {});
+                              updateAccountBalance();
                             }
                           },
                         )
@@ -379,8 +508,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     );
   }
 
-  int? getBalanceOfAccount() => account?.balances.first.assetHolding.amount;
-
   onAddBid() async {
     if (isInsufficient()) {
       return;
@@ -415,11 +542,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     if (account == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
-    final accountBalance = getBalanceOfAccount();
-    if (accountBalance == null) return true;
     final minAccountBalanceNeeded =
-        amount.num + 2 * AlgorandService.MIN_TXN_FEE;
-    if (accountBalance < minAccountBalanceNeeded) return true;
+        _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
+    if (_accountBalance < minAccountBalanceNeeded) return true;
     return false;
   }
 

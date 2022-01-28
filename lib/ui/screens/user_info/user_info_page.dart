@@ -1,11 +1,11 @@
-
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/hangout_model.dart';
@@ -32,14 +32,17 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     print('url-------------- \n ${Uri.base.toString()}');
     final mainUserID = ref.watch(myUIDProvider);
     final userPageViewModel = ref.watch(userPageViewModelProvider(widget.uid));
-    var isFriend = false;
-    var isBlocked = false;
+    bool isFriend = false;
+    bool isBlocked = false;
     final userModelChanger = ref.watch(hangoutChangerProvider);
-    if(mainUserID != null) {
+    if (mainUserID != null) {
       final userPrivateAsyncValue = ref.watch(userPrivateProvider(mainUserID));
-
-      isFriend = !haveToWait(userPrivateAsyncValue) && userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.friends.contains(widget.uid);
-      isBlocked = !haveToWait(userPrivateAsyncValue)&& userPrivateAsyncValue.value != null && userPrivateAsyncValue.value!.blocked.contains(widget.uid);
+      isFriend = !haveToWait(userPrivateAsyncValue) &&
+          userPrivateAsyncValue.value != null &&
+          userPrivateAsyncValue.value!.friends.contains(widget.uid);
+      isBlocked = !haveToWait(userPrivateAsyncValue) &&
+          userPrivateAsyncValue.value != null &&
+          userPrivateAsyncValue.value!.blocked.contains(widget.uid);
     }
 
     if (haveToWait(userPageViewModel)) {
@@ -48,58 +51,69 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     Hangout hangout = userPageViewModel!.hangout;
 
-
+    final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.uid));
+    if (haveToWait(bidInsAsyncValue)) return WaitPage();
+    final bidIns = bidInsAsyncValue.value!;
+    final bidInsSorted = combineQueues(
+        bidIns, hangout.loungeHistory, hangout.loungeHistoryIndex);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
         actions: [
-          if(userModelChanger != null)
-          PopupMenuButton<int>(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(8.0),
-              ),
-            ),
-            onSelected: (item) => handleClick(item, userModelChanger, isBlocked),
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(value: 0, child: Text(Strings().report)),
-              PopupMenuItem<int>(
-                value: 1,
-                child: Text(
-                  isBlocked ? Strings().unBlock : Strings().block,
-                  style: TextStyle(color: Theme.of(context).errorColor),
+          if (userModelChanger != null)
+            PopupMenuButton<int>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
                 ),
               ),
-            ],
-          ),
+              onSelected: (item) =>
+                  handleClick(item, userModelChanger, isBlocked),
+              itemBuilder: (context) => [
+                PopupMenuItem<int>(value: 0, child: Text(Strings().report)),
+                PopupMenuItem<int>(
+                  value: 1,
+                  child: Text(
+                    isBlocked ? Strings().unBlock : Strings().block,
+                    style: TextStyle(color: Theme.of(context).errorColor),
+                  ),
+                ),
+              ],
+            ),
           SizedBox(width: 6)
         ],
       ),
-      floatingActionButton: InkResponse(
-        onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),extra: hangout),
-        child: Container(
-          width: kToolbarHeight * 1.15,
-          height: kToolbarHeight * 1.15,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset(2, 2),
-                  blurRadius: 8,
-                  color: Theme.of(context).colorScheme.secondary // changes position of shadow
-                  ),
-            ],
-          ),
-          child: Icon(
-            Icons.add_rounded,
-            size: 30,
-            color: Theme.of(context).cardColor,
-          ),
-        ),
-      ),
+      floatingActionButton: Visibility(
+          visible: !isBlocked,
+          child: InkResponse(
+            onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),
+                extra: CreateBidPageRouterObject(
+                    hangout: hangout, bidIns: bidInsSorted)),
+            child: Container(
+              width: kToolbarHeight * 1.15,
+              height: kToolbarHeight * 1.15,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                      offset: Offset(2, 2),
+                      blurRadius: 8,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary // changes position of shadow
+                      ),
+                ],
+              ),
+              child: Icon(
+                Icons.add_rounded,
+                size: 30,
+                color: Theme.of(context).cardColor,
+              ),
+            ),
+          )),
       body: Column(
         children: [
           Card(
@@ -107,28 +121,32 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             margin: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14,top: 16),
+              padding: const EdgeInsets.only(
+                  right: 20, left: 20, bottom: 14, top: 16),
               child: UserInfoWidget(
-                hangout: hangout, isFav: isFriend, onTapFav: () {
-                  if(userModelChanger != null) {
+                hangout: hangout,
+                isFav: isFriend,
+                onTapFav: () {
+                  if (userModelChanger != null) {
                     if (!isFriend) {
                       userModelChanger.addFriend(widget.uid);
                     } else {
                       userModelChanger.removeFriend(widget.uid);
                     }
                   }
-              },
+                },
               ),
             ),
           ),
           Expanded(
             child: OtherBidInList(
-              B: hangout,
+              hangout: hangout,
+              bidIns: bidInsSorted,
             ),
           ),
         ],
@@ -136,8 +154,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     );
   }
 
-  void handleClick(
-      int item, HangoutChanger userModelChanger, bool isBlocked) {
+  void handleClick(int item, HangoutChanger userModelChanger, bool isBlocked) {
     switch (item) {
       case 0:
         // userModelChanger.addFriend(widget.uid);
@@ -151,6 +168,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         break;
     }
   }
+
   String removeDecimalZeroFormat(double n) {
     return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 2);
   }

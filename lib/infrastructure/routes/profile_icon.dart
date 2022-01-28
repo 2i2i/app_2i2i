@@ -20,8 +20,7 @@ class ProfileIcon extends StatelessWidget {
       if (userId == null) return normalReturn;
 
       final bidInList = ref.watch(bidInsPublicProvider(userId));
-      if (bidInList.value == null)
-        return selectedIcon('assets/icons/person.svg', context);
+      if (bidInList.value == null) return normalReturn;
       List<BidInPublic> bids = bidInList.asData!.value;
       if (bids.isEmpty) return normalReturn;
 
