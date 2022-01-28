@@ -49,10 +49,37 @@ class FirestoreDatabase {
     });
   }
 
+  Future addBid(BidOut bidOut, BidIn bidIn) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(bidIn.private!.A))
+          .doc(bidOut.id);
+
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(bidOut.B))
+          .doc(bidOut.id);
+
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(bidOut.B))
+          .doc(bidOut.id);
+
+      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPublicRef, bidIn.public.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPrivateRef, bidIn.private!.toMap(), SetOptions(merge: false));
+      
+      return Future.value();
+    });
+  }
+
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
+        data: {
+          'heartbeat': FieldValue.serverTimestamp(),
+          'status': status
+        }, // TODO move dependency
         merge: true,
       );
   Future<void> unlockUser(String uid) => _service.setData(
