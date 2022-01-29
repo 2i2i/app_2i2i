@@ -3,8 +3,6 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
-
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -90,10 +88,14 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       floatingActionButton: Visibility(
           visible: !isBlocked,
           child: InkResponse(
-            onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),
-                extra: CreateBidPageRouterObject(
-                    hangout: hangout, bidIns: bidInsSorted)),
-            child: Container(
+            onTap: () => context.pushNamed(
+            Routes.createBid.nameFromPath(),
+            extra: CreateBidPageRouterObject(
+              hangout: hangout,
+              bidIns: bidInsSorted,
+            ),
+          ),
+          child: Container(
               width: kToolbarHeight * 1.15,
               height: kToolbarHeight * 1.15,
               decoration: BoxDecoration(

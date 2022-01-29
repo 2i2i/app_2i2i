@@ -100,7 +100,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     String callerName = '';
     String callerBio = '';
     String bidNote = '';
-    int maxDuration = 0;
+    double  maxDuration = 0;
     double callerRating = 0.0;
 
     bool amA = ringingPageViewModel!.amA();
@@ -110,7 +110,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
     final hangoutAsyncValue = ref.read(hangoutProvider(userId));
     if (ringingPageViewModel?.meeting is Meeting) {
-      maxDuration = ringingPageViewModel!.meeting.maxDuration()!;
+      maxDuration = ringingPageViewModel!.meeting.maxDuration();
       final bidInPrivateAsyncValue =
           ref.watch(getBidFromMeeting(ringingPageViewModel!.meeting));
       if (!(haveToWait(hangoutAsyncValue) &&
@@ -234,8 +234,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       ),
                     ),
                     SizedBox(height: 4),
+                    if(maxDuration != double.infinity)
                     Text(
-                      '${prettyDuration(Duration(seconds: maxDuration))} (${ringingPageViewModel?.meeting.speed.num ?? 0} μAlgo/s)',
+                      '${prettyDuration(Duration(seconds: maxDuration.toInt()))} (${ringingPageViewModel?.meeting.speed.num ?? 0} μAlgo/s)',
                       maxLines: 2,
                       softWrap: true,
                       textAlign: TextAlign.center,
