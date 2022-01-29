@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
@@ -50,6 +52,7 @@ class AddBidPageViewModel {
     required Quantity speed,
     String? bidNote,
     BuildContext? context,
+    Function? timeout,
   }) async {
     log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
 
@@ -65,8 +68,11 @@ class AddBidPageViewModel {
       final note =
           bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txId = await algorand.lockCoins(
-            account: account!, net: net, amount: amount, note: note);
+        txId = await algorand.lockCoins(account: account!, net: net, amount: amount, note: note).timeout(Duration(seconds: 8));
+      } on TimeoutException catch (e) {
+        log('AlgorandException  ${e.message}');
+        timeout?.call();
+        return;
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
         if (cause is dio.DioError) {
@@ -79,6 +85,8 @@ class AddBidPageViewModel {
           log('AlgorandException ' + message);
         }
         return;
+      } catch (e){
+        print('AlgorandException catch $e');
       }
     }
 
