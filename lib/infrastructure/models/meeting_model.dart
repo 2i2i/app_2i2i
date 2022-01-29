@@ -161,7 +161,7 @@ class Meeting extends Equatable {
     required this.B,
     required this.addrA,
     required this.addrB,
-    required this.budget,
+    required this.energy,
     required this.start,
     required this.end,
     required this.duration,
@@ -186,7 +186,8 @@ class Meeting extends Equatable {
   final String? addrA; // set if 0 < speed
   final String? addrB; // set if 0 < speed
 
-  final int? budget; // [coins]; 0 for speed == 0
+  final Map<String, int?> energy;
+
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
@@ -215,9 +216,9 @@ class Meeting extends Equatable {
   bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
 
-  int? maxDuration() {
-    if (budget == null) return null;
-    return (budget! / speed.num).floor();
+  double maxDuration() {
+    if (speed.num == 0) return double.infinity;
+    return energy['MAX']! / speed.num;
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -234,7 +235,11 @@ class Meeting extends Equatable {
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
-    final int? budget = data['budget'];
+    final Map<String, int?> energy = {};
+    for (final String k in data['energy'].keys) {
+      energy[k] = data['energy'][k] as int?;
+    }
+
     final DateTime? start = data['start']?.toDate();
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
@@ -276,7 +281,7 @@ class Meeting extends Equatable {
       B: B,
       addrA: addrA,
       addrB: addrB,
-      budget: budget,
+      energy: energy,
       start: start,
       end: end,
       duration: duration,
@@ -309,7 +314,12 @@ class Meeting extends Equatable {
       B: uid,
       addrA: bidIn.private!.addrA,
       addrB: addrB,
-      budget: bidIn.public.budget,
+      energy: {
+        'MAX': bidIn.public.budget,
+        'A': null,
+        'CREATOR': null,
+        'B': null,
+        },
       start: null,
       end: null,
       duration: null,
@@ -336,7 +346,7 @@ class Meeting extends Equatable {
       'B': B,
       'addrA': addrA,
       'addrB': addrB,
-      'budget': budget,
+      'energy': energy,
       'start': start,
       'end': end,
       'duration': duration,

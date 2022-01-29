@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
-import '../user_info/widgets/no_bid_page.dart';
 import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerWidget {
@@ -31,16 +30,15 @@ class UserBidInsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers = ref.watch(bidInsWithHangoutsProvider(uid));
     if (bidInsWithUsers == null) return WaitPage();
-    if (bidInsWithUsers.isEmpty) return NoBidPage(noBidsText: noBidsText);
 
     // store for notification
     markAsRead(bidInsWithUsers);
 
     return ListView.builder(
-      primary: false,
-      physics: NeverScrollableScrollPhysics(),
+      // primary: false,
+      // physics: NeverScrollableScrollPhysics(),
       itemCount: bidInsWithUsers.length,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 10,bottom: 80),
       itemBuilder: (_, ix) {
 
         return BidInTile(

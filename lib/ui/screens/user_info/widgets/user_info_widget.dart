@@ -9,17 +9,21 @@ import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
   final Hangout hangout;
-  final GestureTapCallback onTapFav;
+  final GestureTapCallback? onTapFav;
   final bool isFav;
 
+  final onTapQr;
   final GestureTapCallback? onTapRules;
+
 
   const UserInfoWidget(
       {Key? key,
       required this.hangout,
-      required this.onTapFav,
+        this.onTapFav,
       required this.isFav,
-      this.onTapRules})
+      this.onTapRules,
+      this.onTapQr,
+      })
       : super(key: key);
 
   @override
@@ -59,15 +63,22 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
-                    InkWell(
-                      onTap: widget.onTapFav,
-                      child: Icon(
+                    IconButton(
+                      onPressed: widget.onTapQr,
+                      icon: Icon(
+                        Icons.qr_code
+                      ),
+                    ),
+                    if(widget.onTapFav != null)
+                    IconButton(
+                      onPressed: widget.onTapFav,
+                      icon: Icon(
                         widget.isFav
                             ? Icons.favorite_rounded
                             : Icons.favorite_border_rounded,
                         color: widget.isFav ? Colors.red : Colors.grey,
                       ),
-                    )
+                    ),
                   ],
                 ),
                 subtitle: Column(

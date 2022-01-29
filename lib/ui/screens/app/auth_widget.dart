@@ -1,13 +1,5 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutterfire_ui/auth.dart';
-
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 
@@ -78,35 +70,7 @@ class AuthWidget extends ConsumerWidget {
               return WaitPage();
             }
 
-            final uid = ref.watch(myUIDProvider);
-            if (uid != null) {
-              final hangoutProviderVal = ref.watch(hangoutProvider(uid));
-              bool isLoaded = !(haveToWait(hangoutProviderVal));
-              if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
-                final Hangout hangout = hangoutProviderVal.asData!.value;
-                if (hangout.name.trim().isEmpty && !showed) {
-                  showed = true;
 
-                  Future.delayed(Duration(seconds: 1)).then((value) {
-                    CustomAlertWidget.showBidAlert(
-                      context,
-                      WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: HangoutSetting(
-                            fromBottomSheet: true,
-                          ),
-                        ),
-                      ),
-                      isDismissible: false,
-                    );
-                  });
-                }
-              }
-            }
 
             return homePageBuilder(context);
           }, loading: () {

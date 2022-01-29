@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
@@ -16,7 +15,8 @@ import '../../../../infrastructure/providers/my_account_provider/my_account_page
 import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
-  const AddAccountOptionsWidgets({Key? key}) : super(key: key);
+  final ValueNotifier? showBottom;
+  const AddAccountOptionsWidgets({Key? key,this.showBottom}) : super(key: key);
 
   @override
   _AddAccountOptionsWidgetsState createState() =>
@@ -27,11 +27,12 @@ class _AddAccountOptionsWidgetsState
     extends ConsumerState<AddAccountOptionsWidgets> {
   String _displayUri = '';
 
-  bool isDialogOpen = false;
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
       defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
+
   @override
   Widget build(BuildContext context) {
     buildContext = context;
@@ -42,10 +43,9 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel =
-                  ref.read(myAccountPageViewModelProvider);
-              await _createSession(myAccountPageViewModel,
-                  myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+              _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+              widget.showBottom?.value = false;
             },
             leading: Container(
               height: 50,
@@ -79,12 +79,8 @@ class _AddAccountOptionsWidgetsState
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).maybePop();
-              Future.delayed(Duration.zero).then(
-                (value) {
-                  context.pushNamed(Routes.recover.nameFromPath());
-                },
-              );
+              widget.showBottom?.value = false;
+              context.pushNamed(Routes.recover.nameFromPath());
             },
             leading: Container(
               height: 50,
@@ -118,7 +114,7 @@ class _AddAccountOptionsWidgetsState
           ),
           ListTile(
             onTap: () async {
-              Navigator.of(context).maybePop();
+              widget.showBottom?.value = false;
               context.pushNamed(Routes.createLocalAccount.nameFromPath());
             },
             leading: Container(
@@ -167,10 +163,7 @@ class _AddAccountOptionsWidgetsState
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       _displayUri = '';
-      if (isDialogOpen) {
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.of(context).pop();
-      }
+      isDialogOpen.value = false;
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
     }
@@ -185,11 +178,20 @@ class _AddAccountOptionsWidgetsState
     if (isMobile) {
       await launch(uri);
     } else {
-      isDialogOpen = true;
+      isDialogOpen.value = true;
       await showDialog(
         context: context,
-        builder: (context) => QrImagePage(imageUrl: _displayUri),
-        barrierDismissible: false,
+        builder: (context) => ValueListenableBuilder(
+            valueListenable: isDialogOpen,
+            builder: (BuildContext context, bool value, Widget? child) {
+              if(!value){
+                Navigator.of(context).pop();
+              }
+              return QrImagePage(imageUrl: _displayUri);
+            },
+
+        ),
+        barrierDismissible: true,
       );
     }
   }

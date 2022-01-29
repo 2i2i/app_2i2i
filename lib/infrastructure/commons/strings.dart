@@ -31,6 +31,20 @@ class Strings {
   var ss = 'ss';
 
   String invalid = 'Invalid';
+
+  String join = 'Join';
+
+  var favorites = 'Favorites';
+
+  String wallet = 'Wallet';
+
+  String blockList = 'Blocked list';
+
+  String favList = 'Favorite List';
+  String fav = 'Favorites';
+
+  String scanQr = 'Scan QR';
+
   Strings._internal();
 
   factory Strings() {
