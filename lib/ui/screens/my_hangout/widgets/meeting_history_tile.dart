@@ -118,13 +118,13 @@ class MeetingHistoryTile extends ConsumerWidget {
                   ],
                 ),
               ),
-              Expanded(
+              Expanded(A̷
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '${(meetingModel.budget ?? 0)} Algo'.toUpperCase(),
+                      '${(meetingModel.energy['MAX'] ?? 0)} Algo'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
