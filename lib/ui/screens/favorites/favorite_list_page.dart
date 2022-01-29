@@ -1,34 +1,35 @@
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
 import '../search/widgtes/user_info_tile.dart';
 
-class FriendsListPage extends ConsumerStatefulWidget {
-  final bool isForBlockedUser;
+class FavoriteListPage extends ConsumerStatefulWidget {
 
-  const FriendsListPage({Key? key, required this.isForBlockedUser})
-      : super(key: key);
+
+  const FavoriteListPage({Key? key}) : super(key: key);
 
   @override
-  _FriendsListPageState createState() => _FriendsListPageState();
+  _FavoriteListPageState createState() => _FavoriteListPageState();
 }
 
-class _FriendsListPageState extends ConsumerState<FriendsListPage> {
+class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 6),
+        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?15:31),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 10),
             Text(
-              widget.isForBlockedUser ? 'Blocked Users' : 'Friends List',
+              Strings().fav,
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 20),
@@ -40,7 +41,7 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
   }
 
   Widget buildListView() {
-    List<String> friendsList = [];
+    List<String> favList = [];
     final myId = ref.read(myUIDProvider)!;
     final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
 
@@ -48,13 +49,10 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
       return WaitPage();
     }
 
-    if (widget.isForBlockedUser) {
-      friendsList = userPrivateAsyncValue.value?.blocked ?? [];
-    } else {
-      friendsList = userPrivateAsyncValue.value?.friends ?? [];
-    }
 
-    if (friendsList.isEmpty) {
+      favList = userPrivateAsyncValue.value?.friends ?? [];
+
+    if (favList.isEmpty) {
       return Center(
           child: Text(
         'No users found',
@@ -62,18 +60,18 @@ class _FriendsListPageState extends ConsumerState<FriendsListPage> {
       ));
     }
     return ListView.separated(
-      itemCount: friendsList.length,
+      itemCount: favList.length,
       shrinkWrap: true,
       primary: false,
       itemBuilder: (_, index) {
-        final hangout = ref.watch(hangoutProvider(friendsList[index]));
+        final hangout = ref.watch(hangoutProvider(favList[index]));
         if (haveToWait(hangout)) {
           return CupertinoActivityIndicator();
         }
         return UserInfoTile(
           hangout: hangout.value!,
           myUIDProvider: myId,
-          isForBlockedUser: widget.isForBlockedUser,
+          isForBlockedUser: false,
         );
       },
       separatorBuilder: (BuildContext context, int index) {

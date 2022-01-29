@@ -4,10 +4,10 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -40,8 +40,6 @@ final databaseProvider =
 
 /*final fireBaseMessagingProvider = Provider<FireBaseMessagingService>((ref) => FireBaseMessagingService());*/
 
-final myAuthUserProvider = authStateChangesProvider;
-
 final accountServiceProvider = Provider((ref) {
   final algorandLib = ref.watch(algorandLibProvider);
   final storage = ref.watch(storageProvider);
@@ -73,15 +71,10 @@ final userPageViewModelProvider =
   final user = ref.watch(hangoutProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return HangoutPageViewModel(functions: functions, hangout: user.asData!.value);
+  return HangoutPageViewModel(
+      functions: functions, hangout: user.asData!.value);
 });
 
-final usersStreamProvider = StreamProvider.autoDispose<List<Hangout?>>((ref) {
-  // log('usersStreamProvider');
-  final database = ref.watch(databaseProvider);
-  // log('usersStreamProvider - database=$database');
-  return database.usersStream();
-});
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
 final searchUsersStreamProvider =
     StreamProvider.autoDispose<List<Hangout?>>((ref) {
@@ -143,21 +136,6 @@ final callScreenProvider =
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
-final algorandAddressProvider =
-    FutureProvider.family<String, int>((ref, numAccount) async {
-  // does not matter which net we use here
-  // log('algorandAddressProvider');
-  final accountService = ref.watch(accountServiceProvider);
-  final algorandLib = ref.watch(algorandLibProvider);
-  final storage = ref.watch(storageProvider);
-  final account = await LocalAccount.fromNumAccount(
-      numAccount: numAccount,
-      algorandLib: algorandLib,
-      storage: storage,
-      accountService: accountService);
-  return account.address;
-});
-
 final myHangoutPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
@@ -180,63 +158,30 @@ final myHangoutPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - 2');
 
   return MyHangoutPageViewModel(
-      database: database,
-      functions: functions,
-      hangout: hangout.asData?.value,
-      accountService: accountService,
-      hangoutChanger: hangoutChanger,
+    database: database,
+    functions: functions,
+    hangout: hangout.asData?.value,
+    accountService: accountService,
+    hangoutChanger: hangoutChanger,
   );
 });
 
 final isUserLocked = IsUserLocked(false);
-final myUserLockedProvider = Provider((ref) {
-  // log('myUserLockedProvider');
-  final uid = ref.watch(myUIDProvider)!;
-  // log('myUserLockedProvider - uid=$uid');
-  final user = ref.watch(hangoutProvider(uid));
-  // log('myUserLockedProvider - user=$user');
-
-  if (user is AsyncError || user is AsyncLoading) {
-    isUserLocked.changeValue(false);
-    return false;
-  }
-  // log('myUserLockedProvider - 2');
-  final Hangout myUser = user.asData!.value;
-  // log('myUserLockedProvider - myUser=$myUser');
-  if (!myUser.isInMeeting()) {
-    isUserLocked.changeValue(false);
-    return false;
-  }
-  // log('myUserLockedProvider - 3');
-
-  isUserLocked.changeValue(true);
-  return true;
-});
 
 final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   final database = ref.watch(databaseProvider);
   return database.meetingStream(id: id);
 });
 
-final topSpeedsProvider = FutureProvider((ref) async {
-  final functions = ref.watch(firebaseFunctionsProvider);
-  final HttpsCallable topSpeedMeetings =
-      functions.httpsCallable('topSpeedMeetings');
-  final topMeetingsData = await topSpeedMeetings();
-  final topMeetings = topMeetingsData.data as List;
-  return topMeetings
-      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
-      .toList();
+final topSpeedsProvider =
+    StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topSpeedsStream();
 });
-final topDurationsProvider = FutureProvider((ref) async {
-  final functions = ref.watch(firebaseFunctionsProvider);
-  final HttpsCallable topDurationMeetings =
-      functions.httpsCallable('topDurationMeetings');
-  final topMeetingsData = await topDurationMeetings();
-  final topMeetings = topMeetingsData.data as List;
-  return topMeetings
-      .map((topMeeting) => TopMeeting.fromMap(topMeeting))
-      .toList();
+final topDurationsProvider =
+    StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topDurationsStream();
 });
 
 final meetingHistoryA =
@@ -246,15 +191,6 @@ final meetingHistoryA =
 });
 
 final meetingHistoryB =
-    StreamProvider.family<List<Meeting>, String>((ref, uid) {
-  final database = ref.watch(databaseProvider);
-  return database.meetingHistoryB(uid);
-});
-
-// class IntString {
-//   final int
-// }
-final meetingHistoryBLimited =
     StreamProvider.family<List<Meeting>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(uid);
@@ -272,7 +208,7 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-final bidInAndUserProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
+final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final A = bidIn.private?.A;
   if (A == null) return null;
   final userAsyncValue = ref.watch(hangoutProvider(A));
@@ -298,142 +234,82 @@ final bidInsPrivateProvider =
   return database.bidInsPrivateStream(uid: uid);
 });
 
-final bidInsProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
-  /*// my user
-  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
-  if (haveToWait(hangoutAsyncValue)||
-      hangoutAsyncValue.value == null) {
-    return null;
-  }*/
+final bidInsWithHangoutsProvider =
+    Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
+  final bidIns = ref.watch(bidInsProvider(uid));
+  if (bidIns == null) return null;
 
-  //private user
-  final userPrivateAsyncValue = ref.watch(userPrivateProvider(uid));
-  if(haveToWait(userPrivateAsyncValue)) {
-    return null;
-  }
-  List<String> blockedHangouts = userPrivateAsyncValue.value?.blocked??[];
-  List<String> favoriteHangouts = userPrivateAsyncValue.value?.friends??[];
+  final bidInsWithUsersTrial =
+      bidIns.map((bid) => ref.watch(bidInAndHangoutProvider(bid))).toList();
+  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
+  final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
+  return bidInsWithUsers;
+});
 
+final bidInsProvider =
+    Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   // public bid ins
   final bidInsPublicAsyncValue = ref.watch(bidInsPublicProvider(uid));
-  if (haveToWait(bidInsPublicAsyncValue) || bidInsPublicAsyncValue.value == null) {
+  if (haveToWait(bidInsPublicAsyncValue) ||
+      bidInsPublicAsyncValue.value == null) {
     return null;
   }
-  if (bidInsPublicAsyncValue.value?.isEmpty ?? false) {
+  if (bidInsPublicAsyncValue.value!.isEmpty) {
     return <BidIn>[];
   }
   List<BidInPublic> bidInsPublic = bidInsPublicAsyncValue.value!;
 
-  // private bid ins
-  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
+  // my hangout
+  final hangoutAsyncValue = ref.watch(hangoutProvider(uid));
+  if (haveToWait(hangoutAsyncValue) || hangoutAsyncValue.value == null) {
     return null;
   }
-  if (bidInsPrivateAsyncValue.value?.isEmpty ?? false) {
-    return <BidIn>[];
+  final hangout = hangoutAsyncValue.value!;
+  final bidInsPublicSorted = combineQueues(
+      bidInsPublic, hangout.loungeHistory, hangout.loungeHistoryIndex);
+
+  // private bid ins
+  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
+  if (haveToWait(bidInsPrivateAsyncValue) ||
+      bidInsPrivateAsyncValue.value == null) {
+    return null;
   }
   List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
 
   // create bid ins
-  final bidIns = BidIn.createList(bidInsPublic, bidInsPrivate);
-  final bidInsWithUsersTrial = bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
-  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
-  final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
-
-  bidInsWithUsers.removeWhere((element) {
-    return blockedHangouts.contains(element.hangout?.id);
-  });
-
-
-  bidInsWithUsers.sort(
-    (a, b) {
-      if (favoriteHangouts.contains(a.hangout?.id)) {
-        return 0;
-      }
-      return 1;
-    },
-  );
-
-  return bidInsWithUsers;
-
-  // List<BidIn> bidInsChronies = bidIns
-  //     .where((bidIn) => bidIn.public.speed.num == user.rule.minSpeed)
-  //     .toList();
-  // List<BidIn> bidInsHighRollers = bidIns
-  //     .where((bidIn) => user.rule.minSpeed < bidIn.public.speed.num)
-  //     .toList();
-  // if (bidInsChronies.length + bidInsHighRollers.length != bidIns.length)
-  //   throw Exception(
-  //       'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
-
-  // bidInsHighRollers.sort((b1, b2) {
-  //   return b1.public.speed.num.compareTo(b2.public.speed.num);
-  // });
-
-  // List<BidIn> bidInsSorted = [];
-  // if (bidInsHighRollers.isEmpty)
-  //   bidInsSorted = bidInsChronies;
-  // else if (bidInsChronies.isEmpty)
-  //   bidInsSorted = bidInsHighRollers;
-  // else {
-  //   // meeting history
-  //   final meetingHistoryAsyncValue = ref.watch(meetingHistoryB(uid));
-  //   if (meetingHistoryAsyncValue is AsyncLoading ||
-  //       meetingHistoryAsyncValue is AsyncError ||
-  //       meetingHistoryAsyncValue.value == null) {
-  //     return WaitPage();
-  //   }
-  //   final meetingHistory = meetingHistoryAsyncValue.value!;
-
-  //   // order bidIns
-  //   int N = user.rule.importanceSize();
-  //   final recentMeetings = meetingHistory.getRange(0, N - 1).toList();
-  //   final recentLounges = recentMeetings.map((m) => m.lounge).toList();
-
-  //   int chronyIndex = 0;
-  //   int highRollerIndex = 0;
-  //   int historyIndex = min(N - 1, recentLounges.length); // -1 => do not use recentLounges
-
-  //   // mean lounge value
-
-  //   BidIn nextChrony = bidInsChronies[chronyIndex];
-  //   BidIn nextHighroller = bidInsChronies[highRollerIndex];
-
-  //   // next rule comes from the earlier guest if different
-  //   HangOutRule nextRule =
-  //       nextChrony.public.rule == nextHighroller.public.rule
-  //           ? nextChrony.public.rule
-  //           : (nextChrony.public.ts.microsecondsSinceEpoch <
-  //                   nextHighroller.public.ts.microsecondsSinceEpoch
-  //               ? nextChrony.public.rule
-  //               : nextHighroller.public.rule);
-
-  //   // is nextChrony eligible according to nextRule
-  //   if (nextChrony.public.speed.num < nextRule.minSpeed) {
-  //     // choose HighRoller
-  //     bidInsSorted.add(nextHighroller);
-
-  //     // next
-
-  //   }
-  // }
+  final bidIns = BidIn.createList(bidInsPublicSorted, bidInsPrivate);
+  return bidIns;
 });
 
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
   (ref) {
-    final uid = ref.watch(myUIDProvider)!;
+    final uid = ref.watch(myUIDProvider);
+    if(uid == null){
+      return null;
+    }
     final hangout = ref.watch(hangoutProvider(uid));
     log('lockedUserViewModelProvider - user=$hangout');
     if (hangout is AsyncLoading || hangout is AsyncError) return null;
 
-    if (hangout.asData!.value.meeting == null) return null;
+    if (hangout.asData!.value.meeting == null) {
+      isUserLocked.value = false;
+      return null;
+    }
     final String userMeeting = hangout.asData!.value.meeting!;
     log('lockedHangoutViewModelProvider - userMeeting=$userMeeting');
     final meeting = ref.watch(meetingProvider(userMeeting));
+
     log('lockedHangoutViewModelProvider - meeting=$meeting');
-    if (meeting is AsyncLoading || meeting is AsyncError) return null;
-    return LockedHangoutViewModel(
-        hangout: hangout.asData!.value, meeting: meeting.asData!.value);
+    if (meeting is AsyncLoading || meeting is AsyncError) {
+      isUserLocked.value = false;
+      return null;
+    }
+    if(meeting.value?.active??false){
+      isUserLocked.value = true;
+    }else{
+      isUserLocked.value = false;
+    }
+    return LockedHangoutViewModel(hangout: hangout.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -558,51 +434,4 @@ final ratingListProvider =
     StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
-});
-
-final estMaxDurationProvider =
-    FutureProvider.family<double?, String>((ref, bidId) async {
-  final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(bidId));
-  final bidInAsyncValue = ref.watch(bidInProvider(bidId));
-  if (bidInAsyncValue is AsyncError || bidInAsyncValue is AsyncLoading)
-    return null;
-  final bidIn = bidInAsyncValue.value;
-  if (bidIn == null) return null;
-
-  final speed = bidIn.speed.num;
-  if (speed == 0) return double.infinity;
-
-  if (bidInPrivateAsyncValue is AsyncError ||
-      bidInPrivateAsyncValue is AsyncLoading) return null;
-  final bidInPrivate = bidInPrivateAsyncValue.value;
-  if (bidInPrivate == null) return null;
-
-  final addr = bidInPrivate.addrA!;
-  final assetId = bidIn.speed.assetId;
-
-  final accountService = ref.watch(accountServiceProvider);
-  final assetHoldings = await accountService.getAssetHoldings(
-      address: addr, net: AlgorandNet.testnet);
-
-  for (final assetHolding in assetHoldings) {
-    if (assetHolding.assetId == assetId) {
-      return (assetHolding.amount / speed).floorToDouble();
-    }
-  }
-
-  return null;
-});
-
-final isMainAccountEmptyProvider = FutureProvider((ref) async {
-  final accountService = ref.watch(accountServiceProvider);
-  final mainAccount = await accountService.getMainAccount();
-  for (final balance in mainAccount.balances) {
-    if (balance.assetHolding.assetId == 0) {
-      if (balance.assetHolding.amount == 0)
-        return true;
-      else
-        return false;
-    }
-  }
-  throw Exception('');
 });

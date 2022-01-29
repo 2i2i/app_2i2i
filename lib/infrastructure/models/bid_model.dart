@@ -31,7 +31,7 @@ class BidOut extends Equatable {
     required this.B,
     required this.speed,
     required this.net,
-    required this.txId,
+    required this.txns,
     required this.addrA,
     required this.active,
     required this.budget,
@@ -42,7 +42,7 @@ class BidOut extends Equatable {
   final Quantity speed;
   final AlgorandNet net;
   final String? addrA;
-  final String? txId;
+  final Map<String, String> txns;
   final bool active;
   final int budget;
 
@@ -64,7 +64,12 @@ class BidOut extends Equatable {
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
-    final txId = data['txId'] as String?;
+
+    final Map<String, String> txns = {};
+    for (final String k in data['txns'].keys) {
+      txns[k] = data['txns'][k] as String;
+    }
+
     final int budget = data['budget'];
 
     return BidOut(
@@ -74,7 +79,7 @@ class BidOut extends Equatable {
       B: B,
       speed: speed,
       net: net,
-      txId: txId,
+      txns: txns,
       budget: budget,
     );
   }
@@ -82,7 +87,7 @@ class BidOut extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'addrA': addrA,
-      'txId': txId,
+      'txns': txns,
       'B': B,
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
@@ -119,7 +124,8 @@ class BidIn extends Equatable {
     List<BidIn> bidIns = [];
     for (int i = 0; i < publics.length; i++) {
       final bidInPublic = publics[i];
-      final bidInPrivate = privates.firstWhere((element) => element.id == bidInPublic.id);
+      final bidInPrivate =
+          privates.firstWhere((element) => element.id == bidInPublic.id);
       BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
       bidIns.add(bidIn);
     }

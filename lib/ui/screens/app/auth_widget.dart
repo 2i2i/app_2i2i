@@ -1,11 +1,9 @@
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutterfire_ui/auth.dart';
-
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
+
+bool showed = false;
 
 class AuthWidget extends ConsumerWidget {
   AuthWidget({required this.homePageBuilder});
@@ -19,8 +17,8 @@ class AuthWidget extends ConsumerWidget {
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return authStateChanges.when(data: (hangout) {
-            if (hangout == null) {
+          return authStateChanges.when(data: (firebaseUser) {
+            if (firebaseUser == null) {
               final signUpViewModel = ref.read(setupUserViewModelProvider);
               if (!signUpViewModel.signUpInProcess) {
                 signUpViewModel.signInAnonymously();
@@ -71,6 +69,8 @@ class AuthWidget extends ConsumerWidget {
               }
               return WaitPage();
             }
+
+
 
             return homePageBuilder(context);
           }, loading: () {

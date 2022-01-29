@@ -30,9 +30,9 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-
-      final meetingDocRef =
-          _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
+      final meetingDocRef = _service.firestore
+          .collection(FirestorePath.meetings())
+          .doc(meeting.id);
 
       final lockObj = {'meeting': meeting.id};
 
@@ -144,8 +144,7 @@ class FirestoreDatabase {
           data: userPrivate.toMap(),
           merge: true);
 
-  Stream<Hangout> userStream({required String uid}) =>
-      _service.documentStream(
+  Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
@@ -253,10 +252,21 @@ class FirestoreDatabase {
             return Meeting.fromMap(data, documentId);
           });
 
-  Stream<List<Meeting?>> topMeetingStream() => _service
+  Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(
-        path: FirestorePath.topMeetings(),
-        builder: (data, documentId) => Meeting.fromMap(data, documentId),
+        path: FirestorePath.topSpeeds(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('speed.num', descending: true),
+      )
+          .handleError((onError) {
+        print(onError);
+        return [];
+      });
+  Stream<List<TopMeeting>> topDurationsStream() => _service
+          .collectionStream(
+        path: FirestorePath.topDurations(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('duration', descending: true),
       )
           .handleError((onError) {
         print(onError);
@@ -287,5 +297,4 @@ class FirestoreDatabase {
       },
     );
   }
-//</editor-fold>
 }

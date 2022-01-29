@@ -12,7 +12,6 @@ import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
 import '../home/wait_page.dart';
-import '../user_info/widgets/no_bid_page.dart';
 import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerWidget {
@@ -32,9 +31,8 @@ class UserBidInsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers =
-        ref.watch(bidInsProvider(myHangoutPageViewModel.hangout!.id));
+        ref.watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout!.id));
     if (bidInsWithUsers == null) return WaitPage();
-    if (bidInsWithUsers.isEmpty) return NoBidPage(noBidsText: noBidsText);
 
     // store for notification
     markAsRead(bidInsWithUsers);
@@ -78,10 +76,10 @@ class UserBidInsList extends ConsumerWidget {
         ),
       ),
       body: ListView.builder(
-        primary: false,
-        physics: NeverScrollableScrollPhysics(),
+        //primary: false,
+        //physics: NeverScrollableScrollPhysics(),
         itemCount: bidInsWithUsers.length,
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.only(top: 10,bottom: 80),
         itemBuilder: (_, ix) {
           return BidInTile(
             bidInList: bidInsWithUsers,

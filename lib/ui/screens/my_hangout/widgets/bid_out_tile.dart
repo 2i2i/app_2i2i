@@ -8,18 +8,19 @@ import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 
 class BidOutTile extends ConsumerWidget {
-  final List<BidOut> bidOutList;
-  final int index;
+  final BidOut bidOut;
+  final void Function(BidOut bidOut) onCancelClick;
 
-  const BidOutTile({Key? key, required this.bidOutList, required this.index})
+  const BidOutTile(
+      {Key? key,
+      required this.bidOut,
+      required this.onCancelClick})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var statusColor = AppTheme().green;
-    var budgetCount = 0;
     String bidSpeed = "0";
-    BidOut bidOut = bidOutList[index];
 
     final userAsyncValue = ref.watch(hangoutProvider(bidOut.B));
     if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
@@ -27,12 +28,7 @@ class BidOutTile extends ConsumerWidget {
     }
 
     Hangout hangout = userAsyncValue.asData!.value;
-
     bidSpeed = bidOut.speed.num.toString();
-
-    for (int i = 0; i <= index; i++) {
-      budgetCount += bidOutList[i].budget;
-    }
 
     if (hangout.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
@@ -80,8 +76,11 @@ class BidOutTile extends ConsumerWidget {
                         alignment: Alignment.center,
                         child: Text(
                           firstNameChar,
-                          style: Theme.of(context).textTheme.headline6!.copyWith(
-                              fontWeight: FontWeight.w600, fontSize: 20),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(
+                                  fontWeight: FontWeight.w600, fontSize: 20),
                         ),
                       ),
                       Align(
@@ -92,7 +91,8 @@ class BidOutTile extends ConsumerWidget {
                           decoration: BoxDecoration(
                               color: statusColor,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white, width: 2)),
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
                         ),
                       ),
                     ],
@@ -166,18 +166,20 @@ class BidOutTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
+                  IconButton(
+                      onPressed: () => onCancelClick(bidOut),
+                      icon: Icon(Icons.cancel)),
                   Spacer(),
                   Expanded(
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                        text: 'Total Budget:',
+                        text: 'Budget:',
                         children: [
                           TextSpan(
-                            text: ' $budgetCount',
-                            children: [],
-                            style: Theme.of(context).textTheme.bodyText2
-                          )
+                              text: ' ${bidOut.budget}',
+                              children: [],
+                              style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
