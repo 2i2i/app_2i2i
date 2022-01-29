@@ -1,18 +1,10 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
-import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -33,104 +25,24 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     if (haveToWait(hangout)) {
       return WaitPage();
     }
-    final message = 'https://test.2i2i.app/user/$uid';
-    var appSettingModel = ref.watch(appSettingProvider);
 
     return Scaffold(
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             Text(
               'Settings',
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 15),
-            Text(
-              'QR code',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20.0),
-                child: Column(
-                  children: [
-                    Text(
-                      Strings().shareQr,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    QrWidget(
-                      message: message,
-                      logoSize: 54,
-                      imageSize: 180,
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        // color: Color(0xffF3F3F7),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          width: 0.5,
-                          color: Theme.of(context).iconTheme.color??Colors.transparent
-                        )
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(
-                                  text: message,
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Copied Link!')),
-                              );
-                            },
-                            child: Text('Copy'),
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Share.share(
-                                  'Your friend and invite for join 2i2i\n$message');
-                            },
-                            child: Text('Share'),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-
             //profile
             Text(
-              'Profile',
+              Strings().account,
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -141,7 +53,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 children: [
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '');
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +79,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: (){
-                      CustomNavigation.push(context, HangoutSetting(), '');
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
                       Strings().bio,
@@ -176,11 +88,57 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                     trailing: Icon(Icons.navigate_next),
                   ),
+                  ListTile(
+                    onTap: (){
+                      context.pushNamed(Routes.account.nameFromPath());
+                    },
+                    title: Text(
+                      Strings().wallet,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: 20),
 
+            //others
+            Text(
+              'Others',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: Column(
+                children: [
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    title: Text(
+                      Strings().blockList,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    title: Text(
+                      Strings().meetingsHistory,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
 
             //theme
             Text(
@@ -235,84 +193,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                 );
               },
-            ),
-            Visibility(
-              visible: false,
-              child: Container(
-                decoration: Custom.getBoxDecoration(context),
-                child: ListTile(
-                  onTap: () {
-                    CustomNavigation.push(
-                        context, ThemeModeScreen(), 'ThemeModeScreen');
-                  },
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        getThemeModeName(appSettingModel.currentThemeMode),
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      if (appSettingModel.currentThemeMode == ThemeMode.system)
-                        Text(
-                          'System Defaults',
-                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                  trailing: Icon(
-                    Icons.navigate_next,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-
-            //others
-            Text(
-              'Others',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'Friends',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: false,
-                        ),
-                        Routes.FRIENDS),
-                  ),
-                  ListTile(
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: true,
-                        ),
-                        Routes.FRIENDS),
-                    title: Text(
-                      'Blocked users',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                  ),
-                ],
-              ),
             ),
             SizedBox(height: 20),
 
@@ -398,21 +278,5 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       return 'Dark Mode';
     }
     return 'Light Mode';
-  }
-
-  void showProfile() {
-    CustomAlertWidget.showBidAlert(
-      context,
-      WillPopScope(
-        onWillPop: () {
-          return Future.value(true);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: HangoutSetting(),
-        ),
-      ),
-      isDismissible: true,
-    );
   }
 }

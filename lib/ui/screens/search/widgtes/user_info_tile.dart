@@ -2,24 +2,26 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
-import '../../../commons/custom_navigation.dart';
 import '../../../commons/custom_profile_image_view.dart';
-import '../../user_info/user_info_page.dart';
 
 class UserInfoTile extends ConsumerWidget {
   final Hangout hangout;
   final String myUIDProvider;
   final bool isForBlockedUser;
+  final double? marginBottom;
 
   const UserInfoTile(
       {Key? key,
       required this.hangout,
+        this.marginBottom,
       required this.myUIDProvider,
       required this.isForBlockedUser})
       : super(key: key);
@@ -41,10 +43,10 @@ class UserInfoTile extends ConsumerWidget {
 
 
     return Container(
+      margin: EdgeInsets.only(bottom: marginBottom??0),
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
-        onTap: () => CustomNavigation.push(
-            context, UserInfoPage(uid: hangout.id), Routes.USER),
+        onTap: () => context.pushNamed(Routes.user.nameFromPath(),params: {'uid':hangout.id,}),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(

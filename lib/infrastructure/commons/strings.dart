@@ -22,13 +22,29 @@ class Strings {
   String maxDuration = 'Max Duration';
 
   String numberHint = 'Enter real number like 12';
+  String numberZeroHint = '0';
 
-  String algoPerSec = 'μALGO/Sec';
+  String algoPerSec = 'μALGO/sec';
 
   var hh = 'hh';
   var mm = 'mm';
+  var ss = 'ss';
 
   String invalid = 'Invalid';
+
+  String join = 'Join';
+
+  var favorites = 'Favorites';
+
+  String wallet = 'Wallet';
+
+  String blockList = 'Blocked list';
+
+  String favList = 'Favorite List';
+  String fav = 'Favorites';
+
+  String scanQr = 'Scan QR';
+
   Strings._internal();
 
   factory Strings() {
@@ -42,6 +58,7 @@ class Strings {
   String talk = 'Talk';
   String cancel = 'Cancel';
   String copyMessage = 'Copied to Clipboard';
+  String userBusyMessage = 'User is Offline or Busy..';
 
   // Logout
   String logout = 'Logout';
@@ -78,7 +95,7 @@ class Strings {
 
   //User Info page
   String createABid = 'Create a bid';
-  String algoSec = 'μAlgo/s';
+  String algoSec = 'μALGO/s';
   String speed = 'Speed';
   String bidAmount = 'Bid Amount';
   String note = 'Note (optional)';
@@ -86,16 +103,18 @@ class Strings {
 
   //SetUp User page
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
-  String yourNameHint = 'My cool username';
+  String yourNameHint = 'My hangout name';
   String writeYourBio = 'Write your bio';
   String writeYourName = 'Write your name';
-  String bioExample = 'Ex: I like #cooking #basketball';
+  String bioExample = 'Ex: Let\'s talk about #cooking or #basketball';
   String save = 'Save';
   String required = 'Required';
   String enterValidData = 'Please enter valid data';
   String setUpAccount = 'Setup Account';
+  String hangoutSettings = 'Hangout Settings';
   String userName = 'Username';
-  String bio = 'Bio';
+  String name = 'Name';
+  String bio = 'Description';
     String addAccount = 'Add account';
   String walletAccount = 'Wallet account';
   String walletAccountMsg = 'I want to connect a 3rd party wallet';
@@ -106,7 +125,7 @@ class Strings {
   String addLocalAccount = 'Add local account';
   String addLocalAccountMsg = 'Create a local account on this device';
 
-  String estMaxDuration = 'Est.max duration';
+  String estMaxDuration = 'Est. max duration';
   String swipeAndChangeAccount = 'Swipe Below Card Left or Right to change account';
 
   String insufficientBalance = 'Insufficient balance';

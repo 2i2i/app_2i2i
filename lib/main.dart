@@ -7,15 +7,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-// import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/commons/strings.dart';
-// import 'infrastructure/data_access_layer/accounts/theme_chaker.dart';
 import 'infrastructure/providers/all_providers.dart';
-import 'ui/screens/app/auth_widget.dart';
-import 'ui/screens/home/home_page.dart';
-// import 'ui/screens/setup_account/setup_account.dart';
-// import 'ui/test_screen.dart';
+import 'infrastructure/routes/named_routes.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -46,28 +41,28 @@ Future<void> main() async {
   // });
   //endregion DEBUG
 
-  // await SentryFlutter.init((options) {
-  //   options.dsn =
-  //       'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  // }, appRunner: () {
-  //   FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //     return runApp(
-  //       ProviderScope(
-  //         child: MainWidget(themeMode: value ?? "AUTO"),
-  //       ),
-  //     );
-  //   });
-  // }).onError((error, stackTrace) {
-  //   print(error);
-  // });
-
-  return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-    return runApp(
-      ProviderScope(
-        child: MainWidget(themeMode: value ?? "AUTO"),
-      ),
-    );
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  }, appRunner: () {
+    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+      return runApp(
+        ProviderScope(
+          child: MainWidget(themeMode: value ?? "AUTO"),
+        ),
+      );
+    });
+  }).onError((error, stackTrace) {
+    print(error);
   });
+
+  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  //   return runApp(
+  //     ProviderScope(
+  //       child: MainWidget(themeMode: value ?? "AUTO"),
+  //     ),
+  //   );
+  // });
 }
 
 class MainWidget extends ConsumerStatefulWidget {
@@ -101,40 +96,15 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
-    return MaterialApp(
+    return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
-      home: getView(),
-      // home:TestScreen(),
       title: Strings().appName,
       debugShowCheckedModeBanner: false,
       themeMode: appSettingModel.currentThemeMode,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
-    );
-  }
-
-  Widget getView() {
-    bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
-    if (kIsWeb && !isMobile) {
-      return FittedBox(
-        fit: BoxFit.scaleDown,
-        child: SizedBox(
-          width: 500,
-          height: 844,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AuthWidget(
-               // homePageBuilder: (_) => RingingPage(),
-               homePageBuilder: (_) => HomePage(),
-            ),
-          ),
-        ),
-      );
-    }
-    return AuthWidget(
-      homePageBuilder: (_) => HomePage(),
-      // homePageBuilder: (_) => SetupBio(),
+      routeInformationParser: NamedRoutes.router.routeInformationParser,
+      routerDelegate: NamedRoutes.router.routerDelegate,
     );
   }
 }
