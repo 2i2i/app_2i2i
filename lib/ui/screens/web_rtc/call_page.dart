@@ -84,11 +84,11 @@ class _CallPageState extends ConsumerState<CallPage>
     if (budgetTimer?.isActive ?? false) return;
 
     final maxDuration = widget.meeting.maxDuration().round();
-    log(X + 'maxDuration=$maxDuration');
+    // log(X + 'maxDuration=$maxDuration');
     final duration = getDuration(maxDuration);
-    log(X + 'duration=$duration');
+    // log(X + 'duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration), () {
-      log(X + 'budgetTimer');
+      // log(X + 'budgetTimer');
       progressTimer?.cancel();
       signaling?.hangUp(reason: MeetingStatus.END_TIMER);
     });
