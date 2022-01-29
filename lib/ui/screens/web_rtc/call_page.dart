@@ -54,7 +54,7 @@ class _CallPageState extends ConsumerState<CallPage>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future<void> _initBudgetTimer() async {
+  Future<void> _init() async {
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
 
@@ -75,13 +75,20 @@ class _CallPageState extends ConsumerState<CallPage>
       //   setState(() {});
       // }
     });
+  }
 
+  Future<void> _initTimers() async {
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
+    if (widget.meeting.start == null) return;
+    if (budgetTimer?.isActive ?? false) return;
 
-    final maxDuration = widget.meeting.maxDuration()!;
+    final maxDuration = widget.meeting.maxDuration().round();
+    log(X + 'maxDuration=$maxDuration');
     final duration = getDuration(maxDuration);
+    log(X + 'duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration), () {
+      log(X + 'budgetTimer');
       progressTimer?.cancel();
       signaling?.hangUp(reason: MeetingStatus.END_TIMER);
     });
@@ -95,22 +102,16 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   int getDuration(int maxDuration) {
-    int duration = maxDuration;
-    final activeTime = widget.meeting.start;
-    if (activeTime != null) {
-      final DateTime maxEndTime =
-          activeTime.add(Duration(seconds: maxDuration));
-      final durationObj = maxEndTime.difference(DateTime.now().toUtc());
-      duration = durationObj.inSeconds;
-    }
-    return duration;
+    final DateTime maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final durationObj = maxEndTime.difference(DateTime.now().toUtc());
+    return durationObj.inSeconds;
   }
 
   void showCountDown(int duration) {
     if (countDownTimerDate != null) {
       return;
     }
-    final maxDuration = widget.meeting.maxDuration()!;
+    final maxDuration = widget.meeting.maxDuration().round();
     final duration = getDuration(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
@@ -123,10 +124,8 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
-    _initBudgetTimer();
-
+    _init();
     amA = widget.meeting.A == widget.hangout.id;
-
     super.initState();
   }
 
@@ -141,13 +140,17 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Future<void> disposeInit() async {
     if (_localRenderer.srcObject != null) {
-      _localRenderer.srcObject!.getTracks().forEach((element) async => await element.stop());
+      _localRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
       await _localRenderer.srcObject!.dispose();
       _localRenderer.srcObject = null;
     }
 
     if (_remoteRenderer.srcObject != null) {
-      _remoteRenderer.srcObject!.getTracks().forEach((element) async => await element.stop());
+      _remoteRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
       await _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
@@ -161,6 +164,8 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   Widget build(BuildContext context) {
+    _initTimers();
+
     callScreenModel = ref.watch(callScreenProvider);
     final myUid = amA ? widget.meeting.A : widget.meeting.B;
     final hangout = ref.watch(hangoutProvider(myUid));
@@ -303,8 +308,8 @@ class _CallPageState extends ConsumerState<CallPage>
                           animationType: AnimationType.scaleIn,
                           characterTextStyle: Theme.of(context)
                               .textTheme
-                              .headline3
-                              !.copyWith(color: Colors.white),
+                              .headline3!
+                              .copyWith(color: Colors.white),
                         ),
                       ),
                     ),

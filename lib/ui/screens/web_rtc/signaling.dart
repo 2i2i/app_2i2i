@@ -127,11 +127,10 @@ class Signaling {
         remoteStream?.addTrack(track);
       });
 
-      if (amA) {
+      if (amA && meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
         await meetingChanger.remoteReceivedByAMeeting(meeting.id);
-      } else {
+      else if (meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
         await meetingChanger.remoteReceivedByBMeeting(meeting.id);
-      }
     };
 
     // Listening for remote session description below

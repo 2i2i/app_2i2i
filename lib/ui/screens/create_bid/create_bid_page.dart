@@ -68,7 +68,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? note;
-  double maxDuration = 300;
+  int maxDuration = 300;
   int maxMaxDuration = 300;
   int minMaxDuration = 10;
 
@@ -101,7 +101,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
               .floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
-      maxDuration = min(maxDuration, maxMaxDuration.toDouble());
+      maxDuration = min(maxDuration, maxMaxDuration);
     }
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
     setState(() {});
@@ -338,9 +338,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       ? null
                                       : min(
                                           100, maxMaxDuration - minMaxDuration),
-                                  value: maxDuration,
+                                  value: maxDuration.toDouble(),
                                   onChanged: (value) {
-                                    maxDuration = value;
+                                    maxDuration = value.round();
                                     update();
                                   },
                                 ),

@@ -186,7 +186,7 @@ class Meeting extends Equatable {
   final String? addrA; // set if 0 < speed
   final String? addrB; // set if 0 < speed
 
-  final int? budget; // [coins]; 0 for speed == 0
+  final int budget; // [coins]; 0 for speed == 0
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
@@ -215,9 +215,9 @@ class Meeting extends Equatable {
   bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
 
-  int? maxDuration() {
-    if (budget == null) return null;
-    return (budget! / speed.num).floor();
+  double maxDuration() {
+    if (speed.num == 0) return double.infinity;
+    return budget / speed.num;
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -234,7 +234,7 @@ class Meeting extends Equatable {
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
-    final int? budget = data['budget'];
+    final int budget = data['budget'];
     final DateTime? start = data['start']?.toDate();
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
