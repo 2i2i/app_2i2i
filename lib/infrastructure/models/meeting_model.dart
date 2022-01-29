@@ -218,7 +218,7 @@ class Meeting extends Equatable {
 
   double maxDuration() {
     if (speed.num == 0) return double.infinity;
-    return energy['max']! / speed.num;
+    return energy['MAX']! / speed.num;
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
