@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_p
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -24,20 +25,12 @@ class MyHangoutPageViewModel {
   final HangoutChanger hangoutChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn) async {
-    String? addrB;
-    if (bidIn.public.speed.num != 0) {
-      final account = await accountService.getMainAccount();
-      addrB = account.address;
-    }
-    if (hangout is Hangout &&
-        hangout?.status != 'OFFLINE' &&
-        hangout!.isInMeeting()) {
-      final meeting = Meeting.newMeeting(
-          id: bidIn.public.id, uid: hangout!.id, addrB: addrB, bidIn: bidIn);
+  Future acceptBid(BidIn bidIn,String bUserId) async {
+    if (hangout is Hangout && hangout!.status != 'OFFLINE' && !(hangout!.isInMeeting())) {
+      final meeting = Meeting.newMeeting(id: bidIn.public.id, uid: hangout!.id, addrB: bUserId, bidIn: bidIn);
       database.acceptBid(meeting);
     } else {
-      cancelBid(bidId: bidIn.public.id, B: bidIn.hangout!.id);
+      cancelBid(bidId: bidIn.public.id, B: bidIn.hangout!.id,speed: bidIn.public.speed);
     }
   }
 

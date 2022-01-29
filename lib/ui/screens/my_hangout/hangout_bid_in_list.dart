@@ -2,6 +2,7 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -30,31 +31,31 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers =
-        ref.watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout!.id));
+    final bidInsWithUsers = ref.watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout!.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
     markAsRead(bidInsWithUsers);
-
+    List<BidIn> bidIns = bidInsWithUsers.toList();
     return Scaffold(
       floatingActionButton: InkResponse(
-        onTap: () async {
-          for (BidIn bidIn in bidInsWithUsers) {
+        onTap: () {
+          for (BidIn bidIn in bidIns) {
             Hangout? hangout = bidIn.hangout;
-            if (hangout is Hangout && hangout.status == 'OFFLINE' ||
-                (hangout?.isInMeeting() ?? false)) {
-              await myHangoutPageViewModel.cancelBid(
-                  bidId: bidIn.public.id, B: bidIn.hangout!.id);
+            if(hangout == null){
+              return;
+            }
+            if (hangout.status == 'OFFLINE' || hangout.isInMeeting()) {
+              myHangoutPageViewModel.cancelBid(bidId: bidIn.public.id, B: myHangoutPageViewModel.hangout!.id,speed: bidIn.public.speed,);
             } else {
-              await myHangoutPageViewModel.acceptBid(bidIn);
+              myHangoutPageViewModel.acceptBid(bidIn,myHangoutPageViewModel.hangout!.id);
               break;
             }
           }
         },
         child: Container(
-          width: kToolbarHeight * 1.125,
-          height: kToolbarHeight * 1.125,
+          width: kToolbarHeight * 1.15,
+          height: kToolbarHeight * 1.15,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(18),
@@ -65,13 +66,23 @@ class UserBidInsList extends ConsumerWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .secondary // changes position of shadow
-                  ),
+              ),
             ],
           ),
-          child: Icon(
-            Icons.play_arrow,
-            size: 30,
-            color: Theme.of(context).cardColor,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.play_arrow,
+                size: 30,
+                color: Theme.of(context).cardColor,
+              ),
+              SizedBox(height: 2),
+              Text(Strings().talk,style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                color: Theme.of(context).cardColor,
+              ))
+            ],
           ),
         ),
       ),
