@@ -145,6 +145,10 @@ final myHangoutPageViewModelProvider = Provider((ref) {
   final uid = ref.watch(myUIDProvider)!;
   // log('myUserPageViewModelProvider - uid=$uid');
   final hangout = ref.watch(hangoutProvider(uid));
+  if (hangout is AsyncError || hangout is AsyncLoading) {
+    return null;
+  }
+
   // log('myUserPageViewModelProvider - user=$user');
   final hangoutChanger = ref.watch(hangoutChangerProvider);
   if (hangoutChanger == null) return null;
@@ -160,7 +164,7 @@ final myHangoutPageViewModelProvider = Provider((ref) {
   return MyHangoutPageViewModel(
     database: database,
     functions: functions,
-    hangout: hangout.asData?.value,
+    hangout: hangout.asData!.value,
     accountService: accountService,
     hangoutChanger: hangoutChanger,
   );

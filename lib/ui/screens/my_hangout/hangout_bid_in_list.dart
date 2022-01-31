@@ -31,7 +31,8 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref.watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout!.id));
+    final bidInsWithUsers = ref
+        .watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -39,18 +40,15 @@ class UserBidInsList extends ConsumerWidget {
     List<BidIn> bidIns = bidInsWithUsers.toList();
     return Scaffold(
       floatingActionButton: InkResponse(
-        onTap: () {
+        onTap: () async {
           for (BidIn bidIn in bidIns) {
             Hangout? hangout = bidIn.hangout;
-            if(hangout == null){
+            if (hangout == null) {
               return;
             }
-            if (hangout.status == 'OFFLINE' || hangout.isInMeeting()) {
-              myHangoutPageViewModel.cancelBid(bidId: bidIn.public.id, B: myHangoutPageViewModel.hangout!.id,speed: bidIn.public.speed,);
-            } else {
-              myHangoutPageViewModel.acceptBid(bidIn,myHangoutPageViewModel.hangout!.id);
-              break;
-            }
+
+            final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIn);
+            if (acceptedBid) break;
           }
         },
         child: Container(
@@ -66,7 +64,7 @@ class UserBidInsList extends ConsumerWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .secondary // changes position of shadow
-              ),
+                  ),
             ],
           ),
           alignment: Alignment.center,
@@ -79,9 +77,10 @@ class UserBidInsList extends ConsumerWidget {
                 color: Theme.of(context).cardColor,
               ),
               SizedBox(height: 2),
-              Text(Strings().talk,style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                color: Theme.of(context).cardColor,
-              ))
+              Text(Strings().talk,
+                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        color: Theme.of(context).cardColor,
+                      ))
             ],
           ),
         ),
@@ -90,7 +89,7 @@ class UserBidInsList extends ConsumerWidget {
         //primary: false,
         //physics: NeverScrollableScrollPhysics(),
         itemCount: bidInsWithUsers.length,
-        padding: const EdgeInsets.only(top: 10,bottom: 80),
+        padding: const EdgeInsets.only(top: 10, bottom: 80),
         itemBuilder: (_, ix) {
           return BidInTile(
             bidInList: bidInsWithUsers,

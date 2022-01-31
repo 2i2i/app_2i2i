@@ -59,16 +59,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     final bidInsSorted = combineQueues(
         bidIns, hangout.loungeHistory, hangout.loungeHistoryIndex);
 
-    List<BidInPublic> myBids = [];
-
-    if (mainUserID != null) {
-      final myBidOuts = ref.watch(bidOutsProvider(mainUserID));
-      if (haveToWait(bidInsAsyncValue)) {
-        return WaitPage();
-      }
-      myBids = bidInsSorted.where((bidIn) => myBidOuts.value?.any((bidOut) => bidOut.id == bidIn.id) ?? false).toList();
-    }
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -98,7 +88,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: Visibility(
-        visible: myBids.isEmpty && !isBlocked,
+        visible: bidInsSorted.isEmpty && !isBlocked,
         child: InkResponse(
           onTap: () => context.pushNamed(
             Routes.createBid.nameFromPath(),
