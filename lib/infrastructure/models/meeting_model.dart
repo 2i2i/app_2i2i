@@ -23,12 +23,12 @@ enum MeetingStatus {
 }
 
 // ACCEPTED_B -> END_TIMER
-// ACCEPTED_B -> END_A
-// ACCEPTED_B -> END_B
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_A
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED-> END_B
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_TIMER
-// always possible to get END_DISCONNECT_*
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_TIMER
+// always possible to get END_DISCONNECT
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
     return this.toString().split('.').last;
@@ -112,7 +112,7 @@ class MeetingChanger {
       'active': false,
       'end': now,
     };
-    return database.updateMeeting(meeting.id, data);
+    return database.meetingEndUnlockUser(meeting, data);
   }
 
   Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
@@ -299,7 +299,7 @@ class Meeting extends Equatable {
   // used by acceptBid, as B
   factory Meeting.newMeeting({
     required String id,
-    required String uid,
+    required String B,
     required String? addrB,
     required BidIn bidIn,
   }) {
@@ -311,7 +311,7 @@ class Meeting extends Equatable {
       active: true,
       settled: false,
       A: bidIn.private!.A,
-      B: uid,
+      B: B,
       addrA: bidIn.private!.addrA,
       addrB: addrB,
       energy: {

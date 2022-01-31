@@ -87,7 +87,7 @@ class AlgorandService {
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
-  Future<String> lockCoins({
+  Future<Map<String, String>> lockCoins({
     required AbstractAccount account,
     required AlgorandNet net,
     required Quantity amount,
@@ -124,7 +124,14 @@ class AlgorandService {
     log(J + 'lockALGO - signed');
 
     try {
-      return algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
+      final groupTxId =
+          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
+
+      return {
+        'group': groupTxId,
+        'pay': lockTxn.id,
+        'app': appCallTxn.id,
+      };
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {

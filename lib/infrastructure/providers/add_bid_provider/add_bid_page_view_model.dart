@@ -59,12 +59,12 @@ class AddBidPageViewModel {
             .meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
-    String? txId;
+    Map<String, String> txns = {};
     if (speed.num != 0) {
       final note =
           bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txId = await algorand.lockCoins(
+        txns = await algorand.lockCoins(
             account: account!, net: net, amount: amount, note: note);
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
@@ -86,7 +86,7 @@ class AddBidPageViewModel {
       B: B.id,
       speed: speed,
       net: net,
-      txns: txId == null ? {} : {'lock': txId},
+      txns: txns,
       active: true,
       addrA: addrA,
       budget: amount.num,
@@ -107,7 +107,7 @@ class AddBidPageViewModel {
       A: uid,
       addrA: addrA,
       comment: bidNote,
-      txId: txId,
+      txns: txns,
     );
 
     BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);

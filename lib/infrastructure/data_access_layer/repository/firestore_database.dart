@@ -104,12 +104,6 @@ class FirestoreDatabase {
         }, // TODO move dependency
         merge: true,
       );
-  
-  Future<void> unlockUser(String uid) => _service.setData(
-        path: FirestorePath.user(uid),
-        data: {'meeting': null},
-        merge: true,
-      );
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service.setData(
@@ -117,6 +111,23 @@ class FirestoreDatabase {
       data: data,
       merge: true,
     );
+  }
+
+  Future meetingEndUnlockUser(Meeting meeting, Map<String, dynamic> data) async {
+    return _service.runTransaction((transaction) {
+      final userARef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
+      final userBRef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
+      final meetingRef = FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
+
+      final obj = {'meeting': null};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(meetingRef, data, setOptions);
+      transaction.set(userARef, obj, setOptions);
+      transaction.set(userBRef, obj, setOptions);
+
+      return Future.value();
+    });
   }
 
   Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) =>

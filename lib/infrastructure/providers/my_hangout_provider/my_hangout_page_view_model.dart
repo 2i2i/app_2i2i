@@ -29,7 +29,7 @@ class MyHangoutPageViewModel {
     }
     if (hangout is Hangout) {
       final meeting = Meeting.newMeeting(
-          id: bidIn.public.id, uid: hangout!.id, addrB: addrB, bidIn: bidIn);
+          id: bidIn.public.id, B: hangout!.id, addrB: addrB, bidIn: bidIn);
       database.acceptBid(meeting);
     }
   }

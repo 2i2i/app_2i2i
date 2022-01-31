@@ -7,7 +7,7 @@ const String I = 'I - ';
 const String J = 'J - ';
 const String E = 'ERROR - ';
 void log(String message) {
-  if (!message.startsWith(E)) return;
+  // if (!message.startsWith(E)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   print('************* - $now ($N): $message');
