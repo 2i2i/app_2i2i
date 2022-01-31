@@ -58,7 +58,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
         ),
         Visibility(
             visible: showRingingPage,
-            child: RingingPage(meeting: lockedUserViewModel.meeting)),
+            child: RingingPage(),
+        ),
         Visibility(
           visible: showWaitPage,
           child: WaitPage(),

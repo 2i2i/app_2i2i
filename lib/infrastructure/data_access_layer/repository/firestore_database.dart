@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../models/bid_model.dart';
+import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
-import '../../models/hangout_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -106,11 +108,15 @@ class FirestoreDatabase {
       );
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
   }
 
   Future meetingEndUnlockUser(Meeting meeting, Map<String, dynamic> data) async {
@@ -298,6 +304,7 @@ class FirestoreDatabase {
         path: FirestorePath.bidInPublic(uid, bidId),
         builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       );
+
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(

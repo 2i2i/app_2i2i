@@ -9,8 +9,7 @@ class Custom{
         BoxShadow(
             offset: Offset(2, 4),
             blurRadius: 8,
-            color: Colors.black12.withOpacity(0.1)
-            ),
+            color: Colors.black12.withOpacity(0.1)),
       ],
     );
   }

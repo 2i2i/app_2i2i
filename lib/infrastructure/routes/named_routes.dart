@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
@@ -26,6 +27,7 @@ import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +35,7 @@ import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
+  static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
@@ -111,7 +114,15 @@ class NamedRoutes {
         path: Routes.lock,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(LockedUserPage()),
+          child: getView(LockedUserPage(
+            onHangPhone: (uid, meetingId){
+              showRating.value = {
+                'show':true,
+                'otherUid':uid,
+                'meetingId':meetingId,
+              };
+            },
+          )),
         ),
       ),
       GoRoute(
@@ -278,6 +289,7 @@ class NamedRoutes {
   static ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   static Widget getView(Widget page) {
+    var feedbackController = TextEditingController();
     Widget widget = AuthWidget(
       homePageBuilder: (_) => Scaffold(
         body: page,
@@ -318,8 +330,123 @@ class NamedRoutes {
                 }
               }
             }
-
-            return Container(height: 0);
+             return ValueListenableBuilder(
+              valueListenable: showRating,
+              builder: (BuildContext context, Map value, Widget? child) {
+                child ??= Container();
+                return Visibility(
+                  visible: value['show'] ?? false,
+                  child: child,
+                );
+              },
+              child: BottomSheet(
+                backgroundColor: Theme.of(context).cardColor,
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                ),
+                onClosing: () {},
+                builder: (BuildContext context) {
+                  var otherUid = showRating.value['otherUid'];
+                  var meetingId = showRating.value['meetingId'];
+                  num rating = 5;
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Strings().appRatingTitle,
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          Strings().appRatingMessage,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 20, top: 8),
+                          child: RatingBar.builder(
+                            initialRating: rating.toDouble(),
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            glowColor: Colors.white,
+                            unratedColor: Colors.grey.shade300,
+                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star_rounded,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (starRating) {
+                              rating = starRating / 5;
+                            },
+                          ),
+                        ),
+                        TextFormField(
+                          controller: feedbackController,
+                          minLines: 5,
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Theme.of(context).iconTheme.color?.withAlpha(10),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                              ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => {
+                                showRating.value = {'show': false}
+                              },
+                              child: Text(
+                                Strings().cancel,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            TextButton(
+                              onPressed: () async {
+                                if (otherUid is String && meetingId is String) {
+                                  final database = ref.watch(databaseProvider);
+                                  database.addRating(
+                                      otherUid,
+                                      meetingId,
+                                      RatingModel(
+                                          rating: rating.toDouble(),
+                                          comment: feedbackController.text,
+                                      ),
+                                  );
+                                }
+                                showRating.value = {'show': false};
+                              },
+                              child: Text(
+                                Strings().appRatingSubmitButton,
+                              ),
+                              style: TextButton.styleFrom(
+                                primary: Theme.of(context).colorScheme.secondary,
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
           },
         ),
         bottomNavigationBar: ValueListenableBuilder(

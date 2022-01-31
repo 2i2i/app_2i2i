@@ -208,6 +208,11 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
+final getBidFromMeeting = StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
+  final database = ref.watch(databaseProvider);
+  return database.getBidInPrivate(uid: meeting.B, bidId: meeting.id);
+});
+
 final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final A = bidIn.private?.A;
   if (A == null) return null;
@@ -218,6 +223,7 @@ final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final hangout = userAsyncValue.asData!.value;
   return BidIn(public: bidIn.public, private: bidIn.private, hangout: hangout);
 });
+
 
 final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
