@@ -5,7 +5,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_p
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
@@ -60,12 +59,12 @@ class AddBidPageViewModel {
             .meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
-    String? txId;
+    Map<String, String> txns = {};
     if (speed.num != 0) {
       final note =
           bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txId = await algorand.lockCoins(
+        txns = await algorand.lockCoins(
             account: account!, net: net, amount: amount, note: note);
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
@@ -82,23 +81,16 @@ class AddBidPageViewModel {
       }
     }
 
-    // TODO clean separation into firestore_service and firestore_database
-    final bidOutRef = FirebaseFirestore.instance
-        .collection(FirestorePath.bidOuts(uid))
-        .doc(bidId);
     final bidOut = BidOut(
       id: bidId,
       B: B.id,
       speed: speed,
       net: net,
-      txns: txId == null ? {} : {'lock': txId},
+      txns: txns,
       active: true,
       addrA: addrA,
       budget: amount.num,
     );
-    final bidInPublicRef = FirebaseFirestore.instance
-        .collection(FirestorePath.bidInsPublic(B.id))
-        .doc(bidId);
     final bidInPublic = BidInPublic(
       id: bidId,
       speed: speed,
@@ -108,23 +100,17 @@ class AddBidPageViewModel {
       rule: hangout.rule,
       budget: amount.num,
     );
-    final bidInPrivateRef = FirebaseFirestore.instance
-        .collection(FirestorePath.bidInsPrivate(B.id))
-        .doc(bidId);
+
     final bidInPrivate = BidInPrivate(
       id: bidId,
       active: true,
       A: uid,
       addrA: addrA,
       comment: bidNote,
-      txId: txId,
+      txns: txns,
     );
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
-      transaction.set(
-          bidInPublicRef, bidInPublic.toMap(), SetOptions(merge: false));
-      transaction.set(
-          bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
-    });
+
+    BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
+    return database.addBid(bidOut, bidIn);
   }
 }

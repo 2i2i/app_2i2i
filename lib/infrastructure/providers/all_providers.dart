@@ -349,6 +349,9 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
 
+  final hangoutChanger = ref.watch(hangoutChangerProvider);
+  if (hangoutChanger == null) return null;
+  
   final meetingChanger = ref.watch(meetingChangerProvider);
 
   return RingingPageViewModel(
@@ -357,6 +360,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       algorand: algorand,
       functions: functions,
       meetingChanger: meetingChanger,
+      hangoutChanger: hangoutChanger,
       meeting: meeting.asData!.value);
 });
 

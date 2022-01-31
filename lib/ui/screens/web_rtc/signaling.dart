@@ -51,7 +51,8 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    await meetingChanger.roomCreatedMeeting(meeting.id, roomRef.id);
+    if (meeting.status != MeetingStatus.ACCEPTED_A) return;
+    return meetingChanger.roomCreatedMeeting(meeting.id, roomRef.id);
   }
 
   final Meeting meeting;
@@ -267,10 +268,7 @@ class Signaling {
 
   Future hangUp({required MeetingStatus reason}) {
     peerConnection?.close();
-    final f1 = hangoutChanger.unlock(meeting.A);
-    final f2 = hangoutChanger.unlock(meeting.B);
-    final f3 = meetingChanger.endMeeting(meeting, reason);
-    return Future.wait([f1, f2, f3]);
+    return meetingChanger.endMeeting(meeting, reason);
   }
 
   void registerPeerConnectionListeners() {
