@@ -46,12 +46,11 @@ class RingingPageState extends ConsumerState<RingingPage> {
     finish();
   }
 
-  // TODO does this work? does the timer stay when changing to MeetingStatus.TXN_SENT? that would be wrong
   void setTimer(RingingPageViewModel model) {
     if(timer == null) {
       if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
       timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-        var finishFuture = finish();
+        final finishFuture = finish();
         final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
         await Future.wait([finishFuture, endMeetingFuture]);
       });
@@ -99,7 +98,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
     String callerName = '';
     String callerBio = '';
-    String bidNote = '';
+    String bidComment = '';
     double  maxDuration = 0;
     double callerRating = 0.0;
 
@@ -118,7 +117,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
         callerName = hangoutAsyncValue.asData!.value.name;
         callerBio = hangoutAsyncValue.asData!.value.bio;
         callerRating = hangoutAsyncValue.asData!.value.rating;
-        bidNote = bidInPrivateAsyncValue.value?.comment ?? "";
+        bidComment = bidInPrivateAsyncValue.value?.comment ?? "";
       }
     }
 
@@ -173,9 +172,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     ),
                     SizedBox(height: 14),
                     Visibility(
-                      visible: !amA && bidNote.isNotEmpty,
+                      visible: !amA && bidComment.isNotEmpty,
                       child: Text(
-                        'Note: $bidNote',
+                        'Note: $bidComment',
                         maxLines: 2,
                         softWrap: true,
                         textAlign: TextAlign.center,
@@ -236,7 +235,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     SizedBox(height: 4),
                     if(maxDuration != double.infinity)
                     Text(
-                      '${prettyDuration(Duration(seconds: maxDuration.toInt()))} (${ringingPageViewModel?.meeting.speed.num ?? 0} μAlgo/s)',
+                      '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
                       maxLines: 2,
                       softWrap: true,
                       textAlign: TextAlign.center,
