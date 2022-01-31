@@ -1,9 +1,9 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,6 +54,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.uid));
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
+
     final bidIns = bidInsAsyncValue.value!;
     final bidInsSorted = combineQueues(
         bidIns, hangout.loungeHistory, hangout.loungeHistoryIndex);
@@ -87,44 +88,49 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
       floatingActionButton: Visibility(
-          visible: !isBlocked,
-          child: InkResponse(
-            onTap: () => context.pushNamed(Routes.createBid.nameFromPath(),
-                extra: CreateBidPageRouterObject(
-                    hangout: hangout, bidIns: bidInsSorted)),
-            child: Container(
-              width: kToolbarHeight * 1.15,
-              height: kToolbarHeight * 1.15,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                      offset: Offset(2, 2),
-                      blurRadius: 8,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .secondary // changes position of shadow
-                  ),
-                ],
-              ),
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.call_merge,
-                    size: 30,
-                    color: Theme.of(context).cardColor,
-                  ),
-                  SizedBox(height: 2),
-                  Text(Strings().join,style: Theme.of(context).textTheme.button?.copyWith(
-                      color: Theme.of(context).cardColor
-                  ),)
-                ],
-              ),
+        visible: bidInsSorted.isEmpty && !isBlocked,
+        child: InkResponse(
+          onTap: () => context.pushNamed(
+            Routes.createBid.nameFromPath(),
+            extra: CreateBidPageRouterObject(
+              hangout: hangout,
+              bidIns: bidInsSorted,
             ),
           ),
+          child: Container(
+            width: kToolbarHeight * 1.15,
+            height: kToolbarHeight * 1.15,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 8,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.call_merge,
+                  size: 30,
+                  color: Theme.of(context).cardColor,
+                ),
+                SizedBox(height: 2),
+                Text(
+                  Strings().join,
+                  style: Theme.of(context).textTheme.button?.copyWith(
+                        color: Theme.of(context).cardColor,
+                      ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -138,8 +144,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(
-                  right: 20, left: 20, bottom: 14, top: 16),
+              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14, top: 16),
               child: UserInfoWidget(
                 hangout: hangout,
                 isFav: isFriend,

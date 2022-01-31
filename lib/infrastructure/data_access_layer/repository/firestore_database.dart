@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../models/bid_model.dart';
+import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
-import '../../models/hangout_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -22,11 +24,11 @@ class FirestoreDatabase {
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
-  Future<void> setTestA() => _service.setData(
-        path: FirestorePath.testA(),
-        data: {},
-        merge: true,
-      );
+  // Future<void> setTestA() => _service.setData(
+  //       path: FirestorePath.testA(),
+  //       data: {},
+  //       merge: true,
+  //     );
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
@@ -49,24 +51,89 @@ class FirestoreDatabase {
     });
   }
 
+  Future addBid(BidOut bidOut, BidIn bidIn) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(bidIn.private!.A))
+          .doc(bidOut.id);
+
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(bidOut.B))
+          .doc(bidOut.id);
+
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(bidOut.B))
+          .doc(bidOut.id);
+
+      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPublicRef, bidIn.public.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPrivateRef, bidIn.private!.toMap(), SetOptions(merge: false));
+
+      return Future.value();
+    });
+  }
+
+  Future cancelBid(BidOut bidOut, String myUid) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(myUid))
+          .doc(bidOut.id);
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(bidOut.B))
+          .doc(bidOut.id);
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(bidOut.B))
+          .doc(bidOut.id);
+      final obj = {'active': false};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(bidOutRef, obj, setOptions);
+      transaction.set(bidInPublicRef, obj, setOptions);
+      transaction.set(bidInPrivateRef, obj, setOptions);
+
+      return Future.value();
+    });
+  }
+
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
-        merge: true,
-      );
-  Future<void> unlockUser(String uid) => _service.setData(
-        path: FirestorePath.user(uid),
-        data: {'meeting': null},
+        data: {
+          'heartbeat': FieldValue.serverTimestamp(),
+          'status': status
+        }, // TODO move dependency
         merge: true,
       );
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
+  }
+
+  Future meetingEndUnlockUser(Meeting meeting, Map<String, dynamic> data) async {
+    return _service.runTransaction((transaction) {
+      final userARef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
+      final userBRef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
+      final meetingRef = FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
+
+      final obj = {'meeting': null};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(meetingRef, data, setOptions);
+      transaction.set(userARef, obj, setOptions);
+      transaction.set(userBRef, obj, setOptions);
+
+      return Future.value();
+    });
   }
 
   Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) =>
@@ -76,17 +143,16 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUser(Hangout hangout) async {
-    log('setUser - user=$hangout - map=${hangout.toMap()}');
-    _service.setData(
-      path: FirestorePath.user(hangout.id),
-      data: hangout.toMap(),
-      merge: true,
-    );
-    log('setUser - done');
-  }
+  // Future<void> setUser(Hangout hangout) async {
+  //   log('setUser - user=$hangout - map=${hangout.toMap()}');
+  //   _service.setData(
+  //     path: FirestorePath.user(hangout.id),
+  //     data: hangout.toMap(),
+  //     merge: true,
+  //   );
+  //   log('setUser - done');
+  // }
 
-  //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
       _service.setData(
         path: FirestorePath.newRating(uid, meetingId),
@@ -137,12 +203,12 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> setUserPrivate(
-          {required String uid, required UserModelPrivate userPrivate}) =>
-      _service.setData(
-          path: FirestorePath.userPrivate(uid),
-          data: userPrivate.toMap(),
-          merge: true);
+  // Future<void> setUserPrivate(
+  //         {required String uid, required UserModelPrivate userPrivate}) =>
+  //     _service.setData(
+  //         path: FirestorePath.userPrivate(uid),
+  //         data: userPrivate.toMap(),
+  //         merge: true);
 
   Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
@@ -238,6 +304,7 @@ class FirestoreDatabase {
         path: FirestorePath.bidInPublic(uid, bidId),
         builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       );
+
   Stream<BidInPrivate?> getBidInPrivate(
           {required String uid, required String bidId}) =>
       _service.documentStream(
@@ -273,11 +340,11 @@ class FirestoreDatabase {
         return [];
       });
 
-  Future<void> setMeeting(Meeting meeting) => _service.setData(
-        path: FirestorePath.meeting(meeting.id),
-        data: meeting.toMap(),
-        merge: true,
-      );
+  // Future<void> setMeeting(Meeting meeting) => _service.setData(
+  //       path: FirestorePath.meeting(meeting.id),
+  //       data: meeting.toMap(),
+  //       merge: true,
+  //     );
 
   Stream<List<Meeting>> meetingHistoryA(String uid) =>
       _meetingHistoryX(uid, 'A');

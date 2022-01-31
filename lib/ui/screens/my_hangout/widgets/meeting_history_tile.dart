@@ -124,7 +124,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '${meetingModel.budget} Algo'.toUpperCase(),
+                      '${(meetingModel.energy['MAX'] ?? 0)} Algo'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
