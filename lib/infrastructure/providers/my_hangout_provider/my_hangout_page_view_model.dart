@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,23 +16,31 @@ class MyHangoutPageViewModel {
     required this.accountService,
     required this.hangoutChanger,
   });
-  final Hangout? hangout;
+  final Hangout hangout;
   final FirestoreDatabase database;
   final FirebaseFunctions functions;
   final HangoutChanger hangoutChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn) async {
+  Future<bool> acceptBid(BidIn bidIn) async {
+    if (hangout.status == 'OFFLINE' || hangout.isInMeeting()) {
+      cancelBid(
+          bidId: bidIn.public.id,
+          B: hangout.id,
+          speed: bidIn.public.speed);
+      return false;
+    }
+
     String? addrB;
     if (bidIn.public.speed.num != 0) {
       final account = await accountService.getMainAccount();
       addrB = account.address;
     }
-    if (hangout is Hangout) {
-      final meeting = Meeting.newMeeting(
-          id: bidIn.public.id, B: hangout!.id, addrB: addrB, bidIn: bidIn);
-      database.acceptBid(meeting);
-    }
+    final meeting = Meeting.newMeeting(
+        id: bidIn.public.id, uid: hangout.id, addrB: addrB, bidIn: bidIn);
+    await database.acceptBid(meeting);
+
+    return true;
   }
 
   // TODO clean separation into firestore_service and firestore_database
