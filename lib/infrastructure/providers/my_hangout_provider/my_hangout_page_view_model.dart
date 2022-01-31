@@ -1,12 +1,9 @@
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 
@@ -32,38 +29,19 @@ class MyHangoutPageViewModel {
     }
     if (hangout is Hangout) {
       final meeting = Meeting.newMeeting(
-          id: bidIn.public.id, uid: hangout!.id, addrB: addrB, bidIn: bidIn);
+          id: bidIn.public.id, B: hangout!.id, addrB: addrB, bidIn: bidIn);
       database.acceptBid(meeting);
     }
   }
 
   // TODO clean separation into firestore_service and firestore_database
-  Future cancelBid(
-      {required String bidId,
-      required String B,
-      required Quantity speed}) async {
-    if (hangout != null && speed.num == 0) {
-      final bidOutRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidOuts(hangout!.id))
-          .doc(bidId);
-      final bidInPublicRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPublic(B))
-          .doc(bidId);
-      final bidInPrivateRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPrivate(B))
-          .doc(bidId);
-      final obj = {'active': false};
-      final setOptions = SetOptions(merge: true);
-      return FirebaseFirestore.instance.runTransaction((transaction) async {
-        transaction.set(bidOutRef, obj, setOptions);
-        transaction.set(bidInPublicRef, obj, setOptions);
-        transaction.set(bidInPrivateRef, obj, setOptions);
-      });
+  Future cancelBid({required BidOut bidOut}) async {
+    if (hangout != null && bidOut.speed.num == 0) {
+      return database.cancelBid(bidOut, hangout!.id);
     }
-
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid({'bidId': bidId});
+    await cancelBid({'bidId': bidOut.id});
   }
 
   Future changeNameAndBio(String name, String bio) async {
@@ -72,14 +50,5 @@ class MyHangoutPageViewModel {
 
   Future updateHangout(Hangout hangout) async {
     await hangoutChanger.updateHangout(hangout);
-  }
-
-  Future setUserPrivate(
-      {required BuildContext context,
-      required String uid,
-      required UserModelPrivate userPrivate}) async {
-    CustomDialogs.loader(true, context);
-    await database.setUserPrivate(uid: uid, userPrivate: userPrivate);
-    CustomDialogs.loader(false, context);
   }
 }
