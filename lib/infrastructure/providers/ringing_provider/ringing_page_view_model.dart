@@ -13,9 +13,11 @@ class RingingPageViewModel {
       required this.meeting,
       required this.algorand,
       required this.functions,
-      required this.meetingChanger});
+      required this.meetingChanger,
+      required this.hangoutChanger});
 
   final MeetingChanger meetingChanger;
+  final HangoutChanger hangoutChanger;
   final FirebaseFunctions functions;
   final AlgorandService algorand;
   final Hangout hangout;
@@ -28,8 +30,12 @@ class RingingPageViewModel {
     return x;
   }
 
-  Future endMeeting(MeetingStatus reason) =>
-      meetingChanger.endMeeting(meeting, reason);
+  Future endMeeting(MeetingStatus reason) {
+    return meetingChanger.endMeeting(meeting, reason);
+  }
 
-  Future acceptMeeting() => meetingChanger.acceptMeeting(meeting.id);
+  Future acceptMeeting() {
+    if (meeting.status != MeetingStatus.ACCEPTED_B) return Future.value();
+    return meetingChanger.acceptMeeting(meeting.id);
+  }
 }

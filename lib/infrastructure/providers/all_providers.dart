@@ -212,6 +212,11 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
+final getBidFromMeeting = StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
+  final database = ref.watch(databaseProvider);
+  return database.getBidInPrivate(uid: meeting.B, bidId: meeting.id);
+});
+
 final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final A = bidIn.private?.A;
   if (A == null) return null;
@@ -222,6 +227,7 @@ final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final hangout = userAsyncValue.asData!.value;
   return BidIn(public: bidIn.public, private: bidIn.private, hangout: hangout);
 });
+
 
 final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
@@ -347,6 +353,9 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
 
+  final hangoutChanger = ref.watch(hangoutChangerProvider);
+  if (hangoutChanger == null) return null;
+  
   final meetingChanger = ref.watch(meetingChangerProvider);
 
   return RingingPageViewModel(
@@ -355,6 +364,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       algorand: algorand,
       functions: functions,
       meetingChanger: meetingChanger,
+      hangoutChanger: hangoutChanger,
       meeting: meeting.asData!.value);
 });
 

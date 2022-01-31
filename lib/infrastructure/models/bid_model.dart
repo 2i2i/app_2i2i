@@ -86,12 +86,12 @@ class BidOut extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'addrA': addrA,
-      'txns': txns,
       'B': B,
       'speed': speed.toMap(),
       'net': net.toStringEnum(),
+      'addrA': addrA,
       'active': active,
+      'txns': txns,
       'budget': budget,
     };
   }
@@ -212,7 +212,7 @@ class BidInPrivate {
     required this.A,
     required this.addrA,
     required this.comment,
-    required this.txId,
+    required this.txns,
   });
 
   final String id;
@@ -220,7 +220,7 @@ class BidInPrivate {
   final String A;
   final String? addrA;
   final String? comment;
-  final String? txId;
+  final Map<String, String> txns;
 
   factory BidInPrivate.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -228,7 +228,11 @@ class BidInPrivate {
       throw StateError('missing data for id: $documentId');
     }
 
-    String? txId = data['txId'];
+    final Map<String, String> txns = {};
+    for (final String k in data['txns'].keys) {
+      txns[k] = data['txns'][k] as String;
+    }
+
     String A = data['A'];
     String? addrA = data['addrA'];
     String? comment = data['comment'];
@@ -236,7 +240,7 @@ class BidInPrivate {
 
     return BidInPrivate(
       id: documentId,
-      txId: txId,
+      txns: txns,
       active: active,
       A: A,
       addrA: addrA,
@@ -247,7 +251,7 @@ class BidInPrivate {
   Map<String, dynamic> toMap() {
     return {
       'active': active,
-      'txId': txId,
+      'txns': txns,
       'A': A,
       'addrA': addrA,
       'comment': comment,

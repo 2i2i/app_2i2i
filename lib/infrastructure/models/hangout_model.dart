@@ -23,8 +23,6 @@ class HangoutChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future unlock(String uid) => database.unlockUser(uid);
-
   Future updateHeartbeat() async {
     final status = 'ONLINE';
     return database.updateUserHeartbeat(uid, status);
@@ -68,10 +66,10 @@ class HangoutChanger {
 class HangOutRule extends Equatable {
   static const defaultImportance = {
     // set also in cloud function userCreated
-    Lounge.lurker: 0,
     Lounge.chrony: 1,
     Lounge.highroller: 5,
-    Lounge.eccentric: 0
+    Lounge.eccentric: 0,
+    Lounge.lurker: 0,
   };
 
   const HangOutRule({
@@ -195,9 +193,9 @@ class Hangout extends Equatable {
         ? HangOutRule()
         : HangOutRule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) => Lounge.values
-            .firstWhere((e) => e.toStringEnum() == item)));
-    final int loungeHistoryIndex = data['loungeHistoryIndex']??0;
+        .map((item) =>
+            Lounge.values.firstWhere((e) => e.toStringEnum() == item)));
+    final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
     return Hangout(
       id: documentId,
