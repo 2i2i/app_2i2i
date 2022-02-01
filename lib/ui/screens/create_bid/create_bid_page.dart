@@ -544,7 +544,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }else{
       CustomDialogs.loader(true, context);
     }
-    await Future.delayed(Duration(seconds: 10));
     await addBidPageViewModel.addBid(
       account: account,
       amount: amount,
