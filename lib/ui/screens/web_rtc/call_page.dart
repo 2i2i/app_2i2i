@@ -102,7 +102,8 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   int getDuration(int maxDuration) {
-    final DateTime maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final DateTime maxEndTime =
+        widget.meeting.start!.add(Duration(seconds: maxDuration));
     final durationObj = maxEndTime.difference(DateTime.now().toUtc());
     return durationObj.inSeconds;
   }
@@ -258,7 +259,7 @@ class _CallPageState extends ConsumerState<CallPage>
                                   color: Colors.transparent,
                                   shadowColor: Colors.black,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   type: MaterialType.card,
                                   child: SizedBox(
@@ -276,7 +277,7 @@ class _CallPageState extends ConsumerState<CallPage>
                                   borderRadius: BorderRadius.circular(20),
                                   shadowColor: Colors.black12,
                                   type: MaterialType.card,
-                                  child:  ClipRRect(
+                                  child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: ProgressBar(
                                       height: width,
@@ -302,11 +303,8 @@ class _CallPageState extends ConsumerState<CallPage>
                                     height: height,
                                     width: 20,
                                     decoration: BoxDecoration(
-                                      color: Colors.white24,
-                                      border: Border(
-                                        bottom: BorderSide()
-                                      )
-                                    ),
+                                        color: Colors.white24,
+                                        border: Border(bottom: BorderSide())),
                                   ),
                                 ),
                               ),
@@ -380,10 +378,10 @@ class _CallPageState extends ConsumerState<CallPage>
                               : Icons.videocam_off_rounded,
                           onTap: () => callScreenModel!
                               .muteVideo(signaling: signaling!)),
-                      CircleButton(
-                          icon: Icons.cameraswitch_rounded,
-                          onTap: () => callScreenModel!.cameraSwitch(
-                              context: context, signaling: signaling!)),
+                      // CircleButton(
+                      //     icon: Icons.cameraswitch_rounded,
+                      //     onTap: () => callScreenModel!.cameraSwitch(
+                      //         context: context, signaling: signaling!)),
                     ],
                   ),
                 ),
