@@ -45,6 +45,10 @@ class Strings {
 
   String scanQr = 'Scan QR';
 
+  String about = 'About';
+
+  String aboutPageUrl = 'https://about.2i2i.app';
+
   Strings._internal();
 
   factory Strings() {
