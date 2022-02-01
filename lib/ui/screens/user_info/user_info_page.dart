@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/material.dart';
@@ -153,9 +154,10 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                     context: context,
                     builder: (context) => FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: SizedBox(
+                      child: Container(
                         height: 400,
                         width: 350,
+                        decoration: Custom.getBoxDecoration(context,color: Colors.white),
                         child: QrCodeWidget(
                             message:
                                 'https://test.2i2i.app/user/${hangoutB.id}'),
