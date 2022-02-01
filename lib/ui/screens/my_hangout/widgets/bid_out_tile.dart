@@ -177,7 +177,7 @@ class BidOutTile extends ConsumerWidget {
                         text: 'Budget:',
                         children: [
                           TextSpan(
-                              text: ' ${bidOut.budget}',
+                              text: ' ${bidOut.energy}',
                               children: [],
                               style: Theme.of(context).textTheme.bodyText2)
                         ],

@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,8 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: EdgeInsets.only(right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),
+        padding: EdgeInsets.only(
+            right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,16 +34,13 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
             Expanded(
               child: Builder(
                 builder: (BuildContext context) {
-                  List<String> blockList = [];
-                  final myId = ref.read(myUIDProvider)!;
-                  final userPrivateAsyncValue =
-                      ref.watch(userPrivateProvider(myId));
-
-                  if (haveToWait(userPrivateAsyncValue)) {
-                    return WaitPage();
+                  final myUid = ref.read(myUIDProvider)!;
+                  final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
+                  if (haveToWait(myHangoutAsyncValue)) {
+                    return CupertinoActivityIndicator();
                   }
-
-                  blockList = userPrivateAsyncValue.value?.blocked ?? [];
+                  final myHangout = myHangoutAsyncValue.value!;
+                  final blockList = myHangout.blocked;
 
                   if (blockList.isEmpty) {
                     return Center(
@@ -58,22 +55,19 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                     shrinkWrap: true,
                     primary: false,
                     itemBuilder: (_, index) {
-                      final hangout =
-                          ref.watch(hangoutProvider(blockList[index]));
-                      if (haveToWait(hangout)) {
+                      final blockedHangoutAsyncValue =
+                          ref.watch(hangoutProvider(myUid));
+                      if (haveToWait(blockedHangoutAsyncValue)) {
                         return CupertinoActivityIndicator();
                       }
+                      final blockedHangout = blockedHangoutAsyncValue.value!;
                       return UserInfoTile(
-                        hangout: hangout.value!,
-                        myUIDProvider: myId,
+                        hangout: blockedHangout,
+                        myUid: myUid,
                         isForBlockedUser: true,
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      /*final hangout = users[index];
-        if (hangout.id == mainUserID) {
-          return Container();
-        }*/
                       return Divider(
                         color: Colors.transparent,
                       );

@@ -1,12 +1,9 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -45,7 +42,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
       return WaitPage();
     }
 
-    Hangout hangout = myHangoutPageViewModel!.hangout!;
+    Hangout hangout = myHangoutPageViewModel!.hangout;
     return Scaffold(
       body: Column(
         children: [

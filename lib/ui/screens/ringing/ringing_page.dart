@@ -36,7 +36,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   void initState() {
-   start();
+    start();
     super.initState();
   }
 
@@ -47,7 +47,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
   }
 
   void setTimer(RingingPageViewModel model) {
-    if(timer == null) {
+    if (timer == null) {
       if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
       timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
         final finishFuture = finish();
@@ -99,26 +99,37 @@ class RingingPageState extends ConsumerState<RingingPage> {
     String callerName = '';
     String callerBio = '';
     String bidComment = '';
-    double  maxDuration = 0;
-    double callerRating = 0.0;
+    double maxDuration = 0;
+    double callerRating = 1.0;
 
     bool amA = ringingPageViewModel!.amA();
-    String userId =
-        amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
-    // String userId = amA ? "":widget.meeting.;
 
-    final hangoutAsyncValue = ref.read(hangoutProvider(userId));
+    final meetingId = ringingPageViewModel?.meeting.id;
+    if (amA && meetingId != null) {
+      final bidOutAsyncValue = ref.watch(bidOutProvider(meetingId));
+      if (!haveToWait(bidOutAsyncValue)) {
+        final bidOut = bidOutAsyncValue.value!;
+        bidComment = bidOut.comment ?? '';
+      }
+    } else if (meetingId != null) {
+      final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(meetingId));
+      if (!haveToWait(bidInPrivateAsyncValue)) {
+        final bidInPrivate = bidInPrivateAsyncValue.value!;
+        bidComment = bidInPrivate.comment ?? '';
+      }
+    }
+
+    String otherUserId =
+        amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    final otherHangoutAsyncValue = ref.read(hangoutProvider(otherUserId));
+    if (!haveToWait(otherHangoutAsyncValue)) {
+      callerName = otherHangoutAsyncValue.asData!.value.name;
+      callerBio = otherHangoutAsyncValue.asData!.value.bio;
+      callerRating = otherHangoutAsyncValue.asData!.value.rating;
+    }
+    
     if (ringingPageViewModel?.meeting is Meeting) {
       maxDuration = ringingPageViewModel!.meeting.maxDuration();
-      final bidInPrivateAsyncValue =
-          ref.watch(getBidFromMeeting(ringingPageViewModel!.meeting));
-      if (!(haveToWait(hangoutAsyncValue) &&
-          (haveToWait(bidInPrivateAsyncValue)))) {
-        callerName = hangoutAsyncValue.asData!.value.name;
-        callerBio = hangoutAsyncValue.asData!.value.bio;
-        callerRating = hangoutAsyncValue.asData!.value.rating;
-        bidComment = bidInPrivateAsyncValue.value?.comment ?? "";
-      }
     }
 
     log(F + 'RingingPage - scaffold');
@@ -191,11 +202,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('$callerRating',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .caption
-                                  ?.copyWith(color: Colors.amber),
+                          Text(
+                            '$callerRating',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption
+                                ?.copyWith(color: Colors.amber),
                           ),
                           SizedBox(width: 4),
                           IgnorePointer(
@@ -233,18 +245,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       ),
                     ),
                     SizedBox(height: 4),
-                    if(maxDuration != double.infinity)
-                    Text(
-                      '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
-                      maxLines: 2,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Theme.of(context).primaryColorDark),
-                    ),
+                    if (maxDuration != double.infinity)
+                      Text(
+                        '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
+                        maxLines: 2,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                            color: Theme.of(context).primaryColorDark),
+                      ),
                   ],
                 ),
               ),
@@ -283,7 +293,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                         ?.copyWith(
                                             fontWeight: FontWeight.w600,
                                             color: Theme.of(context)
-                                                .colorScheme.secondary),
+                                                .colorScheme
+                                                .secondary),
                                   )),
                             ),
                           )

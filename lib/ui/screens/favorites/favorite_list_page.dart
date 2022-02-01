@@ -42,15 +42,12 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
 
   Widget buildListView() {
     List<String> favList = [];
-    final myId = ref.read(myUIDProvider)!;
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(myId));
-
-    if (haveToWait(userPrivateAsyncValue)) {
+    final myUid = ref.read(myUIDProvider)!;
+    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
+    if (haveToWait(myHangoutAsyncValue)) {
       return WaitPage();
     }
-
-
-      favList = userPrivateAsyncValue.value?.friends ?? [];
+    favList = myHangoutAsyncValue.value!.friends;
 
     if (favList.isEmpty) {
       return Center(
@@ -70,7 +67,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
         }
         return UserInfoTile(
           hangout: hangout.value!,
-          myUIDProvider: myId,
+          myUid: myUid,
           isForBlockedUser: false,
         );
       },

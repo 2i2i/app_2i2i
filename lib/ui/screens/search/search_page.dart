@@ -124,7 +124,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       itemCount: hangoutList.length,
       itemBuilder: (_, index) => UserInfoTile(
         hangout: hangoutList[index]!,
-        myUIDProvider: mainUserID,
+        myUid: mainUserID,
         isForBlockedUser: false,
         marginBottom: 10,
       ),

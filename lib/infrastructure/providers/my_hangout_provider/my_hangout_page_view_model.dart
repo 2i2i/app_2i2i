@@ -1,10 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/cupertino.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 
@@ -23,11 +20,10 @@ class MyHangoutPageViewModel {
   final AccountService accountService;
 
   Future<bool> acceptBid(BidIn bidIn) async {
-    if (hangout.status == 'OFFLINE' || hangout.isInMeeting()) {
-      cancelBid(
-          bidId: bidIn.public.id,
-          B: hangout.id,
-          speed: bidIn.public.speed);
+    if (!bidIn.public.active) return false;
+
+    if (bidIn.hangout!.status == 'OFFLINE' || bidIn.hangout!.isInMeeting()) {
+      await cancelNoShow(bidIn: bidIn);
       return false;
     }
 
@@ -37,16 +33,21 @@ class MyHangoutPageViewModel {
       addrB = account.address;
     }
     final meeting = Meeting.newMeeting(
-        id: bidIn.public.id, uid: hangout.id, addrB: addrB, bidIn: bidIn);
+        id: bidIn.public.id, B: hangout.id, addrB: addrB, bidIn: bidIn);
     await database.acceptBid(meeting);
 
     return true;
   }
 
-  // TODO clean separation into firestore_service and firestore_database
-  Future cancelBid({required BidOut bidOut}) async {
-    if (hangout != null && bidOut.speed.num == 0) {
-      return database.cancelBid(bidOut, hangout!.id);
+  Future cancelNoShow({required BidIn bidIn}) async {
+    return database.cancelBid(A: bidIn.private!.A, B: hangout.id, bidId: bidIn.public.id);
+  }
+
+  Future cancelOwnBid({required BidOut bidOut}) async {
+    if (!bidOut.active) return;
+    
+    if (bidOut.speed.num == 0) {
+      return database.cancelBid(A: hangout.id, B: bidOut.B, bidId: bidOut.id);
     }
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');

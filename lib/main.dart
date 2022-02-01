@@ -1,3 +1,10 @@
+// A -> B
+// main actions:
+// createBid - A
+// acceptBid - B
+// acceptMeeting - A
+// createRoom - A
+
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';

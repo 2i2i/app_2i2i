@@ -23,11 +23,11 @@ class BidInTile extends StatelessWidget {
     var budgetCount = 0;
     var totalDuration = 0;
     for (int i = 0; i <= index; i++) {
-      budgetCount += bidInList[i].public.budget;
+      budgetCount += bidInList[i].public.energy;
       int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
       if (0 < bidInList[i].public.speed.num) {
         final thisBidMaxDurationTmp =
-            (bidInList[i].public.budget / bidInList[i].public.speed.num)
+            (bidInList[i].public.energy / bidInList[i].public.speed.num)
                 .floor();
         thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
       }

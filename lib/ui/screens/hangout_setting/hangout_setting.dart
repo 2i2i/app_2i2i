@@ -94,11 +94,11 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     return '~ every $ratio$postfix is a ${lounge.name()}';
   }
 
-  String minSupportString() {
+  String minSpeedString() {
     if (speedEditController.text.isEmpty) return '';
-    final minSupportPerSec = int.parse(speedEditController.text);
-    final minSupportPerHour = minSupportPerSec * 3600;
-    final s = microALGOToLargerUnit(minSupportPerHour);
+    final minSpeedPerSec = int.parse(speedEditController.text);
+    final minSpeedPerHour = minSpeedPerSec * 3600;
+    final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$s/hour';
   }
 
@@ -237,7 +237,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '${Strings().minSpeed}: ${minSupportString()}',
+                    '${Strings().minSpeed}: ${minSpeedString()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
