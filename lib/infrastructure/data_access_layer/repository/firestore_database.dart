@@ -170,7 +170,7 @@ class FirestoreDatabase {
   //</editor-fold>
 
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayUnion([targetUid])
         },
@@ -178,7 +178,7 @@ class FirestoreDatabase {
       );
 
   Future<void> addFriend(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'friends': FieldValue.arrayUnion([targetUid])
         },
@@ -186,14 +186,14 @@ class FirestoreDatabase {
       );
 
   Future<void> removeBlocked(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayRemove([targetUid])
         },
         merge: true,
       );
   Future<void> removeFriend(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'friends': FieldValue.arrayRemove([targetUid])
         },
