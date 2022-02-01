@@ -1,10 +1,13 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -27,19 +30,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     }
 
     return Scaffold(
-
+      appBar: CustomAppbar(
+        title: Text(
+          Strings().settings,
+          style: Theme.of(context).textTheme.headline5,
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+        padding: EdgeInsets.symmetric(horizontal: 30),
         // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 10),
-            Text(
-              'Settings',
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            SizedBox(height: 15),
             //profile
             Text(
               Strings().account,
@@ -106,11 +108,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 20),
 
             //others
-            Text(
-              'Others',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
+
             Container(
               decoration: Custom.getBoxDecoration(context),
               child: Column(
@@ -196,6 +194,51 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             ),
             SizedBox(height: 20),
 
+            //link
+            Text(
+              'Others',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Container(
+              decoration: Custom.getBoxDecoration(context),
+              child: Column(
+                children: [
+                  ListTile(
+                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
+                    title: Text(
+                      Strings().faq,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      try {
+                        await launch(
+                          Strings().aboutPageUrl,
+                          forceSafariVC: true,
+                          forceWebView: true,
+                        );
+                      } catch (e) {
+                        print(e);
+                      }
+                    },
+                    title: Text(
+                      Strings().about,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+
             //lgout
             /*Text(
               'Logout',
@@ -225,48 +268,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               ),
             ),*/
             SizedBox(height: 20),
-            /*Text(Strings().selectNetworkMode,
-                style: Theme.of(context)
-                    .textTheme
-                    .subtitle1!
-                    .copyWith(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Card(
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                  ),
-                  child: DropdownButton(
-                    isExpanded: true,
-                    focusColor: Colors.transparent,
-                    underline: Container(),
-                    value: _value,
-                    borderRadius: BorderRadius.circular(10),
-                    items: List.generate(
-                        networkList.length,
-                        (index) => DropdownMenuItem(
-                              child: Text(networkList[index]),
-                              value: index,
-                            )),
-                    onChanged: (int? value) async {
-                      setState(() {
-                        _value = value!;
-                      });
-                      await algorand
-                          .setNetworkMode(networkList[_value].toString());
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Divider(),
-            SizedBox(height: 8),
-            SignOutButton(),*/
           ],
         ),
       ),

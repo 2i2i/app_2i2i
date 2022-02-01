@@ -185,7 +185,7 @@ class AppTheme{
   ThemeData darkTheme(BuildContext context) {
     return ThemeData(
       brightness: Brightness.dark,
-      appBarTheme: appBarTheme(true, context),
+      appBarTheme: appBarTheme(true, context,textColor: darkSecondaryTextColor),
       primaryColor: primaryDarkColor,
       primaryColorLight: secondaryDarkColor,
       primaryColorDark: secondaryTextColor,
@@ -335,16 +335,17 @@ class AppTheme{
     );
   }
 
-  AppBarTheme appBarTheme(bool dark,BuildContext context) => AppBarTheme(
+  AppBarTheme appBarTheme(bool dark,BuildContext context,{Color? textColor}) => AppBarTheme(
     elevation: 0,
     backgroundColor: !dark ? primaryColor : primaryDarkColor,
     iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
+
     titleTextStyle: TextStyle(
-      color: Color(0xff48484A),
-      fontSize: 34,
       fontStyle: FontStyle.normal,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.37,
+      fontWeight: FontWeight.w800,
+      fontSize: 28,
+      color: textColor,
+      // color: Color(0xff8E8E93),
     ),
   );
 

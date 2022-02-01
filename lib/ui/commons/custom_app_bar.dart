@@ -13,8 +13,9 @@ import '../screens/search/widgtes/star_widget.dart';
 class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Color? backgroundColor;
+  final Widget? title;
 
-  CustomAppbar({this.actions, this.backgroundColor});
+  const CustomAppbar({this.title,this.actions, this.backgroundColor});
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);
@@ -27,7 +28,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: backgroundColor,
       elevation: 0,
-      actions: [
+      actions: actions??[
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -67,7 +68,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
       ],
       toolbarHeight: kToolbarHeight + 50,
       centerTitle: false,
-      title: Padding(
+      title: title??Padding(
         padding: const EdgeInsets.all(8.0),
         child: SvgPicture.asset(
           getLogo(context),

@@ -46,6 +46,8 @@ class Strings {
 
   String scanQr = 'Scan QR';
 
+  String about = 'About';
+  String aboutPageUrl = 'https://about.2i2i.app';
   String scanInWalletConnect = 'Scan in a WalletConnect wallet\n(e.g. Algorand Wallet)';
 
   Strings._internal();

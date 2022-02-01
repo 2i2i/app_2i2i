@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -140,11 +141,20 @@ class _FAQPageState extends State<FAQPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppbar(),
+        appBar: AppBar(
+          elevation: 0,
+        ),
         body: Container(
-          margin: const EdgeInsets.all(10),
+          margin: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
           child: ListView(
-            children: [...createFAQWidgets(faqs), contact()],
+            children: [
+              Text(
+                Strings().faq,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              SizedBox(height: 20),
+              ...createFAQWidgets(faqs), contact()
+            ],
           ),
         ));
   }
