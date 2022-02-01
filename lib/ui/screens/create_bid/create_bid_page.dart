@@ -70,19 +70,29 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? comment;
-  int maxDuration = 300;
+  int selectedDuration = 300;
   int maxMaxDuration = 300;
   int minMaxDuration = 10;
 
   int _minAccountBalance = 0;
   int _accountBalance = 0;
 
+  TextEditingController speedController  = TextEditingController();
+
   @override
   void initState() {
+    setupDefaultValue();
+    super.initState();
+  }
+
+  void setupDefaultValue() {
     ref.read(myAccountPageViewModelProvider).initMethod();
+    speedController.text = widget.B.rule.minSpeed.toString();
     speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
     updateAccountBalance();
-    super.initState();
+    if(mounted) {
+      setState(() {});
+    }
   }
 
   void updateAccountBalance() {
@@ -97,16 +107,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     final availableBalance = _accountBalance - _minAccountBalance;
     maxMaxDuration = widget.B.rule.maxMeetingDuration;
     if (speed.num != 0) {
-      final availableMaxDuration = max(
-          0,
-          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
-              .floor());
+      final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
-      maxDuration = min(maxDuration, maxMaxDuration);
+      selectedDuration = min(selectedDuration, maxMaxDuration);
     }
-    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
-    setState(() {});
+    amount = Quantity(num: (selectedDuration * speed.num).round(), assetId: 0);
+    if(mounted) {
+      setState(() {});
+    }
   }
 
   String calcWaitTime() {
@@ -157,6 +166,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       account = myAccountPageViewModel.accounts!.first;
+      selectedDuration = widget.B.rule.maxMeetingDuration;
       updateAccountBalance();
     }
 
@@ -213,6 +223,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: CustomTextField(
+                      autovalidateMode:AutovalidateMode.always,
+                      controller: speedController,
                       title: Strings().speed,
                       hintText: "0",
                       suffixIcon: Row(
@@ -239,8 +251,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       ),
                       onChanged: (String value) {
                         final num = int.tryParse(value) ?? 0;
-                        speed = Quantity(num: num, assetId: speed.assetId);
-                        update();
+                        if(num >= widget.B.rule.minSpeed){
+                          speed = Quantity(num: num, assetId: speed.assetId);
+                          update();
+                        }else if(mounted) {
+                            setState(() {});
+                          }
+
+                      },
+                      validator: (val){
+                        var spd = int.tryParse(val??'')??0;
+                        if(spd < widget.B.rule.minSpeed){
+                          return 'Min speed is ${widget.B.rule.minSpeed}';
+                        }
                       },
                     ),
                   ),
@@ -254,170 +277,160 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       },
                     ),
                   ),
-                  Visibility(
-                    visible: speed.num != 0,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Strings().estMaxDuration,
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                          SizedBox(height: 4),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .shadowColor
-                                    .withOpacity(0.20),
-                                borderRadius: BorderRadius.circular(10)),
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                SizedBox(width: 6),
-                                Text(
-                                  '$minMaxDuration secs',
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: SliderTheme(
-                                      data: SliderTheme.of(context).copyWith(
-                                        activeTrackColor:
-                                            Theme.of(context).cardColor,
-                                        inactiveTrackColor:
-                                            Theme.of(context).disabledColor,
-                                        thumbShape: CustomSliderThumbRect(
-                                          mainContext: context,
-                                          thumbRadius: 15,
-                                          min: minMaxDuration,
-                                          max: maxMaxDuration,
-                                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Strings().estMaxDuration,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.20),
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 6),
+                              Text(
+                                '$minMaxDuration secs',
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8),
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor:
+                                          Theme.of(context).cardColor,
+                                      inactiveTrackColor:
+                                          Theme.of(context).disabledColor,
+                                      thumbShape: CustomSliderThumbRect(
+                                        mainContext: context,
+                                        thumbRadius: 15,
+                                        min: minMaxDuration,
+                                        max: maxMaxDuration,
                                       ),
-                                      child: Slider(
-                                        min: minMaxDuration.toDouble(),
-                                        max: maxMaxDuration.toDouble(),
-                                        divisions:
-                                            maxMaxDuration == minMaxDuration
-                                                ? null
-                                                : min(
-                                                    100,
-                                                    maxMaxDuration -
-                                                        minMaxDuration),
-                                        value: maxDuration.toDouble(),
-                                        onChanged: (value) {
-                                          maxDuration = value.round();
-                                          update();
-                                        },
-                                      ),
+                                    ),
+                                    child: Slider(
+                                      min: minMaxDuration.toDouble(),
+                                      max: maxMaxDuration.toDouble(),
+                                      divisions:
+                                          maxMaxDuration == minMaxDuration
+                                              ? null
+                                              : min(100, maxMaxDuration - minMaxDuration),
+                                      value: selectedDuration.toDouble(),
+                                      onChanged: (value) {
+                                        selectedDuration = value.round();
+                                        update();
+                                      },
                                     ),
                                   ),
                                 ),
-                                Text('$maxMaxDuration secs',
-                                    style:
-                                        Theme.of(context).textTheme.subtitle1),
-                                SizedBox(width: 6),
+                              ),
+                              Text('$maxMaxDuration secs',
+                                  style:
+                                      Theme.of(context).textTheme.subtitle1),
+                              SizedBox(width: 6),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    constraints:
+                        (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                            ? BoxConstraints(
+                                minHeight: 150,
+                                maxHeight: 200,
+                              )
+                            : null,
+                    child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                        ? PageView.builder(
+                            controller: controller,
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                myAccountPageViewModel.accounts?.length ?? 0,
+                            itemBuilder: (_, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: AccountInfo(
+                                  false,
+                                  key: ObjectKey(myAccountPageViewModel
+                                      .accounts![index].address),
+                                  account:
+                                      myAccountPageViewModel.accounts![index],
+                                  afterRefresh: updateAccountBalance,
+                                ),
+                              );
+                            },
+                            onPageChanged: (int val) {
+                              final newAccount = myAccountPageViewModel
+                                  .accounts
+                                  ?.elementAt(val);
+                              if (account == newAccount) return;
+                              account = newAccount;
+                              if (mounted) {
+                                updateAccountBalance();
+                              }
+                            },
+                          )
+                        : Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 12),
+                                Text(
+                                  'No account added',
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      Theme.of(context).textTheme.subtitle1,
+                                ),
+                                SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 10),
+                                  child: IconButton(
+                                    onPressed: () =>
+                                        CustomAlertWidget.showBidAlert(
+                                            context,
+                                            AddAccountOptionsWidgets()),
+                                    iconSize: 30,
+                                    icon: Icon(
+                                      Icons.add_circle_rounded,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ) /*ElevatedButton(
+                                      child: Text(Strings().addAccount),
+                                    )*/
+                                  ,
+                                )
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          )
-                        ],
-                      ),
-                    ),
                   ),
                   Visibility(
-                    visible: speed.num != 0,
-                    child: Container(
-                      constraints:
-                          (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                              ? BoxConstraints(
-                                  minHeight: 150,
-                                  maxHeight: 200,
-                                )
-                              : null,
-                      child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                          ? PageView.builder(
-                              controller: controller,
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  myAccountPageViewModel.accounts?.length ?? 0,
-                              itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AccountInfo(
-                                    false,
-                                    key: ObjectKey(myAccountPageViewModel
-                                        .accounts![index].address),
-                                    account:
-                                        myAccountPageViewModel.accounts![index],
-                                    afterRefresh: updateAccountBalance,
-                                  ),
-                                );
-                              },
-                              onPageChanged: (int val) {
-                                final newAccount = myAccountPageViewModel
-                                    .accounts
-                                    ?.elementAt(val);
-                                if (account == newAccount) return;
-                                account = newAccount;
-                                if (mounted) {
-                                  updateAccountBalance();
-                                }
-                              },
-                            )
-                          : Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .shadowColor
-                                    .withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SizedBox(height: 12),
-                                  Text(
-                                    'No account added',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.subtitle1,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 50, vertical: 10),
-                                    child: IconButton(
-                                      onPressed: () =>
-                                          CustomAlertWidget.showBidAlert(
-                                              context,
-                                              AddAccountOptionsWidgets()),
-                                      iconSize: 30,
-                                      icon: Icon(
-                                        Icons.add_circle_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ) /*ElevatedButton(
-                                        child: Text(Strings().addAccount),
-                                      )*/
-                                    ,
-                                  )
-                                ],
-                              ),
-                            ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: speed.num != 0 &&
-                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    visible: (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -448,21 +461,28 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 10),
-                    child: ElevatedButton(
-                      onPressed: isInsufficient() ? null : () => onAddBid(),
-                      child: Text(getConfirmSliderText()),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
         ],
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ElevatedButton(
+          onPressed: isInsufficient() || isInvalid() ? null : () => onAddBid(),
+          child: Text(getConfirmSliderText()),
+        ),
+      ),
     );
+  }
+
+  bool isInvalid(){
+    final num = int.tryParse(speedController.text) ?? 0;
+    if(num >= widget.B.rule.minSpeed){
+      return false;
+    }
+    return true;
   }
 
   onAddBid() async {
