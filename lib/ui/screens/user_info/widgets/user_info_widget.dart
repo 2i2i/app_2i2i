@@ -13,6 +13,7 @@ class UserInfoWidget extends StatefulWidget {
   final bool isFav;
 
   final onTapQr;
+  final onTapWallet;
   final GestureTapCallback? onTapRules;
 
   final int? estWaitTime;
@@ -24,6 +25,7 @@ class UserInfoWidget extends StatefulWidget {
     required this.isFav,
     this.onTapRules,
     this.onTapQr,
+    this.onTapWallet,
     this.estWaitTime,
   }) : super(key: key);
 
@@ -65,6 +67,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: Text(
                         widget.hangout.name,
                         style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.onTapWallet != null,
+                      child: IconButton(
+                        onPressed: widget.onTapWallet,
+                        icon: Icon(Icons.attach_money),
                       ),
                     ),
                     IconButton(

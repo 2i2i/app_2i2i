@@ -45,6 +45,8 @@ class Strings {
 
   String scanQr = 'Scan QR';
 
+  String scanInWalletConnect = 'Scan in a WalletConnect wallet\n(e.g. Algorand Wallet)';
+
   Strings._internal();
 
   factory Strings() {
