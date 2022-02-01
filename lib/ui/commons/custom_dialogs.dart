@@ -3,31 +3,61 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../infrastructure/commons/strings.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
+import 'custom.dart';
+
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context, {bool rootNavigator = true}) {
+  static loader(bool isLoading, BuildContext context, {String title = '',String message = '',bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       content: Center(
         child: Container(
-          height: 110,
-          width: 110,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
+          padding: EdgeInsets.all(8),
+          decoration: Custom.getBoxDecoration(context,color: Colors.white,radius: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                  height: 90, width: 90, child: CircularProgressIndicator()),
-              Image.asset(
-                'assets/logo.png',
-                width: 60,
-                height: 60,
-              )
+                height: 110,
+                width: 110,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: LinearProgressIndicator(
+                        minHeight: 1,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Image.asset(
+                      'assets/logo.png',
+                      width: 80,
+                      height: 80,
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: false,//title.isNotEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Text(title,style: Theme.of(context).textTheme.headline6,),
+                ),
+              ),
+              Visibility(
+                visible: message.isNotEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(message,style: Theme.of(context).textTheme.headline6,textAlign: TextAlign.center,),
+                ),
+              ),
             ],
           ),
         ),

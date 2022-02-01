@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -445,16 +446,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                           ),
                         );
                       }
-                      return Visibility(
-                        visible: false,
-                        child: TextButton.icon(
-                          style: TextButton.styleFrom(
-                              primary: Theme.of(context).colorScheme.secondary
-                          ),
-                          icon: Icon(Icons.bolt),
-                          label: Text('Add Support'), onPressed: () {  isAddSupportVisible.value = true;},
-                        ),
-                      );
+                      return Container();
                     },
                   ),
                 ],
@@ -482,7 +474,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     padding: const EdgeInsets.only(left:10.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
+                        primary: Theme.of(context).iconTheme.color,
                       ),
                       onPressed: (){
                         isAddSupportVisible.value = !isAddSupportVisible.value;
@@ -547,7 +539,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
-    CustomDialogs.loader(true, context);
+    if(account is WalletConnectAccount) {
+      CustomDialogs.loader(true, context, title: 'We are waiting!', message: 'Please confirm in your wallet');
+    }else{
+      CustomDialogs.loader(true, context);
+    }
+    await Future.delayed(Duration(seconds: 10));
     await addBidPageViewModel.addBid(
       account: account,
       amount: amount,
@@ -589,12 +586,14 @@ class TopCard extends StatelessWidget {
               Icon(
                 Icons.timer,
                 size: 17,
-                color: Theme.of(context).textTheme.caption?.color,
+                color: Theme.of(context).errorColor,
               ),
               SizedBox(width: 2),
               Text(
                 'Est. Wait Time is $minWait',
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.caption?.copyWith(
+                  color: Theme.of(context).errorColor
+                ),
               ),
             ],
           ),
