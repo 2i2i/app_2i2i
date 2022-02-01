@@ -35,7 +35,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             WillPopScope(
               onWillPop: () {
                 return Future.value(true);
-
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -112,7 +111,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final filter = ref.watch(searchFilterProvider.state).state;
     final mainUserID = ref.watch(myUIDProvider)!;
     var hangoutListProvider = ref.watch(searchUsersStreamProvider);
-    if(haveToWait(hangoutListProvider)){
+    if (haveToWait(hangoutListProvider)) {
       return WaitPage(isCupertino: true);
     }
     List<Hangout?> hangoutList = hangoutListProvider.value!;
