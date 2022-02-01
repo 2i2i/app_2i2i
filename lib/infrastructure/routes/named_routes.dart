@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -292,7 +293,17 @@ class NamedRoutes {
   static Widget getView(Widget page) {
     var feedbackController = TextEditingController();
     Widget widget = AuthWidget(
-      homePageBuilder: (_) => Scaffold(
+      homePageBuilder: (context) => Scaffold(
+        appBar: AppBar(
+          leading: Container(),
+          toolbarHeight: 20,
+          title: Text(AlgorandNet.testnet.name),
+          titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(
+            color: Theme.of(context).cardColor
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.green,
+        ),
         body: page,
         bottomSheet: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
