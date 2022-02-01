@@ -7,8 +7,9 @@ import 'package:flutter/widgets.dart';
 
 class ProgressBar extends StatelessWidget {
   final double? height;
+  final double? radius;
   final double? lineWidth;
-  const ProgressBar({Key? key, this.height, this.lineWidth}) : super(key: key);
+  const ProgressBar({Key? key, this.height, this.lineWidth, this.radius}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +19,7 @@ class ProgressBar extends StatelessWidget {
         offsetSpeed: Offset(1, 0),
         width: height??MediaQuery.of(context).size.width/4,
         height: lineWidth??20,
+        radius: radius,
         colors: [
           Color(0xFFEF6654),
           /*Color(0xFFd6db86),
@@ -40,12 +42,14 @@ class MyAnimatedLoading extends StatefulWidget {
   final double width;
   final double height;
 
+  final double? radius;
+
   const MyAnimatedLoading(
       {Key? key,
         required this.offsetSpeed,
         required this.colors,
         required this.width,
-        required this.height})
+        required this.height, this.radius})
       : super(key: key);
 
   @override
@@ -101,10 +105,11 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
     _calculateNewPositions();
     return ClipRRect(
       clipBehavior: Clip.hardEdge,
-      borderRadius: const BorderRadius.all(Radius.circular(25)),
+      borderRadius: BorderRadius.all(Radius.circular(widget.radius??25)),
       child: CustomPaint(
         size: Size(widget.width, widget.height),
         painter: MyCustomPaint(nodes: nodes),
+        foregroundPainter: MyCustomPaint(nodes: nodes),
       ),
     );
   }
@@ -180,6 +185,7 @@ class MyCustomPaint extends CustomPainter {
       paint..shader = gradient.createShader(nodes[i].rect);
       paint..color = nodes[i].color;
       canvas.drawRect(nodes[i].rect, paint);
+
     }
   }
 
