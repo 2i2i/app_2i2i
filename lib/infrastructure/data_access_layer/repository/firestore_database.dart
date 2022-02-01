@@ -72,7 +72,8 @@ class FirestoreDatabase {
     });
   }
 
-  Future cancelBid({required String A, required String B, required String bidId}) async {
+  Future cancelBid(
+      {required String A, required String B, required String bidId}) async {
     return _service.runTransaction((transaction) {
       final bidOutRef = FirebaseFirestore.instance
           .collection(FirestorePath.bidOuts(A))
@@ -116,11 +117,15 @@ class FirestoreDatabase {
     });
   }
 
-  Future meetingEndUnlockUser(Meeting meeting, Map<String, dynamic> data) async {
+  Future meetingEndUnlockUser(
+      Meeting meeting, Map<String, dynamic> data) async {
     return _service.runTransaction((transaction) {
-      final userARef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
-      final userBRef = FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
-      final meetingRef = FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
+      final userARef =
+          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
+      final userBRef =
+          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
+      final meetingRef =
+          FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
 
       final obj = {'meeting': null};
       final setOptions = SetOptions(merge: true);
@@ -197,13 +202,6 @@ class FirestoreDatabase {
         },
         merge: true,
       );
-
-  // Future<void> setUserPrivate(
-  //         {required String uid, required UserModelPrivate userPrivate}) =>
-  //     _service.setData(
-  //         path: FirestorePath.userPrivate(uid),
-  //         data: userPrivate.toMap(),
-  //         merge: true);
 
   Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
@@ -285,8 +283,7 @@ class FirestoreDatabase {
     );
   }
 
-  Stream<BidOut> getBidOut(
-          {required String uid, required String bidId}) =>
+  Stream<BidOut> getBidOut({required String uid, required String bidId}) =>
       _service.documentStream(
         path: FirestorePath.bidOut(uid, bidId),
         builder: (data, documentId) => BidOut.fromMap(data, documentId),

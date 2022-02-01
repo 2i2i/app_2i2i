@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,6 @@ class UserInfoTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final userModelChanger = ref.watch(hangoutChangerProvider)!;
     if (hangout.name.isEmpty) return Container();
 
@@ -37,7 +37,12 @@ class UserInfoTile extends ConsumerWidget {
     if (hangout.status == 'OFFLINE') statusColor = AppTheme().gray;
     if (hangout.isInMeeting()) statusColor = AppTheme().red;
 
-    final isFriend = hangout.friends.contains(hangout.id);
+    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
+    bool isFriend = false;
+    if (!haveToWait(myHangoutAsyncValue)) {
+      final myHangout = myHangoutAsyncValue.value!;
+      isFriend = myHangout.friends.contains(hangout.id);
+    }
 
     return Container(
       margin: EdgeInsets.only(bottom: marginBottom ?? 0),
