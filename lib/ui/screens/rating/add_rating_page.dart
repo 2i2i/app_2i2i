@@ -15,7 +15,7 @@ class AddRatingPage extends ConsumerStatefulWidget {
 }
 
 class _AddRatingPageState extends ConsumerState<AddRatingPage> {
-  double rating = 0;
+  double rating = 1.0;
   TextEditingController feedbackController = TextEditingController();
 
   @override
