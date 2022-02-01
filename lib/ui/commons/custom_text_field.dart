@@ -7,13 +7,16 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
-
+  final AutovalidateMode? autovalidateMode;
+  final FormFieldValidator<String>? validator;
   const CustomTextField(
       {Key? key,
       required this.title,
       this.hintText,
       this.prefixIcon,
+      this.validator,
       this.suffixIcon,
+      this.autovalidateMode,
       this.controller, this.onChanged})
       : super(key: key);
 
@@ -30,6 +33,8 @@ class CustomTextField extends StatelessWidget {
         SizedBox(height: 4),
         TextFormField(
           controller: controller,
+          autovalidateMode: autovalidateMode,
+          validator: validator,
           autofocus: false,
           style: Theme.of(context)
               .textTheme
