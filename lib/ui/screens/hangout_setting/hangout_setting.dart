@@ -36,7 +36,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   String imageUrl = "";
 
   // importance
-  static const double _importanceSliderMaxHalf = 50.0;
+  static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
 
@@ -59,11 +59,11 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     int minLarge = largeInt;
     double minError = (largeDouble - largeInt).abs();
 
-    while (small < 100) {
+    while (small < _importanceSliderMaxHalf * 2.0) {
       small++;
       largeDouble = a * small;
       largeInt = largeDouble.round();
-      if (99 < largeInt) continue;
+      if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
       final error = (largeDouble - largeInt).abs();
       if (error < minError) {
         minSmall = small;
@@ -128,7 +128,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
         _importanceRatioValue = N / h;
         x = 2.0 - _importanceRatioValue!;
       }
-      _importanceSliderValue = (x / 98.0 + 1.0) * _importanceSliderMaxHalf;
+      _importanceSliderValue =
+          (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) *
+              _importanceSliderMaxHalf;
     }
     setState(() {});
   }
@@ -415,7 +417,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                                               (_importanceSliderValue! -
                                                               _importanceSliderMaxHalf)
                                                           .abs() *
-                                                      98.0 /
+                                                      (_importanceSliderMaxHalf *
+                                                              2.0 -
+                                                          2.0) /
                                                       _importanceSliderMaxHalf +
                                                   2.0;
                                         });
