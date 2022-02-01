@@ -18,7 +18,7 @@ import '../../data_access_layer/services/logging.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
-    required this.uid,
+    required this.A,
     required this.database,
     required this.functions,
     required this.algorand,
@@ -27,7 +27,7 @@ class AddBidPageViewModel {
     required this.accountService,
   });
 
-  final String uid;
+  final String A;
   final FirebaseFunctions functions;
   final Hangout B;
   final AlgorandService algorand;
@@ -45,15 +45,16 @@ class AddBidPageViewModel {
 
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
-    required Hangout hangout,
     required AbstractAccount? account,
     required Quantity amount,
     required Quantity speed,
-    String? bidNote,
+    String? bidComment,
     BuildContext? context,
     Function? timeout,
   }) async {
     log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
+
+    if (B.blocked.contains(A)) return;
 
     final net = AlgorandNet.testnet;
     final String? addrA = speed.num == 0 ? null : account!.address;
@@ -67,7 +68,9 @@ class AddBidPageViewModel {
       final note =
           bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txId = await algorand.lockCoins(account: account!, net: net, amount: amount, note: note).timeout(Duration(seconds: 8));
+        txns = await algorand
+            .lockCoins(account: account!, net: net, amount: amount, note: note)
+            .timeout(Duration(seconds: 60));
       } on TimeoutException catch (e) {
         log('AlgorandException  ${e.message}');
         timeout?.call();
@@ -84,7 +87,7 @@ class AddBidPageViewModel {
           log('AlgorandException ' + message);
         }
         return;
-      } catch (e){
+      } catch (e) {
         print('AlgorandException catch $e');
       }
     }
@@ -97,7 +100,8 @@ class AddBidPageViewModel {
       txns: txns,
       active: true,
       addrA: addrA,
-      budget: amount.num,
+      energy: amount.num,
+      comment: bidComment,
     );
     final bidInPublic = BidInPublic(
       id: bidId,
@@ -105,16 +109,16 @@ class AddBidPageViewModel {
       net: net,
       active: true,
       ts: DateTime.now().toUtc(),
-      rule: hangout.rule,
-      budget: amount.num,
+      rule: B.rule,
+      energy: amount.num,
     );
 
     final bidInPrivate = BidInPrivate(
       id: bidId,
       active: true,
-      A: uid,
+      A: A,
       addrA: addrA,
-      comment: bidNote,
+      comment: bidComment,
       txns: txns,
     );
 

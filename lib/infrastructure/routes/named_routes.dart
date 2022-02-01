@@ -115,11 +115,11 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage(
-            onHangPhone: (uid, meetingId){
+            onHangPhone: (uid, meetingId) {
               showRating.value = {
-                'show':true,
-                'otherUid':uid,
-                'meetingId':meetingId,
+                'show': true,
+                'otherUid': uid,
+                'meetingId': meetingId,
               };
             },
           )),
@@ -139,7 +139,7 @@ class NamedRoutes {
           if (userId.trim().isNotEmpty) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(UserInfoPage(uid: userId)),
+              child: getView(UserInfoPage(B: userId)),
             );
           }
           return NoTransitionPage<void>(
@@ -263,7 +263,8 @@ class NamedRoutes {
           if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage.fromObject(state.extra as CreateBidPageRouterObject)),
+              child: getView(CreateBidPage.fromObject(
+                  state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(
@@ -330,7 +331,7 @@ class NamedRoutes {
                 }
               }
             }
-             return ValueListenableBuilder(
+            return ValueListenableBuilder(
               valueListenable: showRating,
               builder: (BuildContext context, Map value, Widget? child) {
                 child ??= Container();
@@ -344,13 +345,14 @@ class NamedRoutes {
                 elevation: 8,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12)),
                 ),
                 onClosing: () {},
                 builder: (BuildContext context) {
                   var otherUid = showRating.value['otherUid'];
                   var meetingId = showRating.value['meetingId'];
-                  num rating = 5;
+                  double rating = 1.0;
                   return Container(
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.all(20),
@@ -375,7 +377,7 @@ class NamedRoutes {
                         Container(
                           margin: EdgeInsets.only(bottom: 20, top: 8),
                           child: RatingBar.builder(
-                            initialRating: rating.toDouble(),
+                            initialRating: rating * 5.0,
                             minRating: 1,
                             direction: Axis.horizontal,
                             allowHalfRating: true,
@@ -388,7 +390,7 @@ class NamedRoutes {
                               color: Colors.amber,
                             ),
                             onRatingUpdate: (starRating) {
-                              rating = starRating / 5;
+                              rating = starRating / 5.0;
                             },
                           ),
                         ),
@@ -397,11 +399,14 @@ class NamedRoutes {
                           minLines: 5,
                           maxLines: 5,
                           decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Theme.of(context).iconTheme.color?.withAlpha(10),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                              ),
+                            filled: true,
+                            fillColor: Theme.of(context)
+                                .iconTheme
+                                .color
+                                ?.withAlpha(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
                           ),
                         ),
                         SizedBox(height: 10),
@@ -422,12 +427,12 @@ class NamedRoutes {
                                 if (otherUid is String && meetingId is String) {
                                   final database = ref.watch(databaseProvider);
                                   database.addRating(
-                                      otherUid,
-                                      meetingId,
-                                      RatingModel(
-                                          rating: rating.toDouble(),
-                                          comment: feedbackController.text,
-                                      ),
+                                    otherUid,
+                                    meetingId,
+                                    RatingModel(
+                                      rating: rating,
+                                      comment: feedbackController.text,
+                                    ),
                                   );
                                 }
                                 showRating.value = {'show': false};
@@ -436,7 +441,8 @@ class NamedRoutes {
                                 Strings().appRatingSubmitButton,
                               ),
                               style: TextButton.styleFrom(
-                                primary: Theme.of(context).colorScheme.secondary,
+                                primary:
+                                    Theme.of(context).colorScheme.secondary,
                               ),
                             )
                           ],
@@ -551,7 +557,8 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(lockedHangoutViewModelProvider); // lockedHangoutViewModelProvider just needs to run
+        ref.watch(
+            lockedHangoutViewModelProvider); // lockedHangoutViewModelProvider just needs to run
         if (kIsWeb) {
           return FittedBox(
             fit: BoxFit.scaleDown,

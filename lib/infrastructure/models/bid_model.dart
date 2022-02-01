@@ -34,7 +34,8 @@ class BidOut extends Equatable {
     required this.txns,
     required this.addrA,
     required this.active,
-    required this.budget,
+    required this.energy,
+    required this.comment,
   });
 
   final String id;
@@ -44,7 +45,8 @@ class BidOut extends Equatable {
   final String? addrA;
   final Map<String, String> txns;
   final bool active;
-  final int budget;
+  final int energy;
+  final String? comment;
 
   @override
   List<Object> get props => [id];
@@ -70,7 +72,9 @@ class BidOut extends Equatable {
       txns[k] = data['txns'][k] as String;
     }
 
-    final int budget = data['budget'];
+    final int energy = data['energy'];
+
+    String? comment = data['comment'];
 
     return BidOut(
       active: active,
@@ -80,7 +84,8 @@ class BidOut extends Equatable {
       speed: speed,
       net: net,
       txns: txns,
-      budget: budget,
+      energy: energy,
+      comment: comment,
     );
   }
 
@@ -92,7 +97,8 @@ class BidOut extends Equatable {
       'addrA': addrA,
       'active': active,
       'txns': txns,
-      'budget': budget,
+      'energy': energy,
+      'comment': comment,
     };
   }
 }
@@ -142,7 +148,7 @@ class BidInPublic extends Equatable {
     required this.net,
     required this.ts,
     required this.rule,
-    required this.budget,
+    required this.energy,
   });
 
   final bool active;
@@ -151,7 +157,7 @@ class BidInPublic extends Equatable {
   final AlgorandNet net;
   final DateTime ts;
   final HangOutRule rule;
-  final int budget;
+  final int energy;
 
   @override
   List<Object> get props => [id];
@@ -171,7 +177,7 @@ class BidInPublic extends Equatable {
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final DateTime ts = data['ts'].toDate();
     final HangOutRule rule = HangOutRule.fromMap(data['rule']);
-    int budget = data['budget'];
+    int energy = data['energy'];
 
     return BidInPublic(
       id: documentId,
@@ -180,7 +186,7 @@ class BidInPublic extends Equatable {
       net: net,
       ts: ts,
       rule: rule,
-      budget: budget,
+      energy: energy,
     );
   }
 
@@ -191,7 +197,7 @@ class BidInPublic extends Equatable {
       'active': active,
       'ts': FieldValue.serverTimestamp(),
       'rule': rule.toMap(),
-      'budget': budget,
+      'energy': energy,
     };
   }
 

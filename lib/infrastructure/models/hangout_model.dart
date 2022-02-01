@@ -134,6 +134,8 @@ class Hangout extends Equatable {
     this.rule = const HangOutRule(),
     this.loungeHistory = const <Lounge>[],
     this.loungeHistoryIndex = -1,
+    this.blocked = const <String>[],
+    this.friends = const <String>[],
   }) {
     _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
@@ -154,6 +156,9 @@ class Hangout extends Equatable {
   final List<Lounge>
       loungeHistory; // actually circular array containing recent 100 lounges
   final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
+
+  final List<String> blocked;
+  final List<String> friends;
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
@@ -197,6 +202,9 @@ class Hangout extends Equatable {
             Lounge.values.firstWhere((e) => e.toStringEnum() == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
+    final List<String> blocked = List.castFrom(data['blocked'] as List);
+    final List<String> friends = List.castFrom(data['friends'] as List);
+
     return Hangout(
       id: documentId,
       status: status,
@@ -209,6 +217,8 @@ class Hangout extends Equatable {
       rule: rule,
       loungeHistory: loungeHistory,
       loungeHistoryIndex: loungeHistoryIndex,
+      blocked: blocked,
+      friends: friends,
     );
   }
 
@@ -225,6 +235,8 @@ class Hangout extends Equatable {
       'rule': rule.toMap(),
       'loungeHistory': loungeHistory,
       'loungeHistoryIndex': loungeHistoryIndex,
+      'blocked': blocked,
+      'friends': friends,
     };
   }
 
@@ -234,39 +246,6 @@ class Hangout extends Equatable {
   }
 
   bool isInMeeting() => meeting != null;
-}
-
-class UserModelPrivate {
-  UserModelPrivate({
-    this.blocked = const <String>[],
-    this.friends = const <String>[],
-  });
-
-  final List<String> blocked;
-  final List<String> friends;
-
-  factory UserModelPrivate.fromMap(
-      Map<String, dynamic>? data, String documentId) {
-    if (data == null) {
-      log('UserModelPrivate.fromMap - data == null');
-      throw StateError('missing data for uid: $documentId');
-    }
-
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
-
-    return UserModelPrivate(
-      blocked: blocked,
-      friends: friends,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'blocked': blocked,
-      'friends': friends,
-    };
-  }
 }
 
 extension ParseToDate on String {

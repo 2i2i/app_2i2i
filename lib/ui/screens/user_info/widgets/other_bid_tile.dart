@@ -16,7 +16,7 @@ class OtherBidTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     int duration = bidIn.speed.num == 0
         ? hangout.rule.maxMeetingDuration
-        : (bidIn.budget / bidIn.speed.num).round();
+        : (bidIn.energy / bidIn.speed.num).round();
 
     return Card(
       shape: RoundedRectangleBorder(

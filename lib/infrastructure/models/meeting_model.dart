@@ -316,7 +316,7 @@ class Meeting extends Equatable {
       addrA: bidIn.private!.addrA,
       addrB: addrB,
       energy: {
-        'MAX': bidIn.public.budget,
+        'MAX': bidIn.public.energy,
         'A': null,
         'CREATOR': null,
         'B': null,

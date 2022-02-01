@@ -55,13 +55,6 @@ final hangoutProvider = StreamProvider.family<Hangout, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.userStream(uid: uid);
 });
-final userPrivateProvider =
-    StreamProvider.autoDispose.family<UserModelPrivate, String>((ref, uid) {
-  // log('userPrivateProvider');
-  final database = ref.watch(databaseProvider);
-  // log('userPrivateProvider - database=$database');
-  return database.userPrivateStream(uid: uid);
-});
 
 final userPageViewModelProvider =
     Provider.family<HangoutPageViewModel?, String>((ref, uid) {
@@ -177,13 +170,11 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
-final topSpeedsProvider =
-    StreamProvider<List<TopMeeting>>((ref) {
+final topSpeedsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topSpeedsStream();
 });
-final topDurationsProvider =
-    StreamProvider<List<TopMeeting>>((ref) {
+final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topDurationsStream();
 });
@@ -200,7 +191,13 @@ final meetingHistoryB =
   return database.meetingHistoryB(uid);
 });
 
-final bidInProvider = StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
+final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
+  final uid = ref.watch(myUIDProvider)!;
+  final database = ref.watch(databaseProvider);
+  return database.getBidOut(uid: uid, bidId: bidIn);
+});
+final bidInPublicProvider =
+    StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidInPublic(uid: uid, bidId: bidIn);
@@ -212,7 +209,8 @@ final bidInPrivateProvider =
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-final getBidFromMeeting = StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
+final getBidFromMeeting =
+    StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
   final database = ref.watch(databaseProvider);
   return database.getBidInPrivate(uid: meeting.B, bidId: meeting.id);
 });
@@ -227,7 +225,6 @@ final bidInAndHangoutProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   final hangout = userAsyncValue.asData!.value;
   return BidIn(public: bidIn.public, private: bidIn.private, hangout: hangout);
 });
-
 
 final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
@@ -294,7 +291,7 @@ final bidInsProvider =
 final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
   (ref) {
     final uid = ref.watch(myUIDProvider);
-    if(uid == null){
+    if (uid == null) {
       return null;
     }
     final hangout = ref.watch(hangoutProvider(uid));
@@ -314,12 +311,13 @@ final lockedHangoutViewModelProvider = Provider<LockedHangoutViewModel?>(
       isUserLocked.value = false;
       return null;
     }
-    if(meeting.value?.active??false){
+    if (meeting.value?.active ?? false) {
       isUserLocked.value = true;
-    }else{
+    } else {
       isUserLocked.value = false;
     }
-    return LockedHangoutViewModel(hangout: hangout.asData!.value, meeting: meeting.asData!.value);
+    return LockedHangoutViewModel(
+        hangout: hangout.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -355,7 +353,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
   final hangoutChanger = ref.watch(hangoutChangerProvider);
   if (hangoutChanger == null) return null;
-  
+
   final meetingChanger = ref.watch(meetingChangerProvider);
 
   return RingingPageViewModel(
@@ -385,15 +383,12 @@ final meetingHistoryProvider =
 });
 
 final addBidPageViewModelProvider =
-    StateProvider.family<AddBidPageViewModel?, String>((ref, uid) {
+    StateProvider.family<AddBidPageViewModel?, Hangout>((ref, B) {
   // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('addBidPageViewModelProvider - functions=$functions');
   final algorand = ref.watch(algorandProvider);
   // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
-  final user = ref.watch(hangoutProvider(uid));
-  // log('addBidPageViewModelProvider - user=$user');
-  if (user is AsyncLoading) return null;
 
   final accounts = ref.watch(accountsProvider);
   if (accounts is AsyncLoading) return null;
@@ -406,13 +401,13 @@ final addBidPageViewModelProvider =
   if (myUid == null) return null;
 
   return AddBidPageViewModel(
-      uid: myUid,
+      A: myUid,
       database: database,
       functions: functions,
       algorand: algorand,
       accounts: accounts.asData!.value,
       accountService: accountService,
-      B: user.asData!.value);
+      B: B);
 });
 
 final accountsProvider = FutureProvider((ref) {
