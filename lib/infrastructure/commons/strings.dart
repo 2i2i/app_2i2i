@@ -12,12 +12,13 @@ class Strings {
   String shareQr = 'Share yourself';
   String error = 'Error';
 
-  String errorWhileAddBid ='Error while adding bid, Try another account or reduce the max duration or reduce the speed';
+  String errorWhileAddBid =
+      'Error while adding bid, Try another account or reduce the max duration or reduce the speed';
   String less = 'less';
 
   String forever = 'forever';
 
-  String minSpeed = 'Min Speed';
+  String minSpeed = 'Min Support';
 
   String maxDuration = 'Max Duration';
 
@@ -96,7 +97,7 @@ class Strings {
   //User Info page
   String createABid = 'Create a bid';
   String algoSec = 'μALGO/s';
-  String speed = 'Speed';
+  String speed = 'Support';
   String bidAmount = 'Bid Amount';
   String note = 'Note (optional)';
   String bidNote = 'Say something awesome';
@@ -115,7 +116,7 @@ class Strings {
   String userName = 'Username';
   String name = 'Name';
   String bio = 'Description';
-    String addAccount = 'Add account';
+  String addAccount = 'Add account';
   String walletAccount = 'Wallet account';
   String walletAccountMsg = 'I want to connect a 3rd party wallet';
 
@@ -126,7 +127,8 @@ class Strings {
   String addLocalAccountMsg = 'Create a local account on this device';
 
   String estMaxDuration = 'Est. max duration';
-  String swipeAndChangeAccount = 'Swipe Below Card Left or Right to change account';
+  String swipeAndChangeAccount =
+      'Swipe Below Card Left or Right to change account';
 
   String insufficientBalance = 'Insufficient balance';
   String addBid = 'Add bid';
@@ -137,8 +139,7 @@ class Strings {
   String unBlock = 'Unblock';
   String seeMore = 'see more';
 
-
-   //App Rating
+  //App Rating
   String appRatingTitle = 'Did you like this meeting?';
   String appRatingMessage = 'Any feedback?';
   String appRatingSubmitButton = 'Submit';
