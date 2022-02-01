@@ -64,8 +64,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   _CreateBidPageState createState() => _CreateBidPageState();
 }
 
-class _CreateBidPageState extends ConsumerState<CreateBidPage>
-    with SingleTickerProviderStateMixin {
+class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTickerProviderStateMixin {
   AbstractAccount? account;
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
@@ -77,10 +76,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   int _minAccountBalance = 0;
   int _accountBalance = 0;
 
+  ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
+  TextEditingController speedController = TextEditingController();
+
   @override
   void initState() {
     ref.read(myAccountPageViewModelProvider).initMethod();
     speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
+    speedController.text = speed.num.toString();
     updateAccountBalance();
     super.initState();
   }
@@ -169,81 +172,88 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            decoration: Custom.getBoxDecoration(context),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  Strings().createABid,
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                SizedBox(height: 5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.timer,
-                      size: 17,
-                      color: Theme.of(context).textTheme.caption?.color,
-                    ),
-                    SizedBox(width: 2),
-                    Text(
-                      'Est. Wait Time is ${calcWaitTime()}',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                UserRulesWidget(
-                  hangout: widget.B,
-                  onTapRules: null,
-                ),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
+          TopCard(minWait: calcWaitTime(), B: widget.B),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: CustomTextField(
-                      title: Strings().speed,
-                      hintText: "0",
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              '${Strings().algoSec}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .iconTheme
-                                        .color
-                                        ?.withOpacity(0.5),
-                                    fontWeight: FontWeight.normal,
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Strings().estMaxDuration,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.20),
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 6),
+                              Text(
+                                '$minMaxDuration secs',
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8),
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor:
+                                      Theme.of(context).cardColor,
+                                      inactiveTrackColor:
+                                      Theme.of(context).disabledColor,
+                                      thumbShape: CustomSliderThumbRect(
+                                        mainContext: context,
+                                        thumbRadius: 15,
+                                        min: minMaxDuration,
+                                        max: maxMaxDuration,
+                                      ),
+                                    ),
+                                    child: Slider(
+                                      min: minMaxDuration.toDouble(),
+                                      max: maxMaxDuration.toDouble(),
+                                      divisions:
+                                      maxMaxDuration == minMaxDuration
+                                          ? null
+                                          : min(
+                                          100,
+                                          maxMaxDuration -
+                                              minMaxDuration),
+                                      value: maxDuration.toDouble(),
+                                      onChanged: (value) {
+                                        maxDuration = value.round();
+                                        update();
+                                      },
+                                    ),
                                   ),
-                            ),
+                                ),
+                              ),
+                              Text('$maxMaxDuration secs',
+                                  style:
+                                  Theme.of(context).textTheme.subtitle1),
+                              SizedBox(width: 6),
+                            ],
                           ),
-                          SizedBox(width: 8)
-                        ],
-                      ),
-                      onChanged: (String value) {
-                        final num = int.tryParse(value) ?? 0;
-                        speed = Quantity(num: num, assetId: speed.assetId);
-                        update();
-                      },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        )
+                      ],
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: CustomTextField(
@@ -254,213 +264,243 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       },
                     ),
                   ),
-                  Visibility(
-                    visible: speed.num != 0,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Strings().estMaxDuration,
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                          SizedBox(height: 4),
-                          Container(
+
+                  Container(
+                    constraints:
+                        (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                            ? BoxConstraints(
+                                minHeight: 150,
+                                maxHeight: 200,
+                              )
+                            : null,
+                    child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                        ? PageView.builder(
+                            controller: controller,
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                myAccountPageViewModel.accounts?.length ?? 0,
+                            itemBuilder: (_, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: AccountInfo(
+                                  false,
+                                  key: ObjectKey(myAccountPageViewModel
+                                      .accounts![index].address),
+                                  account:
+                                      myAccountPageViewModel.accounts![index],
+                                  afterRefresh: updateAccountBalance,
+                                ),
+                              );
+                            },
+                            onPageChanged: (int val) {
+                              final newAccount = myAccountPageViewModel
+                                  .accounts
+                                  ?.elementAt(val);
+                              if (account == newAccount) return;
+                              account = newAccount;
+                              if (mounted) {
+                                updateAccountBalance();
+                              }
+                            },
+                          )
+                        : Container(
+                            padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .shadowColor
-                                    .withOpacity(0.20),
-                                borderRadius: BorderRadius.circular(10)),
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                SizedBox(width: 6),
+                                SizedBox(height: 12),
                                 Text(
-                                  '$minMaxDuration secs',
-                                  style: Theme.of(context).textTheme.subtitle1,
+                                  'No account added',
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      Theme.of(context).textTheme.subtitle1,
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: SliderTheme(
-                                      data: SliderTheme.of(context).copyWith(
-                                        activeTrackColor:
-                                            Theme.of(context).cardColor,
-                                        inactiveTrackColor:
-                                            Theme.of(context).disabledColor,
-                                        thumbShape: CustomSliderThumbRect(
-                                          mainContext: context,
-                                          thumbRadius: 15,
-                                          min: minMaxDuration,
-                                          max: maxMaxDuration,
-                                        ),
-                                      ),
-                                      child: Slider(
-                                        min: minMaxDuration.toDouble(),
-                                        max: maxMaxDuration.toDouble(),
-                                        divisions:
-                                            maxMaxDuration == minMaxDuration
-                                                ? null
-                                                : min(
-                                                    100,
-                                                    maxMaxDuration -
-                                                        minMaxDuration),
-                                        value: maxDuration.toDouble(),
-                                        onChanged: (value) {
-                                          maxDuration = value.round();
-                                          update();
-                                        },
-                                      ),
+                                SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 10),
+                                  child: IconButton(
+                                    onPressed: () =>
+                                        CustomAlertWidget.showBidAlert(
+                                            context,
+                                            AddAccountOptionsWidgets()),
+                                    iconSize: 30,
+                                    icon: Icon(
+                                      Icons.add_circle_rounded,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                     ),
-                                  ),
-                                ),
-                                Text('$maxMaxDuration secs',
-                                    style:
-                                        Theme.of(context).textTheme.subtitle1),
-                                SizedBox(width: 6),
+                                  ) /*ElevatedButton(
+                                      child: Text(Strings().addAccount),
+                                    )*/
+                                  ,
+                                )
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          )
-                        ],
-                      ),
+                  ),
+
+                  Visibility(
+                    visible: (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            Strings().swipeAndChangeAccount,
+                            maxLines: 2,
+                            textAlign: TextAlign.start,
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                              primary:
+                                  Theme.of(context).colorScheme.secondary),
+                          onPressed: () => CustomAlertWidget.showBidAlert(
+                            context,
+                            AddAccountOptionsWidgets(),
+                          ),
+                          child: Text(
+                            Strings().addAccount,
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  Visibility(
-                    visible: speed.num != 0,
-                    child: Container(
-                      constraints:
-                          (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                              ? BoxConstraints(
-                                  minHeight: 150,
-                                  maxHeight: 200,
-                                )
-                              : null,
-                      child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                          ? PageView.builder(
-                              controller: controller,
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  myAccountPageViewModel.accounts?.length ?? 0,
-                              itemBuilder: (_, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AccountInfo(
-                                    false,
-                                    key: ObjectKey(myAccountPageViewModel
-                                        .accounts![index].address),
-                                    account:
-                                        myAccountPageViewModel.accounts![index],
-                                    afterRefresh: updateAccountBalance,
-                                  ),
-                                );
+
+                  ValueListenableBuilder(
+                    valueListenable: isAddSupportVisible,
+                    builder: (BuildContext context, bool value, Widget? child) {
+                      if(value) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8,left: 10,right: 10),
+                          child: CustomTextField(
+                            autovalidateMode: AutovalidateMode.always,
+                            controller: speedController,
+                            title: Strings().speed,
+                            hintText: "0",
+                            suffixIcon: GestureDetector(
+                              onTap: (){
+                                isAddSupportVisible.value = false;
+                                resetSpeed();
                               },
-                              onPageChanged: (int val) {
-                                final newAccount = myAccountPageViewModel
-                                    .accounts
-                                    ?.elementAt(val);
-                                if (account == newAccount) return;
-                                account = newAccount;
-                                if (mounted) {
-                                  updateAccountBalance();
-                                }
-                              },
-                            )
-                          : Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .shadowColor
-                                    .withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SizedBox(height: 12),
-                                  Text(
-                                    'No account added',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.subtitle1,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 50, vertical: 10),
-                                    child: IconButton(
-                                      onPressed: () =>
-                                          CustomAlertWidget.showBidAlert(
-                                              context,
-                                              AddAccountOptionsWidgets()),
-                                      iconSize: 30,
-                                      icon: Icon(
-                                        Icons.add_circle_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
+                                  Center(
+                                    child: Text(
+                                      '${Strings().algoSec}',
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .subtitle2
+                                          ?.copyWith(
+                                        color: Theme.of(context).iconTheme.color,
+                                        fontWeight: FontWeight.normal,
                                       ),
-                                    ) /*ElevatedButton(
-                                        child: Text(Strings().addAccount),
-                                      )*/
-                                    ,
-                                  )
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  ValueListenableBuilder(
+                                    valueListenable: isAddSupportVisible,
+                                    builder: (BuildContext context, bool value, Widget? child) {
+                                      if(value){
+                                        return child!;
+                                      }
+                                      return Container();
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: Icon(Icons.remove_circle,color: Theme.of(context).iconTheme.color),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: speed.num != 0 &&
-                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              Strings().swipeAndChangeAccount,
-                              maxLines: 2,
-                              textAlign: TextAlign.start,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
+                            onChanged: (String value) {
+                              final num = int.tryParse(value) ?? 0;
+                              if(num >= widget.B.rule.minSpeed) {
+                                speed =
+                                    Quantity(num: num, assetId: speed.assetId);
+                                update();
+                              }
+                            },
+                            validator: (value){
+                              int num = int.tryParse(value??'')??0;
+                              if(num < widget.B.rule.minSpeed){
+                                return 'Min speed is ${widget.B.rule.minSpeed}';
+                              }
+                            },
                           ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                                primary:
-                                    Theme.of(context).colorScheme.secondary),
-                            onPressed: () => CustomAlertWidget.showBidAlert(
-                              context,
-                              AddAccountOptionsWidgets(),
-                            ),
-                            child: Text(
-                              Strings().addAccount,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 10),
-                    child: ElevatedButton(
-                      onPressed: isInsufficient() ? null : () => onAddBid(),
-                      child: Text(getConfirmSliderText()),
-                    ),
+                        );
+                      }
+                      return Visibility(
+                        visible: false,
+                        child: TextButton.icon(
+                          style: TextButton.styleFrom(
+                              primary: Theme.of(context).colorScheme.secondary
+                          ),
+                          icon: Icon(Icons.bolt),
+                          label: Text('Add Support'), onPressed: () {  isAddSupportVisible.value = true;},
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: isInsufficient() ? null : () => onAddBid(),
+                child: Text(getConfirmSliderText()),
+              ),
+            ),
+            ValueListenableBuilder(
+            valueListenable: isAddSupportVisible,
+              builder: (BuildContext context, bool value, Widget? child) {
+                return Visibility(
+                  visible: !value,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:10.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black,
+                      ),
+                      onPressed: (){
+                        isAddSupportVisible.value = !isAddSupportVisible.value;
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.add,size: 15,),
+                          SizedBox(width: 3),
+                          Text('Support'),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -515,6 +555,58 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       bidComment: comment,
     );
     CustomDialogs.loader(false, context);
+  }
+
+  void resetSpeed() {
+    speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
+    speedController.text = speed.num.toString();
+    updateAccountBalance();
+  }
+}
+
+class TopCard extends StatelessWidget {
+  final String minWait;
+  final Hangout B;
+
+  const TopCard({Key? key, required this.minWait, required this.B}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: Custom.getBoxDecoration(context),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            Strings().createABid,
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          SizedBox(height: 5),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.timer,
+                size: 17,
+                color: Theme.of(context).textTheme.caption?.color,
+              ),
+              SizedBox(width: 2),
+              Text(
+                'Est. Wait Time is $minWait',
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          UserRulesWidget(
+            hangout: B,
+            onTapRules: null,
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
   }
 }
 
