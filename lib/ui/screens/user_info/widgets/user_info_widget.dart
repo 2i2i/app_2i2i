@@ -15,16 +15,17 @@ class UserInfoWidget extends StatefulWidget {
   final onTapQr;
   final GestureTapCallback? onTapRules;
 
+  final int? estWaitTime;
 
-  const UserInfoWidget(
-      {Key? key,
-      required this.hangout,
-        this.onTapFav,
-      required this.isFav,
-      this.onTapRules,
-      this.onTapQr,
-      })
-      : super(key: key);
+  const UserInfoWidget({
+    Key? key,
+    required this.hangout,
+    this.onTapFav,
+    required this.isFav,
+    this.onTapRules,
+    this.onTapQr,
+    this.estWaitTime,
+  }) : super(key: key);
 
   @override
   _UserInfoWidgetState createState() => _UserInfoWidgetState();
@@ -37,13 +38,16 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   Widget build(BuildContext context) {
     final shortBio =
         widget.hangout.bio; //user.bio.substring(shortBioStart, shortBioEnd);
+
     var statusColor = AppTheme().green;
     if (widget.hangout.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
     } else if (widget.hangout.isInMeeting()) {
       statusColor = AppTheme().red;
     }
+
     final totalRating = removeDecimalZeroFormat(widget.hangout.rating * 5);
+
     return Column(
       children: [
         Row(
@@ -65,20 +69,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     ),
                     IconButton(
                       onPressed: widget.onTapQr,
-                      icon: Icon(
-                        Icons.qr_code
-                      ),
+                      icon: Icon(Icons.qr_code),
                     ),
-                    if(widget.onTapFav != null)
-                    IconButton(
-                      onPressed: widget.onTapFav,
-                      icon: Icon(
-                        widget.isFav
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
-                        color: widget.isFav ? Colors.red : Colors.grey,
+                    if (widget.onTapFav != null)
+                      IconButton(
+                        onPressed: widget.onTapFav,
+                        icon: Icon(
+                          widget.isFav
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: widget.isFav ? Colors.red : Colors.grey,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 subtitle: Column(
@@ -152,6 +154,24 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             ),
           ],
         ),
+        widget.estWaitTime is int ? SizedBox(height: 5) : Container(),
+        widget.estWaitTime is int
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.timer,
+                    size: 17,
+                    color: Theme.of(context).textTheme.caption?.color,
+                  ),
+                  SizedBox(width: 2),
+                  Text(
+                    'Est. Wait Time is ${secondsToSensibleTimePeriod(widget.estWaitTime!)}',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ],
+              )
+            : Container(),
         SizedBox(height: 20),
         UserRulesWidget(
           hangout: widget.hangout,

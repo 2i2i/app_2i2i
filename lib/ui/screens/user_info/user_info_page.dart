@@ -38,25 +38,47 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     bool amBlocked =
         A == null || userPageBViewModel.hangout.blocked.contains(A);
 
+    Hangout? hangoutA;
+    if (A is String) {
+      final hangoutAAsyncValue = ref.watch(hangoutProvider(A));
+      if (!haveToWait(hangoutAAsyncValue)) hangoutA = hangoutAAsyncValue.value;
+    }
     final userModelChanger = ref.watch(hangoutChangerProvider);
     bool isFriend = false;
-    if (A != null) {
-      final hangoutAAsyncValue = ref.watch(hangoutProvider(A));
-      if (!haveToWait(hangoutAAsyncValue) &&
-          hangoutAAsyncValue.value != null &&
-          hangoutAAsyncValue.value!.friends.contains(widget.B)) {
-        isFriend = true;
-      }
-    }
+    if (hangoutA is Hangout && hangoutA.friends.contains(widget.B))
+      isFriend = true;
 
-    final Hangout B = userPageBViewModel.hangout;
+    final Hangout hangoutB = userPageBViewModel.hangout;
 
     final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.B));
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
     final bidInsSorted = combineQueues(
-        bidIns, B.loungeHistory, B.loungeHistoryIndex);
+        bidIns, hangoutB.loungeHistory, hangoutB.loungeHistoryIndex);
+
+    // show est. wait time?
+    int? estWaitTime;
+    if (A is String) {
+      final bidOutsAsyncValue = ref.watch(bidOutsProvider(A));
+      if (!haveToWait(bidOutsAsyncValue)) {
+        final bidOuts = bidOutsAsyncValue.value!;
+        int totalDuration = 0;
+        for (int i = 0; i < bidInsSorted.length; i++) {
+          final bidIn = bidInsSorted[i];
+
+          if (bidOuts.any((bidOut) => bidOut.id == bidIn.id)) {
+            estWaitTime = totalDuration;
+            break;
+          }
+
+          int duration = bidIn.speed.num == 0
+              ? hangoutB.rule.maxMeetingDuration
+              : (bidIn.energy / bidIn.speed.num).round();
+          totalDuration += duration;
+        }
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +91,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           onTap: () => context.pushNamed(
             Routes.createBid.nameFromPath(),
             extra: CreateBidPageRouterObject(
-              B: B,
+              B: hangoutB,
               bidIns: bidInsSorted,
             ),
           ),
@@ -123,8 +145,9 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               padding: const EdgeInsets.only(
                   right: 20, left: 20, bottom: 14, top: 16),
               child: UserInfoWidget(
-                hangout: B,
+                hangout: hangoutB,
                 isFav: isFriend,
+                estWaitTime: estWaitTime,
                 onTapQr: () {
                   showDialog(
                     context: context,
@@ -135,7 +158,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                         width: 350,
                         child: QrCodeWidget(
                             message:
-                                'https://test.2i2i.app/user/${B.id}'),
+                                'https://test.2i2i.app/user/${hangoutB.id}'),
                       ),
                     ),
                   );
@@ -154,7 +177,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           ),
           Expanded(
             child: OtherBidInList(
-              hangout: B,
+              hangout: hangoutB,
               bidIns: bidInsSorted,
             ),
           ),
