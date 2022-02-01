@@ -13,6 +13,7 @@ import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
@@ -22,6 +23,7 @@ import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
+import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
@@ -288,10 +290,8 @@ class NamedRoutes {
     },
   );
 
-  static ValueNotifier<int> currentIndex = ValueNotifier(0);
-
   static Widget getView(Widget page) {
-    var feedbackController = TextEditingController();
+
     Widget widget = AuthWidget(
       homePageBuilder: (context) => Scaffold(
         appBar: AppBar(
@@ -342,228 +342,10 @@ class NamedRoutes {
                 }
               }
             }
-            return ValueListenableBuilder(
-              valueListenable: showRating,
-              builder: (BuildContext context, Map value, Widget? child) {
-                child ??= Container();
-                return Visibility(
-                  visible: value['show'] ?? false,
-                  child: child,
-                );
-              },
-              child: BottomSheet(
-                backgroundColor: Theme.of(context).cardColor,
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12)),
-                ),
-                onClosing: () {},
-                builder: (BuildContext context) {
-                  var otherUid = showRating.value['otherUid'];
-                  var meetingId = showRating.value['meetingId'];
-                  double rating = 1.0;
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12)),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          Strings().appRatingTitle,
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          Strings().appRatingMessage,
-                          style: Theme.of(context).textTheme.bodyText2,
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 20, top: 8),
-                          child: RatingBar.builder(
-                            initialRating: rating * 5.0,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemCount: 5,
-                            glowColor: Colors.white,
-                            unratedColor: Colors.grey.shade300,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                            itemBuilder: (context, _) => Icon(
-                              Icons.star_rounded,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (starRating) {
-                              rating = starRating / 5.0;
-                            },
-                          ),
-                        ),
-                        TextFormField(
-                          controller: feedbackController,
-                          minLines: 5,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Theme.of(context)
-                                .iconTheme
-                                .color
-                                ?.withAlpha(10),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () => {
-                                showRating.value = {'show': false}
-                              },
-                              child: Text(
-                                Strings().cancel,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            TextButton(
-                              onPressed: () async {
-                                if (otherUid is String && meetingId is String) {
-                                  final database = ref.watch(databaseProvider);
-                                  database.addRating(
-                                    otherUid,
-                                    meetingId,
-                                    RatingModel(
-                                      rating: rating,
-                                      comment: feedbackController.text,
-                                    ),
-                                  );
-                                }
-                                showRating.value = {'show': false};
-                              },
-                              child: Text(
-                                Strings().appRatingSubmitButton,
-                              ),
-                              style: TextButton.styleFrom(
-                                primary:
-                                    Theme.of(context).colorScheme.secondary,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
+            return AddRatingPage(showRating: showRating);
           },
         ),
-        bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: isUserLocked,
-          builder: (BuildContext context, value, Widget? child) {
-            if (value == false) {
-              return Container(
-                padding: const EdgeInsets.all(4.0),
-                child: ValueListenableBuilder(
-                  valueListenable: currentIndex,
-                  builder: (BuildContext context, int value, Widget? child) {
-                    return BottomNavigationBar(
-                      type: BottomNavigationBarType.fixed,
-                      currentIndex: value,
-                      onTap: (i) {
-                        currentIndex.value = i;
-                        switch (i) {
-                          case 0:
-                            context.go(Routes.root);
-                            break;
-                          case 1:
-                            context.go(Routes.myHangout);
-                            break;
-                          case 2:
-                            context.go(Routes.bidOut);
-                            break;
-                          case 3:
-                            context.go(Routes.favorites);
-                            break;
-                          case 4:
-                            context.go(Routes.setting);
-                            break;
-                        }
-                      },
-                      items: [
-                        BottomNavigationBarItem(
-                          label: Strings().home,
-                          activeIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/house.svg',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                          icon: SvgPicture.asset('assets/icons/house.svg'),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().profile,
-                          activeIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/person.svg',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                          icon: ProfileIcon(),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().bidOut,
-                          activeIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(Icons.call_made,
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                          icon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(Icons.call_made),
-                          ),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().favorites,
-                          activeIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(Icons.favorite,
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                          icon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(Icons.favorite),
-                          ),
-                        ),
-                        BottomNavigationBarItem(
-                          label: Strings().settings,
-                          activeIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/setting.svg',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                          icon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: SvgPicture.asset('assets/icons/setting.svg'),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              );
-            }
-            return Container(
-              height: 0,
-            );
-          },
-        ),
+        bottomNavigationBar: BottomNavBar(),
       ),
     );
     return Consumer(

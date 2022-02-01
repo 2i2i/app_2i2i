@@ -11,13 +11,14 @@ class QrWidget extends ConsumerWidget {
   final logoSize;
   final message;
   final bool? hideLogo;
+  final bool lightOnly;
 
   const QrWidget({
     Key? key,
     this.imageSize,
     this.logoSize,
     this.hideLogo,
-    required this.message,
+    required this.message,  this.lightOnly=false,
   }) : super(key: key);
 
   Future<ui.Image> _loadOverlayImage(BuildContext context) async {
@@ -48,17 +49,18 @@ class QrWidget extends ConsumerWidget {
           return CustomPaint(
             size: Size.square(size.toDouble()),
             painter: QrPainter(
+              color: lightOnly?Colors.black:Theme.of(context).canvasColor,
               data: message,
               version: QrVersions.auto,
               eyeStyle: QrEyeStyle(
                 eyeShape: QrEyeShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
-                color: Theme.of(context).iconTheme.color,
+                color: lightOnly?Colors.black:Theme.of(context).iconTheme.color,
               ),
               dataModuleStyle: QrDataModuleStyle(
                 dataModuleShape: QrDataModuleShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
-                color: Theme.of(context).iconTheme.color,
+                color: lightOnly?Colors.black:Theme.of(context).iconTheme.color,
               ),
               embeddedImage: (hideLogo??false)?null:snapshot.data,
               embeddedImageStyle: QrEmbeddedImageStyle(

@@ -77,6 +77,9 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                           ),
                       );
                     },
+                    onTapWallet: (){
+                      context.pushNamed(Routes.account.nameFromPath());
+                    },
                     isFav: true,
                   ),
                 ],

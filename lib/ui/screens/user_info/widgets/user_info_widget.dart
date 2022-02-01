@@ -1,6 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -13,6 +15,7 @@ class UserInfoWidget extends StatefulWidget {
   final bool isFav;
 
   final onTapQr;
+  final onTapWallet;
   final GestureTapCallback? onTapRules;
 
   final int? estWaitTime;
@@ -24,6 +27,7 @@ class UserInfoWidget extends StatefulWidget {
     required this.isFav,
     this.onTapRules,
     this.onTapQr,
+    this.onTapWallet,
     this.estWaitTime,
   }) : super(key: key);
 
@@ -67,6 +71,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
+                    Visibility(
+                      visible: widget.onTapWallet != null,
+                      child: IconButton(
+                        onPressed: widget.onTapWallet,
+                        icon: Icon(Icons.attach_money),
+                      ),
+                    ),
                     IconButton(
                       onPressed: widget.onTapQr,
                       icon: Icon(Icons.qr_code),
@@ -88,36 +99,39 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 2),
-                    Row(
-                      children: [
-                        IgnorePointer(
-                          ignoring: true,
-                          child: RatingBar.builder(
-                            initialRating: widget.hangout.rating * 5,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            itemCount: 5,
-                            itemSize: 15,
-                            tapOnlyMode: true,
-                            updateOnDrag: false,
-                            allowHalfRating: true,
-                            glowColor: Colors.white,
-                            unratedColor: Colors.grey.shade300,
-                            itemBuilder: (context, _) => Icon(
-                              Icons.star_rounded,
-                              color: Colors.amber,
+                    InkWell(
+                      onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':widget.hangout.id}),
+                      child: Row(
+                        children: [
+                          IgnorePointer(
+                            ignoring: true,
+                            child: RatingBar.builder(
+                              initialRating: widget.hangout.rating * 5,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              itemCount: 5,
+                              itemSize: 15,
+                              tapOnlyMode: true,
+                              updateOnDrag: false,
+                              allowHalfRating: true,
+                              glowColor: Colors.white,
+                              unratedColor: Colors.grey.shade300,
+                              itemBuilder: (context, _) => Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber,
+                              ),
+                              onRatingUpdate: (rating) {
+                                print(rating);
+                              },
                             ),
-                            onRatingUpdate: (rating) {
-                              print(rating);
-                            },
                           ),
-                        ),
-                        SizedBox(width: 5),
-                        Text(
-                          '($totalRating/5)',
-                          style: Theme.of(context).textTheme.caption,
-                        )
-                      ],
+                          SizedBox(width: 5),
+                          Text(
+                            '($totalRating/5)',
+                            style: Theme.of(context).textTheme.caption,
+                          )
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
