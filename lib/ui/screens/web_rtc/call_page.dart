@@ -234,89 +234,84 @@ class _CallPageState extends ConsumerState<CallPage>
                     builder:
                         (BuildContext context, double value, Widget? child) {
                       var val = value;
-                      if (amA) {
-                        val = value;
-                      }else if (val > 0) {
-                        val = 100 - val;
+                      if (amA && value > 0) {
+                        val = 100 - value;
                       }
 
                       double width = MediaQuery.of(context).size.height / 3;
                       double height = (val * width) / 100;
-                      return RotationTransition(
-                        turns: new AlwaysStoppedAnimation(amA ? 0 : 0),
-                        child: Container(
-                          height: width,
-                          width: 28,
-                          margin: const EdgeInsets.only(right: 30, left: 30),
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    shadowColor: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    type: MaterialType.card,
-                                    child: SizedBox(
-                                      height: width,
-                                      width: 20,
-                                    ),
-                                  ),
-                                ),
+                      return Container(
+                        height: width,
+                        width: 28,
+                        margin: const EdgeInsets.only(right: 30, left: 30),
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Material(
-                                    borderRadius: BorderRadius.circular(20),
-                                    shadowColor: Colors.black12,
-                                    type: MaterialType.card,
-                                    child:  ClipRRect(
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  shadowColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: ProgressBar(
-                                        height: width,
-                                        radius: 0,
-                                      ),
+                                  ),
+                                  type: MaterialType.card,
+                                  child: SizedBox(
+                                    height: width,
+                                    width: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Material(
+                                  borderRadius: BorderRadius.circular(20),
+                                  shadowColor: Colors.black12,
+                                  type: MaterialType.card,
+                                  child:  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: ProgressBar(
+                                      height: width,
+                                      radius: 0,
                                     ),
                                   ),
                                 ),
                               ),
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Material(
-                                    color: Colors.grey,
-                                    shadowColor: Colors.black,
-                                    type: MaterialType.card,
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      topLeft: Radius.circular(20),
-                                    ),
-                                    child: Container(
-                                      height: height,
-                                      width: 20,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white24,
-                                        border: Border(
-                                          bottom: BorderSide()
-                                        )
-                                      ),
+                            ),
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Material(
+                                  color: Colors.grey,
+                                  shadowColor: Colors.black,
+                                  type: MaterialType.card,
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(20),
+                                    topLeft: Radius.circular(20),
+                                  ),
+                                  child: Container(
+                                    height: height,
+                                    width: 20,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white24,
+                                      border: Border(
+                                        bottom: BorderSide()
+                                      )
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       );
                     },
