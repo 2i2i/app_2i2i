@@ -1,97 +1,67 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/theme.dart';
-import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
-import '../../../commons/custom_navigation.dart';
-import '../../user_bid/user_page.dart';
+import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoTile extends ConsumerWidget {
-  final UserModel userModel;
-  final String myUIDProvider;
+  final Hangout hangout;
+  final String myUid;
   final bool isForBlockedUser;
+  final double? marginBottom;
 
   const UserInfoTile(
       {Key? key,
-      required this.userModel,
-      required this.myUIDProvider,
-      required this.isForBlockedUser})
+      required this.hangout,
+      this.marginBottom,
+      required this.myUid,
+      this.isForBlockedUser = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userPrivateAsyncValue = ref.watch(userPrivateProvider(myUIDProvider));
-    final userModelChanger = ref.watch(userModelChangerProvider)!;
-    if (userModel.name.isEmpty) return Container();
+    final userModelChanger = ref.watch(hangoutChangerProvider)!;
+    if (hangout.name.isEmpty) return Container();
 
-    final name = userModel.name;
-    final bio = userModel.bio;
+    final name = hangout.name;
+    final bio = hangout.bio;
 
     var statusColor = AppTheme().green;
-    if (userModel.status == 'OFFLINE') statusColor = AppTheme().gray;
-    if (userModel.isInMeeting()) statusColor = AppTheme().red;
+    if (hangout.status == 'OFFLINE') statusColor = AppTheme().gray;
+    if (hangout.isInMeeting()) statusColor = AppTheme().red;
 
-    final isFriend = !(userPrivateAsyncValue is AsyncError) &&
-        !(userPrivateAsyncValue is AsyncLoading) &&
-        userPrivateAsyncValue.value != null &&
-        userPrivateAsyncValue.value!.friends.contains(userModel.id);
-    String firstNameChar = userModel.name;
-    if (firstNameChar.isNotEmpty) {
-      firstNameChar = firstNameChar.substring(0, 1);
+    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
+    bool isFriend = false;
+    if (!haveToWait(myHangoutAsyncValue)) {
+      final myHangout = myHangoutAsyncValue.value!;
+      isFriend = myHangout.friends.contains(hangout.id);
     }
 
     return Container(
+      margin: EdgeInsets.only(bottom: marginBottom ?? 0),
       decoration: Custom.getBoxDecoration(context, radius: 12),
       child: InkWell(
-        onTap: () => CustomNavigation.push(
-            context, UserPage(uid: userModel.id), Routes.USER),
+        onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+          'uid': hangout.id,
+        }),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
           child: Row(
             children: [
-              SizedBox(
-                height: 55,
-                width: 55,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 20,
-                              spreadRadius: 0.5,
-                            )
-                          ]),
-                      alignment: Alignment.center,
-                      child: Text(
-                        firstNameChar,
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Container(
-                        height: 15,
-                        width: 15,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ProfileWidget(
+                stringPath: hangout.name,
+                radius: 62,
+                hideShadow: true,
+                showBorder: true,
+                statusColor: statusColor,
+                style: Theme.of(context).textTheme.headline5,
               ),
               SizedBox(width: 10),
               Expanded(
@@ -117,7 +87,7 @@ class UserInfoTile extends ConsumerWidget {
                             IgnorePointer(
                               ignoring: true,
                               child: RatingBar.builder(
-                                initialRating: userModel.rating * 5,
+                                initialRating: hangout.rating * 5,
                                 minRating: 1,
                                 direction: Axis.horizontal,
                                 tapOnlyMode: true,
@@ -131,11 +101,12 @@ class UserInfoTile extends ConsumerWidget {
                                 itemBuilder: (context, _) => Icon(
                                   Icons.star_rounded,
                                   color: Colors.grey,
-                                ), onRatingUpdate: (double value) {  },
+                                ),
+                                onRatingUpdate: (double value) {},
                               ),
                             ),
                             SizedBox(width: 6),
-                            Text('${(userModel.rating * 5).toStringAsFixed(1)}',
+                            Text('${(hangout.rating * 5).toStringAsFixed(1)}',
                                 style: Theme.of(context).textTheme.caption)
                           ],
                         ),
@@ -150,23 +121,19 @@ class UserInfoTile extends ConsumerWidget {
                             maxLines: 2,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
-                            style:
-                                Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).disabledColor,
-                                    ),
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
                         ),
                         isForBlockedUser
                             ? IconButton(
-                                onPressed: () => userModelChanger.removeBlocked(userModel.id),
+                                onPressed: () =>
+                                    userModelChanger.removeBlocked(hangout.id),
                                 icon: Icon(Icons.remove_circle_rounded))
                             : IconButton(
                                 padding: EdgeInsets.zero,
                                 onPressed: () => isFriend
-                                    ? userModelChanger
-                                        .removeFriend(userModel.id)
-                                    : userModelChanger.addFriend(userModel.id),
+                                    ? userModelChanger.removeFriend(hangout.id)
+                                    : userModelChanger.addFriend(hangout.id),
                                 icon: Icon(isFriend
                                     ? Icons.favorite_rounded
                                     : Icons.favorite_border_rounded),

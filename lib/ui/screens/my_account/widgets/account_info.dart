@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,10 +13,12 @@ import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
-  AccountInfo(this.shrinkwrap, {Key? key, required this.account})
+  AccountInfo(this.shrinkwrap,
+      {Key? key, required this.account, this.afterRefresh})
       : super(key: key);
 
   final AbstractAccount account;
+  final void Function()? afterRefresh;
 
   @override
   _AccountInfoState createState() => _AccountInfoState();
@@ -46,7 +49,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
@@ -81,8 +84,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           assetName,
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle2!
-                              .copyWith(color: Theme.of(context).disabledColor),
+                              .subtitle1
+                              ?.copyWith(
+                                  color: AppTheme().lightSecondaryTextColor),
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -92,10 +96,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 ),
                 Text(
                   "$amount",
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color:
-                          Theme.of(context).tabBarTheme.unselectedLabelColor),
+                  style: Theme.of(context).textTheme.headline4,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                 )
@@ -122,10 +123,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         Text(
                           widget.account.address,
                           maxLines: 4,
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption!
-                              .copyWith(fontWeight: FontWeight.w600),
+                          style: Theme.of(context).textTheme.caption,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -135,15 +133,18 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   Container(
                     height: 40,
                     width: 40,
-                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    margin: EdgeInsets.symmetric(horizontal: 6),
                     child: IconButton(
-                      icon: Icon(
-                        Icons.refresh,
-                        size: 20,
+                      icon: SvgPicture.asset(
+                        'assets/icons/refresh.svg',
+                        width: 20,
+                        height: 20,
+                        color: iconColor(context),
                       ),
                       onPressed: () async {
                         CustomDialogs.loader(true, context);
                         await widget.account.updateBalances();
+                        if (widget.afterRefresh != null) widget.afterRefresh!();
                         CustomDialogs.loader(false, context);
                         setState(() {});
                       },
@@ -158,6 +159,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         'assets/icons/copy.svg',
                         width: 20,
                         height: 20,
+                        color: iconColor(context),
                       ),
                       onPressed: () {
                         Clipboard.setData(
@@ -185,6 +187,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                               'assets/icons/key.svg',
                               width: 20,
                               height: 20,
+                              color: iconColor(context),
                             ),
                             onPressed: () => CustomDialogs.infoDialog(
                                   context: context,
@@ -203,6 +206,11 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       ),
     );
   }
+
+  Color? iconColor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).colorScheme.secondary
+          : null;
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(

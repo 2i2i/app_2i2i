@@ -18,12 +18,12 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = new TabController(length: 2, vsync: this);
+    controller =  TabController(length: 2, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return  Scaffold(
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -40,8 +40,10 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                 Text('Who’s Top?'.toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
-                        .headline5!
-                        .copyWith(fontWeight: FontWeight.bold)),
+                        .headline5?.copyWith(
+                      color: AppTheme().lightSecondaryTextColor
+                    ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
                   decoration: BoxDecoration(

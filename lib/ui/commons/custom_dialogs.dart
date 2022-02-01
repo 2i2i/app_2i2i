@@ -64,7 +64,7 @@ class CustomDialogs {
             Strings().appRatingTitle,
             style: Theme.of(context).textTheme.headline4,
           ),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           Text(
             Strings().appRatingMessage,
             style: Theme.of(context).textTheme.bodyText2,
@@ -78,15 +78,17 @@ class CustomDialogs {
           onPressed: () =>
               Navigator.of(context, rootNavigator: rootNavigator).pop(),
           child:
-              Text(Strings().cancel, style: Theme.of(context).textTheme.button),
+              Text(Strings().cancel),
         ),
         TextButton(
+          style: TextButton.styleFrom(
+            primary: Theme.of(context).colorScheme.secondary,
+          ),
           onPressed: () {
             Navigator.of(context, rootNavigator: rootNavigator).pop();
             onPressed(totalRating / 5, ratingFeedBack.text);
           },
-          child: Text(Strings().appRatingSubmitButton,
-              style: Theme.of(context).textTheme.button),
+          child: Text(Strings().appRatingSubmitButton),
         )
       ],
       content: Container(

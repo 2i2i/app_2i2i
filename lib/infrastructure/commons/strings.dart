@@ -10,6 +10,40 @@ class Strings {
   String automatic = 'Automatic';
 
   String shareQr = 'Share yourself';
+  String error = 'Error';
+
+  String errorWhileAddBid ='Error while adding bid, Try another account or reduce the max duration or reduce the speed';
+  String less = 'less';
+
+  String forever = 'forever';
+
+  String minSpeed = 'Min Speed';
+
+  String maxDuration = 'Max Duration';
+
+  String numberHint = 'Enter real number like 12';
+  String numberZeroHint = '0';
+
+  String algoPerSec = 'μALGO/sec';
+
+  var hh = 'hh';
+  var mm = 'mm';
+  var ss = 'ss';
+
+  String invalid = 'Invalid';
+
+  String join = 'Join';
+
+  var favorites = 'Favorites';
+
+  String wallet = 'Wallet';
+
+  String blockList = 'Blocked list';
+
+  String favList = 'Favorite List';
+  String fav = 'Favorites';
+
+  String scanQr = 'Scan QR';
 
   Strings._internal();
 
@@ -24,6 +58,7 @@ class Strings {
   String talk = 'Talk';
   String cancel = 'Cancel';
   String copyMessage = 'Copied to Clipboard';
+  String userBusyMessage = 'User is Offline or Busy..';
 
   // Logout
   String logout = 'Logout';
@@ -60,7 +95,7 @@ class Strings {
 
   //User Info page
   String createABid = 'Create a bid';
-  String algoSec = 'μAlgo/s';
+  String algoSec = 'μALGO/s';
   String speed = 'Speed';
   String bidAmount = 'Bid Amount';
   String note = 'Note (optional)';
@@ -68,15 +103,40 @@ class Strings {
 
   //SetUp User page
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
-  String yourNameHint = 'My cool username';
+  String yourNameHint = 'My hangout name';
   String writeYourBio = 'Write your bio';
   String writeYourName = 'Write your name';
-  String bioExample = 'Ex: I like #cooking #basketball';
+  String bioExample = 'Ex: Let\'s talk about #cooking or #basketball';
   String save = 'Save';
   String required = 'Required';
+  String enterValidData = 'Please enter valid data';
   String setUpAccount = 'Setup Account';
+  String hangoutSettings = 'Hangout Settings';
   String userName = 'Username';
-  String bio = 'Bio';
+  String name = 'Name';
+  String bio = 'Description';
+    String addAccount = 'Add account';
+  String walletAccount = 'Wallet account';
+  String walletAccountMsg = 'I want to connect a 3rd party wallet';
+
+  String recoverPassphrase = 'Recover with passphrase';
+  String recoverPassPhaseMsg = 'I know the 25 secret words';
+
+  String addLocalAccount = 'Add local account';
+  String addLocalAccountMsg = 'Create a local account on this device';
+
+  String estMaxDuration = 'Est. max duration';
+  String swipeAndChangeAccount = 'Swipe Below Card Left or Right to change account';
+
+  String insufficientBalance = 'Insufficient balance';
+  String addBid = 'Add bid';
+
+  String copyAndNext = 'Copy and Next';
+  String report = 'Report';
+  String block = 'Block';
+  String unBlock = 'Unblock';
+  String seeMore = 'see more';
+
 
    //App Rating
   String appRatingTitle = 'Did you like this meeting?';
@@ -95,4 +155,7 @@ class Strings {
 
   //Meeting History
   String meetingsHistory = 'Meetings History';
+  String history = 'History';
+
+  String friendList = 'Friend list';
 }

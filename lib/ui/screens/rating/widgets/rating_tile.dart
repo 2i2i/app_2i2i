@@ -17,11 +17,11 @@ class RatingTile extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextProfileView(
-              text: (ratingModel.rating * 5).toStringAsFixed(0),
+            child: ProfileWidget(
+              stringPath: (ratingModel.rating * 5).toStringAsFixed(0),
               isRating: true,
+              showBorder: true,
               radius: 65,
-              hideStatus: true,
               style: Theme.of(context)
                   .textTheme
                   .headline5!
@@ -59,8 +59,7 @@ class RatingTile extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 6),
-                      Text('24 Dec 2021',
-                          style: Theme.of(context).textTheme.caption)
+                      Text('24 Dec 2021', style: Theme.of(context).textTheme.caption)//todo created date time
                     ],
                   ),
                   subtitle: Padding(
@@ -69,8 +68,8 @@ class RatingTile extends StatelessWidget {
                       ratingModel.comment ?? "",
                       style: Theme.of(context)
                           .textTheme
-                          .subtitle1!
-                          .copyWith(fontStyle: FontStyle.italic),
+                          .subtitle1
+                          ?.copyWith(fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),

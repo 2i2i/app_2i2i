@@ -25,16 +25,15 @@ class CustomTextField extends StatelessWidget {
         Text(title,
             style: Theme.of(context)
                 .textTheme
-                .caption!
-                .copyWith(color: Theme.of(context).shadowColor)),
+                .caption,
+        ),
         SizedBox(height: 4),
         TextFormField(
           controller: controller,
           autofocus: false,
           style: Theme.of(context)
               .textTheme
-              .subtitle2!
-              .copyWith(fontWeight: FontWeight.normal),
+              .subtitle1,
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,

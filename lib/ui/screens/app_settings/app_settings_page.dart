@@ -1,17 +1,10 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_navigation.dart';
-import 'package:app_2i2i/ui/screens/app_settings/theme_mode_screen.dart';
-import 'package:app_2i2i/ui/screens/block_and_friends/friends_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:app_2i2i/ui/screens/qr_code/widgets/qr_image.dart';
-import 'package:app_2i2i/ui/screens/setup_account/setup_account.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -21,108 +14,35 @@ class AppSettingPage extends ConsumerStatefulWidget {
   _AppSettingPageState createState() => _AppSettingPageState();
 }
 
-class _AppSettingPageState extends ConsumerState<AppSettingPage> {
+class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin{
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
-    final user = ref.watch(userProvider(uid));
-    if (user is AsyncLoading || user is AsyncError) return WaitPage();
-    final message = 'https://test.2i2i.app/user/$uid';
-    var appSettingModel = ref.watch(appSettingProvider);
+    final hangout = ref.watch(hangoutProvider(uid));
+    if (haveToWait(hangout)) {
+      return WaitPage();
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-        ),
-        centerTitle: false,
-      ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+        padding: EdgeInsets.only(right: 30,left: 30, bottom: 10,top: kIsWeb?10:31),
+        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 10),
             Text(
-              'QR code',
-              style: Theme.of(context).textTheme.subtitle1,
+              'Settings',
+              style: Theme.of(context).textTheme.headline5,
             ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20.0),
-                child: Column(
-                  children: [
-                    Text(
-                      Strings().shareQr,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    QrWidget(
-                      message: message,
-                      logoSize: 60,
-                      imageSize: 180,
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Color(0xffF3F3F7),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(
-                                  text: message,
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Copied Link!')),
-                              );
-                            },
-                            child: Text('Copy'),
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Share.share(
-                                  'Your friend and invite for join 2i2i\n$message');
-                            },
-                            child: Text('Share'),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-
+            SizedBox(height: 15),
             //profile
             Text(
-              'Profile',
+              Strings().account,
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -133,18 +53,23 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                 children: [
                   ListTile(
                     onTap: (){
-                      showProfile();
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          Strings().userName,
+                          Strings().userName+' ',
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
-                        Text(
-                          user.value?.name ?? '',
-                          style: Theme.of(context).textTheme.subtitle1,
+                        Flexible(
+                          child: Text(
+                            hangout.value?.name ?? '',
+                            style: Theme.of(context).textTheme.subtitle1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
                       ],
                     ),
@@ -154,7 +79,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                   ),
                   ListTile(
                     onTap: (){
-                      showProfile();
+                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
                       Strings().bio,
@@ -163,45 +88,19 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                     ),
                     trailing: Icon(Icons.navigate_next),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-
-
-            //theme
-            Text(
-              'Theme',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            SizedBox(height: 12),
-            Container(
-              decoration: Custom.getBoxDecoration(context),
-              child: ListTile(
-                onTap: () {
-                  CustomNavigation.push(
-                      context, ThemeModeScreen(), 'ThemeModeScreen');
-                },
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      getThemeModeName(appSettingModel.currentThemeMode),
+                  ListTile(
+                    onTap: (){
+                      context.pushNamed(Routes.account.nameFromPath());
+                    },
+                    title: Text(
+                      Strings().wallet,
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    if (appSettingModel.currentThemeMode == ThemeMode.system)
-                      Text(
-                        'System Defaults',
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-                trailing: Icon(
-                  Icons.navigate_next,
-                ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
@@ -217,29 +116,19 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
               child: Column(
                 children: [
                   ListTile(
+                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
-                      'Friends',
+                      Strings().blockList,
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
                     ),
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: false,
-                        ),
-                        Routes.FRIENDS),
                   ),
                   ListTile(
-                    onTap: () => CustomNavigation.push(
-                        context,
-                        FriendsListPage(
-                          isForBlockedUser: true,
-                        ),
-                        Routes.FRIENDS),
+                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
                     title: Text(
-                      'Blocked users',
+                      Strings().meetingsHistory,
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -248,6 +137,62 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
                   ),
                 ],
               ),
+            ),
+            SizedBox(height: 20),
+
+            //theme
+            Text(
+              'Theme',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 12),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                var appSettingModel = ref.watch(appSettingProvider);
+                int selectedIndex = 0;
+                if(appSettingModel.currentThemeMode == ThemeMode.system){
+                  selectedIndex = 2;
+                }else if(appSettingModel.currentThemeMode == ThemeMode.dark){
+                  selectedIndex = 1;
+                }
+                return Container(
+                  decoration: Custom.getBoxDecoration(context),
+                  child: TabBar(
+                    controller: TabController(length: 3, vsync: this,initialIndex: selectedIndex),
+                    indicatorPadding: EdgeInsets.all(3),
+                    indicator: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    tabs: [
+                      Tab(
+                        text: 'Light',
+                      ),
+                      Tab(
+                        text: 'Dark',
+                      ),
+                      Tab(
+                        text: 'Auto',
+                      ),
+                    ],
+                    onTap: (index){
+                      switch (index) {
+                        case 0:
+                          appSettingModel.setThemeMode("LIGHT");
+                          break;
+                        case 1:
+                          appSettingModel.setThemeMode("DARK");
+                          break;
+                        case 2:
+                          appSettingModel.setThemeMode("AUTO");
+                          break;
+                      }
+                    },
+                  ),
+                );
+              },
             ),
             SizedBox(height: 20),
 
@@ -333,23 +278,5 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> {
       return 'Dark Mode';
     }
     return 'Light Mode';
-  }
-
-  void showProfile() {
-    CustomAlertWidget.showBidAlert(
-      context,
-      WillPopScope(
-        onWillPop: () {
-          return Future.value(true);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SetupBio(
-            isFromDialog: true,
-          ),
-        ),
-      ),
-      isDismissible: true,
-    );
   }
 }

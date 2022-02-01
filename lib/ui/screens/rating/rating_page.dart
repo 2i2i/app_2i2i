@@ -1,38 +1,33 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/models/meeting_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import 'widgets/rating_tile.dart';
 
 class RatingPage extends ConsumerStatefulWidget {
-  final UserModel? userModel;
+  final String uid;
 
-  RatingPage({this.userModel});
+  RatingPage({required this.uid});
 
   @override
   _RatingPageState createState() => _RatingPageState();
 }
 
 class _RatingPageState extends ConsumerState<RatingPage> {
-  UserModel? userModel;
+  Hangout? hangout;
 
   @override
   Widget build(BuildContext context) {
-    String uid;
-    if (widget.userModel != null) {
-      uid = widget.userModel!.id;
-      userModel = widget.userModel;
-    } else {
-      uid = ref.watch(myUIDProvider)!;
-      userModel = ref.watch(userPageViewModelProvider(uid))?.user;
-    }
 
-    final ratingListAsyncValue = ref.watch(ratingListProvider(uid));
+    hangout = ref.watch(userPageViewModelProvider(widget.uid))?.hangout;
 
-    if (ratingListAsyncValue is AsyncLoading || userModel is AsyncLoading) {
+    final ratingListAsyncValue = ref.watch(ratingListProvider(widget.uid));
+
+    if (haveToWait(ratingListAsyncValue)) {
       return WaitPage();
     } else if (ratingListAsyncValue is AsyncError) {
       return Scaffold(
@@ -43,7 +38,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     }
 
     final ratingList = ratingListAsyncValue.asData!.value;
-    final totalRating = (userModel!.rating * 5).toStringAsFixed(1);
+    final totalRating = (hangout!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(),
@@ -78,8 +73,8 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                         Text('($totalRating/5)',
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle1
-                                ?.copyWith(fontWeight: FontWeight.w600)),
+                                .subtitle2,
+                        ),
                         SizedBox(width: 4),
                         Icon(
                           Icons.star_purple500_outlined,

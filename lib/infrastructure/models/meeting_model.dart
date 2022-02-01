@@ -1,8 +1,10 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
@@ -22,12 +24,12 @@ enum MeetingStatus {
 }
 
 // ACCEPTED_B -> END_TIMER
-// ACCEPTED_B -> END_A
-// ACCEPTED_B -> END_B
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_A
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED-> END_B
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A -> RECEIVED_REMOTE_B -> CALL_STARTED -> END_TIMER
-// always possible to get END_DISCONNECT_*
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_TIMER
+// always possible to get END_DISCONNECT
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
     return this.toString().split('.').last;
@@ -61,6 +63,7 @@ class TopMeeting extends Equatable {
     required this.name,
     required this.duration,
     required this.speed,
+    required this.ts,
   });
 
   final String id;
@@ -68,6 +71,7 @@ class TopMeeting extends Equatable {
   final String name;
   final int duration;
   final Quantity speed;
+  final DateTime ts;
 
   @override
   List<Object> get props => [id];
@@ -75,14 +79,21 @@ class TopMeeting extends Equatable {
   @override
   bool get stringify => true;
 
-  factory TopMeeting.fromMap(Map<String, dynamic> data) {
-    final id = data['id'] as String;
+  factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('TopMeeting.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final id = documentId;
     final B = data['B'] as String;
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
+    final DateTime ts = data['ts'].toDate();
+
     return TopMeeting(
-        id: id, B: B, name: name, duration: duration, speed: speed);
+        id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
 }
 
@@ -102,7 +113,7 @@ class MeetingChanger {
       'active': false,
       'end': now,
     };
-    return database.updateMeeting(meeting.id, data);
+    return database.meetingEndUnlockUser(meeting, data);
   }
 
   Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
@@ -151,7 +162,7 @@ class Meeting extends Equatable {
     required this.B,
     required this.addrA,
     required this.addrB,
-    required this.budget,
+    required this.energy,
     required this.start,
     required this.end,
     required this.duration,
@@ -160,10 +171,10 @@ class Meeting extends Equatable {
     required this.statusHistory,
     required this.net,
     required this.speed,
-    required this.bid,
     required this.room,
     required this.coinFlowsA,
     required this.coinFlowsB,
+    required this.lounge,
   });
 
   final String id;
@@ -176,24 +187,25 @@ class Meeting extends Equatable {
   final String? addrA; // set if 0 < speed
   final String? addrB; // set if 0 < speed
 
-  final int? budget; // [coins]; 0 for speed == 0
+  final Map<String, int?> energy;
+
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
 
-  // null in free call
-  final MeetingTxns txns;
+  final Map<String, String> txns;
 
   final MeetingStatus status;
   final List<MeetingStatusWithTS> statusHistory;
 
   final AlgorandNet net;
   final Quantity speed;
-  final String bid;
   final String? room;
 
   final List<Quantity> coinFlowsA;
   final List<Quantity> coinFlowsB;
+
+  final Lounge lounge;
 
   @override
   List<Object> get props => [id];
@@ -205,9 +217,9 @@ class Meeting extends Equatable {
   bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
 
-  int? maxDuration() {
-    if (budget == null) return null;
-    return (budget! / speed.num).floor();
+  double maxDuration() {
+    if (speed.num == 0) return double.infinity;
+    return energy['MAX']! / speed.num;
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -224,12 +236,19 @@ class Meeting extends Equatable {
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
-    final int? budget = data['budget'];
+    final Map<String, int?> energy = {};
+    for (final String k in data['energy'].keys) {
+      energy[k] = data['energy'][k] as int?;
+    }
+
     final DateTime? start = data['start']?.toDate();
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
-    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
+    final Map<String, String> txns = {};
+    for (final String k in data['txns'].keys) {
+      txns[k] = data['txns'][k] as String;
+    }
 
     final MeetingStatus status = MeetingStatus.values
         .firstWhere((e) => e.toStringEnum() == data['status']);
@@ -244,7 +263,6 @@ class Meeting extends Equatable {
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final Quantity speed = Quantity.fromMap(data['speed']);
-    final String bid = data['bid'];
     final String? room = data['room'];
 
     final List<Quantity> coinFlowsA = List<Quantity>.from(
@@ -252,15 +270,19 @@ class Meeting extends Equatable {
     final List<Quantity> coinFlowsB = List<Quantity>.from(
         data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
+    final Lounge lounge =
+        Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
+
     return Meeting(
       id: documentId,
+      lounge: lounge,
       active: active,
       settled: settled,
       A: A,
       B: B,
       addrA: addrA,
       addrB: addrB,
-      budget: budget,
+      energy: energy,
       start: start,
       end: end,
       duration: duration,
@@ -269,7 +291,6 @@ class Meeting extends Equatable {
       statusHistory: statusHistory,
       net: net,
       speed: speed,
-      bid: bid,
       room: room,
       coinFlowsA: coinFlowsA,
       coinFlowsB: coinFlowsB,
@@ -278,32 +299,39 @@ class Meeting extends Equatable {
 
   // used by acceptBid, as B
   factory Meeting.newMeeting({
-    required String uid,
+    required String id,
+    required String B,
     required String? addrB,
     required BidIn bidIn,
-    required BidInPrivate bidInPrivate,
   }) {
     return Meeting(
-      id: '',
+      id: id,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed
+          ? Lounge.chrony
+          : Lounge.highroller,
       active: true,
       settled: false,
-      A: bidInPrivate.A,
-      B: uid,
-      addrA: bidInPrivate.addrA,
+      A: bidIn.private!.A,
+      B: B,
+      addrA: bidIn.private!.addrA,
       addrB: addrB,
-      budget: bidInPrivate.budget,
+      energy: {
+        'MAX': bidIn.public.energy,
+        'A': null,
+        'CREATOR': null,
+        'B': null,
+        },
       start: null,
       end: null,
       duration: null,
-      txns: MeetingTxns(),
+      txns: {},
       status: MeetingStatus.ACCEPTED_B,
       statusHistory: [
         MeetingStatusWithTS(
             value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())
       ],
-      net: bidIn.net,
-      speed: bidIn.speed,
-      bid: bidIn.id,
+      net: bidIn.public.net,
+      speed: bidIn.public.speed,
       room: null,
       coinFlowsA: [],
       coinFlowsB: [],
@@ -319,19 +347,19 @@ class Meeting extends Equatable {
       'B': B,
       'addrA': addrA,
       'addrB': addrB,
-      'budget': budget,
+      'energy': energy,
       'start': start,
       'end': end,
       'duration': duration,
-      'txns': txns.toMap(),
+      'txns': txns,
       'status': status.toStringEnum(),
       'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
-      'bid': bid,
       'room': room,
       'coinFlowsA': coinFlowsA,
       'coinFlowsB': coinFlowsB,
+      'lounge': lounge.toStringEnum(),
     };
   }
 }
@@ -364,48 +392,4 @@ class RatingModel {
       'comment': comment,
     };
   }
-}
-
-class MeetingTxns {
-  MeetingTxns(
-      {this.group,
-      this.lockALGO,
-      this.lockASA,
-      this.state,
-      this.unlock,
-      this.optIn});
-  String? group;
-  String? lockALGO;
-  String? lockASA;
-  String? state;
-  String? unlock;
-  String? optIn;
-  factory MeetingTxns.fromMap(Map<String, dynamic> data) {
-    final String? group = data['group'];
-    final String? lockALGO = data['lockALGO'];
-    final String? lockASA = data['lockASA'];
-    final String? state = data['state'];
-    final String? unlock = data['unlock'];
-    final String? optIn = data['optIn'];
-    return MeetingTxns(
-      group: group,
-      lockALGO: lockALGO,
-      lockASA: lockASA,
-      state: state,
-      unlock: unlock,
-      optIn: optIn,
-    );
-  }
-  Map<String, dynamic> toMap() {
-    return {
-      'group': group,
-      'lockALGO': lockALGO,
-      'lockASA': lockASA,
-      'state': state,
-      'unlock': unlock,
-      'optIn': optIn,
-    };
-  }
-
-  String? lockId({required bool isALGO}) => isALGO ? lockALGO : lockASA;
 }

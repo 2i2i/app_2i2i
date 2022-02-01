@@ -1,10 +1,16 @@
+import 'dart:async';
+
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
+
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -12,7 +18,7 @@ import '../../data_access_layer/services/logging.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
-    required this.uid,
+    required this.A,
     required this.database,
     required this.functions,
     required this.algorand,
@@ -21,9 +27,9 @@ class AddBidPageViewModel {
     required this.accountService,
   });
 
-  final String uid;
+  final String A;
   final FirebaseFunctions functions;
-  final UserModel B;
+  final Hangout B;
   final AlgorandService algorand;
   final AccountService accountService;
   final List<AbstractAccount> accounts;
@@ -42,61 +48,81 @@ class AddBidPageViewModel {
     required AbstractAccount? account,
     required Quantity amount,
     required Quantity speed,
-    String? bidNote,
+    String? bidComment,
+    BuildContext? context,
+    Function? timeout,
   }) async {
     log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
 
+    if (B.blocked.contains(A)) return;
+
     final net = AlgorandNet.testnet;
     final String? addrA = speed.num == 0 ? null : account!.address;
-    final bidId = database.newDocId(path: 'users/$uid/bidOuts');
+    final bidId = database.newDocId(
+        path: FirestorePath
+            .meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
-    String? txId;
+    Map<String, String> txns = {};
     if (speed.num != 0) {
       final note =
           bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txId = await algorand.lockCoins(
-            account: account!, net: net, amount: amount, note: note);
+        txns = await algorand
+            .lockCoins(account: account!, net: net, amount: amount, note: note)
+            .timeout(Duration(seconds: 60));
+      } on TimeoutException catch (e) {
+        log('AlgorandException  ${e.message}');
+        timeout?.call();
+        return;
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
         if (cause is dio.DioError) {
           final message = cause.response?.data['message'];
+          if (context != null) {
+            CustomAlertWidget.showErrorDialog(
+                context, Strings().errorWhileAddBid,
+                errorStacktrace: '$message');
+          }
           log('AlgorandException ' + message);
         }
         return;
+      } catch (e) {
+        print('AlgorandException catch $e');
       }
     }
 
-    // TODO clean separation into firestore_service and firestore_database
-    final bidOutRef =
-        FirebaseFirestore.instance.collection('users/$uid/bidOuts').doc(bidId);
     final bidOut = BidOut(
       id: bidId,
       B: B.id,
       speed: speed,
       net: net,
-      txId: txId,
+      txns: txns,
       active: true,
       addrA: addrA,
-      budget: amount.num,
+      energy: amount.num,
+      comment: bidComment,
     );
-    final bidInRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
-        .doc(bidId);
-    final bidIn = BidIn(id: bidId, speed: speed, net: net, active: true);
-    final bidInPrivateRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
-        .doc(bidId)
-        .collection('private')
-        .doc('main');
+    final bidInPublic = BidInPublic(
+      id: bidId,
+      speed: speed,
+      net: net,
+      active: true,
+      ts: DateTime.now().toUtc(),
+      rule: B.rule,
+      energy: amount.num,
+    );
+
     final bidInPrivate = BidInPrivate(
-        A: uid, addrA: addrA, comment: bidNote, txId: txId, budget: amount.num);
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
-      transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
-      transaction.set(
-          bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
-    });
+      id: bidId,
+      active: true,
+      A: A,
+      addrA: addrA,
+      comment: bidComment,
+      txns: txns,
+    );
+
+    BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
+    return database.addBid(bidOut, bidIn);
   }
 }

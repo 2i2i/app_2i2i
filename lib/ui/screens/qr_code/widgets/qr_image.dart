@@ -10,17 +10,24 @@ class QrWidget extends ConsumerWidget {
   final imageSize;
   final logoSize;
   final message;
+  final bool? hideLogo;
 
   const QrWidget({
     Key? key,
     this.imageSize,
     this.logoSize,
+    this.hideLogo,
     required this.message,
   }) : super(key: key);
 
-  Future<ui.Image> _loadOverlayImage() async {
+  Future<ui.Image> _loadOverlayImage(BuildContext context) async {
     final completer = Completer<ui.Image>();
-    final byteData = await rootBundle.load('assets/logo.png');
+    String path = 'assets/logo.png';
+    var byteData;
+    if(Theme.of(context).brightness == Brightness.dark){
+      path = 'assets/logo_dark.png';
+    }
+    byteData = await rootBundle.load(path);
     ui.decodeImageFromList(byteData.buffer.asUint8List(), completer.complete);
     return completer.future;
   }
@@ -28,7 +35,7 @@ class QrWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<ui.Image>(
-        future: _loadOverlayImage(),
+        future: _loadOverlayImage(context),
         builder: (ctx, snapshot) {
           final size = imageSize != null ? imageSize : 280.0;
           if (!snapshot.hasData) {
@@ -53,7 +60,7 @@ class QrWidget extends ConsumerWidget {
                 // color: Theme.of(context).colorScheme.secondary,
                 color: Theme.of(context).iconTheme.color,
               ),
-              embeddedImage: snapshot.data,
+              embeddedImage: (hideLogo??false)?null:snapshot.data,
               embeddedImageStyle: QrEmbeddedImageStyle(
                   size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
             ),

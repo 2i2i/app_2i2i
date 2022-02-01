@@ -3,6 +3,7 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RecoverAccountPage extends ConsumerStatefulWidget {
   const RecoverAccountPage({Key? key}) : super(key: key);
@@ -101,8 +102,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                           '${index + 1}',
                           style: Theme.of(context)
                               .textTheme
-                              .caption
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                              .caption,
                         ),
                       ),
                       title: Text(
@@ -151,16 +151,13 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                 SizedBox(height: 20),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.grey.shade200,
-                    child: IconButton(
-                      icon: Icon(Icons.navigate_before),
-                      onPressed: currentIndex == 0
-                          ? null
-                          : () {
-                              onClickPrevious();
-                            },
-                    ),
+                  leading: IconButton(
+                    icon: Icon(Icons.navigate_before),
+                    onPressed: currentIndex == 0
+                        ? null
+                        : () {
+                            onClickPrevious();
+                          },
                   ),
                   title: TextFormField(
                     autofocus: false,
@@ -169,23 +166,19 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                     decoration: InputDecoration(
                       hintText: 'Enter value',
                       filled: true,
-                      fillColor: Colors.grey.shade200,
                     ),
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (val) {
                       onClickNext();
                     },
                   ),
-                  trailing: CircleAvatar(
-                    backgroundColor: Colors.grey.shade200,
-                    child: IconButton(
-                      icon: Icon(Icons.navigate_next),
-                      onPressed: isLast()
-                          ? null
-                          : () {
-                              onClickNext();
-                            },
-                    ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.navigate_next),
+                    onPressed: isLast()
+                        ? null
+                        : () {
+                            onClickNext();
+                          },
                   ),
                 ),
                 SizedBox(height: 30),
@@ -235,7 +228,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
     try {
       final account = await myAccountPageViewModel.recoverAccount(keys);
       await account.setMainAccount();
-      Navigator.of(context).maybePop();
+      context.pop();
     } catch (e) {
       print(e.toString());
     }

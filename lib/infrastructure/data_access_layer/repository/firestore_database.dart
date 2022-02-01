@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../models/bid_model.dart';
+import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
-import '../../models/user_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -22,21 +24,19 @@ class FirestoreDatabase {
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
-  Future<void> setTestA() => _service.setData(
-        path: FirestorePath.testA(),
-        data: {},
-        merge: true,
-      );
+  // Future<void> setTestA() => _service.setData(
+  //       path: FirestorePath.testA(),
+  //       data: {},
+  //       merge: true,
+  //     );
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-      final meetingDocRef =
-          _service.firestore.collection(FirestorePath.meetings()).doc();
+      final meetingDocRef = _service.firestore
+          .collection(FirestorePath.meetings())
+          .doc(meeting.id);
 
-      final lockObj = {'meeting': meetingDocRef.id};
-
-      // log(H + 'meeting.toMap()=${meeting.toMap()}');
-      // log(H + 'lockObj()=$lockObj');
+      final lockObj = {'meeting': meeting.id};
 
       transaction.set(meetingDocRef, meeting.toMap());
       final userADocRef = _service.firestore.doc(FirestorePath.user(meeting.A));
@@ -48,46 +48,113 @@ class FirestoreDatabase {
     });
   }
 
+  Future addBid(BidOut bidOut, BidIn bidIn) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(bidIn.private!.A))
+          .doc(bidOut.id);
+
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(bidOut.B))
+          .doc(bidOut.id);
+
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(bidOut.B))
+          .doc(bidOut.id);
+
+      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPublicRef, bidIn.public.toMap(), SetOptions(merge: false));
+      transaction.set(
+          bidInPrivateRef, bidIn.private!.toMap(), SetOptions(merge: false));
+
+      return Future.value();
+    });
+  }
+
+  Future cancelBid(
+      {required String A, required String B, required String bidId}) async {
+    return _service.runTransaction((transaction) {
+      final bidOutRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidOuts(A))
+          .doc(bidId);
+      final bidInPublicRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPublic(B))
+          .doc(bidId);
+      final bidInPrivateRef = FirebaseFirestore.instance
+          .collection(FirestorePath.bidInsPrivate(B))
+          .doc(bidId);
+      final obj = {'active': false};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(bidOutRef, obj, setOptions);
+      transaction.set(bidInPublicRef, obj, setOptions);
+      transaction.set(bidInPrivateRef, obj, setOptions);
+
+      return Future.value();
+    });
+  }
+
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
-        merge: true,
-      );
-  Future<void> unlockUser(String uid) =>
-      _service.setData(
-        path: FirestorePath.user(uid),
-        data: {'meeting': null},
+        data: {
+          'heartbeat': FieldValue.serverTimestamp(),
+          'status': status
+        }, // TODO move dependency
         merge: true,
       );
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
   }
 
-  Future<void> updateUserNameAndBio(
-          String uid, Map<String, dynamic> data) =>
+  Future meetingEndUnlockUser(
+      Meeting meeting, Map<String, dynamic> data) async {
+    return _service.runTransaction((transaction) {
+      final userARef =
+          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
+      final userBRef =
+          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
+      final meetingRef =
+          FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
+
+      final obj = {'meeting': null};
+      final setOptions = SetOptions(merge: true);
+
+      transaction.set(meetingRef, data, setOptions);
+      transaction.set(userARef, obj, setOptions);
+      transaction.set(userBRef, obj, setOptions);
+
+      return Future.value();
+    });
+  }
+
+  Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: data,
         merge: true,
       );
 
-  Future<void> setUser(UserModel user) async {
-    log('setUser - user=$user - map=${user.toMap()}');
-    _service.setData(
-      path: FirestorePath.user(user.id),
-      data: user.toMap(),
-      merge: true,
-    );
-    log('setUser - done');
-  }
+  // Future<void> setUser(Hangout hangout) async {
+  //   log('setUser - user=$hangout - map=${hangout.toMap()}');
+  //   _service.setData(
+  //     path: FirestorePath.user(hangout.id),
+  //     data: hangout.toMap(),
+  //     merge: true,
+  //   );
+  //   log('setUser - done');
+  // }
 
-  //<editor-fold desc="Rating module">
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
       _service.setData(
         path: FirestorePath.newRating(uid, meetingId),
@@ -105,10 +172,8 @@ class FirestoreDatabase {
     });
   }
 
-  //</editor-fold>
-
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayUnion([targetUid])
         },
@@ -116,7 +181,7 @@ class FirestoreDatabase {
       );
 
   Future<void> addFriend(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'friends': FieldValue.arrayUnion([targetUid])
         },
@@ -124,37 +189,29 @@ class FirestoreDatabase {
       );
 
   Future<void> removeBlocked(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayRemove([targetUid])
         },
         merge: true,
       );
   Future<void> removeFriend(String uid, String targetUid) => _service.setData(
-        path: FirestorePath.userPrivate(uid),
+        path: FirestorePath.user(uid),
         data: {
           'friends': FieldValue.arrayRemove([targetUid])
         },
         merge: true,
       );
 
-  Future<void> setUserPrivate(
-          {required String uid, required UserModelPrivate userPrivate}) =>
-      _service.setData(
-          path: FirestorePath.userPrivate(uid),
-          data: userPrivate.toMap(),
-          merge: true);
-
-  Stream<UserModel> userStream({required String uid}) =>
-      _service.documentStream(
+  Stream<Hangout> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
-          return UserModel.fromMap(data, documentId);
+          return Hangout.fromMap(data, documentId);
         },
       );
 
-  Future<UserModel?> getUser(String uid) async {
+  Future<Hangout?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
         await _service.getData(path: FirestorePath.user(uid));
     if (documentSnapshot.exists) {
@@ -162,7 +219,7 @@ class FirestoreDatabase {
       final data = documentSnapshot.data();
       if (data is Map) {
         try {
-          return UserModel.fromMap(data.cast<String, dynamic>(), id);
+          return Hangout.fromMap(data.cast<String, dynamic>(), id);
         } catch (e) {
           return null;
         }
@@ -171,18 +228,11 @@ class FirestoreDatabase {
     return null;
   }
 
-  Stream<UserModelPrivate> userPrivateStream({required String uid}) =>
-      _service.documentStream(
-        path: FirestorePath.userPrivate(uid),
-        builder: (data, documentId) =>
-            UserModelPrivate.fromMap(data, documentId),
-      );
-
-  Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
+  Stream<List<Hangout>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
     return _service.collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) => UserModel.fromMap(data, documentId),
+      builder: (data, documentId) => Hangout.fromMap(data, documentId),
       queryBuilder: tags.isEmpty
           ? null
           : (query) => query.where('tags', arrayContainsAny: tags),
@@ -208,12 +258,20 @@ class FirestoreDatabase {
     );
   }
 
-  Stream<List<BidIn>> bidInsStream({required String uid}) {
+  Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
     return _service.collectionStream(
-      path: FirestorePath.bidIns(uid),
-      builder: (data, documentId) => BidIn.fromMap(data, documentId),
+      path: FirestorePath.bidInsPublic(uid),
+      builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+          query.where('active', isEqualTo: true).orderBy('ts'),
+    );
+  }
+
+  Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
+    return _service.collectionStream(
+      path: FirestorePath.bidInsPrivate(uid),
+      builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
@@ -221,21 +279,27 @@ class FirestoreDatabase {
     return _service.collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      queryBuilder: (query) =>
-          query.where('active', isEqualTo: true), //.orderBy('speed.num'),
+      queryBuilder: (query) => query.where('active', isEqualTo: true),
     );
   }
 
-  //<editor-fold desc="Meeting Module">\
-  Stream<BidIn?> getBidIn({required String uid, required String bidId}) =>
+  Stream<BidOut> getBidOut({required String uid, required String bidId}) =>
       _service.documentStream(
-        path: FirestorePath.bidIn(uid, bidId),
-        builder: (data, documentId) => BidIn.fromMap(data, documentId),
+        path: FirestorePath.bidOut(uid, bidId),
+        builder: (data, documentId) => BidOut.fromMap(data, documentId),
       );
-  Stream<BidInPrivate?> getBidInPrivate(
+
+  Stream<BidInPublic> getBidInPublic(
           {required String uid, required String bidId}) =>
       _service.documentStream(
-        path: FirestorePath.bidPrivate(uid, bidId),
+        path: FirestorePath.bidInPublic(uid, bidId),
+        builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
+      );
+
+  Stream<BidInPrivate> getBidInPrivate(
+          {required String uid, required String bidId}) =>
+      _service.documentStream(
+        path: FirestorePath.bidInPrivate(uid, bidId),
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
@@ -246,38 +310,49 @@ class FirestoreDatabase {
             return Meeting.fromMap(data, documentId);
           });
 
-  Stream<List<Meeting?>> topMeetingStream() => _service
+  Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(
-        path: FirestorePath.topMeetings(),
-        builder: (data, documentId) => Meeting.fromMap(data, documentId),
+        path: FirestorePath.topSpeeds(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('speed.num', descending: true),
+      )
+          .handleError((onError) {
+        print(onError);
+        return [];
+      });
+  Stream<List<TopMeeting>> topDurationsStream() => _service
+          .collectionStream(
+        path: FirestorePath.topDurations(),
+        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
+        queryBuilder: (query) => query.orderBy('duration', descending: true),
       )
           .handleError((onError) {
         print(onError);
         return [];
       });
 
-  Future<void> setMeeting(Meeting meeting) => _service.setData(
-        path: FirestorePath.meeting(meeting.id),
-        data: meeting.toMap(),
-        merge: true,
-      );
+  // Future<void> setMeeting(Meeting meeting) => _service.setData(
+  //       path: FirestorePath.meeting(meeting.id),
+  //       data: meeting.toMap(),
+  //       merge: true,
+  //     );
 
-  Stream<List<Meeting?>> meetingHistoryA(String uid) =>
+  Stream<List<Meeting>> meetingHistoryA(String uid) =>
       _meetingHistoryX(uid, 'A');
 
-  Stream<List<Meeting?>> meetingHistoryB(String uid) =>
-      _meetingHistoryX(uid, 'B');
+  Stream<List<Meeting>> meetingHistoryB(String uid, {int? limit}) =>
+      _meetingHistoryX(uid, 'B', limit: limit);
 
-  Stream<List<Meeting?>> _meetingHistoryX(String uid, String field) {
-    return _service
-        .collectionStream(
+  Stream<List<Meeting>> _meetingHistoryX(String uid, String field,
+      {int? limit}) {
+    return _service.collectionStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
-      queryBuilder: (query) => query.where(field, isEqualTo: uid),
-    )
-        .handleError((value) {
-      log(value);
-    });
+      queryBuilder: (query) {
+        query = query.where(field, isEqualTo: uid).orderBy('end');
+        if (limit != null) query = query.limit(limit);
+        return query;
+      },
+    );
   }
-//</editor-fold>
 }

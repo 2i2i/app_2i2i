@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
@@ -11,7 +11,7 @@ class Signaling {
   Signaling(
       {required this.meeting,
       required this.meetingChanger,
-      required this.userModelChanger,
+      required this.hangoutChanger,
       required this.amA,
       required this.localVideo,
       required this.remoteVideo}) {
@@ -51,12 +51,13 @@ class Signaling {
 
   Future notifyMeeting() async {
     log(G + 'Signaling - notifyMeeting - ${meeting.id}');
-    await meetingChanger.roomCreatedMeeting(meeting.id, roomRef.id);
+    if (meeting.status != MeetingStatus.ACCEPTED_A) return;
+    return meetingChanger.roomCreatedMeeting(meeting.id, roomRef.id);
   }
 
   final Meeting meeting;
   final MeetingChanger meetingChanger;
-  final UserModelChanger userModelChanger;
+  final HangoutChanger hangoutChanger;
   final bool amA;
   final RTCVideoRenderer localVideo;
   final RTCVideoRenderer remoteVideo;
@@ -127,11 +128,10 @@ class Signaling {
         remoteStream?.addTrack(track);
       });
 
-      if (amA) {
+      if (amA && meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
         await meetingChanger.remoteReceivedByAMeeting(meeting.id);
-      } else {
+      else if (meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
         await meetingChanger.remoteReceivedByBMeeting(meeting.id);
-      }
     };
 
     // Listening for remote session description below
@@ -268,10 +268,7 @@ class Signaling {
 
   Future hangUp({required MeetingStatus reason}) {
     peerConnection?.close();
-    final f1 = userModelChanger.unlock(meeting.A);
-    final f2 = userModelChanger.unlock(meeting.B);
-    final f3 = meetingChanger.endMeeting(meeting, reason);
-    return Future.wait([f1, f2, f3]);
+    return meetingChanger.endMeeting(meeting, reason);
   }
 
   void registerPeerConnectionListeners() {

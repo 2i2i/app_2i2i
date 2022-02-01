@@ -1,32 +1,35 @@
 import 'dart:async';
+
 import 'package:animate_countdown_text/animate_countdown_text.dart';
-import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
-import '../../../infrastructure/models/user_model.dart';
+import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/web_rtc_provider/call_screen_provider.dart';
 import 'widgets/circle_button.dart';
 
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
-  final UserModel user;
+  final Hangout hangout;
   final Function onHangPhone;
   final MeetingChanger meetingChanger;
-  final UserModelChanger userModelChanger;
+  final HangoutChanger hangoutChanger;
 
   CallPage({
     Key? key,
     required this.meeting,
     required this.meetingChanger,
-    required this.userModelChanger,
+    required this.hangoutChanger,
     required this.onHangPhone,
-    required this.user,
+    required this.hangout,
   }) : super(key: key);
 
   @override
@@ -51,14 +54,14 @@ class _CallPageState extends ConsumerState<CallPage>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future<void> _initBudgetTimer() async {
+  Future<void> _init() async {
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
 
     signaling = Signaling(
       meeting: widget.meeting,
       meetingChanger: widget.meetingChanger,
-      userModelChanger: widget.userModelChanger,
+      hangoutChanger: widget.hangoutChanger,
       amA: amA,
       localVideo: _localRenderer,
       remoteVideo: _remoteRenderer,
@@ -68,15 +71,24 @@ class _CallPageState extends ConsumerState<CallPage>
       if (signaling?.localStream != null) {
         ref.read(callScreenProvider).getInitialValue(signaling!.localStream!);
       }
-      setState(() {});
+      // if(mounted) {
+      //   setState(() {});
+      // }
     });
+  }
 
+  Future<void> _initTimers() async {
     // no timer for free call
     if (widget.meeting.speed.num == 0) return;
+    if (widget.meeting.start == null) return;
+    if (budgetTimer?.isActive ?? false) return;
 
-    final maxDuration = widget.meeting.maxDuration()!;
+    final maxDuration = widget.meeting.maxDuration().round();
+    // log(X + 'maxDuration=$maxDuration');
     final duration = getDuration(maxDuration);
+    // log(X + 'duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration), () {
+      // log(X + 'budgetTimer');
       progressTimer?.cancel();
       signaling?.hangUp(reason: MeetingStatus.END_TIMER);
     });
@@ -90,22 +102,16 @@ class _CallPageState extends ConsumerState<CallPage>
   }
 
   int getDuration(int maxDuration) {
-    int duration = maxDuration;
-    final activeTime = widget.meeting.start;
-    if (activeTime != null) {
-      final DateTime maxEndTime =
-          activeTime.add(Duration(seconds: maxDuration));
-      final durationObj = maxEndTime.difference(DateTime.now().toUtc());
-      duration = durationObj.inSeconds;
-    }
-    return duration;
+    final DateTime maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final durationObj = maxEndTime.difference(DateTime.now().toUtc());
+    return durationObj.inSeconds;
   }
 
   void showCountDown(int duration) {
     if (countDownTimerDate != null) {
       return;
     }
-    final maxDuration = widget.meeting.maxDuration()!;
+    final maxDuration = widget.meeting.maxDuration().round();
     final duration = getDuration(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
@@ -118,44 +124,52 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
-    _initBudgetTimer();
-
-    amA = widget.meeting.A == widget.user.id;
-
+    _init();
+    amA = widget.meeting.A == widget.hangout.id;
     super.initState();
   }
 
   @override
   void dispose() async {
-    _localRenderer.srcObject?.getTracks().forEach((element) async {
-      await element.stop();
-    });
-    await _localRenderer.srcObject?.dispose();
-    _localRenderer.srcObject = null;
-    await _localRenderer.dispose();
+    super.dispose();
+    await disposeInit();
 
-    _remoteRenderer.srcObject?.getTracks().forEach((element) async {
-      await element.stop();
-    });
-    await _remoteRenderer.srcObject?.dispose();
-    _remoteRenderer.srcObject = null;
-    await _remoteRenderer.dispose();
+    // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
+    // await widget.onHangPhone(otherUid, widget.meeting.id);
+  }
+
+  Future<void> disposeInit() async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject = null;
+    }
+
+    if (_remoteRenderer.srcObject != null) {
+      _remoteRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _remoteRenderer.srcObject!.dispose();
+      _remoteRenderer.srcObject = null;
+    }
 
     budgetTimer?.cancel();
     progressTimer?.cancel();
 
-    // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
-    // await widget.onHangPhone(otherUid, widget.meeting.id);
-
-    super.dispose();
+    final otherUid = amA ? widget.meeting.B : widget.meeting.A;
+    widget.onHangPhone(otherUid, widget.meeting.id);
   }
 
   @override
   Widget build(BuildContext context) {
+    _initTimers();
+
     callScreenModel = ref.watch(callScreenProvider);
     final myUid = amA ? widget.meeting.A : widget.meeting.B;
-    final userModel = ref.watch(userProvider(myUid));
-    if (userModel is AsyncLoading || userModel is AsyncError) {
+    final hangout = ref.watch(hangoutProvider(myUid));
+    if (haveToWait(hangout)) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -171,7 +185,7 @@ class _CallPageState extends ConsumerState<CallPage>
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       renderer: _localRenderer,
-                      userModel: userModel.asData!.value)
+                      hangout: hangout.asData!.value)
                   : secondVideoView(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -189,7 +203,7 @@ class _CallPageState extends ConsumerState<CallPage>
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
                               renderer: _localRenderer,
-                              userModel: userModel.asData!.value)
+                              hangout: hangout.asData!.value)
                           : secondVideoView(
                               height: MediaQuery.of(context).size.height * 0.3,
                               width: MediaQuery.of(context).size.height * 0.3,
@@ -356,7 +370,7 @@ class _CallPageState extends ConsumerState<CallPage>
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
                             await signaling?.hangUp(reason: reason);
 
-                            dispose();
+                            await disposeInit();
                           }),
                       CircleButton(
                           icon: callScreenModel?.isAudioEnabled ?? false
@@ -402,7 +416,7 @@ class _CallPageState extends ConsumerState<CallPage>
       {double? height,
       double? width,
       RTCVideoRenderer? renderer,
-      UserModel? userModel}) {
+      Hangout? hangout}) {
     return Container(
       width: width,
       height: height,
