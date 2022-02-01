@@ -68,7 +68,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
-                suffixIcon: Icon(Icons.mic),
+                // suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim();

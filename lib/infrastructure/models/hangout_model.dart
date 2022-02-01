@@ -198,8 +198,7 @@ class Hangout extends Equatable {
         ? HangOutRule()
         : HangOutRule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) =>
-            Lounge.values.firstWhere((e) => e.toStringEnum() == item)));
+        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
     final List<String> blocked = List.castFrom(data['blocked'] as List);
