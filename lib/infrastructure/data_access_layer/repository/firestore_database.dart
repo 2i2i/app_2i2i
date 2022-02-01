@@ -167,8 +167,6 @@ class FirestoreDatabase {
     });
   }
 
-  //</editor-fold>
-
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(
         path: FirestorePath.user(uid),
         data: {
