@@ -47,9 +47,8 @@ class Strings {
   String scanQr = 'Scan QR';
 
   String about = 'About';
-  String aboutPageUrl = 'https://about.2i2i.app';
-  String scanInWalletConnect =
-      'Use WalletConnect\n(e.g. Algorand Wallet)';
+  String aboutPageUrl = 'https://shorturl.at/hilqL'; // 'https://about.2i2i.app';
+  String scanInWalletConnect = 'Use WalletConnect\n(e.g. Algorand Wallet)';
 
   Strings._internal();
 
@@ -132,8 +131,7 @@ class Strings {
   String addLocalAccountMsg = 'Create a local account on this device';
 
   String estMaxDuration = 'Max duration';
-  String swipeAndChangeAccount =
-      'Swipe to change account';
+  String swipeAndChangeAccount = 'Swipe to change account';
 
   String insufficientBalance = 'Insufficient balance';
   String addBid = 'Join';
