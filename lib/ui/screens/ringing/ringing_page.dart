@@ -47,14 +47,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
   }
 
   void setTimer(RingingPageViewModel model) {
-    if (timer == null) {
-      if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
-      timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-        final finishFuture = finish();
-        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
-        await Future.wait([finishFuture, endMeetingFuture]);
-      });
-    }
+    if (timer != null) return;
+    if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
+    timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
+      log(J + 'RingingPage - Timer');
+      final finishFuture = finish();
+      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
+      await Future.wait([finishFuture, endMeetingFuture]);
+    });
   }
 
   Future<void> start() async {
@@ -99,7 +99,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     String callerName = '';
     String callerBio = '';
     String bidComment = '';
-    double maxDuration = 0;
+    int maxDuration = 0;
     double callerRating = 1.0;
 
     bool amA = ringingPageViewModel!.amA();
@@ -127,7 +127,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
       callerBio = otherHangoutAsyncValue.asData!.value.bio;
       callerRating = otherHangoutAsyncValue.asData!.value.rating;
     }
-    
+
     if (ringingPageViewModel?.meeting is Meeting) {
       maxDuration = ringingPageViewModel!.meeting.maxDuration();
     }
@@ -306,7 +306,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 0.2),
                                 borderRadius: BorderRadius.circular(20)),
-                            child: Text(amA ? 'We are connecting the Host....' : 'We are connecting the Guest....',
+                            child: Text(
+                                amA
+                                    ? 'We are connecting the Host....'
+                                    : 'We are connecting the Guest....',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2

@@ -31,6 +31,7 @@ class RingingPageViewModel {
   }
 
   Future endMeeting(MeetingStatus reason) {
+    log(J + 'RingingPageViewModel - endMeeting - reason=$reason');
     return meetingChanger.endMeeting(meeting, reason);
   }
 

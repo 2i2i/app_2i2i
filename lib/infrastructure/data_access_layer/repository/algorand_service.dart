@@ -118,10 +118,10 @@ class AlgorandService {
     txns.add(appCallTxn);
 
     AtomicTransfer.group(txns);
-    log(J + 'lockALGO - grouped');
+    log('lockALGO - grouped');
 
     final signedTxnsBytes = await account.sign(txns);
-    log(J + 'lockALGO - signed');
+    log('lockALGO - signed');
 
     try {
       final groupTxId =

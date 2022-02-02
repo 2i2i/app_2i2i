@@ -79,13 +79,12 @@ class _CallPageState extends ConsumerState<CallPage>
 
   Future<void> _initTimers() async {
     // no timer for free call
-    if (widget.meeting.speed.num == 0) return;
     if (widget.meeting.start == null) return;
     if (budgetTimer?.isActive ?? false) return;
 
-    final maxDuration = widget.meeting.maxDuration().round();
+    final maxDuration = widget.meeting.maxDuration();
     // log(X + 'maxDuration=$maxDuration');
-    final duration = getDuration(maxDuration);
+    final duration = getDurationLeft(maxDuration);
     // log(X + 'duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration), () {
       // log(X + 'budgetTimer');
@@ -101,7 +100,7 @@ class _CallPageState extends ConsumerState<CallPage>
     });
   }
 
-  int getDuration(int maxDuration) {
+  int getDurationLeft(int maxDuration) {
     final DateTime maxEndTime =
         widget.meeting.start!.add(Duration(seconds: maxDuration));
     final durationObj = maxEndTime.difference(DateTime.now().toUtc());
@@ -112,11 +111,12 @@ class _CallPageState extends ConsumerState<CallPage>
     if (countDownTimerDate != null) {
       return;
     }
-    final maxDuration = widget.meeting.maxDuration().round();
-    final duration = getDuration(maxDuration);
+    final maxDuration = widget.meeting.maxDuration();
+    final duration = getDurationLeft(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
-      countDownTimerDate = DateTime.now().add(Duration(seconds: duration));
+      countDownTimerDate =
+          DateTime.now().toUtc().add(Duration(seconds: duration));
       if (mounted) {
         setState(() {});
       }
@@ -326,7 +326,8 @@ class _CallPageState extends ConsumerState<CallPage>
                       width: 100,
                       child: Center(
                         child: AnimateCountdownText(
-                          dateTime: countDownTimerDate ?? DateTime.now(),
+                          dateTime:
+                              countDownTimerDate ?? DateTime.now().toUtc(),
                           format: _formatHMS,
                           animationType: AnimationType.scaleIn,
                           characterTextStyle: Theme.of(context)
@@ -421,12 +422,7 @@ class _CallPageState extends ConsumerState<CallPage>
     );
   }
 
-  DurationFormat _formatHMS(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes - hours * 60;
-    final seconds = duration.inSeconds - hours * 60 * 60 - minutes * 60;
-    return DurationFormat(
-      second: "$seconds",
-    );
-  }
+  DurationFormat _formatHMS(Duration duration) => DurationFormat(
+        second: "${duration.inSeconds}",
+      );
 }

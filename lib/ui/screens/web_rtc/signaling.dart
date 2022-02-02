@@ -268,6 +268,7 @@ class Signaling {
 
   Future hangUp({required MeetingStatus reason}) {
     peerConnection?.close();
+    log(J + 'Signaling - hangUp - reason=$reason');
     return meetingChanger.endMeeting(meeting, reason);
   }
 
