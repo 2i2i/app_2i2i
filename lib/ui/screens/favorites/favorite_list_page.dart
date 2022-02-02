@@ -80,7 +80,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
     if (favList.isEmpty) {
       return Center(
           child: Text(
-        'No users found',
+        'No Hosts found',
         style: Theme.of(context).textTheme.subtitle2,
       ));
     }

@@ -203,7 +203,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '$callerRating',
+                            '${callerRating * 5.0}',
                             style: Theme.of(context)
                                 .textTheme
                                 .caption
@@ -213,7 +213,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           IgnorePointer(
                             ignoring: true,
                             child: RatingBar.builder(
-                              initialRating: callerRating * 5,
+                              initialRating: callerRating * 5.0,
                               minRating: 1,
                               direction: Axis.horizontal,
                               tapOnlyMode: true,
@@ -306,7 +306,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 0.2),
                                 borderRadius: BorderRadius.circular(20)),
-                            child: Text('We are connecting to guest....',
+                            child: Text(amA ? 'We are connecting the Host....' : 'We are connecting the Guest....',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2

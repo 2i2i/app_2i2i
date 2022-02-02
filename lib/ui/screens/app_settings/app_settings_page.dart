@@ -123,16 +123,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       Icons.navigate_next,
                     ),
                   ),
-                  ListTile(
-                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
-                    title: Text(
-                      Strings().meetingsHistory,
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
-                    ),
-                  ),
+                  // ListTile(
+                  //   onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                  //   title: Text(
+                  //     Strings().meetingsHistory,
+                  //     style: Theme.of(context).textTheme.subtitle1,
+                  //   ),
+                  //   trailing: Icon(
+                  //     Icons.navigate_next,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -196,7 +196,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
             //link
             Text(
-              'Others',
+              'More',
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),

@@ -39,7 +39,7 @@ class Strings {
 
   String wallet = 'Wallet';
 
-  String blockList = 'Blocked list';
+  String blockList = 'Blocked Guests';
 
   String favList = 'Favorite List';
   String fav = 'Favorites';
@@ -48,7 +48,8 @@ class Strings {
 
   String about = 'About';
   String aboutPageUrl = 'https://about.2i2i.app';
-  String scanInWalletConnect = 'Scan in a WalletConnect wallet\n(e.g. Algorand Wallet)';
+  String scanInWalletConnect =
+      'Use WalletConnect\n(e.g. Algorand Wallet)';
 
   Strings._internal();
 
@@ -79,12 +80,12 @@ class Strings {
 
   // Home page
   String homePage = 'Home Page';
-  String home = 'Home';
-  String account = 'Accounts';
+  String home = 'Search';
+  String account = 'Profile';
   String doneIHaveCopied = 'Done and copied';
-  String profile = 'Profile';
+  String profile = 'Host';
   String settings = 'Settings';
-  String searchUserHint = 'Search user';
+  String searchUserHint = 'Find a Host';
 
   // Jobs page
   String search = 'Search';
@@ -99,7 +100,7 @@ class Strings {
   String newCardTitle = 'New Card';
 
   //User Info page
-  String createABid = 'Create a bid';
+  String createABid = 'Join the queue';
   String algoSec = 'μALGO/s';
   String speed = 'Support';
   String bidAmount = 'Bid Amount';
@@ -108,18 +109,18 @@ class Strings {
 
   //SetUp User page
   String yourBioHint = 'I love to #talk and #cook\nI can #teach';
-  String yourNameHint = 'My hangout name';
+  String yourNameHint = 'My cool name';
   String writeYourBio = 'Write your bio';
   String writeYourName = 'Write your name';
   String bioExample = 'Ex: Let\'s talk about #cooking or #basketball';
   String save = 'Save';
   String required = 'Required';
   String enterValidData = 'Please enter valid data';
-  String setUpAccount = 'Setup Account';
-  String hangoutSettings = 'Hangout Settings';
+  String setUpAccount = 'Who are you?';
+  String hangoutSettings = 'Host Settings';
   String userName = 'Username';
-  String name = 'Name';
-  String bio = 'Description';
+  String name = 'Username';
+  String bio = 'Your interests (use hashtags)';
   String addAccount = 'Add account';
   String walletAccount = 'Wallet account';
   String walletAccountMsg = 'I want to connect a 3rd party wallet';
@@ -130,12 +131,12 @@ class Strings {
   String addLocalAccount = 'Add local account';
   String addLocalAccountMsg = 'Create a local account on this device';
 
-  String estMaxDuration = 'Est. max duration';
+  String estMaxDuration = 'Max duration';
   String swipeAndChangeAccount =
-      'Swipe Below Card Left or Right to change account';
+      'Swipe to change account';
 
   String insufficientBalance = 'Insufficient balance';
-  String addBid = 'Add bid';
+  String addBid = 'Join';
 
   String copyAndNext = 'Copy and Next';
   String report = 'Report';
@@ -155,7 +156,7 @@ class Strings {
   //My Profile
   String myProfile = 'My Profile';
   String bidIn = 'Bid in';
-  String bidOut = 'Bid out';
+  String bidOut = 'Waiting';
   String noBidFound = 'No bids found';
 
   //Meeting History

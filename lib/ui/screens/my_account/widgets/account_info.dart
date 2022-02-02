@@ -36,9 +36,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   Widget build(BuildContext context) {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
-    final amount = balanceModel.assetHolding.amount;
+    final amount = balanceModel.assetHolding.amount / 1000000;
     String assetName =
-        assetId == 0 ? 'μALGO' : balanceModel.assetHolding.assetId.toString();
+        assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
       constraints: widget.shrinkwrap == true

@@ -20,10 +20,10 @@ class BidInTile extends StatelessWidget {
 
     Hangout hangout = bidInList[index].hangout!;
 
-    var budgetCount = 0;
-    var totalDuration = 0;
-    for (int i = 0; i <= index; i++) {
-      budgetCount += bidInList[i].public.energy;
+    int budgetCountInt = 0;
+    int totalDuration = 0;
+    for (int i = 0; i < index; i++) {
+      budgetCountInt += bidInList[i].public.energy;
       int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
       if (0 < bidInList[i].public.speed.num) {
         final thisBidMaxDurationTmp =
@@ -33,6 +33,7 @@ class BidInTile extends StatelessWidget {
       }
       totalDuration += thisBidMaxDuration;
     }
+    final budgetCount = budgetCountInt / 1000000;
 
     if (hangout.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
@@ -174,7 +175,7 @@ class BidInTile extends StatelessWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: 'Sum of Budget:',
+                        text: 'Accumulated support ',
                         children: [
                           TextSpan(
                               text: ' $budgetCount',
@@ -193,7 +194,7 @@ class BidInTile extends StatelessWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: 'Start After:',
+                        text: 'Starts in ',
                         children: [
                           TextSpan(
                               text:

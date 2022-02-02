@@ -12,9 +12,7 @@ class BidOutTile extends ConsumerWidget {
   final void Function(BidOut bidOut) onCancelClick;
 
   const BidOutTile(
-      {Key? key,
-      required this.bidOut,
-      required this.onCancelClick})
+      {Key? key, required this.bidOut, required this.onCancelClick})
       : super(key: key);
 
   @override
@@ -28,7 +26,7 @@ class BidOutTile extends ConsumerWidget {
     }
 
     Hangout hangout = userAsyncValue.asData!.value;
-    bidSpeed = bidOut.speed.num.toString();
+    bidSpeed = (bidOut.speed.num / 1000000).toString();
 
     if (hangout.status == 'OFFLINE') {
       statusColor = AppTheme().gray;
@@ -131,7 +129,7 @@ class BidOutTile extends ConsumerWidget {
                     text: bidSpeed,
                     children: [
                       TextSpan(
-                        text: ' μAlgo/s',
+                        text: ' ALGO/sec',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
                               color: Theme.of(context)
@@ -174,7 +172,7 @@ class BidOutTile extends ConsumerWidget {
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                        text: 'Budget:',
+                        text: 'Support :',
                         children: [
                           TextSpan(
                               text: ' ${bidOut.energy}',
