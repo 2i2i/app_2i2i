@@ -65,7 +65,8 @@ class CreateBidPage extends ConsumerStatefulWidget {
   _CreateBidPageState createState() => _CreateBidPageState();
 }
 
-class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTickerProviderStateMixin {
+class _CreateBidPageState extends ConsumerState<CreateBidPage>
+    with SingleTickerProviderStateMixin {
   AbstractAccount? account;
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
@@ -107,8 +108,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
               .floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
-      maxDuration = min(maxDuration, maxMaxDuration);
     }
+    maxDuration = min(maxDuration, maxMaxDuration);
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
     setState(() {});
   }
@@ -180,7 +181,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Column(
@@ -207,14 +207,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
                                   child: SliderTheme(
                                     data: SliderTheme.of(context).copyWith(
                                       activeTrackColor:
-                                      Theme.of(context).cardColor,
+                                          Theme.of(context).cardColor,
                                       inactiveTrackColor:
-                                      Theme.of(context).disabledColor,
+                                          Theme.of(context).disabledColor,
                                       thumbShape: CustomSliderThumbRect(
                                         mainContext: context,
                                         thumbRadius: 15,
@@ -225,13 +225,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     child: Slider(
                                       min: minMaxDuration.toDouble(),
                                       max: maxMaxDuration.toDouble(),
-                                      divisions:
-                                      maxMaxDuration == minMaxDuration
+                                      divisions: maxMaxDuration ==
+                                              minMaxDuration
                                           ? null
-                                          : min(
-                                          100,
-                                          maxMaxDuration -
-                                              minMaxDuration),
+                                          : min(100,
+                                              maxMaxDuration - minMaxDuration),
                                       value: maxDuration.toDouble(),
                                       onChanged: (value) {
                                         maxDuration = value.round();
@@ -242,8 +240,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 ),
                               ),
                               Text('$maxMaxDuration secs',
-                                  style:
-                                  Theme.of(context).textTheme.subtitle1),
+                                  style: Theme.of(context).textTheme.subtitle1),
                               SizedBox(width: 6),
                             ],
                           ),
@@ -254,7 +251,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       ],
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: CustomTextField(
@@ -265,7 +261,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       },
                     ),
                   ),
-
                   Container(
                     constraints:
                         (myAccountPageViewModel.accounts?.length ?? 0) > 0
@@ -294,8 +289,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               );
                             },
                             onPageChanged: (int val) {
-                              final newAccount = myAccountPageViewModel
-                                  .accounts
+                              final newAccount = myAccountPageViewModel.accounts
                                   ?.elementAt(val);
                               if (account == newAccount) return;
                               account = newAccount;
@@ -320,8 +314,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 Text(
                                   'No account added',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      Theme.of(context).textTheme.subtitle1,
+                                  style: Theme.of(context).textTheme.subtitle1,
                                 ),
                                 SizedBox(height: 8),
                                 Padding(
@@ -329,8 +322,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                       horizontal: 50, vertical: 10),
                                   child: IconButton(
                                     onPressed: () =>
-                                        CustomAlertWidget.showBidAlert(
-                                            context,
+                                        CustomAlertWidget.showBidAlert(context,
                                             AddAccountOptionsWidgets()),
                                     iconSize: 30,
                                     icon: Icon(
@@ -348,9 +340,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                           ),
                   ),
-
                   Visibility(
-                    visible: (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    visible:
+                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -365,8 +357,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                         ),
                         TextButton(
                           style: TextButton.styleFrom(
-                              primary:
-                                  Theme.of(context).colorScheme.secondary),
+                              primary: Theme.of(context).colorScheme.secondary),
                           onPressed: () => CustomAlertWidget.showBidAlert(
                             context,
                             AddAccountOptionsWidgets(),
@@ -378,20 +369,20 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       ],
                     ),
                   ),
-
                   ValueListenableBuilder(
                     valueListenable: isAddSupportVisible,
                     builder: (BuildContext context, bool value, Widget? child) {
-                      if(value) {
+                      if (value) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 8,left: 10,right: 10),
+                          padding: const EdgeInsets.only(
+                              top: 8, left: 10, right: 10),
                           child: CustomTextField(
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
                             title: Strings().speed,
                             hintText: "0",
                             suffixIcon: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 isAddSupportVisible.value = false;
                                 resetSpeed();
                               },
@@ -402,28 +393,33 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                   Center(
                                     child: Text(
                                       '${Strings().algoSec}',
-                                      style: Theme
-                                          .of(context)
+                                      style: Theme.of(context)
                                           .textTheme
                                           .subtitle2
                                           ?.copyWith(
-                                        color: Theme.of(context).iconTheme.color,
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                                            color: Theme.of(context)
+                                                .iconTheme
+                                                .color,
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                     ),
                                   ),
                                   SizedBox(width: 8),
                                   ValueListenableBuilder(
                                     valueListenable: isAddSupportVisible,
-                                    builder: (BuildContext context, bool value, Widget? child) {
-                                      if(value){
+                                    builder: (BuildContext context, bool value,
+                                        Widget? child) {
+                                      if (value) {
                                         return child!;
                                       }
                                       return Container();
                                     },
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 8.0),
-                                      child: Icon(Icons.remove_circle,color: Theme.of(context).iconTheme.color),
+                                      child: Icon(Icons.remove_circle,
+                                          color: Theme.of(context)
+                                              .iconTheme
+                                              .color),
                                     ),
                                   ),
                                 ],
@@ -431,15 +427,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
-                              if(num >= widget.B.rule.minSpeed) {
+                              if (num >= widget.B.rule.minSpeed) {
                                 speed =
                                     Quantity(num: num, assetId: speed.assetId);
                                 update();
                               }
                             },
-                            validator: (value){
-                              int num = int.tryParse(value??'')??0;
-                              if(num < widget.B.rule.minSpeed){
+                            validator: (value) {
+                              int num = int.tryParse(value ?? '') ?? 0;
+                              if (num < widget.B.rule.minSpeed) {
                                 return 'Min support is ${widget.B.rule.minSpeed}';
                               }
                             },
@@ -466,22 +462,25 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
               ),
             ),
             ValueListenableBuilder(
-            valueListenable: isAddSupportVisible,
+              valueListenable: isAddSupportVisible,
               builder: (BuildContext context, bool value, Widget? child) {
                 return Visibility(
                   visible: !value,
                   child: Padding(
-                    padding: const EdgeInsets.only(left:10.0),
+                    padding: const EdgeInsets.only(left: 10.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: Theme.of(context).iconTheme.color,
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         isAddSupportVisible.value = !isAddSupportVisible.value;
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.add,size: 15,),
+                          Icon(
+                            Icons.add,
+                            size: 15,
+                          ),
                           SizedBox(width: 3),
                           Text('Wait Less'),
                         ],
@@ -539,9 +538,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
-    if(account is WalletConnectAccount) {
-      CustomDialogs.loader(true, context, title: 'We are waiting!', message: 'Please confirm in your wallet');
-    }else{
+    if (account is WalletConnectAccount) {
+      CustomDialogs.loader(true, context,
+          title: 'We are waiting!', message: 'Please confirm in your wallet');
+    } else {
       CustomDialogs.loader(true, context);
     }
     await addBidPageViewModel.addBid(
@@ -564,7 +564,8 @@ class TopCard extends StatelessWidget {
   final String minWait;
   final Hangout B;
 
-  const TopCard({Key? key, required this.minWait, required this.B}) : super(key: key);
+  const TopCard({Key? key, required this.minWait, required this.B})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -590,9 +591,10 @@ class TopCard extends StatelessWidget {
               SizedBox(width: 2),
               Text(
                 'Est. Wait Time is $minWait',
-                style: Theme.of(context).textTheme.caption?.copyWith(
-                  color: Theme.of(context).errorColor
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .caption
+                    ?.copyWith(color: Theme.of(context).errorColor),
               ),
             ],
           ),
