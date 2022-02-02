@@ -33,6 +33,7 @@ class BidInTile extends StatelessWidget {
       }
       totalDuration += thisBidMaxDuration;
     }
+    budgetCountInt += bidInList[index].public.energy;
     final budgetCount = budgetCountInt / 1000000;
 
     if (hangout.status == 'OFFLINE') {

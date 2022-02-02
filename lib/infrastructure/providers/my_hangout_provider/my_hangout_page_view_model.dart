@@ -54,11 +54,5 @@ class MyHangoutPageViewModel {
     await cancelBid({'bidId': bidOut.id});
   }
 
-  Future changeNameAndBio(String name, String bio) async {
-    await hangoutChanger.updateNameAndBio(name, bio);
-  }
-
-  Future updateHangout(Hangout hangout) async {
-    await hangoutChanger.updateHangout(hangout);
-  }
+  Future updateHangout(Hangout hangout) => hangoutChanger.updateSettings(hangout);
 }

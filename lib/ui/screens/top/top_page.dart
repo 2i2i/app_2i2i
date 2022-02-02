@@ -1,7 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'widgets/top_speeds_page.dart';
 import 'widgets/top_durations_page.dart';
 

@@ -28,27 +28,7 @@ class HangoutChanger {
     return database.updateUserHeartbeat(uid, status);
   }
 
-  Future updateHangout(Hangout hangout) {
-    final tags = Hangout.tagsFromBio(hangout.bio);
-    Map map = hangout.toMap();
-    map['tags'] = [hangout.name.toLowerCase(), ...tags];
-    return database.updateUserNameAndBio(uid, map.cast());
-  }
-
-  Future updateNameAndBio(String name, String bio) async {
-    final tags = Hangout.tagsFromBio(bio);
-    Map<String, dynamic> data = {
-      'name': name,
-      'bio': bio,
-      'tags': [name.toLowerCase(), ...tags]
-    };
-    final user = await database.getUser(uid);
-    if (user == null) {
-      final newUser = Hangout(id: uid, name: name, bio: bio);
-      data = newUser.toMap();
-    }
-    return database.updateUserNameAndBio(uid, data);
-  }
+  Future updateSettings(Hangout hangout) => database.updateUser(hangout);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
@@ -137,7 +117,7 @@ class Hangout extends Equatable {
     this.blocked = const <String>[],
     this.friends = const <String>[],
   }) {
-    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+    setTags();
   }
 
   final String id;
@@ -146,19 +126,13 @@ class Hangout extends Equatable {
 
   final String? meeting;
   HangOutRule rule;
+
   String name;
   String bio;
-  late final List<String> _tags;
-
-  final double rating;
-  final int numRatings;
-
-  final List<Lounge>
-      loungeHistory; // actually circular array containing recent 100 lounges
-  final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
-
-  final List<String> blocked;
-  final List<String> friends;
+  late List<String> _tags;
+  void setTags() {
+    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+  }
 
   static List<String> tagsFromBio(String bio) {
     RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
@@ -170,6 +144,22 @@ class Hangout extends Equatable {
     }
     return tags;
   }
+
+  void setNameOrBio({String? name, String? bio}) {
+    if (name is String) this.name = name;
+    if (bio is String) this.bio = bio;
+    if (name is String || bio is String) setTags();
+  }
+
+  final double rating;
+  final int numRatings;
+
+  final List<Lounge>
+      loungeHistory; // actually circular array containing recent 100 lounges
+  final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
+
+  final List<String> blocked;
+  final List<String> friends;
 
   @override
   List<Object> get props => [id];
@@ -232,7 +222,7 @@ class Hangout extends Equatable {
       'numRatings': numRatings,
       'heartbeat': heartbeat,
       'rule': rule.toMap(),
-      'loungeHistory': loungeHistory,
+      'loungeHistory': loungeHistory.map((e) => e.index),
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
