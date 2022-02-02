@@ -233,7 +233,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${microALGOToLargerUnit(hangout.rule.minSpeed, maxDigits: 2, unitALGO: 'A')}/s',
+                    '${hangout.rule.minSpeed/1000000} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),

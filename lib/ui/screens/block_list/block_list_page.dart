@@ -45,7 +45,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                   if (blockList.isEmpty) {
                     return Center(
                       child: Text(
-                        'No users found',
+                        'No Guests found',
                         style: Theme.of(context).textTheme.subtitle2,
                       ),
                     );

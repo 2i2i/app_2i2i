@@ -440,7 +440,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (value){
                               int num = int.tryParse(value??'')??0;
                               if(num < widget.B.rule.minSpeed){
-                                return 'Min speed is ${widget.B.rule.minSpeed}';
+                                return 'Min support is ${widget.B.rule.minSpeed}';
                               }
                             },
                           ),
@@ -483,7 +483,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                         children: [
                           Icon(Icons.add,size: 15,),
                           SizedBox(width: 3),
-                          Text('Support'),
+                          Text('Wait Less'),
                         ],
                       ),
                     ),

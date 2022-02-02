@@ -67,7 +67,7 @@ class HangOutRule extends Equatable {
   static const defaultImportance = {
     // set also in cloud function userCreated
     Lounge.chrony: 1,
-    Lounge.highroller: 5,
+    Lounge.highroller: 4,
     Lounge.eccentric: 0,
     Lounge.lurker: 0,
   };

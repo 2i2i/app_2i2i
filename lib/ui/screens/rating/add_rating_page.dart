@@ -57,10 +57,10 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                   style: Theme.of(context).textTheme.headline4,
                 ),
                 SizedBox(height: 8),
-                Text(
-                  Strings().appRatingMessage,
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
+                // Text(
+                //   Strings().appRatingMessage,
+                //   style: Theme.of(context).textTheme.bodyText2,
+                // ),
                 Container(
                   margin: EdgeInsets.only(bottom: 20, top: 8),
                   child: RatingBar.builder(

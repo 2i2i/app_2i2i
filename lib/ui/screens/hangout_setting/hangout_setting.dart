@@ -98,8 +98,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = int.parse(speedEditController.text);
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$s/hour';
+    final minSpeedPerHourinALGO = minSpeedPerHour / 1000000;
+    // final s = microALGOToLargerUnit(minSpeedPerHour);
+    return '$minSpeedPerHourinALGO ALGO/hour';
   }
 
   void setData() {
@@ -364,7 +365,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                hintText: Strings().mm.toUpperCase(),
+                                hintText: Strings().ss.toUpperCase(),
                                 // suffix: Text(Strings().algoPerSec),
                               ),
                             ),

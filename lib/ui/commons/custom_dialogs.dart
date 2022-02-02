@@ -6,14 +6,16 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'custom.dart';
 
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context, {String title = '',String message = '',bool rootNavigator = true}) {
+  static loader(bool isLoading, BuildContext context,
+      {String title = '', String message = '', bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       content: Center(
         child: Container(
           padding: EdgeInsets.all(8),
-          decoration: Custom.getBoxDecoration(context,color: Colors.white,radius: 10),
+          decoration:
+              Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -45,17 +47,24 @@ class CustomDialogs {
                 ),
               ),
               Visibility(
-                visible: false,//title.isNotEmpty,
+                visible: false, //title.isNotEmpty,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 30),
-                  child: Text(title,style: Theme.of(context).textTheme.headline6,),
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
                 ),
               ),
               Visibility(
                 visible: message.isNotEmpty,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text(message,style: Theme.of(context).textTheme.headline6,textAlign: TextAlign.center,),
+                  child: Text(
+                    message,
+                    style: Theme.of(context).textTheme.headline6,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ],
@@ -81,7 +90,8 @@ class CustomDialogs {
     }
   }
 
-  static inAppRatingDialog(BuildContext context, {required Function onPressed, bool rootNavigator = false}) {
+  static inAppRatingDialog(BuildContext context,
+      {required Function onPressed, bool rootNavigator = false}) {
     double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
@@ -95,10 +105,10 @@ class CustomDialogs {
             style: Theme.of(context).textTheme.headline4,
           ),
           SizedBox(height: 10),
-          Text(
-            Strings().appRatingMessage,
-            style: Theme.of(context).textTheme.bodyText2,
-          ),
+          // Text(
+          //   Strings().appRatingMessage,
+          //   style: Theme.of(context).textTheme.bodyText2,
+          // ),
         ],
       ),
       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -107,8 +117,7 @@ class CustomDialogs {
         TextButton(
           onPressed: () =>
               Navigator.of(context, rootNavigator: rootNavigator).pop(),
-          child:
-              Text(Strings().cancel),
+          child: Text(Strings().cancel),
         ),
         TextButton(
           style: TextButton.styleFrom(
@@ -165,10 +174,10 @@ class CustomDialogs {
       context: context,
       builder: (BuildContext context) {
         return WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-            child: ratingDialog,
+          onWillPop: () async {
+            return false;
+          },
+          child: ratingDialog,
         );
       },
     );
