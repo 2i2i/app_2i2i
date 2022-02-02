@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:flutter/material.dart';
 
-import '../../qr_code/widgets/qr_image.dart';
+import '../../../commons/qr_image.dart';
 
 class QrImagePage extends StatelessWidget {
   final String imageUrl;

@@ -38,27 +38,26 @@ class FAQ extends StatelessWidget {
           expandedTextColor: Theme.of(context).colorScheme.secondary,
 
           children: <Widget>[
+
             Divider(
               thickness: 1.0,
               height: 1.0,
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: Text(
-                  data.description,
-                  textAlign: TextAlign.justify,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2,
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                data.description,
+                textAlign: TextAlign.left,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText2,
               ),
             ),
           ],
-        ));
+        ),
+    );
   }
 }

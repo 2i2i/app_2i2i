@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,8 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                           context: context,
                           builder: (context)=>FittedBox(
                             fit: BoxFit.scaleDown,
-                              child: SizedBox(
+                              child: Container(
+                                decoration: Custom.getBoxDecoration(context,color: Colors.white),
                                 height: 400,
                                   width: 350,
                                   child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),

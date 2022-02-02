@@ -123,9 +123,10 @@ class BidIn extends Equatable {
 
   static List<BidIn> createList(
       List<BidInPublic> publics, List<BidInPrivate> privates) {
-    if (publics.length != privates.length)
-      throw Exception(
-          'BidIn createList publics.length (${publics.length}) != privates.length (${privates.length})');
+    if (publics.length != privates.length) {
+      return [];
+      // throw Exception('BidIn createList publics.length (${publics.length}) != privates.length (${privates.length})');
+    }
 
     List<BidIn> bidIns = [];
     for (int i = 0; i < publics.length; i++) {

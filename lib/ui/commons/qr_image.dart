@@ -25,9 +25,9 @@ class QrWidget extends ConsumerWidget {
     final completer = Completer<ui.Image>();
     String path = 'assets/logo.png';
     var byteData;
-    if(Theme.of(context).brightness == Brightness.dark){
-      path = 'assets/logo_dark.png';
-    }
+    // if(Theme.of(context).brightness == Brightness.dark){
+    //   path = 'assets/logo_dark.png';
+    // }
     byteData = await rootBundle.load(path);
     ui.decodeImageFromList(byteData.buffer.asUint8List(), completer.complete);
     return completer.future;
@@ -49,18 +49,18 @@ class QrWidget extends ConsumerWidget {
           return CustomPaint(
             size: Size.square(size.toDouble()),
             painter: QrPainter(
-              color: lightOnly?Colors.black:Theme.of(context).canvasColor,
+              // color: lightOnly?Colors.black:Theme.of(context).canvasColor,
               data: message,
               version: QrVersions.auto,
               eyeStyle: QrEyeStyle(
                 eyeShape: QrEyeShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
-                color: lightOnly?Colors.black:Theme.of(context).iconTheme.color,
+                color: Colors.black,
               ),
               dataModuleStyle: QrDataModuleStyle(
                 dataModuleShape: QrDataModuleShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
-                color: lightOnly?Colors.black:Theme.of(context).iconTheme.color,
+                color: Colors.black,
               ),
               embeddedImage: (hideLogo??false)?null:snapshot.data,
               embeddedImageStyle: QrEmbeddedImageStyle(

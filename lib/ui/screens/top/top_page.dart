@@ -32,8 +32,8 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SvgPicture.asset(
-                  'assets/icons/hip_logo.svg',
+                Image.asset(
+                  'assets/icons/hip_logo_p.png',
                   height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.height * 0.18,
                 ),
