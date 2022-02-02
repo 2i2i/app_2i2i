@@ -487,8 +487,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
-        hangout.name = userNameEditController.text;
-        hangout.bio = bioEditController.text;
+        hangout.setNameOrBio(
+            name: userNameEditController.text, bio: bioEditController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
             ? Lounge.chrony
@@ -504,8 +504,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             });
         hangout.rule = rule;
       } else {
-        hangout!.name = userNameEditController.text;
-        hangout.bio = bioEditController.text;
+        hangout!.setNameOrBio(
+            name: userNameEditController.text, bio: bioEditController.text);
       }
       myUserPageViewModel?.updateHangout(hangout);
       Navigator.of(context).maybePop();

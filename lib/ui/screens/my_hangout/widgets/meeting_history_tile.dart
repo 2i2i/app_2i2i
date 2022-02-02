@@ -34,7 +34,7 @@ class MeetingHistoryTile extends ConsumerWidget {
     if (hangout?.isInMeeting() ?? false) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = hangout?.name ?? "";
+    String firstNameChar = hangout?.name ?? '';
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }

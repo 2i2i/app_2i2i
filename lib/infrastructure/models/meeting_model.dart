@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -166,6 +168,7 @@ class Meeting extends Equatable {
     required this.start,
     required this.end,
     required this.duration,
+    required this.rule,
     required this.txns,
     required this.status,
     required this.statusHistory,
@@ -207,6 +210,8 @@ class Meeting extends Equatable {
 
   final Lounge lounge;
 
+  final HangOutRule rule;
+
   @override
   List<Object> get props => [id];
 
@@ -217,9 +222,10 @@ class Meeting extends Equatable {
   bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
 
-  double maxDuration() {
-    if (speed.num == 0) return double.infinity;
-    return energy['MAX']! / speed.num;
+  int maxDuration() {
+    if (speed.num == 0) return rule.maxMeetingDuration;
+    final fundedMaxDuration = (energy['MAX']! / speed.num).round();
+    return min(rule.maxMeetingDuration, fundedMaxDuration);
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -273,6 +279,8 @@ class Meeting extends Equatable {
     final Lounge lounge =
         Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
 
+    final HangOutRule rule = HangOutRule.fromMap(data['rule']);
+
     return Meeting(
       id: documentId,
       lounge: lounge,
@@ -294,6 +302,7 @@ class Meeting extends Equatable {
       room: room,
       coinFlowsA: coinFlowsA,
       coinFlowsB: coinFlowsB,
+      rule: rule,
     );
   }
 
@@ -320,7 +329,7 @@ class Meeting extends Equatable {
         'A': null,
         'CREATOR': null,
         'B': null,
-        },
+      },
       start: null,
       end: null,
       duration: null,
@@ -335,6 +344,7 @@ class Meeting extends Equatable {
       room: null,
       coinFlowsA: [],
       coinFlowsB: [],
+      rule: bidIn.public.rule,
     );
   }
 
@@ -360,6 +370,7 @@ class Meeting extends Equatable {
       'coinFlowsA': coinFlowsA,
       'coinFlowsB': coinFlowsB,
       'lounge': lounge.toStringEnum(),
+      'rule': rule.toMap(),
     };
   }
 }

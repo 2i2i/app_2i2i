@@ -54,6 +54,9 @@ class AddBidPageViewModel {
   }) async {
     log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
 
+    if (speed.num < B.rule.minSpeed) return;
+    // throw Exception('speed.num < B.rule.minSpeed');
+
     if (B.blocked.contains(A)) return;
 
     final net = AlgorandNet.testnet;

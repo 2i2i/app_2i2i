@@ -1,5 +1,4 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/qr_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,9 +24,11 @@ class QrCodeWidget extends StatelessWidget {
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: IconButton(onPressed: () {
-                    Navigator.of(context).maybePop();
-                  }, icon: Icon(Icons.close)),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).maybePop();
+                      },
+                      icon: Icon(Icons.close)),
                 ),
               ],
             ),
@@ -41,21 +42,19 @@ class QrCodeWidget extends StatelessWidget {
             Container(
               height: 40,
               decoration: BoxDecoration(
-                  // color: Color(0xffF3F3F7),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                      width: 0.5,
-                      color: Theme.of(context).iconTheme.color ??
-                          Colors.transparent),
+                // color: Color(0xffF3F3F7),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                    width: 0.5,
+                    color: Theme.of(context).iconTheme.color ??
+                        Colors.transparent),
               ),
               alignment: Alignment.center,
               child: Text(
                 message,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      decoration: TextDecoration.underline,
-                  color: Colors.black
-                    ),
+                    decoration: TextDecoration.underline, color: Colors.black),
               ),
             ),
             SizedBox(height: 16),

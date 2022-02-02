@@ -211,6 +211,14 @@ class FirestoreDatabase {
         },
       );
 
+  Future<void> updateUser(Hangout user) =>
+      _service.setData(
+        path: FirestorePath.user(user.id),
+        data: user.toMap(),
+        merge: true,
+      );
+
+
   Future<Hangout?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
         await _service.getData(path: FirestorePath.user(uid));

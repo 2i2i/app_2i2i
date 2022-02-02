@@ -202,9 +202,9 @@ class BidInPublic extends Equatable {
     };
   }
 
-  Future<num> estMaxDuration(
+  Future<int> estMaxDuration(
       BidInPrivate bidInPrivate, AccountService accountService) async {
-    if (bidInPrivate.addrA == null) return double.infinity;
+    if (bidInPrivate.addrA == null) return rule.maxMeetingDuration;
     final balance = await accountService.getBalance(
         address: bidInPrivate.addrA!, assetId: speed.assetId, net: net);
     return (balance!.amount / speed.num).floor();

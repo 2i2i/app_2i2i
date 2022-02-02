@@ -24,7 +24,7 @@ class BidInTile extends StatelessWidget {
     int totalDuration = 0;
     for (int i = 0; i < index; i++) {
       budgetCountInt += bidInList[i].public.energy;
-      int thisBidMaxDuration = hangout.rule.maxMeetingDuration;
+      int thisBidMaxDuration = bidInList[i].public.rule.maxMeetingDuration;
       if (0 < bidInList[i].public.speed.num) {
         final thisBidMaxDurationTmp =
             (bidInList[i].public.energy / bidInList[i].public.speed.num)
@@ -33,6 +33,7 @@ class BidInTile extends StatelessWidget {
       }
       totalDuration += thisBidMaxDuration;
     }
+    budgetCountInt += bidInList[index].public.energy;
     final budgetCount = budgetCountInt / 1000000;
 
     if (hangout.status == 'OFFLINE') {
