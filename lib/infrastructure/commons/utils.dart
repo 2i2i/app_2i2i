@@ -151,21 +151,11 @@ String prettyDuration(Duration duration) {
   return components.join();
 }
 
-bool haveToWait(var provider){
-  if(provider is AsyncError){
-
 num getMaxDuration({required num budget, required num speed}) {
   if (speed <= 0) {
     return double.infinity;
   }
   return (budget / speed).floor();
-}
-
-String getDuration(Duration duration) {
-  String twoDigits(int n) => n.toString().padLeft(2, "0");
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-  // String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
 }
 
 bool haveToWait(var provider) {
