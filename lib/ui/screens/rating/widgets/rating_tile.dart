@@ -58,8 +58,11 @@ class RatingTile extends StatelessWidget {
                           },
                         ),
                       ),
-                      SizedBox(width: 6),
-                      Text('24 Dec 2021', style: Theme.of(context).textTheme.caption)//todo created date time
+                      // SizedBox(width: 6),
+                      // Text('24 Dec 2021',
+                      //     style: Theme.of(context)
+                      //         .textTheme
+                      //         .caption) //todo created date time
                     ],
                   ),
                   subtitle: Padding(

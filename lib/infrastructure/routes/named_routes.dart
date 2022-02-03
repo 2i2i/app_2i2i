@@ -287,16 +287,17 @@ class NamedRoutes {
   );
 
   static Widget getView(Widget page) {
-
     Widget widget = AuthWidget(
       homePageBuilder: (context) => Scaffold(
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text(AlgorandNet.testnet.name),
-          titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(
-            color: Theme.of(context).cardColor
-          ),
+          title: Text(AlgorandNet.testnet.name +
+              ' - on some devices video is not working - fixing...'),
+          titleTextStyle: Theme.of(context)
+              .textTheme
+              .bodyText2
+              ?.copyWith(color: Theme.of(context).cardColor),
           centerTitle: true,
           backgroundColor: Colors.green,
         ),
