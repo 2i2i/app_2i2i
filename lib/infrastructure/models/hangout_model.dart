@@ -134,12 +134,14 @@ class Hangout extends Equatable {
     _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
 
+  // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
+  // (?<=#)[a-zA-Z0-9]+ -> (?:#)[a-zA-Z0-9]+
   static List<String> tagsFromBio(String bio) {
-    RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
+    RegExp r = RegExp(r"(?:#)[a-zA-Z0-9]+");
     final matches = r.allMatches(bio).toList();
     final List<String> tags = [];
     for (final m in matches) {
-      final t = bio.substring(m.start, m.end).toLowerCase();
+      final t = bio.substring(m.start + 1, m.end).toLowerCase();
       tags.add(t);
     }
     return tags;
