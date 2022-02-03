@@ -68,8 +68,22 @@ class Signaling {
     'iceServers': [
       {
         'urls': [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302'
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
+          "stun:to-turn2.xirsys.com"
+        ]
+      },
+      {
+        'username':
+            "FC8kkN9vySomIqAm3MJvZx-hcrOQA1jiBquXw0MZy7HF5RjTZigp8TkX5bHxm6SxAAAAAGH8T0MyaTJp",
+        'credential': "f826b9aa-853b-11ec-8e4a-0242ac140004",
+        'urls': [
+          "turn:to-turn2.xirsys.com:80?transport=udp",
+          "turn:to-turn2.xirsys.com:3478?transport=udp",
+          "turn:to-turn2.xirsys.com:80?transport=tcp",
+          "turn:to-turn2.xirsys.com:3478?transport=tcp",
+          "turns:to-turn2.xirsys.com:443?transport=tcp",
+          "turns:to-turn2.xirsys.com:5349?transport=tcp"
         ]
       }
     ]

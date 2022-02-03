@@ -81,7 +81,7 @@ class QrCodeWidget extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       Share.share(
-                          'Your friend and invite for join 2i2i\n$message');
+                          'Come and hang out with me on 2i2i:\n$message');
                       Navigator.of(context).maybePop();
                     },
                     child: Text('Share'),
