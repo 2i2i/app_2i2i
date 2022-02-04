@@ -293,7 +293,7 @@ class NamedRoutes {
           leading: Container(),
           toolbarHeight: 20,
           title: Text(AlgorandNet.testnet.name +
-              ' - on some devices video is not working - fixing...'),
+              ' - not working on iOS or Safari'),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2
