@@ -1,10 +1,10 @@
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/ui/screens/web_rtc/call_page_websockets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import '../ringing/ringing_page.dart';
-import '../web_rtc/call_page.dart';
 
 class LockedUserPage extends ConsumerStatefulWidget {
   final Function? onHangPhone;
@@ -47,18 +47,19 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
       children: [
         Visibility(
           visible: showCallPage,
-          child: CallPage(
-              onHangPhone: (uid, meetingId) {
-                widget.onHangPhone?.call(uid, meetingId);
-              },
-              meeting: lockedUserViewModel.meeting,
-              meetingChanger: meetingChanger,
-              hangoutChanger: hangoutModelChanger,
-              hangout: lockedUserViewModel.hangout),
+          child: CallPageWebsockets(
+            meeting: lockedUserViewModel.meeting,
+            meetingChanger: meetingChanger,
+            hangoutChanger: hangoutModelChanger,
+            hangout: lockedUserViewModel.hangout,
+            onHangPhone: (uid, meetingId) {
+              widget.onHangPhone?.call(uid, meetingId);
+            },
+          ),
         ),
         Visibility(
-            visible: showRingingPage,
-            child: RingingPage(),
+          visible: showRingingPage,
+          child: RingingPage(),
         ),
         Visibility(
           visible: showWaitPage,

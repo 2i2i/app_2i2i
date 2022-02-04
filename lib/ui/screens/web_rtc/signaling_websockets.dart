@@ -34,11 +34,11 @@ class Session {
 }
 
 class SignalingWebSockets {
-  SignalingWebSockets(this._host);
+  SignalingWebSockets(this._host, this._selfId);
 
   JsonEncoder _encoder = JsonEncoder();
   JsonDecoder _decoder = JsonDecoder();
-  String _selfId = randomNumeric(6);
+  final String _selfId;// = randomNumeric(6);
   SimpleWebSocket? _socket;
   var _host;
   var _port = 8086;
@@ -100,10 +100,17 @@ class SignalingWebSockets {
     }
   }
 
-  void muteMic() {
+  void muteAudio() {
     if (_localStream != null) {
       bool enabled = _localStream!.getAudioTracks()[0].enabled;
       _localStream!.getAudioTracks()[0].enabled = !enabled;
+    }
+  }
+
+  void muteVideo() {
+    if (_localStream != null) {
+      bool enabled = _localStream!.getVideoTracks()[0].enabled;
+      _localStream!.getVideoTracks()[0].enabled = !enabled;
     }
   }
 
