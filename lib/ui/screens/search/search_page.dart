@@ -18,8 +18,8 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   void initState() {
-    // initMethod();
     super.initState();
+    // initMethod();
   }
 
   void initMethod() {

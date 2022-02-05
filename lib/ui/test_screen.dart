@@ -16,11 +16,11 @@ class _TestScreenState extends State<TestScreen> {
   int val = 0;
   @override
   void initState() {
+    super.initState();
     Timer.periodic(Duration(seconds: 1), (timer) {
       val = timer.tick;
       setState(() {});
     });
-    super.initState();
   }
 
   @override

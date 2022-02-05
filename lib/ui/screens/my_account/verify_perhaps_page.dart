@@ -26,8 +26,8 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
 
   @override
   void initState() {
-    generateFive();
     super.initState();
+    generateFive();
   }
 
   @override

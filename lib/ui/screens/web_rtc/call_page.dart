@@ -125,9 +125,9 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
+    super.initState();
     _init();
     amA = widget.meeting.A == widget.hangout.id;
-    super.initState();
   }
 
   @override

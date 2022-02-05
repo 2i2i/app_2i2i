@@ -83,11 +83,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   @override
   void initState() {
+    super.initState();
     ref.read(myAccountPageViewModelProvider).initMethod();
     speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
     speedController.text = speed.num.toString();
     updateAccountBalance();
-    super.initState();
   }
 
   void updateAccountBalance() {

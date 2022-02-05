@@ -43,10 +43,10 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       setData();
     });
-    super.initState();
   }
 
   Map<Lounge, int> findImportances(double ratio, Lounge lounge) {

@@ -36,8 +36,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   void initState() {
-    start();
     super.initState();
+    start();
   }
 
   @override
