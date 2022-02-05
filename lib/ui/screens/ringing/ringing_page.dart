@@ -203,7 +203,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${callerRating * 5.0}',
+                            '${(callerRating * 5.0).toStringAsFixed(1)}',
                             style: Theme.of(context)
                                 .textTheme
                                 .caption
