@@ -522,6 +522,7 @@ class SignalingWebSockets {
       await _localStream!.dispose();
       _localStream = null;
     }
+
     _sessions.forEach((key, sess) async {
       await sess.pc?.close();
       await sess.dc?.close();

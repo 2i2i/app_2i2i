@@ -32,8 +32,8 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
 
   @override
   void dispose() {
-    super.dispose();
     _tabController!.dispose();
+    super.dispose();
   }
 
   @override

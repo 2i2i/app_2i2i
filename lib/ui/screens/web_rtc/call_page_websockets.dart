@@ -104,21 +104,22 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     outnit();
+    super.dispose();
   }
 
-  // @override
-  // deactivate() {
-  //   super.deactivate();
-  //   _signaling?.close();
-  //   _localRenderer.dispose();
-  //   _remoteRenderer.dispose();
+  @override
+  deactivate() {
+    outnit();
+    super.deactivate();
+    // _signaling?.close();
+    // _localRenderer.dispose();
+    // _remoteRenderer.dispose();
 
-  //   budgetTimer?.cancel();
-  //   progressTimer?.cancel();
-  //   widget.onHangPhone(remoteId, widget.meeting.id);
-  // }
+    // budgetTimer?.cancel();
+    // progressTimer?.cancel();
+    // widget.onHangPhone(remoteId, widget.meeting.id);
+  }
 
   void _connect() {
     _signaling ??= SignalingWebSockets(widget.host, localId)..connect();

@@ -42,8 +42,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Future<void> dispose() async {
-    super.dispose();
     finish();
+    super.dispose();
   }
 
   void setTimer(RingingPageViewModel model) {
