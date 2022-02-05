@@ -4,18 +4,21 @@ import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../../infrastructure/data_access_layer/services/logging.dart';
-import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/web_rtc_provider/call_screen_provider.dart';
 import 'widgets/circle_button.dart';
-
 class CallPage extends ConsumerStatefulWidget {
   final Meeting meeting;
   final Hangout hangout;
@@ -44,6 +47,7 @@ class _CallPageState extends ConsumerState<CallPage>
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   TextEditingController textEditingController = TextEditingController(text: '');
+  ScreenshotController screenshotController = ScreenshotController();
 
   Timer? budgetTimer;
   Timer? progressTimer;
@@ -177,7 +181,8 @@ class _CallPageState extends ConsumerState<CallPage>
     return Scaffold(
       key: _scaffoldKey,
       body: OrientationBuilder(builder: (context, orientation) {
-        return Container(
+        return Screenshot(
+          controller: screenshotController,
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
@@ -379,6 +384,29 @@ class _CallPageState extends ConsumerState<CallPage>
                               : Icons.videocam_off_rounded,
                           onTap: () => callScreenModel!
                               .muteVideo(signaling: signaling!)),
+                      CircleButton(
+                          icon: Icons.screenshot_rounded,
+                          onTap: () {
+                            screenshotController
+                                .capture(delay: Duration(milliseconds: 10))
+                                .then((capturedImage) async {
+                              if (capturedImage != null) {
+                                if (!kIsWeb) {
+                                  CustomDialogs.showToastMessage(
+                                      context, 'Feature is on working');
+                                  return;
+                                }
+                                MimeType type = MimeType.JPEG;
+                                String path = await FileSaver.instance.saveFile(
+                                    "File", capturedImage, "png",
+                                    mimeType: type);
+                                CustomDialogs.showToastMessage(
+                                    context, 'File Saved In Downloads');
+                              }
+                            }).catchError((onError) {
+                              print(onError);
+                            });
+                          }),
                       // CircleButton(
                       //     icon: Icons.cameraswitch_rounded,
                       //     onTap: () => callScreenModel!.cameraSwitch(
