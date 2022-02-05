@@ -170,12 +170,15 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     }
   }
 
-  _switchCamera() {
-    _signaling?.switchCamera();
-  }
+  // _switchCamera() {
+  //   _signaling?.switchCamera();
+  // }
 
   _muteAudio() {
     _signaling?.muteAudio();
+    setState(() {
+      isAudioEnabled = false;
+    });
   }
 
   _muteVideo() {
@@ -273,6 +276,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   DateTime? countDownTimerDate;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isAudioEnabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -479,28 +484,29 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                             _hangUp(reason);
                           }),
                       CircleButton(
-                        icon: callScreenModel?.isAudioEnabled ?? false
+                        // icon: callScreenModel?.isAudioEnabled ?? false
+                        icon: isAudioEnabled
                             ? Icons.mic_rounded
                             : Icons.mic_off_rounded,
                         onTap: _muteAudio,
-                      // () => callScreenModel!.muteAudio(
-                      //     signaling: signaling!,
-                      //     localRenderer: _localRenderer)),
+                        // () => callScreenModel!.muteAudio(
+                        //     signaling: signaling!,
+                        //     localRenderer: _localRenderer)),
                       ),
-                      CircleButton(
-                          icon: callScreenModel?.isVideoEnabled ?? false
-                              ? Icons.videocam_rounded
-                              : Icons.videocam_off_rounded,
-                          onTap: _muteVideo,
-                      // () => callScreenModel!
-                      //     .muteVideo(signaling: signaling!)),
-                      ),
-                      CircleButton(
-                          icon: Icons.cameraswitch_rounded,
-                          onTap: _switchCamera,
-                          // () => callScreenModel!.cameraSwitch(
-                          //     context: context, signaling: signaling!)),
-                      ),
+                      // CircleButton(
+                      //     icon: callScreenModel?.isVideoEnabled ?? false
+                      //         ? Icons.videocam_rounded
+                      //         : Icons.videocam_off_rounded,
+                      //     onTap: _muteVideo,
+                      // // () => callScreenModel!
+                      // //     .muteVideo(signaling: signaling!)),
+                      // ),
+                      // CircleButton(
+                      //     icon: Icons.cameraswitch_rounded,
+                      //     onTap: _switchCamera,
+                      //     // () => callScreenModel!.cameraSwitch(
+                      //     //     context: context, signaling: signaling!)),
+                      // ),
                     ],
                   ),
                 ),
