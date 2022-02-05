@@ -67,12 +67,36 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     await _remoteRenderer.initialize();
   }
 
+  Future disposeRenderers() async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject = null;
+    }
+
+    if (_remoteRenderer.srcObject != null) {
+      _remoteRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _remoteRenderer.srcObject!.dispose();
+      _remoteRenderer.srcObject = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    disposeRenderers();
+  }
+
   @override
   deactivate() {
     super.deactivate();
     _signaling?.close();
-    _localRenderer.dispose();
-    _remoteRenderer.dispose();
+    disposeRenderers();
 
     budgetTimer?.cancel();
     progressTimer?.cancel();
@@ -163,9 +187,10 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     }
   }
 
-  _hangUp(MeetingStatus reason) {
+  _hangUp(MeetingStatus reason) async {
     if (_session != null) {
       _signaling?.bye(_session!.sid);
+      await disposeRenderers();
       return widget.meetingChanger.endMeeting(widget.meeting, reason);
     }
   }
