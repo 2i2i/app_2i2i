@@ -40,11 +40,11 @@ class CallPageWebsockets extends ConsumerStatefulWidget {
 
 class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   SignalingWebSockets? _signaling;
-  List<dynamic> _peers = [];
+  // List<dynamic> _peers = [];
   String? _selfId;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-  bool _inCalling = false;
+  // bool _inCalling = false;
   Session? _session;
 
   // ignore: unused_element
@@ -97,7 +97,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
         case CallState.CallStateNew:
           setState(() {
             _session = session;
-            _inCalling = true;
+            // _inCalling = true;
           });
 
           log(K +
@@ -111,7 +111,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
           setState(() {
             _localRenderer.srcObject = null;
             _remoteRenderer.srcObject = null;
-            _inCalling = false;
+            // _inCalling = false;
             _session = null;
           });
           break;
@@ -126,7 +126,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       log(K + '_signaling?.onPeersUpdate - event[peers]=${event['peers']}');
       setState(() {
         _selfId = event['self'];
-        _peers = event['peers'];
+        // _peers = event['peers'];
       });
 
       if (amA) _invitePeer(remoteId, false);

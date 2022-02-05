@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-import 'utils/random_string.dart';
+// import 'utils/random_string.dart';
 
 import './utils/device_info.dart'
     if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart'
     if (dart.library.js) './utils/websocket_web.dart';
-import './utils/turn.dart' if (dart.library.js) './utils/turn_web.dart';
+// import './utils/turn.dart' if (dart.library.js) './utils/turn_web.dart';
 
 enum SignalingState {
   ConnectionOpen,
@@ -38,11 +38,11 @@ class SignalingWebSockets {
 
   JsonEncoder _encoder = JsonEncoder();
   JsonDecoder _decoder = JsonDecoder();
-  final String _selfId;// = randomNumeric(6);
+  final String _selfId; // = randomNumeric(6);
   SimpleWebSocket? _socket;
   var _host;
   var _port = 8086;
-  var _turnCredential;
+  // var _turnCredential;
   Map<String, Session> _sessions = {};
   MediaStream? _localStream;
   List<MediaStream> _remoteStreams = <MediaStream>[];
@@ -62,17 +62,41 @@ class SignalingWebSockets {
 
   Map<String, dynamic> _iceServers = {
     'iceServers': [
-      {'url': 'stun:stun.l.google.com:19302'},
-      /*
-       * turn server configuration example.
       {
-        'url': 'turn:123.45.67.89:3478',
-        'username': 'change_to_real_user',
-        'credential': 'change_to_real_secret'
+        'urls': [
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
+          "stun:to-turn2.xirsys.com"
+        ]
       },
-      */
+      {
+        'username':
+            "FC8kkN9vySomIqAm3MJvZx-hcrOQA1jiBquXw0MZy7HF5RjTZigp8TkX5bHxm6SxAAAAAGH8T0MyaTJp",
+        'credential': "f826b9aa-853b-11ec-8e4a-0242ac140004",
+        'urls': [
+          "turn:to-turn2.xirsys.com:80?transport=udp",
+          "turn:to-turn2.xirsys.com:3478?transport=udp",
+          "turn:to-turn2.xirsys.com:80?transport=tcp",
+          "turn:to-turn2.xirsys.com:3478?transport=tcp",
+          "turns:to-turn2.xirsys.com:443?transport=tcp",
+          "turns:to-turn2.xirsys.com:5349?transport=tcp"
+        ]
+      }
     ]
   };
+  // Map<String, dynamic> _iceServers = {
+  //   'iceServers': [
+  //     {'url': 'stun:stun.l.google.com:19302'},
+  //     /*
+  //      * turn server configuration example.
+  //     {
+  //       'url': 'turn:123.45.67.89:3478',
+  //       'username': 'change_to_real_user',
+  //       'credential': 'change_to_real_secret'
+  //     },
+  //     */
+  //   ]
+  // };
 
   final Map<String, dynamic> _config = {
     'mandatory': {},
@@ -244,27 +268,27 @@ class SignalingWebSockets {
 
     print('connect to $url');
 
-    if (_turnCredential == null) {
-      try {
-        _turnCredential = await getTurnCredential(_host, _port);
-        /*{
-            "username": "1584195784:mbzrxpgjys",
-            "password": "isyl6FF6nqMTB9/ig5MrMRUXqZg",
-            "ttl": 86400,
-            "uris": ["turn:127.0.0.1:19302?transport=udp"]
-          }
-        */
-        _iceServers = {
-          'iceServers': [
-            {
-              'urls': _turnCredential['uris'][0],
-              'username': _turnCredential['username'],
-              'credential': _turnCredential['password']
-            },
-          ]
-        };
-      } catch (e) {}
-    }
+    // if (_turnCredential == null) {
+    //   try {
+    //     _turnCredential = await getTurnCredential(_host, _port);
+    //     /*{
+    //         "username": "1584195784:mbzrxpgjys",
+    //         "password": "isyl6FF6nqMTB9/ig5MrMRUXqZg",
+    //         "ttl": 86400,
+    //         "uris": ["turn:127.0.0.1:19302?transport=udp"]
+    //       }
+    //     */
+    //     _iceServers = {
+    //       'iceServers': [
+    //         {
+    //           'urls': _turnCredential['uris'][0],
+    //           'username': _turnCredential['username'],
+    //           'credential': _turnCredential['password']
+    //         },
+    //       ]
+    //     };
+    //   } catch (e) {}
+    // }
 
     _socket?.onOpen = () {
       print('onOpen');
@@ -393,10 +417,10 @@ class SignalingWebSockets {
       */
     }
     pc.onIceCandidate = (candidate) async {
-      if (candidate == null) {
-        print('onIceCandidate: complete!');
-        return;
-      }
+      // if (candidate == null) {
+      //   print('onIceCandidate: complete!');
+      //   return;
+      // }
       // This delay is needed to allow enough time to try an ICE candidate
       // before skipping to the next one. 1 second is just an heuristic value
       // and should be thoroughly tested in your own environment.

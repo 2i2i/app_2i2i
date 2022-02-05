@@ -6,6 +6,7 @@ const String H = 'H - ';
 const String I = 'I - ';
 const String J = 'J - ';
 const String E = 'ERROR - ';
+const String K = 'K - ';
 void log(String message) {
   // if (!message.startsWith(E)) return;
   final now = DateTime.now().toUtc();

@@ -438,6 +438,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               if (num < widget.B.rule.minSpeed) {
                                 return 'Min support is ${widget.B.rule.minSpeed}';
                               }
+                              return null;
                             },
                           ),
                         );
