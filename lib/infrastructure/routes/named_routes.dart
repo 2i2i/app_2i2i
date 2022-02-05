@@ -292,7 +292,7 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text(AlgorandNet.testnet.name +
+          title: Text('v1 - ' + AlgorandNet.testnet.name +
               ' - Safari might not show mirror'),
           titleTextStyle: Theme.of(context)
               .textTheme
