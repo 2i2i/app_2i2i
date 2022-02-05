@@ -53,6 +53,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                   },
                   items: [
                     BottomNavigationBarItem(
+                      tooltip: '',
                       label: Strings().home,
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -62,6 +63,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       icon: SvgPicture.asset('assets/icons/house.svg'),
                     ),
                     BottomNavigationBarItem(
+                      tooltip: '',
                       label: Strings().profile,
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -71,6 +73,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       icon: ProfileIcon(),
                     ),
                     BottomNavigationBarItem(
+                      tooltip: '',
                       label: Strings().bidOut,
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -83,6 +86,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       ),
                     ),
                     BottomNavigationBarItem(
+                      tooltip: '',
                       label: Strings().favorites,
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -95,6 +99,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       ),
                     ),
                     BottomNavigationBarItem(
+                      tooltip: '',
                       label: Strings().settings,
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
