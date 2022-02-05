@@ -86,6 +86,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
 
   @override
   void initState() {
+    super.initState();
+
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (timer == null) {
         timer = Timer.periodic(Duration(seconds: 10), (timer) async {
@@ -96,8 +98,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
     });
-
-    super.initState();
   }
 
   @override

@@ -18,10 +18,10 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
 
   @override
   void initState() {
+    super.initState();
     // Future.delayed(Duration(seconds: 2)).then((value) {
       ref.read(myAccountPageViewModelProvider).initMethod();
     // });
-    super.initState();
   }
   ValueNotifier<bool> showBottomSheet = ValueNotifier(false);
   @override

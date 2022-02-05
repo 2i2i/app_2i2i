@@ -26,14 +26,14 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    super.dispose();
     _tabController!.dispose();
+    super.dispose();
   }
 
   @override

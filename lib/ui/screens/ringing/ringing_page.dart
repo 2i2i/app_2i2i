@@ -36,14 +36,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   void initState() {
-    start();
     super.initState();
+    start();
   }
 
   @override
   Future<void> dispose() async {
-    super.dispose();
     finish();
+    super.dispose();
   }
 
   void setTimer(RingingPageViewModel model) {
@@ -203,7 +203,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${callerRating * 5.0}',
+                            '${(callerRating * 5.0).toStringAsFixed(1)}',
                             style: Theme.of(context)
                                 .textTheme
                                 .caption

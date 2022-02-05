@@ -125,15 +125,15 @@ class _CallPageState extends ConsumerState<CallPage>
 
   @override
   void initState() {
+    super.initState();
     _init();
     amA = widget.meeting.A == widget.hangout.id;
-    super.initState();
   }
 
   @override
   void dispose() async {
-    super.dispose();
     await disposeInit();
+    super.dispose();
 
     // final otherUid = amA ? widget.meeting.B : widget.meeting.A;
     // await widget.onHangPhone(otherUid, widget.meeting.id);
