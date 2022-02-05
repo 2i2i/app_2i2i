@@ -162,4 +162,6 @@ class Strings {
   String history = 'History';
 
   String friendList = 'Friend list';
+
+  String hostMightNotGetCoins = 'Host might not get coins';
 }

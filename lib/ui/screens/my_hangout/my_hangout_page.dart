@@ -20,20 +20,17 @@ class MyHangoutPage extends ConsumerStatefulWidget {
   _MyHangoutPageState createState() => _MyHangoutPageState();
 }
 
-class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
-    with SingleTickerProviderStateMixin {
-  TabController? _tabController;
+class _MyHangoutPageState extends ConsumerState<MyHangoutPage> {
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _tabController!.dispose();
   }
 
   @override
@@ -89,17 +86,14 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
-              child: UserBidInsList(
-                myHangoutPageViewModel: myHangoutPageViewModel,
-                titleWidget: Text(
-                  'Bids In',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                noBidsText: Strings().noBidFound,
-                onTap: (x) => {}, //myUserPageViewModel.acceptBid,
+            child: UserBidInsList(
+              myHangoutPageViewModel: myHangoutPageViewModel,
+              titleWidget: Text(
+                'Bids In',
+                style: Theme.of(context).textTheme.headline6,
               ),
+              noBidsText: Strings().noBidFound,
+              onTap: (x) => {}, //myUserPageViewModel.acceptBid,
             ),
           ),
         ],

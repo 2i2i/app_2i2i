@@ -6,9 +6,11 @@ import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
@@ -33,7 +35,9 @@ class UserBidInsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers = ref
         .watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout.id));
-    if (bidInsWithUsers == null) return WaitPage();
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    if (bidInsWithUsers == null || haveToWait(myAccountPageViewModel))
+      return WaitPage();
 
     // store for notification
     markAsRead(bidInsWithUsers);
@@ -46,9 +50,14 @@ class UserBidInsList extends ConsumerWidget {
             if (hangout == null) {
               return;
             }
-
-            final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIn);
-            if (acceptedBid) break;
+            //todo what to do ?
+            // if ((myAccountPageViewModel.accounts?.length ?? 0) > 0 && (bidIn.public.speed.num > 100000)) {
+              final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIn);
+              // if (acceptedBid) break;
+            // } else {
+            //   CustomDialogs.showToastMessage(context, Strings().hostMightNotGetCoins);
+            //   return;
+            // }
           }
         },
         child: Container(
@@ -89,7 +98,8 @@ class UserBidInsList extends ConsumerWidget {
         //primary: false,
         //physics: NeverScrollableScrollPhysics(),
         itemCount: bidInsWithUsers.length,
-        padding: const EdgeInsets.only(top: 10, bottom: 80),
+        padding:
+            const EdgeInsets.only(top: 10, bottom: 80, left: 18, right: 18),
         itemBuilder: (_, ix) {
           return BidInTile(
             bidInList: bidInsWithUsers,
