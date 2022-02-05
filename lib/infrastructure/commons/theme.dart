@@ -193,6 +193,7 @@ class AppTheme{
       scaffoldBackgroundColor: primaryDarkColor,
       iconTheme: IconThemeData(color: primaryColor),
       cardColor: cardDarkColor,
+      shadowColor: fillColor,
 
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(

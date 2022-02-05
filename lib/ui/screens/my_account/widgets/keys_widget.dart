@@ -2,6 +2,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
@@ -15,7 +16,7 @@ class KeysWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Theme.of(context).primaryColorLight,
+      backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(14.0))),
@@ -144,17 +145,36 @@ class KeysWidget extends StatelessWidget {
                     }),
                   ),
                 ),
-                SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () {
-                    if(perhaps.isNotEmpty) {
-                      Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                      CustomDialogs.showToastMessage(context, Strings().copyMessage);
-                    }
-                      Navigator.of(context,rootNavigator: true).pop();
-                  },
-                  child: Text('Copy and Done'),
-                  style: ElevatedButton.styleFrom(primary: Theme.of(context).shadowColor),
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        child: Text(Strings().close),
+                        style: ElevatedButton.styleFrom(
+                            primary: AppTheme().redColor),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (perhaps.isNotEmpty) {
+                            Clipboard.setData(
+                                ClipboardData(text: perhaps.join(' ')));
+                            CustomDialogs.showToastMessage(
+                                context, Strings().copyMessage);
+                          }
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text('Copy'),
+                        style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).shadowColor),
+                      ),
+                    ),
+                  ],
                 )
               ],
             );
