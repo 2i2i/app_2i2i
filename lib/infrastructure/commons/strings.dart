@@ -62,6 +62,7 @@ class Strings {
   String ok = 'OK';
   String talk = 'Talk';
   String cancel = 'Cancel';
+  String close = 'Close';
   String copyMessage = 'Copied to Clipboard';
   String userBusyMessage = 'User is Offline or Busy..';
 
