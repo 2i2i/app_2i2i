@@ -67,7 +67,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     await _remoteRenderer.initialize();
   }
 
-  Future disposeRenderers() async {
+  Future outnit() async {
     if (_localRenderer.srcObject != null) {
       _localRenderer.srcObject!
           .getTracks()
@@ -75,6 +75,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       await _localRenderer.srcObject!.dispose();
       _localRenderer.srcObject = null;
     }
+    _localRenderer.dispose();
 
     if (_remoteRenderer.srcObject != null) {
       _remoteRenderer.srcObject!
@@ -83,25 +84,36 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       await _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
+    _remoteRenderer.dispose();
+
+    _signaling?.close();
+    budgetTimer?.cancel();
+    progressTimer?.cancel();
+
+    // _inCalling = false;
+    _session = null;
+
+    final otherUid = amA ? widget.meeting.B : widget.meeting.A;
+    widget.onHangPhone(otherUid, widget.meeting.id);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    disposeRenderers();
+    outnit();
   }
 
-  @override
-  deactivate() {
-    super.deactivate();
-    _signaling?.close();
-    disposeRenderers();
+  // @override
+  // deactivate() {
+  //   super.deactivate();
+  //   _signaling?.close();
+  //   outnit();
 
-    budgetTimer?.cancel();
-    progressTimer?.cancel();
-    widget.onHangPhone(remoteId, widget.meeting.id);
-  }
+  //   budgetTimer?.cancel();
+  //   progressTimer?.cancel();
+  //   widget.onHangPhone(remoteId, widget.meeting.id);
+  // }
 
   void _connect() {
     _signaling ??= SignalingWebSockets(widget.host, localId)..connect();
@@ -132,12 +144,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          setState(() {
-            _localRenderer.srcObject = null;
-            _remoteRenderer.srcObject = null;
-            // _inCalling = false;
-            _session = null;
-          });
+          setState(() => outnit());
           break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
@@ -188,11 +195,15 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   _hangUp(MeetingStatus reason) async {
+    // if (budgetTimer?.isActive ?? false) {
+    //   budgetTimer?.cancel();
+    // }
+
     if (_session != null) {
       _signaling?.bye(_session!.sid);
-      await disposeRenderers();
-      return widget.meetingChanger.endMeeting(widget.meeting, reason);
     }
+    await widget.meetingChanger.endMeeting(widget.meeting, reason);
+    return outnit();
   }
 
   // _switchCamera() {
@@ -206,9 +217,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     });
   }
 
-  _muteVideo() {
-    _signaling?.muteVideo();
-  }
+  // _muteVideo() {
+  //   _signaling?.muteVideo();
+  // }
 
   // _buildRow(context, peer) {
   //   var self = (peer['id'] == _selfId);
@@ -497,16 +508,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                           iconColor: Colors.white,
                           backgroundColor: AppTheme().red,
                           onTap: () {
-                            if (budgetTimer?.isActive ?? false) {
-                              budgetTimer?.cancel();
-                            }
                             final reason =
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
                             // await signaling?.hangUp(reason: reason);
 
                             // await disposeInit();
 
-                            _hangUp(reason);
+                            return _hangUp(reason);
                           }),
                       CircleButton(
                         // icon: callScreenModel?.isAudioEnabled ?? false
