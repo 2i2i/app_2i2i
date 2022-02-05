@@ -57,6 +57,7 @@ class SignalingWebSockets {
       onDataChannelMessage;
   Function(Session session, RTCDataChannel dc)? onDataChannel;
 
+
   String get sdpSemantics =>
       WebRTC.platformIsWindows ? 'plan-b' : 'unified-plan';
 

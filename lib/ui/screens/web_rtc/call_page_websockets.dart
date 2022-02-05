@@ -67,17 +67,58 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     await _remoteRenderer.initialize();
   }
 
-  @override
-  deactivate() {
-    super.deactivate();
-    _signaling?.close();
+  Future outnit({MeetingStatus? endReason}) async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject = null;
+    }
     _localRenderer.dispose();
+
+    if (_remoteRenderer.srcObject != null) {
+      _remoteRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      await _remoteRenderer.srcObject!.dispose();
+      _remoteRenderer.srcObject = null;
+    }
     _remoteRenderer.dispose();
 
+    setState(() {});
+
+    _signaling?.close();
     budgetTimer?.cancel();
     progressTimer?.cancel();
+
+    // _inCalling = false;
+    _session = null;
+
+    if (endReason is MeetingStatus)
+      await widget.meetingChanger.endMeeting(widget.meeting, endReason);
+
     widget.onHangPhone(remoteId, widget.meeting.id);
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    outnit();
+  }
+
+  // @override
+  // deactivate() {
+  //   super.deactivate();
+  //   _signaling?.close();
+  //   _localRenderer.dispose();
+  //   _remoteRenderer.dispose();
+
+  //   budgetTimer?.cancel();
+  //   progressTimer?.cancel();
+  //   widget.onHangPhone(remoteId, widget.meeting.id);
+  // }
 
   void _connect() {
     _signaling ??= SignalingWebSockets(widget.host, localId)..connect();
@@ -108,12 +149,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          setState(() {
-            _localRenderer.srcObject = null;
-            _remoteRenderer.srcObject = null;
-            // _inCalling = false;
-            _session = null;
-          });
+          setState(() => outnit());
+          // setState(() {
+          //   _localRenderer.srcObject = null;
+          //   _remoteRenderer.srcObject = null;
+          //   // _inCalling = false;
+          //   _session = null;
+          // });
           break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
@@ -163,11 +205,16 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     }
   }
 
-  _hangUp(MeetingStatus reason) {
+  _hangUp(MeetingStatus reason) async {
+    // if (budgetTimer?.isActive ?? false) {
+    //   budgetTimer?.cancel();
+    // }
+
     if (_session != null) {
       _signaling?.bye(_session!.sid);
-      return widget.meetingChanger.endMeeting(widget.meeting, reason);
     }
+
+    return outnit(endReason: reason);
   }
 
   // _switchCamera() {
