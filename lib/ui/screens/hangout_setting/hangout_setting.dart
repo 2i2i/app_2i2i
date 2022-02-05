@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 
 class HangoutSetting extends ConsumerStatefulWidget {
@@ -197,6 +198,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               controller: userNameEditController,
               textInputAction: TextInputAction.next,
               autofocus: false,
+              style: TextStyle(
+                color: AppTheme().cardDarkColor
+              ),
               onChanged: (value) {
                 imageUrl = value;
                 setState(() {});
@@ -226,6 +230,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
               maxLines: 4,
+              style: TextStyle(
+                  color: AppTheme().cardDarkColor
+              ),
               decoration: InputDecoration(
                 filled: true,
                 // fillColor: Theme.of(context).primaryColorLight,
@@ -250,6 +257,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                     controller: speedEditController,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
+                    style: TextStyle(
+                        color: AppTheme().cardDarkColor
+                    ),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     autofocus: false,
                     validator: (value) {
@@ -286,6 +296,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               controller: hourEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              style: TextStyle(
+                                  color: AppTheme().cardDarkColor
+                              ),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -319,6 +332,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               controller: minuteEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              style: TextStyle(
+                                  color: AppTheme().cardDarkColor
+                              ),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -349,6 +365,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                             child: TextFormField(
                               textAlign: TextAlign.center,
                               controller: secondEditController,
+                              style: TextStyle(
+                                  color: AppTheme().cardDarkColor
+                              ),
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               inputFormatters: [

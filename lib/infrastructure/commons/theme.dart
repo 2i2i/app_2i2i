@@ -238,9 +238,10 @@ class AppTheme{
       ),
 
       inputDecorationTheme: InputDecorationTheme(
-        fillColor: cardDarkColor,
+        fillColor: shaDowColor,
         iconColor: fillColor,
-        labelStyle: TextStyle(color: secondaryColor),
+        labelStyle: TextStyle(color: primaryDarkColor),
+        hintStyle: TextStyle(color: primaryDarkColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide.none,
@@ -265,7 +266,7 @@ class AppTheme{
 
       colorScheme: ColorScheme.dark(secondary: secondaryDarkColor),
 
-      textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor),
+      textSelectionTheme: TextSelectionThemeData(cursorColor: primaryDarkColor),
       fontFamily: 'SofiaPro',
       textTheme: TextTheme(
 
