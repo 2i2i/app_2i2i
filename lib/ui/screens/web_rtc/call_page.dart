@@ -114,7 +114,7 @@ class _CallPageState extends ConsumerState<CallPage>
     final maxDuration = widget.meeting.maxDuration();
     final duration = getDurationLeft(maxDuration);
     log(' ====== $duration');
-    if (duration <= 100) {
+    if (duration <= 60) {
       countDownTimerDate =
           DateTime.now().toUtc().add(Duration(seconds: duration));
       if (mounted) {
@@ -212,8 +212,7 @@ class _CallPageState extends ConsumerState<CallPage>
                             ),
                     ),
                     InkResponse(
-                      onTap: () => callScreenModel!.swapped =
-                          !(callScreenModel?.swapped ?? false),
+                      onTap: () => callScreenModel!.swapped = !(callScreenModel?.swapped ?? false),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: Container(
