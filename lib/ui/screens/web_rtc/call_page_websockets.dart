@@ -177,13 +177,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   _muteAudio() {
     _signaling?.muteAudio();
     setState(() {
-      isAudioEnabled = false;
+      isAudioEnabled = !isAudioEnabled;
     });
   }
 
-  _muteVideo() {
-    _signaling?.muteVideo();
-  }
+  // _muteVideo() {
+  //   _signaling?.muteVideo();
+  // }
 
   // _buildRow(context, peer) {
   //   var self = (peer['id'] == _selfId);
@@ -316,27 +316,27 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                       borderRadius: BorderRadius.circular(16.0),
                       child: !(callScreenModel?.swapped ?? false)
                           ? videoView(
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              width: MediaQuery.of(context).size.height * 0.3,
+                              height: MediaQuery.of(context).size.height * 0.15,
+                              width: MediaQuery.of(context).size.height * 0.15,
                               renderer: _localRenderer,
                             )
                           : videoView(
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              width: MediaQuery.of(context).size.height * 0.3,
+                              height: MediaQuery.of(context).size.height * 0.15,
+                              width: MediaQuery.of(context).size.height * 0.15,
                               renderer: _remoteRenderer,
                             ),
                     ),
-                    InkResponse(
-                      onTap: () => callScreenModel!.swapped =
-                          !(callScreenModel?.swapped ?? false),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          width: MediaQuery.of(context).size.height * 0.3,
-                        ),
-                      ),
-                    )
+                    // InkResponse(
+                    //   onTap: () => callScreenModel!.swapped =
+                    //       !(callScreenModel?.swapped ?? false),
+                    //   child: ClipRRect(
+                    //     borderRadius: BorderRadius.circular(16.0),
+                    //     child: Container(
+                    //       height: MediaQuery.of(context).size.height * 0.3,
+                    //       width: MediaQuery.of(context).size.height * 0.3,
+                    //     ),
+                    //   ),
+                    // )
                   ],
                 ),
               ),
