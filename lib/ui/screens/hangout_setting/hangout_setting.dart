@@ -206,6 +206,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                 if (value.trim().isEmpty) {
                   return Strings().required;
                 }
+                return null;
               },
               decoration: InputDecoration(
                 filled: true,
@@ -256,6 +257,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                       if (value.trim().isEmpty || int.tryParse(value) == null) {
                         return Strings().enterValidData;
                       }
+                      return null;
                     },
                     decoration: InputDecoration(
                       filled: true,
