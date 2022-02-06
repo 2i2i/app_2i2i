@@ -292,8 +292,8 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text('v2 - ' + AlgorandNet.testnet.name +
-              ' - Might not be working on Safari'),
+          title: Text('v3 - ' + AlgorandNet.testnet.name +
+              ' - Might not be working on iOS/Chrome'),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2

@@ -18,11 +18,13 @@ class AuthWidget extends ConsumerWidget {
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return authStateChanges.when(data: (firebaseUser) {
-            if (firebaseUser == null) {
-              final signUpViewModel = ref.read(setupUserViewModelProvider);
-              if (!signUpViewModel.signUpInProcess) {
-                signUpViewModel.signInAnonymously();
-                /*return SignInScreen(
+            if (firebaseUser != null) return homePageBuilder(context);
+            // if (firebaseUser == null) {
+            final signUpViewModel = ref.read(setupUserViewModelProvider);
+            // if (!signUpViewModel.signUpInProcess) {
+            // final token = ref.read(firebaseMessagingTokenProvider);
+            signUpViewModel.signInAnonymously();
+            /*return SignInScreen(
                   headerBuilder: (context, constraints, shrinkOffset) =>
                       SvgPicture.asset(
                     'assets/icons/appbar_icon.svg',
@@ -66,13 +68,9 @@ class AuthWidget extends ConsumerWidget {
                     ),
                   ),
                 );*/
-              }
-              return WaitPage();
-            }
-
-
-
-            return homePageBuilder(context);
+            // }
+            return WaitPage();
+            // }
           }, loading: () {
             return WaitPage();
           }, error: (_, __) {

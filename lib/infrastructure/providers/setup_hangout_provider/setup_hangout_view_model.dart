@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
@@ -17,7 +18,6 @@ class SetupUserViewModel with ChangeNotifier {
       required this.algorand,
       required this.storage});
 
-
   final FirebaseAuth auth;
   final FirestoreDatabase database;
   final SecureStorage storage;
@@ -33,22 +33,47 @@ class SetupUserViewModel with ChangeNotifier {
     signUpInProcess = true;
     notifyListeners();
 
-    if (firebaseUserId == null) {
-      await auth.signInAnonymously();
-    }
+    // if (firebaseUserId == null) {
+    //   await auth.signInAnonymously();
+    // }
     await setupAlgorandAccount();
     signUpInProcess = false;
 
     notifyListeners();
   }
 
-  Future signInAnonymously() async {
+  Future updateFirebaseMessagingToken(String uid) async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    // log(X + 'about to get token');
+    // log(X + 'settings=$settings');
+    return messaging.getToken(
+      vapidKey:
+          'BJAuI8w0710AHhIbunDcq8QnCf1QRKDoWjs5e665AIt5pwPBV1D4GovUBx__W2jbyYWABVSqxhfthjkHY5lCN5g',
+    ).then((String? token) {
+      if (token is String) return database.updateToken(uid, token);
+    });
+    // log(X + 'token=$token');
+    // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
+  }
+
+  Future<String?> signInAnonymously() async {
     UserCredential firebaseUser =
         await FirebaseAuth.instance.signInAnonymously();
     String? userId = firebaseUser.user?.uid;
     if (userId is String) {
+      updateFirebaseMessagingToken(userId);
       createAuthAndStartAlgoRand(firebaseUserId: userId);
     }
+    return userId;
   }
 
   // KEEP my_account_provider in local scope
