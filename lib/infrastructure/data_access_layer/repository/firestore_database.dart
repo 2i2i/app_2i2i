@@ -95,13 +95,23 @@ class FirestoreDatabase {
     });
   }
 
+  Future<void> updateToken(String uid, String token) =>
+      _service.setData(
+        path: FirestorePath.token(uid),
+        data: {
+          'token': token,
+          'ts': FieldValue.serverTimestamp(),
+        },
+        merge: true,
+      );
+
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
           'heartbeat': FieldValue.serverTimestamp(),
           'status': status
-        }, // TODO move dependency
+        },
         merge: true,
       );
 

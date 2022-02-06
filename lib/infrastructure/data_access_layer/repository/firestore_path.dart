@@ -2,6 +2,8 @@ class FirestorePath {
   static String user(String uid) => 'users/$uid';
   static String users() => 'users';
 
+  static String token(String uid) => 'tokens/$uid';
+
   static String meetings() => 'meetings';
   static String topSpeeds() => 'topSpeeds';
   static String topDurations() => 'topDurations';
