@@ -95,6 +95,14 @@ class FirestoreDatabase {
     });
   }
 
+  Future<void> updateDeviceInfo(String uid, Map<String, String?> data) =>
+      _service.setData(
+        path: FirestorePath.device(uid),
+        data: data,
+        merge: true,
+      );
+
+
   Future<void> updateToken(String uid, String token) =>
       _service.setData(
         path: FirestorePath.token(uid),

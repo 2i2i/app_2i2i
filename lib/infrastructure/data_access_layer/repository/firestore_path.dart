@@ -3,6 +3,7 @@ class FirestorePath {
   static String users() => 'users';
 
   static String token(String uid) => 'tokens/$uid';
+  static String device(String uid) => 'devices/$uid';
 
   static String meetings() => 'meetings';
   static String topSpeeds() => 'topSpeeds';
