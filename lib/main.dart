@@ -9,6 +9,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +98,32 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
         });
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
+
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+
+      // TODO the following is not working yet
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print('Got a message whilst in the foreground!');
+        print('Message data: ${message.data}');
+
+        if (message.notification != null) {
+          print(
+              'Message also contained a notification: ${message.notification}');
+        }
+
+        if (message.data['action'] == 'update') {
+          NamedRoutes.updateAvailable = true;
+        }
+      });
     });
   }
 
