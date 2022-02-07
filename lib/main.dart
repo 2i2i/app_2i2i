@@ -123,7 +123,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        await updateHeartbeat(Keys.statusIDLE, terminate: true);
+        await updateHeartbeat(Keys.statusONLINE, terminate: true);
         break;
     }
   }
