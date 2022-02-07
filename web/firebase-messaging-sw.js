@@ -18,6 +18,6 @@ messaging.onBackgroundMessage((m) => {
   console.log("onBackgroundMessage", m);
 });
 
-messaging.onMessage((m) => {
-  console.log("onMessage", m);
-});
+// messaging.onMessage((m) => {
+//   console.log("onMessage", m);
+// });
