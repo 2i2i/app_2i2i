@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 
 bool showed = false;
-
-class AuthWidget extends ConsumerWidget {
+class AuthWidget extends ConsumerStatefulWidget {
+  final WidgetBuilder homePageBuilder;
   AuthWidget({required this.homePageBuilder});
 
-  final WidgetBuilder homePageBuilder;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _AuthWidgetState createState() => _AuthWidgetState();
+}
+
+class _AuthWidgetState extends ConsumerState<AuthWidget> {
+  @override
+  Widget build(BuildContext context) {
     final authStateChanges = ref.watch(authStateChangesProvider);
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return authStateChanges.when(data: (firebaseUser) {
-            if (firebaseUser != null) return homePageBuilder(context);
+            if (firebaseUser != null) return widget.homePageBuilder(context);
             // if (firebaseUser == null) {
             final signUpViewModel = ref.read(setupUserViewModelProvider);
             // if (!signUpViewModel.signUpInProcess) {

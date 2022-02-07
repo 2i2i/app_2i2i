@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
+import 'infrastructure/commons/keys.dart';
 import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
@@ -81,23 +83,49 @@ class MainWidget extends ConsumerStatefulWidget {
   _MainWidgetState createState() => _MainWidgetState();
 }
 
-class _MainWidgetState extends ConsumerState<MainWidget> {
-  var timer;
+class _MainWidgetState extends ConsumerState<MainWidget>
+    with WidgetsBindingObserver {
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (timer == null) {
-        timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-          final hangoutChanger = ref.watch(hangoutChangerProvider);
-          if (hangoutChanger == null) return;
-          await hangoutChanger.updateHeartbeat();
-        });
-      }
+    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await updateHeartbeat(Keys.statusONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
     });
+  }
+
+  Future<void> updateHeartbeat(String status, {bool terminate = false}) async {
+    if (terminate) {
+      if (timer?.isActive ?? false) timer!.cancel();
+    }
+    timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+      final hangoutChanger = ref.watch(hangoutChangerProvider);
+      if (hangoutChanger == null) return;
+      await hangoutChanger.updateHeartbeat(status);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        await updateHeartbeat(Keys.statusONLINE, terminate: true);
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        await updateHeartbeat(Keys.statusIDLE, terminate: true);
+        break;
+    }
   }
 
   @override

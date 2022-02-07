@@ -9,4 +9,6 @@ class Keys {
   static const String alertDefault = 'alertDefault';
   static const String alertCancel = 'alertCancel';
   static const String myReadBids = 'myReadBids';
+  static const String statusONLINE = 'ONLINE';
+  static const String statusIDLE = 'IDLE';
 }

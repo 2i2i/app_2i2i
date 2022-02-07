@@ -23,8 +23,8 @@ class HangoutChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat() async {
-    final status = 'ONLINE';
+  Future updateHeartbeat(String status) async {
+    // final status = 'ONLINE';
     return database.updateUserHeartbeat(uid, status);
   }
 
