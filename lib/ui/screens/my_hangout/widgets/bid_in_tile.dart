@@ -49,22 +49,22 @@ class BidInTile extends StatelessWidget {
       firstNameChar = firstNameChar.substring(0, 1);
     }
 
-    return InkResponse(
-      onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-        'uid': hangout.id,
-      }),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  SizedBox(width: 4),
-                  SizedBox(
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(width: 4),
+                InkResponse(
+                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                    'uid': hangout.id,
+                  }),
+                  child: SizedBox(
                     height: 55,
                     width: 55,
                     child: Stack(
@@ -110,113 +110,113 @@ class BidInTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 8),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        hangout.name,
+                        maxLines: 2,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        hangout.bio,
+                        maxLines: 2,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.caption?.copyWith(
+                              fontWeight: FontWeight.w400,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: bidIn.public.speed.num.toString(),
+                    children: [
+                      TextSpan(
+                        text: ' μAlgo/s',
+                        children: [],
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.color
+                                  ?.withOpacity(0.7),
+                            ),
+                      )
+                    ],
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                          color: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.color
+                              ?.withOpacity(0.7),
+                        ),
+                  ),
+                ),
+                // Text(bid.speed.num.toString() + ' μAlgo/s'),
+                SizedBox(width: 8),
+                Image.asset(
+                  'assets/algo_logo.png',
+                  height: 34,
+                  width: 34,
+                ),
+                SizedBox(width: 4),
+              ],
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          hangout.name,
-                          maxLines: 2,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          hangout.bio,
-                          maxLines: 2,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.caption?.copyWith(
-                                fontWeight: FontWeight.w400,
-                              ),
-                        ),
-                      ],
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'Accumulated support ',
+                        children: [
+                          TextSpan(
+                              text: ' $budgetCount',
+                              children: [],
+                              style: Theme.of(context).textTheme.bodyText2)
+                        ],
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      text: bidIn.public.speed.num.toString(),
-                      children: [
-                        TextSpan(
-                          text: ' μAlgo/s',
-                          children: [],
-                          style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.color
-                                    ?.withOpacity(0.7),
-                              ),
-                        )
-                      ],
-                      style: Theme.of(context).textTheme.headline6?.copyWith(
-                            color: Theme.of(context)
-                                .textTheme
-                                .headline6
-                                ?.color
-                                ?.withOpacity(0.7),
-                          ),
+                  Container(
+                    child: VerticalDivider(),
+                    height: 20,
+                  ),
+                  Expanded(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'Starts in ',
+                        children: [
+                          TextSpan(
+                              text:
+                                  ' ${secondsToSensibleTimePeriod(totalDuration)}',
+                              style: Theme.of(context).textTheme.bodyText2)
+                        ],
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                     ),
                   ),
-                  // Text(bid.speed.num.toString() + ' μAlgo/s'),
-                  SizedBox(width: 8),
-                  Image.asset(
-                    'assets/algo_logo.png',
-                    height: 34,
-                    width: 34,
-                  ),
-                  SizedBox(width: 4),
                 ],
               ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: 'Accumulated support ',
-                          children: [
-                            TextSpan(
-                                text: ' $budgetCount',
-                                children: [],
-                                style: Theme.of(context).textTheme.bodyText2)
-                          ],
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: VerticalDivider(),
-                      height: 20,
-                    ),
-                    Expanded(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: 'Starts in ',
-                          children: [
-                            TextSpan(
-                                text:
-                                    ' ${secondsToSensibleTimePeriod(totalDuration)}',
-                                style: Theme.of(context).textTheme.bodyText2)
-                          ],
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
