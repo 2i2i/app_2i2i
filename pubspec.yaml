@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
 
 #  flutter_lints:
+  universal_html: ^2.0.8
   sentry_flutter: ^6.3.0
   walletconnect_dart: ^0.0.6
   algorand_dart: ^1.0.1

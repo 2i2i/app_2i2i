@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
@@ -44,8 +45,11 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         widget.hangout.bio; //user.bio.substring(shortBioStart, shortBioEnd);
 
     var statusColor = AppTheme().green;
-    if (widget.hangout.status == 'OFFLINE') {
+    if (widget.hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    else if (widget.hangout.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     } else if (widget.hangout.isInMeeting()) {
       statusColor = AppTheme().red;
     }

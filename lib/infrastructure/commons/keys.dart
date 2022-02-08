@@ -10,5 +10,6 @@ class Keys {
   static const String alertCancel = 'alertCancel';
   static const String myReadBids = 'myReadBids';
   static const String statusONLINE = 'ONLINE';
+  static const String statusOFFLINE = 'OFFLINE';
   static const String statusIDLE = 'IDLE';
 }

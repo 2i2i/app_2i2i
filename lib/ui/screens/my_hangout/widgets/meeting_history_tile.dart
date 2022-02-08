@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -28,8 +29,11 @@ class MeetingHistoryTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
-    if (hangout?.status == 'OFFLINE') {
+    if (hangout?.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    if (hangout?.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     }
     if (hangout?.isInMeeting() ?? false) {
       statusColor = AppTheme().red;

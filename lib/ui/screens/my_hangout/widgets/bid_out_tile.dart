@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
@@ -28,8 +29,11 @@ class BidOutTile extends ConsumerWidget {
     Hangout hangout = userAsyncValue.asData!.value;
     bidSpeed = (bidOut.speed.num / 1000000).toString();
 
-    if (hangout.status == 'OFFLINE') {
+    if (hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    if (hangout.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     }
     if (hangout.isInMeeting()) {
       statusColor = AppTheme().red;

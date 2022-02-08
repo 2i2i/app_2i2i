@@ -5,7 +5,8 @@
 // acceptMeeting - A
 // createRoom - A
 // import 'package:http/http.dart' as html;
-import 'dart:html' as html;
+// import 'dart:html' as html;
+import "package:universal_html/html.dart" as html;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -120,10 +121,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         html.document.addEventListener('visibilitychange', (event) {
           if (html.document.visibilityState != 'visible') {
             //check after for 2 sec that is it still in background
-            Future.delayed(Duration(seconds: 2)).then((value) {
+            Future.delayed(Duration(seconds: 2)).then((value) async {
               if (html.document.visibilityState != 'visible') {
                 print('======\n\n\n\n background \n\n\n\n=====');
-                updateHeartbeat(Keys.statusIDLE);
+                await updateHeartbeat(Keys.statusIDLE);
               }
             });
           } else {
