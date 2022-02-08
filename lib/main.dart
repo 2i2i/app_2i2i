@@ -6,7 +6,7 @@
 // createRoom - A
 
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -97,15 +97,20 @@ class _MainWidgetState extends ConsumerState<MainWidget>
     });
   }
 
-  Future<void> updateHeartbeat(String status, {bool terminate = false}) async {
-    if (terminate) {
+  Future<void> updateHeartbeat(String status) async {
+    if (status == Keys.statusIDLE) {
       if (timer?.isActive ?? false) timer!.cancel();
-    }
-    timer = Timer.periodic(Duration(seconds: 10), (timer) async {
       final hangoutChanger = ref.watch(hangoutChangerProvider);
       if (hangoutChanger == null) return;
       await hangoutChanger.updateHeartbeat(status);
-    });
+    } else {
+      if (timer?.isActive ?? false) timer!.cancel();
+      timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+        final hangoutChanger = ref.watch(hangoutChangerProvider);
+        if (hangoutChanger == null) return;
+        await hangoutChanger.updateHeartbeat(status);
+      });
+    }
   }
 
   @override
@@ -118,12 +123,12 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        await updateHeartbeat(Keys.statusONLINE, terminate: true);
+        await updateHeartbeat(Keys.statusONLINE);
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        await updateHeartbeat(Keys.statusONLINE, terminate: true);
+      await updateHeartbeat(Keys.statusIDLE);
         break;
     }
   }
