@@ -375,10 +375,12 @@ class FirestoreDatabase {
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(field, isEqualTo: uid).orderBy('end');
+        query = query.where(field, isEqualTo: uid);
         if (limit != null) query = query.limit(limit);
         return query;
       },
-    );
+    ).handleError((onError){
+      print(onError);
+    });
   }
 }

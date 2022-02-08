@@ -156,6 +156,7 @@ class Strings {
   String myProfile = 'My Profile';
   String bidIn = 'Bid in';
   String bidOut = 'Waiting';
+  String bidOutText = 'Bid out';
   String noBidFound = 'No bids found';
 
   //Meeting History

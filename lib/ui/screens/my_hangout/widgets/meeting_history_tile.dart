@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
@@ -107,9 +108,9 @@ class MeetingHistoryTile extends ConsumerWidget {
                             .textTheme
                             .subtitle1,
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 6),
                     Text(
-                      hangout.bio,
+                      DateFormat('d MMM yyyy').format(meetingModel.end ?? DateTime.now()),
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
