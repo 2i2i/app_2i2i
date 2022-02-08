@@ -22,9 +22,14 @@ class _AuthWidgetState extends ConsumerState<AuthWidget> {
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return authStateChanges.when(data: (firebaseUser) {
-            if (firebaseUser != null) return widget.homePageBuilder(context);
-            // if (firebaseUser == null) {
             final signUpViewModel = ref.read(setupUserViewModelProvider);
+
+            if (firebaseUser != null) {
+              signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+              return homePageBuilder(context);
+            }
+
+            // if (firebaseUser == null) {
             // if (!signUpViewModel.signUpInProcess) {
             // final token = ref.read(firebaseMessagingTokenProvider);
             signUpViewModel.signInAnonymously();
