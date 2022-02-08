@@ -26,7 +26,7 @@ class _AuthWidgetState extends ConsumerState<AuthWidget> {
 
             if (firebaseUser != null) {
               signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
-              return homePageBuilder(context);
+              return widget.homePageBuilder(context);
             }
 
             // if (firebaseUser == null) {

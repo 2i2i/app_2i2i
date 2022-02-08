@@ -25,11 +25,11 @@ dependencies:
     sdk: flutter
 
 #  flutter_lints:
-  sentry_flutter: ^6.2.2
+  sentry_flutter: ^6.3.0
   walletconnect_dart: ^0.0.6
   algorand_dart: ^1.0.1
-  flutter_webrtc: ^0.8.1
-  just_audio: ^0.9.18
+  flutter_webrtc: ^0.8.2
+  just_audio: ^0.9.19
   flutter_riverpod: ^1.0.3
   cloud_functions: ^3.2.6
   firebase_auth: ^3.3.6
@@ -46,7 +46,7 @@ dependencies:
   flutter_animator: ^3.2.1
   animate_countdown_text: ^1.1.3
   share_plus: ^3.0.4
-  image_picker: ^0.8.4+5
+  image_picker: ^0.8.4+6
   carousel_slider: ^4.0.0
   flutter_svg: ^1.0.3
   shimmer: ^2.0.0

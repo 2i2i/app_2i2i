@@ -4,7 +4,8 @@
 // acceptBid - B
 // acceptMeeting - A
 // createRoom - A
-
+// import 'package:http/http.dart' as html;
+import 'dart:html' as html;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -66,13 +67,7 @@ Future<void> main() async {
     print(error);
   });
 
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
+
 }
 
 class MainWidget extends ConsumerStatefulWidget {
@@ -121,8 +116,26 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           NamedRoutes.updateAvailable = true;
         }
       });
+      if(kIsWeb) {
+        html.document.addEventListener('visibilitychange', (event) {
+          if (html.document.visibilityState != 'visible') {
+            //check after for 2 sec that is it still in background
+            Future.delayed(Duration(seconds: 2)).then((value) {
+              if (html.document.visibilityState != 'visible') {
+                print('======\n\n\n\n background \n\n\n\n=====');
+                updateHeartbeat(Keys.statusIDLE);
+              }
+            });
+          } else {
+            print('======\n\n\n\n Foreground \n\n\n\n=====');
+            updateHeartbeat(Keys.statusONLINE);
+          }
+        });
+      }
     });
   }
+
+
 
   Future<void> updateHeartbeat(String status) async {
     if (status == Keys.statusIDLE) {
@@ -142,6 +155,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
 
   @override
   void dispose() {
+    // html.document.removeEventListener('visibilitychange', (event) => null);
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
