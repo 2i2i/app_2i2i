@@ -150,15 +150,15 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          return outnit();
-          // setState(() => outnit());
+          // return outnit();
+          setState(() => outnit());
           // setState(() {
           //   _localRenderer.srcObject = null;
           //   _remoteRenderer.srcObject = null;
           //   // _inCalling = false;
           //   _session = null;
           // });
-          // break;
+          break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
         case CallState.CallStateRinging:

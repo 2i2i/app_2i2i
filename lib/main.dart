@@ -50,7 +50,7 @@ Future<void> main() async {
   //endregion DEBUG
 
   await SentryFlutter.init((options) {
-    options.dsn =
+  options.dsn =
         'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
   }, appRunner: () {
     FlutterSecureStorage().read(key: 'theme_mode').then((value) {
