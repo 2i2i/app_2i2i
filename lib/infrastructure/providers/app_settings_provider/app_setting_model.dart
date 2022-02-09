@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../commons/keys.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 
 class AppSettingModel extends ChangeNotifier {
@@ -10,12 +11,23 @@ class AppSettingModel extends ChangeNotifier {
   });
 
   ThemeMode? currentThemeMode;
+  Locale? locale;
 
   bool isAutoModeEnable = false;
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
     getTheme(mode);
+    notifyListeners();
+  }
+
+  Future<void> setLocal(String local) async {
+    await storage.write('language', local);
+    getLocal(local);
+  }
+
+  void getLocal(String local) {
+    locale = Locale(local);
     notifyListeners();
   }
 
@@ -27,15 +39,15 @@ class AppSettingModel extends ChangeNotifier {
 
   ThemeMode getTheme(String mode, {bool notify = false}) {
     switch (mode) {
-      case "DARK":
+      case Keys.dark:
         isAutoModeEnable = false;
         currentThemeMode = ThemeMode.dark;
         break;
-      case "LIGHT":
+      case Keys.light:
         isAutoModeEnable = false;
         currentThemeMode = ThemeMode.light;
         break;
-      case "AUTO":
+      case Keys.auto:
       default:
         isAutoModeEnable = true;
         currentThemeMode = ThemeMode.system;

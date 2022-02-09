@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/mode_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,10 +27,10 @@ class _ThemeModeScreenState extends ConsumerState<ThemeModeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Theme',style: Theme.of(context).textTheme.headline5,),
+            Text(Keys.theme.tr(context),style: Theme.of(context).textTheme.headline5,),
             SizedBox(height: 20),
             Text(
-              Strings().themeMode,
+              Keys.themeMode.tr(context),
               style: Theme.of(context)
                   .textTheme
                   .subtitle1,
@@ -46,7 +46,7 @@ class _ThemeModeScreenState extends ConsumerState<ThemeModeScreen> {
                     isSelected:
                     appSettingModel.currentThemeMode == ThemeMode.light,
                     onTap: () {
-                      appSettingModel.setThemeMode("LIGHT");
+                      appSettingModel.setThemeMode(Keys.light);
                     },
                   ),
                   ModeWidgets(
@@ -54,7 +54,7 @@ class _ThemeModeScreenState extends ConsumerState<ThemeModeScreen> {
                     isSelected:
                     appSettingModel.currentThemeMode == ThemeMode.dark,
                     onTap: () {
-                      appSettingModel.setThemeMode("DARK");
+                      appSettingModel.setThemeMode(Keys.dark);
                     },
                   ),
                 ],
@@ -62,14 +62,14 @@ class _ThemeModeScreenState extends ConsumerState<ThemeModeScreen> {
             ),
             Divider(color: Colors.transparent),
             ListTile(
-              title: Text(Strings().automatic),
+              title: Text(Keys.automatic.tr(context)),
               trailing: Transform.scale(
                   scale: 0.7,
                   child: CupertinoSwitch(
                     value: appSettingModel.isAutoModeEnable,
                     onChanged: (value) async {
                       String mode = await appSettingModel.getThemeMode()??"";
-                      appSettingModel.setThemeMode(value ? "AUTO" : mode);
+                      appSettingModel.setThemeMode(value ? Keys.auto : mode);
                     },
                     activeColor: Theme.of(context).iconTheme.color,
                     thumbColor: Theme.of(context).scaffoldBackgroundColor,

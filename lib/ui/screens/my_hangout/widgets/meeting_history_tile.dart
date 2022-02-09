@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -124,7 +125,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '${(meetingModel.energy['MAX'] ?? 0)} Algo'.toUpperCase(),
+                      '${(meetingModel.energy['MAX'] ?? 0)} ${Keys.ALGO.tr(context)}'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
@@ -132,7 +133,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Settled',
+                      Keys.settled.tr(context),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,

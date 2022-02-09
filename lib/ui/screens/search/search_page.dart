@@ -6,7 +6,7 @@ import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'widgtes/user_info_tile.dart';
@@ -64,7 +64,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               style: TextStyle(color: AppTheme().cardDarkColor),
               autofocus: false,
               decoration: InputDecoration(
-                hintText: Strings().searchUserHint,
+                hintText: Keys.searchUserHint.tr(context),
                 filled: true,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 4),

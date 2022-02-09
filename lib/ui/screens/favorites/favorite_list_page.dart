@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
@@ -33,7 +33,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
     return Scaffold(
       appBar: CustomAppbar(
         title: Text(
-          Strings().fav,
+          Keys.fav.tr(context),
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
@@ -80,7 +80,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
     if (favList.isEmpty) {
       return Center(
           child: Text(
-        'No Hosts found',
+            Keys.noHostsFound.tr(context),
         style: Theme.of(context).textTheme.subtitle2,
       ));
     }

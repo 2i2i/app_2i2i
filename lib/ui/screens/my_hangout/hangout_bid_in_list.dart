@@ -1,14 +1,13 @@
 // order of bid ins: status (online->locked->offline), friends->non-friends, speed
 // do not show bid ins of blocked users
 
-import 'package:app_2i2i/infrastructure/commons/keys.dart';
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
@@ -77,7 +76,7 @@ class UserBidInsList extends ConsumerWidget {
                 color: Theme.of(context).cardColor,
               ),
               SizedBox(height: 2),
-              Text(Strings().talk,
+              Text(Keys.talk.tr(context),
                   style: Theme.of(context).textTheme.bodyText2?.copyWith(
                         color: Theme.of(context).cardColor,
                       ))
@@ -108,7 +107,6 @@ class UserBidInsList extends ConsumerWidget {
       }
       localBids.addAll(bidInsWithUsers.map((e) => e.public.id).toList());
       String localBidIds = localBids.toSet().toList().join(',');
-      log('localBidIds=$localBidIds');
       SecureStorage().write(Keys.myReadBids, localBidIds);
     });
   }

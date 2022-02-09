@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
@@ -69,8 +69,8 @@ class _AddAccountOptionsWidgetsState
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            title: Text(Strings().walletAccount),
-            subtitle: Text(Strings().walletAccountMsg),
+            title: Text(Keys.walletAccount.tr(context)),
+            subtitle: Text(Keys.walletAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
           Padding(
@@ -104,8 +104,8 @@ class _AddAccountOptionsWidgetsState
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            title: Text(Strings().recoverPassphrase),
-            subtitle: Text(Strings().recoverPassPhaseMsg),
+            title: Text(Keys.recoverPassphrase.tr(context)),
+            subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
           Padding(
@@ -139,8 +139,8 @@ class _AddAccountOptionsWidgetsState
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            title: Text(Strings().addLocalAccount),
-            subtitle: Text(Strings().addLocalAccountMsg),
+            title: Text(Keys.addLocalAccount.tr(context)),
+            subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
         ],
@@ -170,7 +170,6 @@ class _AddAccountOptionsWidgetsState
   }
 
   Future _changeDisplayUri(String uri) async {
-    log('_changeDisplayUri - uri=$uri');
     _displayUri = uri;
     if (mounted) {
       setState(() {});

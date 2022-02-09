@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
@@ -30,7 +30,7 @@ class _MeetingHistoryListState extends ConsumerState<MeetingHistoryList> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Text(
-              Strings().meetingsHistory,
+              Keys.meetingsHistory.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
           ),
@@ -62,12 +62,5 @@ class _MeetingHistoryListState extends ConsumerState<MeetingHistoryList> {
         ],
       ),
     );
-  }
-
-  Widget getCallTypeIcon(Hangout hangout, String currentUid) {
-    if (hangout.id == currentUid) {
-      return Icon(Icons.call_received_rounded, color: AppTheme().red);
-    }
-    return Icon(Icons.call_made_rounded, color: AppTheme().green);
   }
 }

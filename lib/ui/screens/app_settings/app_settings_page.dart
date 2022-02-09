@@ -7,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_dialogs.dart';
+import 'widgets/language_widget.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
@@ -31,7 +33,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     return Scaffold(
       appBar: CustomAppbar(
         title: Text(
-          Strings().settings,
+          Keys.settings.tr(context),
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
@@ -43,7 +45,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
           children: [
             //profile
             Text(
-              Strings().account,
+              Keys.account.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -60,7 +62,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          Strings().userName+' ',
+                          Keys.userName.tr(context) + ' ',
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Flexible(
@@ -83,7 +85,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
-                      Strings().bio,
+                      Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                       textAlign: TextAlign.start,
                     ),
@@ -94,7 +96,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       context.pushNamed(Routes.account.nameFromPath());
                     },
                     title: Text(
-                      Strings().wallet,
+                      Keys.wallet.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -115,7 +117,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ListTile(
                     onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
-                      Strings().blockList,
+                      Keys.blockList.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -139,7 +141,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
             //theme
             Text(
-              'Theme',
+              Keys.theme.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -165,13 +167,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
                     tabs: [
                       Tab(
-                        text: 'Light',
+                        text: Keys.light.tr(context),
                       ),
                       Tab(
-                        text: 'Dark',
+                        text: Keys.dark.tr(context),
                       ),
                       Tab(
-                        text: 'Auto',
+                        text: Keys.auto.tr(context),
                       ),
                     ],
                     onTap: (index){
@@ -195,7 +197,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
             //link
             Text(
-              'More',
+              Keys.more.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -204,9 +206,17 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: Column(
                 children: [
                   ListTile(
+                    onTap: () => context.pushNamed(Routes.language.nameFromPath()),
+                    title: Text(
+                      Keys.language.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Text('EN'),
+                  ),
+                  ListTile(
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
-                      Strings().faq,
+                      Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -217,7 +227,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     onTap: () async {
                       try {
                         await launch(
-                          Strings().aboutPageUrl,
+                          Keys.aboutPageUrl.tr(context),
                           forceSafariVC: true,
                           forceWebView: true,
                         );
@@ -226,7 +236,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       }
                     },
                     title: Text(
-                      Strings().about,
+                      Keys.about.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -273,10 +283,4 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     );
   }
 
-  String getThemeModeName(ThemeMode? currentThemeMode) {
-    if (currentThemeMode == ThemeMode.dark) {
-      return 'Dark Mode';
-    }
-    return 'Light Mode';
-  }
 }
