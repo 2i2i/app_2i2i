@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../infrastructure/commons/strings.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_info.dart';
@@ -114,12 +115,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     if (addBidPageViewModel == null || (addBidPageViewModel.submitting))
       return WaitPage(isCupertino: true);
 
-    speed = Quantity(num: hangoutB?.rule.minSpeed ?? 0, assetId: 0);
-    speedController.text = speed.num.toString();
-    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
-      account = myAccountPageViewModel.accounts!.first;
-    }
-    updateAccountBalance();
+    updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
       appBar: AppBar(
@@ -186,7 +182,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     value: maxDuration.toDouble(),
                                     onChanged: (value) {
                                       maxDuration = value.round();
-                                      updateAccountBalance();
+                                      updateAccountBalance(myAccountPageViewModel);
                                     },
                                   ),
                                 ),
@@ -234,7 +230,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       .accounts![index].address),
                                   account:
                                       myAccountPageViewModel.accounts![index],
-                                  afterRefresh: updateAccountBalance,
+                                  afterRefresh:()=> updateAccountBalance(myAccountPageViewModel),
                                 ),
                               );
                             },
@@ -244,7 +240,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               if (account == newAccount) return;
                               account = newAccount;
                               if (mounted) {
-                                updateAccountBalance();
+                                updateAccountBalance(myAccountPageViewModel);
                               }
                             },
                           )
@@ -335,7 +331,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             suffixIcon: GestureDetector(
                               onTap: () {
                                 isAddSupportVisible.value = false;
-                                resetSpeed();
+                                updateAccountBalance(myAccountPageViewModel);
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -380,7 +376,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               final num = int.tryParse(value) ?? 0;
                               if (num >= (hangoutB?.rule.minSpeed ?? 0)) {
                                 speed = Quantity(num: num, assetId: speed.assetId);
-                                updateAccountBalance();
+                                updateAccountBalance(myAccountPageViewModel);
                               }
                             },
                             validator: (value) {
@@ -447,7 +443,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     );
   }
 
-  void updateAccountBalance() {
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
+    speed = Quantity(num: hangoutB?.rule.minSpeed ?? 0, assetId: 0);
+    speedController.text = speed.num.toString();
+    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
+      account = myAccountPageViewModel.accounts!.first;
+    }
+
     if (account != null) {
       _minAccountBalance = account!.minBalance();
       _accountBalance = account!.balanceALGO();
@@ -556,11 +558,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     CustomDialogs.loader(false, context);
   }
 
-  void resetSpeed() {
-    speed = Quantity(num: hangoutB?.rule.minSpeed ?? 0, assetId: 0);
-    speedController.text = speed.num.toString();
-    updateAccountBalance();
-  }
+
 }
 
 
