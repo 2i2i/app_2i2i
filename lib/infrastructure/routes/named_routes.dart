@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
@@ -33,24 +34,36 @@ import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
-
+  static String? previousRouteLocation;
   static bool updateAvailable = false;
-
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
       final locked = isUserLocked.value;
-
       final goingToLocked = state.location == Routes.lock;
-
+      bool validForPrevious = !goingToLocked && state.location != Routes.root && state.location != previousRouteLocation;
+      if(validForPrevious){
+        previousRouteLocation = state.location;
+      }
       if (locked && goingToLocked) {
         return null;
       } else if (!locked && goingToLocked) {
+        if(previousRouteLocation?.isNotEmpty??false){
+          return previousRouteLocation;
+        }
         return Routes.root;
       } else if (locked) {
         return Routes.lock;
+      }
+      if(previousRouteLocation is String){
+        if(showRating.value['show'] == true) {
+          String a = '$previousRouteLocation';
+          previousRouteLocation = null;
+          print('========== $a');
+          return null;
+        }
       }
       return null;
     },
