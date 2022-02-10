@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
@@ -60,6 +61,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
+              style: TextStyle(color: AppTheme().cardDarkColor),
               autofocus: false,
               decoration: InputDecoration(
                 hintText: Strings().searchUserHint,

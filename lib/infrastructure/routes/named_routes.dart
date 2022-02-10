@@ -33,6 +33,9 @@ import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
+
+  static bool updateAvailable = false;
+
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
     urlPathStrategy: UrlPathStrategy.path,
@@ -292,7 +295,7 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text('v3 - ' + AlgorandNet.testnet.name),
+          title: Text(AlgorandNet.testnet.name + ' - v5' + (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2
