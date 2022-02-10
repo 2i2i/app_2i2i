@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -44,21 +45,23 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future updateFirebaseMessagingToken(String uid) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    // NotificationSettings settings = await messaging.requestPermission(
+    //   alert: true,
+    //   announcement: false,
+    //   badge: true,
+    //   carPlay: false,
+    //   criticalAlert: false,
+    //   provisional: false,
+    //   sound: true,
+    // );
     // log(X + 'about to get token');
     // log(X + 'settings=$settings');
-    return messaging.getToken(
+    return messaging
+        .getToken(
       vapidKey:
           'BJAuI8w0710AHhIbunDcq8QnCf1QRKDoWjs5e665AIt5pwPBV1D4GovUBx__W2jbyYWABVSqxhfthjkHY5lCN5g',
-    ).then((String? token) {
+    )
+        .then((String? token) {
       if (token is String) return database.updateToken(uid, token);
     });
     // log(X + 'token=$token');
@@ -72,8 +75,19 @@ class SetupUserViewModel with ChangeNotifier {
     if (userId is String) {
       updateFirebaseMessagingToken(userId);
       createAuthAndStartAlgoRand(firebaseUserId: userId);
+      updateDeviceInfo(userId);
     }
     return userId;
+  }
+
+  Future updateDeviceInfo(String uid) async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+    final Map<String, String?> data = {
+      'web.userAgent': webBrowserInfo.userAgent,
+      'web.browserName': webBrowserInfo.browserName.name,
+    };
+    return database.updateDeviceInfo(uid, data);
   }
 
   // KEEP my_account_provider in local scope

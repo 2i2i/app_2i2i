@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -17,7 +18,8 @@ class CustomTextField extends StatelessWidget {
       this.validator,
       this.suffixIcon,
       this.autovalidateMode,
-      this.controller, this.onChanged})
+      this.controller,
+      this.onChanged})
       : super(key: key);
 
   @override
@@ -25,10 +27,9 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,
-            style: Theme.of(context)
-                .textTheme
-                .caption,
+        Text(
+          title,
+          style: Theme.of(context).textTheme.caption,
         ),
         SizedBox(height: 4),
         TextFormField(
@@ -36,9 +37,7 @@ class CustomTextField extends StatelessWidget {
           autovalidateMode: autovalidateMode,
           validator: validator,
           autofocus: false,
-          style: Theme.of(context)
-              .textTheme
-              .subtitle1,
+          style: TextStyle(color: AppTheme().cardDarkColor),
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,

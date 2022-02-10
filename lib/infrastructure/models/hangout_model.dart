@@ -148,8 +148,8 @@ class Hangout extends Equatable {
   }
 
   void setNameOrBio({String? name, String? bio}) {
-    if (name is String) this.name = name;
-    if (bio is String) this.bio = bio;
+    if (name is String) this.name = name.trim();
+    if (bio is String) this.bio = bio.trim();
     if (name is String || bio is String) setTags();
   }
 

@@ -19,7 +19,7 @@ import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -35,6 +35,7 @@ import 'app_routes.dart';
 
 class NamedRoutes {
   static String? previousRouteLocation;
+  static bool updateAvailable = false;
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
     urlPathStrategy: UrlPathStrategy.path,
@@ -244,7 +245,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(MeetingHistoryList()),
+            child: getView(MeetingHistory()),
           );
         },
       ),
@@ -307,7 +308,7 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text('v3 - ' + AlgorandNet.testnet.name),
+          title: Text(AlgorandNet.testnet.name + ' - v5' + (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2

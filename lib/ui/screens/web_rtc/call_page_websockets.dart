@@ -150,6 +150,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
+          // return outnit();
           setState(() => outnit());
           // setState(() {
           //   _localRenderer.srcObject = null;
@@ -520,9 +521,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                           iconColor: Colors.white,
                           backgroundColor: AppTheme().red,
                           onTap: () {
-                            if (budgetTimer?.isActive ?? false) {
-                              budgetTimer?.cancel();
-                            }
+                            // if (budgetTimer?.isActive ?? false) {
+                            //   budgetTimer?.cancel();
+                            // }
                             final reason =
                                 amA ? MeetingStatus.END_A : MeetingStatus.END_B;
                             // await signaling?.hangUp(reason: reason);

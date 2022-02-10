@@ -7,10 +7,12 @@ import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+
 
 class HangoutSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
@@ -40,6 +42,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
+
+
+  RichTextController? bioTextController;
 
   @override
   void initState() {
@@ -169,6 +174,12 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   @override
   Widget build(BuildContext context) {
+    bioTextController ??= RichTextController(
+      patternMatchMap:{
+        RegExp(r"(?:#)[a-zA-Z0-9]+"):
+        TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+      }, onMatch: (List<String> match) {},
+    );
     final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
@@ -225,7 +236,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
-              controller: bioEditController,
+              controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
