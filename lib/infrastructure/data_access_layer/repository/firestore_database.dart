@@ -102,9 +102,7 @@ class FirestoreDatabase {
         merge: true,
       );
 
-
-  Future<void> updateToken(String uid, String token) =>
-      _service.setData(
+  Future<void> updateToken(String uid, String token) => _service.setData(
         path: FirestorePath.token(uid),
         data: {
           'token': token,
@@ -116,10 +114,7 @@ class FirestoreDatabase {
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {
-          'heartbeat': FieldValue.serverTimestamp(),
-          'status': status
-        },
+        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
         merge: true,
       );
 
@@ -229,13 +224,11 @@ class FirestoreDatabase {
         },
       );
 
-  Future<void> updateUser(Hangout user) =>
-      _service.setData(
+  Future<void> updateUser(Hangout user) => _service.setData(
         path: FirestorePath.user(user.id),
         data: user.toMap(),
         merge: true,
       );
-
 
   Future<Hangout?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
@@ -371,7 +364,8 @@ class FirestoreDatabase {
 
   Stream<List<Meeting>> _meetingHistoryX(String uid, String field,
       {int? limit}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
@@ -379,7 +373,8 @@ class FirestoreDatabase {
         if (limit != null) query = query.limit(limit);
         return query;
       },
-    ).handleError((onError){
+    )
+        .handleError((onError) {
       print(onError);
     });
   }

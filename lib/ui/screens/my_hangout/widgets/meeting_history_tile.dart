@@ -15,16 +15,20 @@ class MeetingHistoryTile extends ConsumerWidget {
   final Meeting meetingModel;
 
   const MeetingHistoryTile(
-      {Key? key, this.onTap,required this.currentUid,required this.meetingModel})
+      {Key? key,
+      this.onTap,
+      required this.currentUid,
+      required this.meetingModel})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var statusColor = AppTheme().green;
 
-    bool isBidIn = meetingModel.A != currentUid;
+    bool amA = meetingModel.A == currentUid;
 
-    final hangout = ref.watch(hangoutProvider(isBidIn ? meetingModel.A : meetingModel.B)).value;
+    final hangout =
+        ref.watch(hangoutProvider(amA ? meetingModel.B : meetingModel.A)).value;
     if (haveToWait(hangout)) {
       return CupertinoActivityIndicator();
     }
@@ -39,6 +43,10 @@ class MeetingHistoryTile extends ConsumerWidget {
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
+
+    int amount = meetingModel.energy['B'] ?? 0;
+    if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
+    double amountInALGO = amount / 1000000;
 
     return InkResponse(
       onTap: onTap,
@@ -63,12 +71,15 @@ class MeetingHistoryTile extends ConsumerWidget {
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              width: 0.3,
-                              color: Theme.of(context).disabledColor,
+                            width: 0.3,
+                            color: Theme.of(context).disabledColor,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).iconTheme.color!.withOpacity(0.08),
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color!
+                                  .withOpacity(0.08),
                               blurRadius: 20,
                               spreadRadius: 0.5,
                             )
@@ -100,17 +111,17 @@ class MeetingHistoryTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(hangout!.name,
-                        maxLines: 2,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context)
-                            .textTheme
-                            .subtitle1,
+                    Text(
+                      hangout!.name,
+                      maxLines: 2,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     SizedBox(height: 6),
                     Text(
-                      DateFormat('d MMM yyyy').format(meetingModel.end ?? DateTime.now()),
+                      DateFormat('yyyy-mm-dd')
+                          .format(meetingModel.end ?? DateTime.now()),
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
@@ -125,26 +136,29 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '${(meetingModel.energy['MAX'] ?? 0)} Algo'.toUpperCase(),
+                      '$amountInALGO ALGO'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      'Settled',
-                      maxLines: 1,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.caption,
+                    Visibility(
+                      visible: meetingModel.settled,
+                      child: Text(
+                        'Settled',
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                     ),
                   ],
                 ),
               ),
               SizedBox(width: 8),
               SvgPicture.asset(
-                isBidIn ? 'assets/icons/income.svg' : 'assets/icons/upward.svg',
+                amA ? 'assets/icons/upward.svg' : 'assets/icons/income.svg',
                 height: 28,
                 width: 28,
               ),

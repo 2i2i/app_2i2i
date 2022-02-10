@@ -67,7 +67,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(Strings().bidIn.toUpperCase()),
+                        Text(Strings().asHost.toUpperCase()),
                         SizedBox(width: 8),
                         Icon(Icons.call_received_rounded,
                             color: AppTheme().green)
@@ -79,7 +79,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(Strings().bidOutText.toUpperCase()),
+                        Text(Strings().asGuest.toUpperCase()),
                         SizedBox(width: 8),
                         Icon(Icons.call_made_rounded, color: AppTheme().red)
                       ],
