@@ -106,7 +106,7 @@ class Keys {
   static const String recoverPassPhaseMsg = 'recoverPassPhaseMsg';
   static const String addLocalAccount = 'addLocalAccount';
   static const String addLocalAccountMsg = 'addLocalAccountMsg';
-  static const String estMaxDuration = 'estMaxDuration';
+  static const String estMaxDuration = 'Max Duration';
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
   static const String addBid = 'addBid';
@@ -127,7 +127,7 @@ class Keys {
   static const String meetingsHistory = 'meetingsHistory';
   static const String share = 'share';
   static const String copy = 'copy';
-  static const String comeAndHangOut= 'Come and hang out with me on 2i2i';
+  static const String comeAndHangOut = 'Come and hang out with me on 2i2i';
   static const String history = 'history';
   static const String friendList = 'friendList';
   static const String copiedLink = 'copiedLink';
@@ -170,8 +170,9 @@ class Keys {
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
 }
-extension CustomTranslation on String{
-  String tr(BuildContext context){
+
+extension CustomTranslation on String {
+  String tr(BuildContext context) {
     return ApplicationLocalizations.of(context)!.translate(this);
   }
 }

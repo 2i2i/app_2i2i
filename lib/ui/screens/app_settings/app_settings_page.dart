@@ -16,7 +16,8 @@ class AppSettingPage extends ConsumerStatefulWidget {
   _AppSettingPageState createState() => _AppSettingPageState();
 }
 
-class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin{
+class _AppSettingPageState extends ConsumerState<AppSettingPage>
+    with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
@@ -54,7 +55,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
@@ -80,7 +81,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
@@ -91,7 +92,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     trailing: Icon(Icons.navigate_next),
                   ),
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.account.nameFromPath());
                     },
                     title: Text(
@@ -114,7 +115,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    onTap: () =>
+                        context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
                       Keys.blockList.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -124,9 +126,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    onTap: () =>
+                        context.pushNamed(Routes.meetingHistory.nameFromPath()),
                     title: Text(
-                      Strings().meetingsHistory,
+                      Keys.meetingsHistory.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -148,22 +151,25 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
                 var appSettingModel = ref.watch(appSettingProvider);
                 int selectedIndex = 0;
-                if(appSettingModel.currentThemeMode == ThemeMode.system){
+                if (appSettingModel.currentThemeMode == ThemeMode.system) {
                   selectedIndex = 2;
-                }else if(appSettingModel.currentThemeMode == ThemeMode.dark){
+                } else if (appSettingModel.currentThemeMode == ThemeMode.dark) {
                   selectedIndex = 1;
                 }
                 return Container(
                   decoration: Custom.getBoxDecoration(context),
                   child: TabBar(
-                    controller: TabController(length: 3, vsync: this,initialIndex: selectedIndex),
+                    controller: TabController(
+                        length: 3, vsync: this, initialIndex: selectedIndex),
                     indicatorPadding: EdgeInsets.all(3),
                     indicator: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
-                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    unselectedLabelColor:
+                        Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor:
+                        Theme.of(context).tabBarTheme.unselectedLabelColor,
                     tabs: [
                       Tab(
                         text: Keys.light.tr(context),
@@ -175,7 +181,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                         text: Keys.auto.tr(context),
                       ),
                     ],
-                    onTap: (index){
+                    onTap: (index) {
                       switch (index) {
                         case 0:
                           appSettingModel.setThemeMode(Keys.light);
@@ -211,8 +217,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       Keys.language.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    trailing:
-                        Text((appSettingModel.locale?.languageCode ?? 'EN').toUpperCase()),
+                    trailing: Text(
+                        (appSettingModel.locale?.languageCode ?? 'EN')
+                            .toUpperCase()),
                   ),
                   ListTile(
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
@@ -283,5 +290,4 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       ),
     );
   }
-
 }
