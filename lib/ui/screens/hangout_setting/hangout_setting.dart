@@ -498,8 +498,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     );
   }
 
-  void onClickSave(
-      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) {
+  Future<void> onClickSave(
+      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) async {
     bool validate = formKey.currentState?.validate() ?? false;
     Hangout? hangout = myUserPageViewModel?.hangout;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
@@ -528,7 +528,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
         hangout!.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
       }
-      myUserPageViewModel?.updateHangout(hangout);
+      await myUserPageViewModel?.updateHangout(hangout);
       Navigator.of(context).maybePop();
     }
   }

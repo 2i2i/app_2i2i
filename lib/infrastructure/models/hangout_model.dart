@@ -224,7 +224,7 @@ class Hangout extends Equatable {
       'numRatings': numRatings,
       'heartbeat': heartbeat,
       'rule': rule.toMap(),
-      'loungeHistory': loungeHistory.map((e) => e.index),
+      'loungeHistory': loungeHistory.map((e) => e.index).toList(),
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
