@@ -47,7 +47,8 @@ class Strings {
   String scanQr = 'Scan QR';
 
   String about = 'About';
-  String aboutPageUrl = 'https://shorturl.at/hilqL'; // 'https://about.2i2i.app';
+  String aboutPageUrl =
+      'https://shorturl.at/hilqL'; // 'https://about.2i2i.app';
   String scanInWalletConnect = 'Use WalletConnect\n(e.g. Algorand Wallet)';
 
   Strings._internal();
@@ -161,6 +162,7 @@ class Strings {
   //Meeting History
   String meetingsHistory = 'Meetings History';
   String history = 'History';
-
+  String asGuest = 'As Guest';
+  String asHost = 'As Host';
   String friendList = 'Friend list';
 }
