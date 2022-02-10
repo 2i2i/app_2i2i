@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../commons/custom_dialogs.dart';
@@ -42,7 +42,7 @@ class KeysWidget extends StatelessWidget {
       children: [
         SizedBox(height: 4),
         Text(
-          'Please read carefully',
+          Keys.pleaseReadCarefully.tr(context),
           style: Theme.of(context)
               .textTheme
               .headline6,
@@ -51,13 +51,13 @@ class KeysWidget extends StatelessWidget {
         RichText(
           text: TextSpan(
               text:
-              'Write down your recovery passphase(1-25 words). This is the',
+              Keys.writeDownRecovery.tr(context),
               style: Theme.of(context).textTheme.bodyText2?.copyWith(
                   color: AppTheme().lightSecondaryTextColor,
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: ' only way to recover your account in future.',
+                      text: ' ${Keys.recoverAccount.tr(context)}',
                       style: Theme.of(context)
                           .textTheme
                           .bodyText2,
@@ -83,7 +83,7 @@ class KeysWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        'Warning',
+                        Keys.warning.tr(context),
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
                             color: AppTheme().redColor,
                         ),
@@ -92,7 +92,7 @@ class KeysWidget extends StatelessWidget {
               ),
                   SizedBox(height: 8),
                   Text(
-                    'Do not share these words with anyone, as it grants full access to your account',
+                    Keys.doNotShare.tr(context),
                     style: Theme.of(context).textTheme.bodyText2?.copyWith(
                         color: AppTheme().redColor,
                     ),
@@ -152,7 +152,7 @@ class KeysWidget extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () =>
                             Navigator.of(context, rootNavigator: true).pop(),
-                        child: Text(Strings().close),
+                        child: Text(Keys.close.tr(context)),
                         style: ElevatedButton.styleFrom(
                             primary: AppTheme().redColor),
                       ),
@@ -165,11 +165,11 @@ class KeysWidget extends StatelessWidget {
                             Clipboard.setData(
                                 ClipboardData(text: perhaps.join(' ')));
                             CustomDialogs.showToastMessage(
-                                context, Strings().copyMessage);
+                                context, Keys.copyMessage.tr(context));
                           }
                           Navigator.of(context, rootNavigator: true).pop();
                         },
-                        child: Text('Copy'),
+                        child: Text(Keys.copy.tr(context)),
                         style: ElevatedButton.styleFrom(
                             primary: Theme.of(context).shadowColor),
                       ),

@@ -339,7 +339,7 @@ class AppTheme{
 
   AppBarTheme appBarTheme(bool dark,BuildContext context,{Color? textColor}) => AppBarTheme(
     elevation: 0,
-    backgroundColor: !dark ? primaryColor : primaryDarkColor,
+    backgroundColor: !dark ? primaryColor : null,
     iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
 
     titleTextStyle: TextStyle(

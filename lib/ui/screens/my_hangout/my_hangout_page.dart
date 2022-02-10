@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -94,10 +94,10 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
               child: UserBidInsList(
                 myHangoutPageViewModel: myHangoutPageViewModel,
                 titleWidget: Text(
-                  'Bids In',
+                  Keys.bidsIn.tr(context),
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                noBidsText: Strings().noBidFound,
+                noBidsText: Keys.noBidFound.tr(context),
                 onTap: (x) => {}, //myUserPageViewModel.acceptBid,
               ),
             ),

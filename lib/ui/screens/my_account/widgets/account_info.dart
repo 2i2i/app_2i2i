@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../commons/custom_dialogs.dart';
@@ -38,7 +39,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount / 1000000;
     String assetName =
-        assetId == 0 ? 'ALGO' : balanceModel.assetHolding.assetId.toString();
+        assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
       constraints: widget.shrinkwrap == true
@@ -164,7 +165,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       onPressed: () {
                         Clipboard.setData(
                             ClipboardData(text: widget.account.address));
-                        showToast('Copied to Clipboard',
+                        showToast(Keys.copyMessage.tr(context),
                             context: context,
                             animation: StyledToastAnimation.slideFromTop,
                             reverseAnimation: StyledToastAnimation.slideToTop,
