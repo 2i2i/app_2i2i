@@ -17,9 +17,9 @@ class Keys {
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';
   static const String theme = 'theme';
-  static const String light = 'Light';
-  static const String dark = 'Dark';
-  static const String auto = 'Auto';
+  static const String light = 'LIGHT';
+  static const String dark = 'DARK';
+  static const String auto = 'AUTO';
   static const String estWaitTime = 'estWaitTime';
   static const String automatic = 'automatic';
   static const String shareQr = 'shareQr';

@@ -10,8 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../../commons/custom_dialogs.dart';
-import 'widgets/language_widget.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
@@ -24,6 +22,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
     if (uid == null) return WaitPage();
     final hangout = ref.watch(hangoutProvider(uid));
     if (haveToWait(hangout)) {
@@ -206,12 +205,14 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.language.nameFromPath()),
+                    onTap: () =>
+                        context.pushNamed(Routes.language.nameFromPath()),
                     title: Text(
                       Keys.language.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    trailing: Text('EN'),
+                    trailing:
+                        Text((appSettingModel.locale?.languageCode ?? 'EN').toUpperCase()),
                   ),
                   ListTile(
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),

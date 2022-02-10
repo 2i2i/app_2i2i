@@ -132,7 +132,7 @@ class en {
       Keys.confirmInWallet: 'Please confirm in your wallet',
       Keys.noHostsFound: 'No Hosts found',
       Keys.pleaseReadCarefully: 'Please read carefully',
-      Keys.writeDownRecovery: 'Write down your recovery passphase(1-25 words). This is the',
+      Keys.writeDownRecovery: 'Write down your recovery passphrase(1-25 words). This is the',
       Keys.recoverAccount: 'only way to recover your account in future.',
       Keys.warning: 'Warning',
       Keys.doNotShare: 'Do not share these words with anyone, as it grants full access to your account',

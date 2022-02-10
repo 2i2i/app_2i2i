@@ -18,7 +18,7 @@ class AppSettingModel extends ChangeNotifier {
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
     getTheme(mode);
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> setLocal(String local) async {

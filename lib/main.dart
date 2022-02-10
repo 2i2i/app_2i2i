@@ -20,6 +20,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
+import 'ui/screens/home/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
@@ -67,14 +68,6 @@ Future<void> main() async {
   }).onError((error, stackTrace) {
     print(error);
   });
-
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
 }
 
 class MainWidget extends ConsumerStatefulWidget {

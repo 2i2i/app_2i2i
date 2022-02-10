@@ -23,6 +23,9 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
+
+    selectedIndex = languageList.indexWhere((element) => Locale(element['languageCode']) == appSettingModel.locale);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -52,7 +55,10 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
                           title: Text(languageList[index]['title']),
                           trailing: IconButton(
                               icon: (selectedIndex == index)
-                                  ? Icon(Icons.done)
+                                  ? Icon(Icons.done, color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .secondary,)
                                   : Container(),
                               onPressed: null),
                         ),
