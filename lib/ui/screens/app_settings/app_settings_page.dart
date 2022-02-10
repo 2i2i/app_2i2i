@@ -178,13 +178,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     onTap: (index){
                       switch (index) {
                         case 0:
-                          appSettingModel.setThemeMode("LIGHT");
+                          appSettingModel.setThemeMode(Keys.light);
                           break;
                         case 1:
-                          appSettingModel.setThemeMode("DARK");
+                          appSettingModel.setThemeMode(Keys.dark);
                           break;
                         case 2:
-                          appSettingModel.setThemeMode("AUTO");
+                          appSettingModel.setThemeMode(Keys.auto);
                           break;
                       }
                     },
