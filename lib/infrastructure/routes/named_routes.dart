@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
+import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
@@ -170,6 +171,16 @@ class NamedRoutes {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(HangoutSetting(fromBottomSheet: false)),
+          );
+        },
+      ),
+      GoRoute(
+        name: Routes.language.nameFromPath(),
+        path: Routes.language,
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(LanguagePage()),
           );
         },
       ),

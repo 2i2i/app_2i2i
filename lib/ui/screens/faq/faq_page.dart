@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -75,7 +75,7 @@ class _FAQPageState extends State<FAQPage> {
           child: ListView(
             children: [
               Text(
-                Strings().faq,
+                Keys.faq.tr(context),
                 style: Theme.of(context).textTheme.headline5,
               ),
               SizedBox(height: 20),

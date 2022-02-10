@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
@@ -61,7 +61,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
             .textTheme
             .overline!
             .copyWith(color: Theme.of(mainContext).shadowColor),
-        text: '${Strings().algoSec}');
+        text: '${Keys.algoSec.tr(mainContext)}');
 
     TextSpan span = new TextSpan(
       children: [span1, span2],

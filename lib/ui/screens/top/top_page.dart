@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
+import '../../../infrastructure/commons/keys.dart';
 import 'widgets/top_speeds_page.dart';
 import 'widgets/top_durations_page.dart';
 
@@ -35,7 +36,7 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                   height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.height * 0.18,
                 ),
-                Text('Who’s Top?'.toUpperCase(),
+                Text(Keys.whoTop.tr(context).toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
                         .headline5?.copyWith(
@@ -59,12 +60,12 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                     tabs: [
                       Container(
                           child: Tab(
-                            text: 'Top Speeds',
+                            text: Keys.topSpeeds.tr(context),
                           ),
                           height: kRadialReactionRadius + 12),
                       Container(
                           child: Tab(
-                            text: 'Top Durations',
+                            text: Keys.topDurations.tr(context),
                           ),
                           height: kRadialReactionRadius + 12),
                     ],

@@ -1,6 +1,8 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../infrastructure/commons/keys.dart';
 
 class CustomAlertWidget {
   static showBidAlert(BuildContext context,Widget child,{bool isDismissible = true}) {
@@ -41,7 +43,7 @@ class CustomAlertWidget {
       );
     }
     var dialog = CupertinoAlertDialog(
-      title: Text(title??Strings().error,style: TextStyle(
+      title: Text(title??Keys.error.tr(context),style: TextStyle(
         color: Theme.of(context).errorColor,
       ),),
       content: messageWidget,

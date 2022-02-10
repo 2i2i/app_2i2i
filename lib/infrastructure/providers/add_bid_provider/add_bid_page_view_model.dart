@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:algorand_dart/algorand_dart.dart';
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
@@ -84,7 +84,7 @@ class AddBidPageViewModel {
           final message = cause.response?.data['message'];
           if (context != null) {
             CustomAlertWidget.showErrorDialog(
-                context, Strings().errorWhileAddBid,
+                context, Keys.errorWhileAddBid.tr(context),
                 errorStacktrace: '$message');
           }
           log('AlgorandException ' + message);

@@ -2,8 +2,9 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../infrastructure/models/meeting_model.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 import 'widgets/rating_tile.dart';
@@ -32,7 +33,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     } else if (ratingListAsyncValue is AsyncError) {
       return Scaffold(
         body: Center(
-          child: Text("Something want wrong"),
+          child: Text(Keys.somethingWantWrong.tr(context),style: Theme.of(context).textTheme.subtitle1),
         ),
       );
     }
@@ -53,7 +54,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Ratings',
+                  Keys.ratings.tr(context),
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Spacer(),
@@ -92,14 +93,13 @@ class _RatingPageState extends ConsumerState<RatingPage> {
               child: ratingList.isEmpty
                   ? Center(
                       child: Text(
-                      'No ratings found',
-                      style: Theme.of(context).textTheme.subtitle2,
-                    ),)
+                        Keys.noRatingsFound.tr(context),
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),)
                   : ListView.builder(
                       itemCount: ratingList.length,
                       itemBuilder: (BuildContext context, int index) {
                         RatingModel ratingModel = ratingList[index];
-                        // RatingModel ratingModel = RatingModel(rating: 4, comment: "“It was great to talk to you, definely will talk later”");
                         return RatingTile(
                           ratingModel: ratingModel,
                         );
