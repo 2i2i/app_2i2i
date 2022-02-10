@@ -17,6 +17,8 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
+  TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +65,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: TextField(
               style: TextStyle(color: AppTheme().cardDarkColor),
               autofocus: false,
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: Keys.searchUserHint.tr(context),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _searchController.text = '';
+                          _searchController.clear();
+                          ref.watch(searchFilterProvider.state).state =  <String>[];
+                        },
+                        iconSize: 20,
+                        icon: Icon(
+                          Icons.close,
+                        ),
+                      )
+                    : IconButton(icon: Container(), onPressed: null),
                 filled: true,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -73,8 +89,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),

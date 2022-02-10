@@ -8,6 +8,7 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -368,18 +369,15 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
 final meetingHistoryProvider =
     StateProvider.family<HistoryViewModel?, String>((ref, uid) {
-  final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
+      final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
   final meetingHistoryBList = ref.watch(meetingHistoryB(uid));
   if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
     return null;
-
-  var list = [
-    ...meetingHistoryAList.asData!.value,
-    ...meetingHistoryBList.asData!.value
-  ];
-  return HistoryViewModel(meetingList: list);
+  return HistoryViewModel(
+      meetingListA: meetingHistoryAList.asData!.value,
+      meetingListB: meetingHistoryBList.asData!.value);
 });
 
 final addBidPageViewModelProvider =
