@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
-import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/commons/strings.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../create_bid/top_card_widget.dart';
 
 class HangoutSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;

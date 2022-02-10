@@ -29,7 +29,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('url-------------- \n ${Uri.base.toString()}');
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
     if (haveToWait(userPageBViewModel) || userPageBViewModel == null) {
       return WaitPage();
@@ -92,7 +91,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           onTap: () => context.pushNamed(
             Routes.createBid.nameFromPath(),
             extra: CreateBidPageRouterObject(
-              B: hangoutB,
+              B: widget.B,
               bidIns: bidInsSorted,
             ),
           ),
