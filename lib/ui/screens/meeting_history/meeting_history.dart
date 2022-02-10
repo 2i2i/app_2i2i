@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(Strings().asHost.toUpperCase()),
+                        Text(Keys.asHost.tr(context).toUpperCase()),
                         SizedBox(width: 8),
                         Icon(Icons.call_received_rounded,
                             color: AppTheme().green)
@@ -79,7 +80,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(Strings().asGuest.toUpperCase()),
+                        Text(Keys.asGuest.tr(context).toUpperCase()),
                         SizedBox(width: 8),
                         Icon(Icons.call_made_rounded, color: AppTheme().red)
                       ],

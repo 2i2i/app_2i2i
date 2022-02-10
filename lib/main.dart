@@ -17,10 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterfire_ui/i10n.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
-import 'ui/screens/home/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
