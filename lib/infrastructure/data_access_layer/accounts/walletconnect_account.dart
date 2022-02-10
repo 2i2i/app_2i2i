@@ -24,15 +24,17 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   late WalletConnect connector;
+  late AlgorandWalletConnectProvider provider;
 
   WalletConnectAccount(
-      {required AccountService accountService, required this.connector})
+      {required AccountService accountService, required this.connector, required this.provider})
       : super(accountService: accountService);
   factory WalletConnectAccount.fromNewConnector(
       {required AccountService accountService}) {
     final connector = newConnector();
+    final provider = AlgorandWalletConnectProvider(connector);
     return WalletConnectAccount(
-        accountService: accountService, connector: connector);
+        accountService: accountService, connector: connector, provider: provider);
   }
 
   // TODO cache management
@@ -84,6 +86,6 @@ class WalletConnectAccount extends AbstractAccount {
     final txnsBytes = txns
         .map((txn) => Encoder.encodeMessagePack(txn.toMessagePack()))
         .toList();
-    return connector.signTransactions(txnsBytes);
+    return provider.signTransactions(txnsBytes);
   }
 }

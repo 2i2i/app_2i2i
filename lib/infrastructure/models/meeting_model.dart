@@ -190,7 +190,7 @@ class Meeting extends Equatable {
   final String? addrA; // set if 0 < speed
   final String? addrB; // set if 0 < speed
 
-  final Map<String, int?> energy;
+  final Map<String, int?> energy; // MAX = A + CREATOR + B
 
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts

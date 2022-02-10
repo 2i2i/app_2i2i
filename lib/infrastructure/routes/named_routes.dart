@@ -18,7 +18,7 @@ import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -232,7 +232,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(MeetingHistoryList()),
+            child: getView(MeetingHistory()),
           );
         },
       ),
