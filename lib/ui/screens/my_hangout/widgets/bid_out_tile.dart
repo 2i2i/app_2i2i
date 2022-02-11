@@ -29,8 +29,11 @@ class BidOutTile extends ConsumerWidget {
     Hangout hangout = userAsyncValue.asData!.value;
     bidSpeed = (bidOut.speed.num / 1000000).toString();
 
-    if (hangout.status == 'OFFLINE') {
+    if (hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    if (hangout.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     }
     if (hangout.isInMeeting()) {
       statusColor = AppTheme().red;

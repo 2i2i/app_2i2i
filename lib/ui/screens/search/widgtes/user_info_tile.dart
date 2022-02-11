@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -34,7 +35,8 @@ class UserInfoTile extends ConsumerWidget {
     final bio = hangout.bio;
 
     var statusColor = AppTheme().green;
-    if (hangout.status == 'OFFLINE') statusColor = AppTheme().gray;
+    if (hangout.status == Keys.statusOFFLINE) statusColor = AppTheme().gray;
+    if (hangout.status == Keys.statusIDLE) statusColor = Colors.amber;
     if (hangout.isInMeeting()) statusColor = AppTheme().red;
 
     final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
