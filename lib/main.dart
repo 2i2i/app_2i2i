@@ -39,7 +39,7 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
   // await FirebaseAppCheck.instance.activate(
-  //   webRecaptchaSiteKey: '6Lf-IwoeAAAAAJ14IkTS2pWgolnAlWrDNw6hXn_a',
+  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
@@ -108,7 +108,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         provisional: false,
         sound: true,
       );
-
 
       // TODO the following is not working yet
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
