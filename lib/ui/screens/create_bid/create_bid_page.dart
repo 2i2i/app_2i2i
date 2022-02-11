@@ -672,6 +672,9 @@ class CustomSliderThumbRect extends SliderComponentShape {
   }
 
   String getValue(double value) {
+    if(min == null || min == null){
+      return '';
+    }
     return (min! + (max! - min!) * value).round().toString();
   }
 }
