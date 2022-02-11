@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../commons/custom.dart';
 import '../user_info/widgets/user_info_widget.dart';
@@ -21,7 +21,7 @@ class TopCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            Strings().createABid,
+            Keys.createABid.tr(context),
             style: Theme.of(context).textTheme.headline5,
           ),
           SizedBox(height: 8),

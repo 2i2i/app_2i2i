@@ -129,7 +129,6 @@ class Keys {
   static const String myProfile = 'myProfile';
   static const String bidIn = 'bidIn';
   static const String bidOut = 'bidOut';
-  static const String noBidFound = 'noBidFound';
   static const String meetingsHistory = 'meetingsHistory';
   static const String share = 'share';
   static const String copy = 'copy';
@@ -179,6 +178,6 @@ class Keys {
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)!.translate(this);
+    return ApplicationLocalizations.of(context)?.translate(this)??'';
   }
 }
