@@ -23,8 +23,8 @@ class HangoutChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat() async {
-    final status = 'ONLINE';
+  Future updateHeartbeat(String status) async {
+    // final status = 'ONLINE';
     return database.updateUserHeartbeat(uid, status);
   }
 
@@ -224,7 +224,7 @@ class Hangout extends Equatable {
       'numRatings': numRatings,
       'heartbeat': heartbeat,
       'rule': rule.toMap(),
-      'loungeHistory': loungeHistory.map((e) => e.index),
+      'loungeHistory': loungeHistory.map((e) => e.index).toList(),
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,

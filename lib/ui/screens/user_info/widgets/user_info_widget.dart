@@ -5,6 +5,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
@@ -44,8 +45,11 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         widget.hangout.bio; //user.bio.substring(shortBioStart, shortBioEnd);
 
     var statusColor = AppTheme().green;
-    if (widget.hangout.status == 'OFFLINE') {
+    if (widget.hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    else if (widget.hangout.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     } else if (widget.hangout.isInMeeting()) {
       statusColor = AppTheme().red;
     }
@@ -226,20 +230,21 @@ class UserRulesWidget extends StatelessWidget {
         onTap: () => onTapRules?.call(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: ListTile.divideTiles(
-            tiles: [
-              Column(
+          children: [
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${hangout.rule.minSpeed/1000000} A/sec',
+                    '${(hangout.rule.minSpeed/1000000).toStringAsFixed(2)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.bolt,
@@ -255,12 +260,15 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: 25,
-                width: 1,
-                color: Theme.of(context).dividerColor,
-              ),
-              Column(
+            ),
+            Container(
+              height: 25,
+              width: 1,
+              margin: EdgeInsets.symmetric(horizontal: 3),
+              color: Theme.of(context).dividerColor,
+            ),
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -273,6 +281,7 @@ class UserRulesWidget extends StatelessWidget {
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.timer,
@@ -288,23 +297,28 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: 25,
-                width: 1,
-                color: Theme.of(context).dividerColor,
-              ),
-              Column(
+            ),
+            Container(
+              height: 25,
+              width: 1,
+              margin: EdgeInsets.symmetric(horizontal: 3),
+              color: Theme.of(context).dividerColor,
+            ),
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     '${importanceString()}',
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.arrow_upward,
@@ -320,10 +334,8 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-            color: Colors.transparent,
-            context: context,
-          ).toList(),
+            ),
+          ],
         ),
       ),
     );

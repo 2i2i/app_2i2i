@@ -91,7 +91,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           onTap: () => context.pushNamed(
             Routes.createBid.nameFromPath(),
             extra: CreateBidPageRouterObject(
-              B: hangoutB,
+              B: widget.B,
               bidIns: bidInsSorted,
             ),
           ),
@@ -143,7 +143,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             ),
             child: Padding(
               padding: const EdgeInsets.only(
-                  right: 20, left: 20, bottom: 14, top: 16),
+                  right: 20, left: 20, bottom: 14, top: 4),
               child: UserInfoWidget(
                 hangout: hangoutB,
                 isFav: isFriend,
