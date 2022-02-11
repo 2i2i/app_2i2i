@@ -91,7 +91,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           onTap: () => context.pushNamed(
             Routes.createBid.nameFromPath(),
             extra: CreateBidPageRouterObject(
-              B: hangoutB,
+              B: widget.B,
               bidIns: bidInsSorted,
             ),
           ),

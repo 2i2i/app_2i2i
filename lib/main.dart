@@ -20,6 +20,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/screens/localization/app_localization.dart';
+import 'ui/screens/home/wait_page.dart';
+import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
