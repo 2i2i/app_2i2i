@@ -62,8 +62,7 @@ class BidInTile extends StatelessWidget {
               children: [
                 SizedBox(width: 4),
                 InkResponse(
-                  onTap: () =>
-                      context.pushNamed(Routes.user.nameFromPath(), params: {
+                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': hangout.id,
                   }),
                   child: SizedBox(
