@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  Strings().appRatingTitle,
+                  Keys.appRatingTitle.tr(context),
                   style: Theme.of(context).textTheme.headline4,
                 ),
                 SizedBox(height: 8),
@@ -102,7 +102,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                         widget.showRating.value = {'show': false}
                       },
                       child: Text(
-                        Strings().cancel,
+                        Keys.cancel.tr(context),
                       ),
                     ),
                     SizedBox(width: 10),
@@ -125,7 +125,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                         widget.showRating.value = {'show': false};
                       },
                       child: Text(
-                        Strings().appRatingSubmitButton,
+                        Keys.appRatingSubmitButton.tr(context),
                       ),
                       style: TextButton.styleFrom(
                         primary: Theme.of(context).colorScheme.secondary,

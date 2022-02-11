@@ -188,7 +188,7 @@ class BidInTile extends StatelessWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: 'Accumulated support ',
+                        text: '${Keys.accumulatedSupport.tr(context)} ',
                         children: [
                           TextSpan(
                               text: ' $budgetCount',
@@ -207,7 +207,7 @@ class BidInTile extends StatelessWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: 'Starts in ',
+                        text: '${Keys.startsIn.tr(context)} ',
                         children: [
                           TextSpan(
                               text:

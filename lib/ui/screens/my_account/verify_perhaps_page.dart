@@ -5,6 +5,8 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/commons/keys.dart';
+
 class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
   final LocalAccount account;
@@ -40,7 +42,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Verify recovery passphrase backup',
+              Keys.verifyRecovery.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 30),
@@ -51,7 +53,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                   Question question = data[index];
                   List options = question.options;
                   return ListTile(
-                    title: Text('Select word #${question.index + 1}'),
+                    title: Text('${Keys.selectWord.tr(context)} #${question.index + 1}'),
                     subtitle: Row(
                       children: List.generate(options.length, (index) {
                         String text = options[index];
@@ -116,7 +118,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                   Navigator.of(context).pop();
                 }
               : null,
-          child: Text('Complete'),
+          child: Text(Keys.complete.tr(context)),
         ),
       ),
     );

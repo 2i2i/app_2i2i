@@ -176,7 +176,7 @@ class BidOutTile extends ConsumerWidget {
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                        text: 'Support :',
+                        text: '${Keys.speed.tr(context)} :',
                         children: [
                           TextSpan(
                               text: ' ${bidOut.energy}',

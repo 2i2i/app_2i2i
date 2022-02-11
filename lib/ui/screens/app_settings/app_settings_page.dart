@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 
@@ -16,12 +16,14 @@ class AppSettingPage extends ConsumerStatefulWidget {
   _AppSettingPageState createState() => _AppSettingPageState();
 }
 
-class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin{
+class _AppSettingPageState extends ConsumerState<AppSettingPage>
+    with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
     if (uid == null) return WaitPage();
     final hangout = ref.watch(hangoutProvider(uid));
     if (haveToWait(hangout)) {
@@ -31,7 +33,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     return Scaffold(
       appBar: CustomAppbar(
         title: Text(
-          Strings().settings,
+          Keys.settings.tr(context),
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
@@ -43,7 +45,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
           children: [
             //profile
             Text(
-              Strings().account,
+              Keys.account.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -53,14 +55,14 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          Strings().userName+' ',
+                          Keys.userName.tr(context) + ' ',
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Flexible(
@@ -79,22 +81,22 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.hangoutSetting.nameFromPath());
                     },
                     title: Text(
-                      Strings().bio,
+                      Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                       textAlign: TextAlign.start,
                     ),
                     trailing: Icon(Icons.navigate_next),
                   ),
                   ListTile(
-                    onTap: (){
+                    onTap: () {
                       context.pushNamed(Routes.account.nameFromPath());
                     },
                     title: Text(
-                      Strings().wallet,
+                      Keys.wallet.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -113,25 +115,27 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
+                    onTap: () =>
+                        context.pushNamed(Routes.blocks.nameFromPath()),
                     title: Text(
-                      Strings().blockList,
+                      Keys.blockList.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
                     ),
                   ),
-                  // ListTile(
-                  //   onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
-                  //   title: Text(
-                  //     Strings().meetingsHistory,
-                  //     style: Theme.of(context).textTheme.subtitle1,
-                  //   ),
-                  //   trailing: Icon(
-                  //     Icons.navigate_next,
-                  //   ),
-                  // ),
+                  ListTile(
+                    onTap: () =>
+                        context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    title: Text(
+                      Keys.meetingsHistory.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -139,7 +143,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
             //theme
             Text(
-              'Theme',
+              Keys.theme.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -147,43 +151,46 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
                 var appSettingModel = ref.watch(appSettingProvider);
                 int selectedIndex = 0;
-                if(appSettingModel.currentThemeMode == ThemeMode.system){
+                if (appSettingModel.currentThemeMode == ThemeMode.system) {
                   selectedIndex = 2;
-                }else if(appSettingModel.currentThemeMode == ThemeMode.dark){
+                } else if (appSettingModel.currentThemeMode == ThemeMode.dark) {
                   selectedIndex = 1;
                 }
                 return Container(
                   decoration: Custom.getBoxDecoration(context),
                   child: TabBar(
-                    controller: TabController(length: 3, vsync: this,initialIndex: selectedIndex),
+                    controller: TabController(
+                        length: 3, vsync: this, initialIndex: selectedIndex),
                     indicatorPadding: EdgeInsets.all(3),
                     indicator: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
-                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    unselectedLabelColor:
+                        Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor:
+                        Theme.of(context).tabBarTheme.unselectedLabelColor,
                     tabs: [
                       Tab(
-                        text: 'Light',
+                        text: Keys.light.tr(context),
                       ),
                       Tab(
-                        text: 'Dark',
+                        text: Keys.dark.tr(context),
                       ),
                       Tab(
-                        text: 'Auto',
+                        text: Keys.auto.tr(context),
                       ),
                     ],
-                    onTap: (index){
+                    onTap: (index) {
                       switch (index) {
                         case 0:
-                          appSettingModel.setThemeMode("LIGHT");
+                          appSettingModel.setThemeMode(Keys.light);
                           break;
                         case 1:
-                          appSettingModel.setThemeMode("DARK");
+                          appSettingModel.setThemeMode(Keys.dark);
                           break;
                         case 2:
-                          appSettingModel.setThemeMode("AUTO");
+                          appSettingModel.setThemeMode(Keys.auto);
                           break;
                       }
                     },
@@ -195,7 +202,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
             //link
             Text(
-              'More',
+              Keys.more.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
@@ -204,9 +211,20 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: Column(
                 children: [
                   ListTile(
+                    onTap: () =>
+                        context.pushNamed(Routes.language.nameFromPath()),
+                    title: Text(
+                      Keys.language.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Text(
+                        (appSettingModel.locale?.languageCode ?? 'EN')
+                            .toUpperCase()),
+                  ),
+                  ListTile(
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
-                      Strings().faq,
+                      Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -217,7 +235,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     onTap: () async {
                       try {
                         await launch(
-                          Strings().aboutPageUrl,
+                          Keys.aboutPageUrl.tr(context),
                           forceSafariVC: true,
                           forceWebView: true,
                         );
@@ -226,7 +244,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       }
                     },
                     title: Text(
-                      Strings().about,
+                      Keys.about.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -271,12 +289,5 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         ),
       ),
     );
-  }
-
-  String getThemeModeName(ThemeMode? currentThemeMode) {
-    if (currentThemeMode == ThemeMode.dark) {
-      return 'Dark Mode';
-    }
-    return 'Light Mode';
   }
 }

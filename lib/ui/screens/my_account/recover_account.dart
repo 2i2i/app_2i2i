@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../infrastructure/commons/keys.dart';
+
 class RecoverAccountPage extends ConsumerStatefulWidget {
   const RecoverAccountPage({Key? key}) : super(key: key);
 
@@ -39,12 +41,12 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Recover account',
+                        Keys.recoverAccounts.tr(context),
                         style: Theme.of(context).textTheme.headline5,
                       ),
                       SizedBox(height: 5),
                       Text(
-                        'Fill all 25 valid keys of your account that you want to recover',
+                        Keys.recoverAccountWarning.tr(context),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -190,7 +192,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                         : () {
                             onClickRecover();
                           },
-                    child: Text('Recover'),
+                    child: Text(Keys.recover.tr(context)),
                   ),
                 ),
                 SizedBox(height: 20),

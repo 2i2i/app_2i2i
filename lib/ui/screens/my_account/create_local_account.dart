@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
@@ -30,12 +30,12 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Create Local Account',
+              Keys.createLocalAccount.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 5),
             Text(
-              'Do not share these words with anyone, as it grants full access to your account.',
+              Keys.createLocalAccountWarning.tr(context),
               style: Theme.of(context).textTheme.caption,
             ),
             SizedBox(height: 6),
@@ -85,7 +85,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                               onPressed: () {
                                 if (perhaps.isNotEmpty) {
                                   Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                                  CustomDialogs.showToastMessage(context, Strings().copyMessage);
+                                  CustomDialogs.showToastMessage(context, Keys.copyMessage.tr(context));
                                   context.pop();
 
                                   context.pushNamed(
@@ -98,7 +98,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
 
                                 }
                               },
-                              child: Text(Strings().copyAndNext),
+                              child: Text(Keys.copyAndNext.tr(context)),
                             ),
                           ],
                         );

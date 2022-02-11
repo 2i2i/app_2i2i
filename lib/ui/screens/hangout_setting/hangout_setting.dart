@@ -7,10 +7,12 @@ import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+
 
 class HangoutSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
@@ -40,6 +42,9 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
+
+
+  RichTextController? bioTextController;
 
   @override
   void initState() {
@@ -169,6 +174,12 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   @override
   Widget build(BuildContext context) {
+    bioTextController ??= RichTextController(
+      patternMatchMap:{
+        RegExp(r"(?:#)[a-zA-Z0-9]+"):
+        TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+      }, onMatch: (List<String> match) {},
+    );
     final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
@@ -182,14 +193,14 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             const SizedBox(height: 10),
             Text(
               widget.fromBottomSheet ?? false
-                  ? Strings().setUpAccount
-                  : Strings().hangoutSettings,
+                  ? Keys.setUpAccount.tr(context)
+                  : Keys.hangoutSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
 
             Text(
-              Strings().name,
+              Keys.name.tr(context),
               style: Theme.of(context).textTheme.bodyText1,
             ),
             const SizedBox(height: 6),
@@ -208,24 +219,24 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               validator: (value) {
                 value ??= '';
                 if (value.trim().isEmpty) {
-                  return Strings().required;
+                  return Keys.required.tr(context);
                 }
                 return null;
               },
               decoration: InputDecoration(
                 filled: true,
-                hintText: Strings().yourNameHint,
+                hintText: Keys.yourNameHint.tr(context),
               ),
             ),
             const SizedBox(height: 30),
 
             Text(
-              Strings().bio,
+              Keys.bio.tr(context),
               style: Theme.of(context).textTheme.bodyText1,
             ),
             const SizedBox(height: 6),
             TextFormField(
-              controller: bioEditController,
+              controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
@@ -237,7 +248,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                 filled: true,
                 // fillColor: Theme.of(context).primaryColorLight,
                 border: OutlineInputBorder(),
-                hintText: Strings().bioExample,
+                hintText: Keys.bioExample.tr(context),
               ),
             ),
             const SizedBox(height: 30),
@@ -248,7 +259,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '${Strings().minSpeed}: ${minSpeedString()}',
+                    '${Keys.minSpeed.tr(context)}: ${minSpeedString()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
@@ -265,19 +276,19 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                     validator: (value) {
                       value ??= '';
                       if (value.trim().isEmpty || int.tryParse(value) == null) {
-                        return Strings().enterValidData;
+                        return Keys.enterValidData.tr(context);
                       }
                       return null;
                     },
                     decoration: InputDecoration(
                       filled: true,
-                      hintText: Strings().numberHint,
-                      suffix: Text(Strings().algoPerSec),
+                      hintText: Keys.numberHint.tr(context),
+                      suffix: Text(Keys.algoPerSec.tr(context)),
                     ),
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    Strings().maxDuration,
+                    Keys.maxDuration.tr(context),
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
@@ -316,8 +327,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                hintText: Strings().hh.toUpperCase(),
-                                // suffix: Text(Strings().algoPerSec),
+                                hintText: Keys.hh.tr(context).toUpperCase(),
+                                // suffix: Text(Keys..algoPerSec),
                               ),
                             ),
                           ),
@@ -351,8 +362,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                hintText: Strings().mm.toUpperCase(),
-                                // suffix: Text(Strings().algoPerSec),
+                                hintText: Keys.mm.tr(context).toUpperCase(),
+                                // suffix: Text(Keys..algoPerSec),
                               ),
                             ),
                           ),
@@ -386,8 +397,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                hintText: Strings().ss.toUpperCase(),
-                                // suffix: Text(Strings().algoPerSec),
+                                hintText: Keys.ss.tr(context).toUpperCase(),
+                                // suffix: Text(Keys..algoPerSec),
                               ),
                             ),
                           ),
@@ -397,7 +408,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    'Importance: ${importanceString()}',
+                    '${Keys.importance.tr(context)}: ${importanceString()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
@@ -410,7 +421,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                       children: [
                         SizedBox(width: 6),
                         Text(
-                          'Chrony',
+                          '${Keys.chrony.tr(context)}',
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Expanded(
@@ -450,7 +461,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                             ),
                           ),
                         ),
-                        Text('HighRoller',
+                        Text('${Keys.highRoller.tr(context)}',
                             style: Theme.of(context).textTheme.subtitle1),
                         SizedBox(width: 6),
                       ],
@@ -464,7 +475,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                         child: Padding(
                           padding: EdgeInsets.only(left: 12, top: 8),
                           child: Text(
-                            Strings().enterValidData,
+                            Keys.enterValidData.tr(context),
                             style: Theme.of(context)
                                 .textTheme
                                 .caption
@@ -483,7 +494,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               onPressed: () {
                 onClickSave(myUserPageViewModel, context);
               },
-              child: Text(Strings().save),
+              child: Text(Keys.save.tr(context)),
             )
           ],
         ),

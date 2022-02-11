@@ -5,7 +5,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
-import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
@@ -160,7 +160,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         builder:
                             (BuildContext context, bool value, Widget? child) {
                           return Text(
-                            value ? Strings().less : Strings().seeMore,
+                            value ? Keys.less.tr(context) : Keys.seeMore.tr(context),
                             style: Theme.of(context).textTheme.caption,
                           );
                         },
@@ -184,7 +184,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   ),
                   SizedBox(width: 2),
                   Text(
-                    'Est. Wait Time is ${secondsToSensibleTimePeriod(widget.estWaitTime!)}',
+                    '${Keys.estWaitTime.tr(context)} ${secondsToSensibleTimePeriod(widget.estWaitTime!)}',
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ],
@@ -252,7 +252,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        Strings().minSpeed,
+                        Keys.minSpeed.tr(context),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -285,7 +285,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        Strings().maxDuration,
+                        Keys.maxDuration.tr(context),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -317,7 +317,7 @@ class UserRulesWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 2),
                       Text(
-                        'Importance',
+                        Keys.importance.tr(context),
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ],
@@ -336,7 +336,6 @@ class UserRulesWidget extends StatelessWidget {
   String getDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    // String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
   }
 }

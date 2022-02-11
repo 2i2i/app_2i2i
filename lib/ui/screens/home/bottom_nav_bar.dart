@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
@@ -53,7 +53,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                   },
                   items: [
                     BottomNavigationBarItem(
-                      label: Strings().home,
+                      label: Keys.home.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: SvgPicture.asset('assets/icons/house.svg',
@@ -62,7 +62,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       icon: SvgPicture.asset('assets/icons/house.svg'),
                     ),
                     BottomNavigationBarItem(
-                      label: Strings().profile,
+                      label: Keys.profile.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: SvgPicture.asset('assets/icons/person.svg',
@@ -71,7 +71,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       icon: ProfileIcon(),
                     ),
                     BottomNavigationBarItem(
-                      label: Strings().bidOut,
+                      label: Keys.bidOut.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: Icon(Icons.call_made,
@@ -83,7 +83,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       ),
                     ),
                     BottomNavigationBarItem(
-                      label: Strings().favorites,
+                      label: Keys.favorites.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: Icon(Icons.favorite,
@@ -95,7 +95,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       ),
                     ),
                     BottomNavigationBarItem(
-                      label: Strings().settings,
+                      label: Keys.settings.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: SvgPicture.asset('assets/icons/setting.svg',
