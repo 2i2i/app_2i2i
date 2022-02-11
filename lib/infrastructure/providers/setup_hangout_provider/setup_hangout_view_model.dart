@@ -104,8 +104,8 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    // await algorand.giftALGO(account);
-    // await account.updateBalances();
+    await algorand.giftALGO(account);
+    await account.updateBalances();
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,

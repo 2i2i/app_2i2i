@@ -1,6 +1,7 @@
 {
   "projects": {
-    "test": "i2i-test"
+    "test": "i2i-test",
+    "main": "app-2i2i"
   },
   "targets": {}
 }
