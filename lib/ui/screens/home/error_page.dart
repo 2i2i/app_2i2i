@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../infrastructure/commons/keys.dart';
+
 class ErrorPage extends StatelessWidget {
   const ErrorPage(this.exception);
   final Exception? exception;
@@ -18,7 +20,7 @@ class ErrorPage extends StatelessWidget {
           SizedBox(
             height: 100,
           ),
-          Text('ERROR'),
+          Text(Keys.error.toUpperCase()),
         ],
       ),
     );

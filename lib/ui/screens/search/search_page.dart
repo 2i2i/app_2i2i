@@ -6,7 +6,7 @@ import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'widgtes/user_info_tile.dart';
@@ -17,6 +17,8 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
+  TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +65,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: TextField(
               style: TextStyle(color: AppTheme().cardDarkColor),
               autofocus: false,
+              controller: _searchController,
               decoration: InputDecoration(
-                hintText: Strings().searchUserHint,
+                hintText: Keys.searchUserHint.tr(context),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _searchController.text = '';
+                          _searchController.clear();
+                          ref.watch(searchFilterProvider.state).state =  <String>[];
+                        },
+                        iconSize: 20,
+                        icon: Icon(
+                          Icons.close,
+                        ),
+                      )
+                    : IconButton(icon: Container(), onPressed: null),
                 filled: true,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -73,8 +89,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),

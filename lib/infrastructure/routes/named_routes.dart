@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
+import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
@@ -18,7 +19,7 @@ import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/my_hangout/meeting_history_list.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -33,24 +34,36 @@ import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
-
+  static String? previousRouteLocation;
   static bool updateAvailable = false;
-
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
       final locked = isUserLocked.value;
-
       final goingToLocked = state.location == Routes.lock;
-
+      bool validForPrevious = !goingToLocked && state.location != Routes.root && state.location != previousRouteLocation;
+      if(validForPrevious){
+        previousRouteLocation = state.location;
+      }
       if (locked && goingToLocked) {
         return null;
       } else if (!locked && goingToLocked) {
+        if(previousRouteLocation?.isNotEmpty??false){
+          return previousRouteLocation;
+        }
         return Routes.root;
       } else if (locked) {
         return Routes.lock;
+      }
+      if(previousRouteLocation is String){
+        if(showRating.value['show'] == true) {
+          String a = '$previousRouteLocation';
+          previousRouteLocation = null;
+          print('========== $a');
+          return null;
+        }
       }
       return null;
     },
@@ -161,6 +174,16 @@ class NamedRoutes {
         },
       ),
       GoRoute(
+        name: Routes.language.nameFromPath(),
+        path: Routes.language,
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(LanguagePage()),
+          );
+        },
+      ),
+      GoRoute(
         name: Routes.recover.nameFromPath(),
         path: Routes.recover,
         pageBuilder: (context, state) {
@@ -232,7 +255,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(MeetingHistoryList()),
+            child: getView(MeetingHistory()),
           );
         },
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
@@ -172,7 +173,7 @@ class BidOutTile extends ConsumerWidget {
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                        text: 'Support :',
+                        text: '${Keys.speed.tr(context)} :',
                         children: [
                           TextSpan(
                               text: ' ${bidOut.energy}',

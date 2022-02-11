@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 
 import '../../../commons/qr_image.dart';
@@ -25,7 +25,7 @@ class QrImagePage extends StatelessWidget {
           children: [
             SizedBox(height: 10),
             Text(
-              Strings().scanInWalletConnect,
+              Keys.scanInWalletConnect.tr(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1?.copyWith(
                 color: Colors.black,
@@ -49,7 +49,7 @@ class QrImagePage extends StatelessWidget {
               ),
               onPressed: (){
                 Navigator.of(context,rootNavigator: true).pop();
-              }, child: Text('Close'.toUpperCase()),
+              }, child: Text(Keys.close.tr(context).toUpperCase()),
             )
           ],
         ),

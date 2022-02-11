@@ -15,10 +15,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutterfire_ui/i10n.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'infrastructure/commons/strings.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
+import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -54,29 +55,25 @@ Future<void> main() async {
         'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
   }, appRunner: () {
     FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-      return runApp(
-        ProviderScope(
-          child: MainWidget(themeMode: value ?? "AUTO"),
-        ),
-      );
+      FlutterSecureStorage().read(key: 'language').then((local) {
+        return runApp(
+          ProviderScope(
+            child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+          ),
+        );
+      });
     });
   }).onError((error, stackTrace) {
     print(error);
   });
-
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
 }
 
 class MainWidget extends ConsumerStatefulWidget {
   final String themeMode;
+  final String local;
 
-  const MainWidget({required this.themeMode, Key? key}) : super(key: key);
+  const MainWidget(this.local, {required this.themeMode, Key? key})
+      : super(key: key);
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -88,7 +85,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (timer == null) {
         timer = Timer.periodic(Duration(seconds: 10), (timer) async {
@@ -98,6 +94,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
         });
       }
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
+      ref.watch(appSettingProvider).getLocal(widget.local);
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       messaging.requestPermission(
@@ -132,8 +129,20 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
     var appSettingModel = ref.watch(appSettingProvider);
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
-      title: Strings().appName,
+      title: '2i2i',
       debugShowCheckedModeBanner: false,
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale("de", "AT"),
+        Locale('ar', 'AR'),
+      ],
+      locale: appSettingModel.locale,
+      localizationsDelegates: [
+        ApplicationLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       themeMode: appSettingModel.currentThemeMode,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),

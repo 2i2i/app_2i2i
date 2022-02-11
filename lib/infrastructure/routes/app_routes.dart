@@ -8,6 +8,7 @@ class Routes {
 
   static const account = '/account';
   static const faq = '/faq';
+  static const language = '/language';
   static const login = '/login';
   static const lock = '/lock';
   static const top = '/top';
@@ -65,6 +66,8 @@ extension name on String{
         return 'account';
       case Routes.faq:
         return 'faq';
+      case Routes.language:
+        return 'language';
       case Routes.meetingHistory:
         return 'meetingHistory';
       default:

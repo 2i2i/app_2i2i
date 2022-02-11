@@ -7,9 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -50,7 +49,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (timer != null) return;
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      log(J + 'RingingPage - Timer');
       final finishFuture = finish();
       final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
       await Future.wait([finishFuture, endMeetingFuture]);
@@ -81,12 +79,11 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   String comment(RingingPageViewModel ringingPageViewModel) => ringingPageViewModel
           .amA()
-      ? 'Please pick up for ${shortString(ringingPageViewModel.otherUser.name)}'
-      : 'Waiting for ${shortString(ringingPageViewModel.otherUser.name)} to pick up';
+      ? '${Keys.pickUpMsg.tr(context)} ${shortString(ringingPageViewModel.otherUser.name)}'
+      : '${Keys.waitingFor.tr(context)} ${shortString(ringingPageViewModel.otherUser.name)} ${Keys.toPickUp.tr(context)}';
 
   @override
   Widget build(BuildContext context) {
-    log(F + 'RingingPage - build');
     final _ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
     if (haveToWait(_ringingPageViewModel)) {
       return WaitPage();
@@ -132,7 +129,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
       maxDuration = ringingPageViewModel!.meeting.maxDuration();
     }
 
-    log(F + 'RingingPage - scaffold');
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -185,7 +181,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     Visibility(
                       visible: !amA && bidComment.isNotEmpty,
                       child: Text(
-                        'Note: $bidComment',
+                        '${Keys.Note.tr(context)}: $bidComment',
                         maxLines: 2,
                         softWrap: true,
                         textAlign: TextAlign.center,
@@ -286,7 +282,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                               child: CircleAvatar(
                                   radius: kToolbarHeight,
                                   child: Text(
-                                    'Start',
+                                    '${Keys.Start.tr(context)}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .subtitle1
@@ -308,8 +304,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 borderRadius: BorderRadius.circular(20)),
                             child: Text(
                                 amA
-                                    ? 'We are connecting the Host....'
-                                    : 'We are connecting the Guest....',
+                                    ? '${Keys.connectingHost.tr(context)}'
+                                    : '${Keys.connectingGuest.tr(context)}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2

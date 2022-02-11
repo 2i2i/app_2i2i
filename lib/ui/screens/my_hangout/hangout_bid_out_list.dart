@@ -5,6 +5,8 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import 'widgets/bid_out_tile.dart';
 
@@ -23,7 +25,7 @@ class UserBidOut extends ConsumerWidget {
     return Scaffold(
       appBar: CustomAppbar(
         title: Text(
-          'Waiting as a Guest',
+          Keys.waitingGuest.tr(context),
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
