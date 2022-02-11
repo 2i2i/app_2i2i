@@ -13,6 +13,12 @@ class Keys {
   static const String alertDefault = 'alertDefault';
   static const String alertCancel = 'alertCancel';
   static const String myReadBids = 'myReadBids';
+  static const String asGuest = 'As Guest';
+  static const String asHost = 'As Host';
+  static const String noBidFound = 'noBidFound';
+  static const String statusONLINE = 'ONLINE';
+  static const String statusOFFLINE = 'OFFLINE';
+  static const String statusIDLE = 'IDLE';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';
@@ -123,7 +129,6 @@ class Keys {
   static const String myProfile = 'myProfile';
   static const String bidIn = 'bidIn';
   static const String bidOut = 'bidOut';
-  static const String noBidFound = 'noBidFound';
   static const String meetingsHistory = 'meetingsHistory';
   static const String share = 'share';
   static const String copy = 'copy';
@@ -160,6 +165,7 @@ class Keys {
   static const String waitingGuest = 'waitingGuest';
   static const String pickUpMsg = 'pickUpMsg';
   static const String waitingFor = 'waitingFor';
+
   static const String toPickUp = 'toPickUp';
   static const String Note = 'Note';
   static const String Start = 'Start';
@@ -176,6 +182,6 @@ class Keys {
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)!.translate(this);
+    return ApplicationLocalizations.of(context)?.translate(this)??'';
   }
 }

@@ -14,7 +14,6 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../create_bid/top_card_widget.dart';
 
 
-
 class HangoutSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
 
