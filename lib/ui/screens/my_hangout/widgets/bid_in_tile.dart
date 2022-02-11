@@ -39,8 +39,11 @@ class BidInTile extends StatelessWidget {
     budgetCountInt += bidInList[index].public.energy;
     final budgetCount = budgetCountInt / 1000000;
 
-    if (hangout.status == 'OFFLINE') {
+    if (hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    if (hangout.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     }
     if (hangout.isInMeeting()) {
       statusColor = AppTheme().red;
@@ -62,8 +65,7 @@ class BidInTile extends StatelessWidget {
               children: [
                 SizedBox(width: 4),
                 InkResponse(
-                  onTap: () =>
-                      context.pushNamed(Routes.user.nameFromPath(), params: {
+                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': hangout.id,
                   }),
                   child: SizedBox(

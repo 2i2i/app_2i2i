@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import '../../commons/keys.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 
@@ -22,7 +23,7 @@ class MyHangoutPageViewModel {
   Future<bool> acceptBid(BidIn bidIn) async {
     if (!bidIn.public.active) return false;
 
-    if (bidIn.hangout!.status == 'OFFLINE' || bidIn.hangout!.isInMeeting()) {
+    if (bidIn.hangout!.status == Keys.statusOFFLINE || bidIn.hangout!.isInMeeting()) {
       await cancelNoShow(bidIn: bidIn);
       return false;
     }

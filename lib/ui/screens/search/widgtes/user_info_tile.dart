@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -34,7 +35,8 @@ class UserInfoTile extends ConsumerWidget {
     final bio = hangout.bio;
 
     var statusColor = AppTheme().green;
-    if (hangout.status == 'OFFLINE') statusColor = AppTheme().gray;
+    if (hangout.status == Keys.statusOFFLINE) statusColor = AppTheme().gray;
+    if (hangout.status == Keys.statusIDLE) statusColor = Colors.amber;
     if (hangout.isInMeeting()) statusColor = AppTheme().red;
 
     final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
@@ -47,105 +49,103 @@ class UserInfoTile extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.only(bottom: marginBottom ?? 0),
       decoration: Custom.getBoxDecoration(context, radius: 12),
-      child: InkWell(
-        onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-          'uid': hangout.id,
-        }),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
-          child: Row(
-            children: [
-              ProfileWidget(
-                stringPath: hangout.name,
-                radius: 62,
-                hideShadow: true,
-                showBorder: true,
-                statusColor: statusColor,
-                style: Theme.of(context).textTheme.headline5,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            name,
-                            style: Theme.of(context).textTheme.subtitle1,
-                            maxLines: 2,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
+        child: Row(
+          children: [
+            ProfileWidget(
+              stringPath: hangout.name,
+              radius: 62,
+              onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                'uid': hangout.id,
+              }),
+              hideShadow: true,
+              showBorder: true,
+              statusColor: statusColor,
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: Theme.of(context).textTheme.subtitle1,
+                          maxLines: 2,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IgnorePointer(
-                              ignoring: true,
-                              child: RatingBar.builder(
-                                initialRating: hangout.rating * 5,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                tapOnlyMode: true,
-                                updateOnDrag: false,
-                                itemCount: 5,
-                                itemSize: 16,
-                                allowHalfRating: true,
-                                glowColor: Colors.white,
-                                ignoreGestures: false,
-                                unratedColor: Colors.grey.shade300,
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star_rounded,
-                                  color: Colors.grey,
-                                ),
-                                onRatingUpdate: (double value) {},
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IgnorePointer(
+                            ignoring: true,
+                            child: RatingBar.builder(
+                              initialRating: hangout.rating * 5,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              tapOnlyMode: true,
+                              updateOnDrag: false,
+                              itemCount: 5,
+                              itemSize: 16,
+                              allowHalfRating: true,
+                              glowColor: Colors.white,
+                              ignoreGestures: false,
+                              unratedColor: Colors.grey.shade300,
+                              itemBuilder: (context, _) => Icon(
+                                Icons.star_rounded,
+                                color: Colors.grey,
                               ),
+                              onRatingUpdate: (double value) {},
                             ),
-                            SizedBox(width: 6),
-                            Text('${(hangout.rating * 5).toStringAsFixed(1)}',
-                                style: Theme.of(context).textTheme.caption)
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            bio,
-                            maxLines: 2,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyText1,
                           ),
+                          SizedBox(width: 6),
+                          Text('${(hangout.rating * 5).toStringAsFixed(1)}',
+                              style: Theme.of(context).textTheme.caption)
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          bio,
+                          maxLines: 2,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyText1,
                         ),
-                        isForBlockedUser
-                            ? IconButton(
-                                onPressed: () =>
-                                    userModelChanger.removeBlocked(hangout.id),
-                                icon: Icon(Icons.remove_circle_rounded))
-                            : IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => isFriend
-                                    ? userModelChanger.removeFriend(hangout.id)
-                                    : userModelChanger.addFriend(hangout.id),
-                                icon: Icon(isFriend
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded),
-                                color: isFriend ? Colors.red : Colors.grey,
-                              )
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                      ),
+                      isForBlockedUser
+                          ? IconButton(
+                              onPressed: () =>
+                                  userModelChanger.removeBlocked(hangout.id),
+                              icon: Icon(Icons.remove_circle_rounded))
+                          : IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () => isFriend
+                                  ? userModelChanger.removeFriend(hangout.id)
+                                  : userModelChanger.addFriend(hangout.id),
+                              icon: Icon(isFriend
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded),
+                              color: isFriend ? Colors.red : Colors.grey,
+                            )
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

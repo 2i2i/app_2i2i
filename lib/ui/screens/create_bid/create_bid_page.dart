@@ -631,3 +631,21 @@ class CustomSliderThumbRect extends SliderComponentShape {
 }
 
 
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr);
+    tp.layout();
+    Offset textCenter =
+        Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+    canvas.drawRRect(rRect, paint);
+    tp.paint(canvas, textCenter);
+  }
+
+  String getValue(double value) {
+    if(min == null || min == null){
+      return '';
+    }
+    return (min! + (max! - min!) * value).round().toString();
+  }
+}

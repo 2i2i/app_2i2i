@@ -171,6 +171,9 @@ class Keys {
   static const String topSpeeds = 'Top Speeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
+  static const String statusONLINE = 'ONLINE';
+  static const String statusOFFLINE = 'OFFLINE';
+  static const String statusIDLE = 'IDLE';
 }
 
 extension CustomTranslation on String {
