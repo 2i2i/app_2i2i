@@ -226,20 +226,21 @@ class UserRulesWidget extends StatelessWidget {
         onTap: () => onTapRules?.call(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: ListTile.divideTiles(
-            tiles: [
-              Column(
+          children: [
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${hangout.rule.minSpeed/1000000} A/sec',
+                    '${(hangout.rule.minSpeed/1000000).toStringAsFixed(2)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.bolt,
@@ -255,12 +256,15 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: 25,
-                width: 1,
-                color: Theme.of(context).dividerColor,
-              ),
-              Column(
+            ),
+            Container(
+              height: 25,
+              width: 1,
+              margin: EdgeInsets.symmetric(horizontal: 3),
+              color: Theme.of(context).dividerColor,
+            ),
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -273,6 +277,7 @@ class UserRulesWidget extends StatelessWidget {
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.timer,
@@ -288,23 +293,28 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: 25,
-                width: 1,
-                color: Theme.of(context).dividerColor,
-              ),
-              Column(
+            ),
+            Container(
+              height: 25,
+              width: 1,
+              margin: EdgeInsets.symmetric(horizontal: 3),
+              color: Theme.of(context).dividerColor,
+            ),
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     '${importanceString()}',
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.arrow_upward,
@@ -320,10 +330,8 @@ class UserRulesWidget extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-            color: Colors.transparent,
-            context: context,
-          ).toList(),
+            ),
+          ],
         ),
       ),
     );

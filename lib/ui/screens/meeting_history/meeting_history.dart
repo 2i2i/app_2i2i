@@ -1,5 +1,4 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +45,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
           children: [
             SizedBox(height: 10),
             Text(
-              Strings().meetingsHistory,
+              Keys.meetingsHistory.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: kRadialReactionRadius),

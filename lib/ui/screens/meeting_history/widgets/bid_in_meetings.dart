@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../my_hangout/widgets/meeting_history_tile.dart';
 
@@ -15,7 +14,7 @@ class BidInMeetings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if(meetingListA.isEmpty){
-      return Center(child: Text(Strings().noBidFound,style: Theme.of(context).textTheme.subtitle1,));
+      return Center(child: Text(Keys.noBidFound.tr(context),style: Theme.of(context).textTheme.subtitle1,));
     }
     return ListView.builder(
       itemCount: meetingListA.length,
