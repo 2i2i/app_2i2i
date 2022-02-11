@@ -34,8 +34,11 @@ class MeetingHistoryTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
-    if (hangout?.status == 'OFFLINE') {
+    if (hangout?.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
+    }
+    if (hangout?.status == Keys.statusIDLE) {
+      statusColor = Colors.amber;
     }
     if (hangout?.isInMeeting() ?? false) {
       statusColor = AppTheme().red;

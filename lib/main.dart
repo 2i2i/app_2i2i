@@ -4,9 +4,11 @@
 // acceptBid - B
 // acceptMeeting - A
 // createRoom - A
-
+// import 'package:http/http.dart' as html;
+// import 'dart:html' as html;
+import "package:universal_html/html.dart" as html;
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,8 +19,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterfire_ui/i10n.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
+import 'infrastructure/commons/keys.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
+import 'ui/screens/localization/app_localization.dart';
+import 'ui/screens/home/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
@@ -79,20 +85,16 @@ class MainWidget extends ConsumerStatefulWidget {
   _MainWidgetState createState() => _MainWidgetState();
 }
 
-class _MainWidgetState extends ConsumerState<MainWidget> {
-  var timer;
+class _MainWidgetState extends ConsumerState<MainWidget>
+    with WidgetsBindingObserver {
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (timer == null) {
-        timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-          final hangoutChanger = ref.watch(hangoutChangerProvider);
-          if (hangoutChanger == null) return;
-          await hangoutChanger.updateHeartbeat();
-        });
-      }
+    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await updateHeartbeat(Keys.statusONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
 
@@ -121,7 +123,62 @@ class _MainWidgetState extends ConsumerState<MainWidget> {
           NamedRoutes.updateAvailable = true;
         }
       });
+      if(kIsWeb) {
+        html.document.addEventListener('visibilitychange', (event) {
+          if (html.document.visibilityState != 'visible') {
+            //check after for 2 sec that is it still in background
+            Future.delayed(Duration(seconds: 2)).then((value) async {
+              if (html.document.visibilityState != 'visible') {
+                print('======\n\n\n\n background \n\n\n\n=====');
+                await updateHeartbeat(Keys.statusIDLE);
+              }
+            });
+          } else {
+            print('======\n\n\n\n Foreground \n\n\n\n=====');
+            updateHeartbeat(Keys.statusONLINE);
+          }
+        });
+      }
     });
+  }
+
+
+
+  Future<void> updateHeartbeat(String status) async {
+    if (status == Keys.statusIDLE) {
+      if (timer?.isActive ?? false) timer!.cancel();
+      final hangoutChanger = ref.watch(hangoutChangerProvider);
+      if (hangoutChanger == null) return;
+      await hangoutChanger.updateHeartbeat(status);
+    } else {
+      if (timer?.isActive ?? false) timer!.cancel();
+      timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+        final hangoutChanger = ref.watch(hangoutChangerProvider);
+        if (hangoutChanger == null) return;
+        await hangoutChanger.updateHeartbeat(status);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // html.document.removeEventListener('visibilitychange', (event) => null);
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        await updateHeartbeat(Keys.statusONLINE);
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      await updateHeartbeat(Keys.statusIDLE);
+        break;
+    }
   }
 
   @override

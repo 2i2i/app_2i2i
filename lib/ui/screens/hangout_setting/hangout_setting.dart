@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
-import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +11,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../create_bid/top_card_widget.dart';
 
 
 class HangoutSetting extends ConsumerStatefulWidget {
@@ -509,8 +509,8 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     );
   }
 
-  void onClickSave(
-      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) {
+  Future<void> onClickSave(
+      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) async {
     bool validate = formKey.currentState?.validate() ?? false;
     Hangout? hangout = myUserPageViewModel?.hangout;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
@@ -539,7 +539,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
         hangout!.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
       }
-      myUserPageViewModel?.updateHangout(hangout);
+      await myUserPageViewModel?.updateHangout(hangout);
       Navigator.of(context).maybePop();
     }
   }

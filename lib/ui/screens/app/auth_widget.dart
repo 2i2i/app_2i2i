@@ -5,14 +5,17 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 
 bool showed = false;
-
-class AuthWidget extends ConsumerWidget {
+class AuthWidget extends ConsumerStatefulWidget {
+  final WidgetBuilder homePageBuilder;
   AuthWidget({required this.homePageBuilder});
 
-  final WidgetBuilder homePageBuilder;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _AuthWidgetState createState() => _AuthWidgetState();
+}
+
+class _AuthWidgetState extends ConsumerState<AuthWidget> {
+  @override
+  Widget build(BuildContext context) {
     final authStateChanges = ref.watch(authStateChangesProvider);
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
@@ -23,7 +26,7 @@ class AuthWidget extends ConsumerWidget {
 
             if (firebaseUser != null) {
               signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
-              return homePageBuilder(context);
+              return widget.homePageBuilder(context);
             }
 
             // if (firebaseUser == null) {

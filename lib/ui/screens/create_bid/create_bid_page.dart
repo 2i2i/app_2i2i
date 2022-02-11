@@ -8,18 +8,18 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
-import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:app_2i2i/ui/screens/user_info/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
+import 'top_card_widget.dart';
 
 class CreateBidPageRouterObject {
   CreateBidPageRouterObject(
@@ -29,7 +29,8 @@ class CreateBidPageRouterObject {
       this.min,
       this.max,
       this.fullWidth});
-  final Hangout B;
+
+  final String B;
   final List<BidInPublic> bidIns;
   final double? sliderHeight;
   final int? min;
@@ -38,7 +39,7 @@ class CreateBidPageRouterObject {
 }
 
 class CreateBidPage extends ConsumerStatefulWidget {
-  late final Hangout B;
+  late final String B;
   late final List<BidInPublic> bidIns;
   late final double sliderHeight;
   late final int min;
@@ -80,90 +81,40 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
+  PageController controller = PageController(initialPage: 0);
+
+  Hangout? hangoutB;
 
   @override
   void initState() {
-    super.initState();
     ref.read(myAccountPageViewModelProvider).initMethod();
-    speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
-    speedController.text = speed.num.toString();
-    updateAccountBalance();
+    super.initState();
   }
-
-  void updateAccountBalance() {
-    if (account != null) {
-      _minAccountBalance = account!.minBalance();
-      _accountBalance = account!.balanceALGO();
-    }
-    update();
-  }
-
-  void update() {
-    final availableBalance = _accountBalance - _minAccountBalance;
-    maxMaxDuration = widget.B.rule.maxMeetingDuration;
-    if (speed.num != 0) {
-      final availableMaxDuration = max(
-          0,
-          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
-              .floor());
-      maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
-      maxMaxDuration = max(minMaxDuration, maxMaxDuration);
-    }
-    maxDuration = min(maxDuration, maxMaxDuration);
-    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
-    setState(() {});
-  }
-
-  String calcWaitTime() {
-    if (amount.assetId != speed.assetId)
-      throw Exception('amount.assetId != speed.assetId');
-
-    final now = DateTime.now().toUtc();
-    final tmpBidIn = BidInPublic(
-        active: false,
-        id: now.microsecondsSinceEpoch.toString(),
-        speed: speed,
-        net: AlgorandNet.testnet,
-        ts: now,
-        energy: amount.num,
-        rule: widget.B.rule);
-
-    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
-        widget.B.loungeHistory, widget.B.loungeHistoryIndex);
-
-    int waitTime = 0;
-    for (final bidIn in sortedBidIns) {
-      if (bidIn.id == tmpBidIn.id) break;
-      int bidDuration = widget.B.rule.maxMeetingDuration;
-      if (bidIn.speed.num != 0)
-        bidDuration =
-            min((bidIn.energy / bidIn.speed.num).round(), bidDuration);
-      waitTime += bidDuration;
-    }
-
-    final waitTimeString = secondsToSensibleTimePeriod(waitTime);
-    return waitTimeString;
-  }
-
-  final controller = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    if (haveToWait(myAccountPageViewModel)) {
+    final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
+
+    if (haveToWait(myAccountPageViewModel) ||
+        haveToWait(userPageBViewModel) ||
+        userPageBViewModel == null) {
       return WaitPage(
         isCupertino: true,
         height: MediaQuery.of(context).size.height / 2,
       );
     }
-    final addBidPageViewModel =
-        ref.watch(addBidPageViewModelProvider(widget.B).state).state;
-    if (addBidPageViewModel == null) return WaitPage(isCupertino: true);
-    if (addBidPageViewModel.submitting) return WaitPage(isCupertino: true);
-    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
-      account = myAccountPageViewModel.accounts!.first;
-      updateAccountBalance();
-    }
+
+    hangoutB = userPageBViewModel.hangout;
+
+    final addBidPageViewModel = ref
+        .watch(addBidPageViewModelProvider(userPageBViewModel.hangout).state)
+        .state;
+
+    if (addBidPageViewModel == null || (addBidPageViewModel.submitting))
+      return WaitPage(isCupertino: true);
+
+    updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
       appBar: AppBar(
@@ -174,82 +125,79 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TopCard(minWait: calcWaitTime(), B: widget.B),
+          TopCard(minWait: calcWaitTime(), B: hangoutB!),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          Keys.estMaxDuration.tr(context),
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                        SizedBox(height: 4),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .shadowColor
-                                  .withOpacity(0.20),
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 6),
-                              Text(
-                                '$minMaxDuration ${Keys.secs.tr(context)}',
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  child: SliderTheme(
-                                    data: SliderTheme.of(context).copyWith(
-                                      activeTrackColor:
-                                          Theme.of(context).cardColor,
-                                      inactiveTrackColor:
-                                          Theme.of(context).disabledColor,
-                                      thumbShape: CustomSliderThumbRect(
-                                        mainContext: context,
-                                        thumbRadius: 15,
-                                        min: minMaxDuration,
-                                        max: maxMaxDuration,
-                                      ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 10),
+                      Text(
+                        Keys.estMaxDuration.tr(context),
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      SizedBox(height: 4),
+                      Container(
+                        decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).shadowColor.withOpacity(0.20),
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 6),
+                            Text(
+                              '$minMaxDuration ${Keys.secs.tr(context)}',
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    activeTrackColor:
+                                        Theme.of(context).cardColor,
+                                    inactiveTrackColor:
+                                        Theme.of(context).disabledColor,
+                                    thumbShape: CustomSliderThumbRect(
+                                      mainContext: context,
+                                      thumbRadius: 15,
+                                      min: minMaxDuration,
+                                      max: maxMaxDuration,
                                     ),
-                                    child: Slider(
-                                      min: minMaxDuration.toDouble(),
-                                      max: maxMaxDuration.toDouble(),
-                                      divisions: maxMaxDuration ==
-                                              minMaxDuration
-                                          ? null
-                                          : min(100,
-                                              maxMaxDuration - minMaxDuration),
-                                      value: maxDuration.toDouble(),
-                                      onChanged: (value) {
-                                        maxDuration = value.round();
-                                        update();
-                                      },
-                                    ),
+                                  ),
+                                  child: Slider(
+                                    min: minMaxDuration.toDouble(),
+                                    max: maxMaxDuration.toDouble(),
+                                    divisions: maxMaxDuration == minMaxDuration
+                                        ? null
+                                        : min(100,
+                                            maxMaxDuration - minMaxDuration),
+                                    value: maxDuration.toDouble(),
+                                    onChanged: (value) {
+                                      maxDuration = value.round();
+                                      updateAccountBalance(
+                                          myAccountPageViewModel);
+                                    },
                                   ),
                                 ),
                               ),
-                              Text('$maxMaxDuration ${Keys.secs.tr(context)}',
-                                  style: Theme.of(context).textTheme.subtitle1),
-                              SizedBox(width: 6),
-                            ],
-                          ),
+                            ),
+                            Text('$maxMaxDuration ${Keys.secs.tr(context)}',
+                                style: Theme.of(context).textTheme.subtitle1),
+                            SizedBox(width: 6),
+                          ],
                         ),
-                        SizedBox(
-                          height: 10,
-                        )
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      )
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
@@ -284,7 +232,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       .accounts![index].address),
                                   account:
                                       myAccountPageViewModel.accounts![index],
-                                  afterRefresh: updateAccountBalance,
+                                  afterRefresh: () => updateAccountBalance(
+                                      myAccountPageViewModel),
                                 ),
                               );
                             },
@@ -294,12 +243,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               if (account == newAccount) return;
                               account = newAccount;
                               if (mounted) {
-                                updateAccountBalance();
+                                updateAccountBalance(myAccountPageViewModel);
                               }
                             },
                           )
                         : Container(
                             padding: EdgeInsets.all(12),
+                            margin: EdgeInsets.only(top: 12),
                             decoration: BoxDecoration(
                               color: Theme.of(context)
                                   .shadowColor
@@ -384,7 +334,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             suffixIcon: GestureDetector(
                               onTap: () {
                                 isAddSupportVisible.value = false;
-                                resetSpeed();
+                                updateAccountBalance(myAccountPageViewModel);
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -427,16 +377,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             ),
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
-                              if (num >= widget.B.rule.minSpeed) {
+                              if (num >= (hangoutB?.rule.minSpeed ?? 0)) {
                                 speed =
                                     Quantity(num: num, assetId: speed.assetId);
-                                update();
+                                updateAccountBalance(myAccountPageViewModel);
                               }
                             },
                             validator: (value) {
                               int num = int.tryParse(value ?? '') ?? 0;
-                              if (num < widget.B.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${widget.B.rule.minSpeed}';
+                              if (num < hangoutB!.rule.minSpeed) {
+                                return '${Keys.minSupportIs.tr(context)} ${hangoutB!.rule.minSpeed}';
                               }
                               return null;
                             },
@@ -453,7 +403,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         ],
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: Row(
           children: [
             Expanded(
@@ -497,12 +447,70 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     );
   }
 
-  onAddBid() async {
-    if (isInsufficient()) {
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
+    speed = Quantity(num: hangoutB?.rule.minSpeed ?? 0, assetId: 0);
+    speedController.text = speed.num.toString();
+    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
+      account = myAccountPageViewModel.accounts!.first;
+    }
+
+    if (account != null) {
+      _minAccountBalance = account!.minBalance();
+      _accountBalance = account!.balanceALGO();
+    }
+
+    final availableBalance = _accountBalance - _minAccountBalance;
+    maxMaxDuration = hangoutB?.rule.maxMeetingDuration ?? 0;
+    if (speed.num != 0) {
+      final availableMaxDuration = max(
+          0,
+          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
+              .floor());
+      maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+    }
+    maxDuration = min(maxDuration, maxMaxDuration);
+    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    setState(() {});
+  }
+
+  String calcWaitTime() {
+    if (amount.assetId != speed.assetId)
+      throw Exception('amount.assetId != speed.assetId');
+
+    final now = DateTime.now().toUtc();
+    final tmpBidIn = BidInPublic(
+        active: false,
+        id: now.microsecondsSinceEpoch.toString(),
+        speed: speed,
+        net: AlgorandNet.testnet,
+        ts: now,
+        energy: amount.num,
+        rule: hangoutB!.rule);
+
+    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
+        hangoutB?.loungeHistory ?? [], hangoutB?.loungeHistoryIndex ?? 0);
+
+    int waitTime = 0;
+    for (final bidIn in sortedBidIns) {
+      if (bidIn.id == tmpBidIn.id) break;
+      int bidDuration = hangoutB?.rule.maxMeetingDuration ?? 0;
+      if (bidIn.speed.num != 0)
+        bidDuration =
+            min((bidIn.energy / bidIn.speed.num).round(), bidDuration);
+      waitTime += bidDuration;
+    }
+
+    final waitTimeString = secondsToSensibleTimePeriod(waitTime);
+    return waitTimeString;
+  }
+
+  Future onAddBid() async {
+    if (isInsufficient() && hangoutB == null) {
       return;
     }
     final addBidPageViewModel =
-        ref.read(addBidPageViewModelProvider(widget.B).state).state;
+        ref.read(addBidPageViewModelProvider(hangoutB!).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await addBid(addBidPageViewModel: addBidPageViewModel);
@@ -527,7 +535,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     return Keys.addBid.tr(context) + ' : ' + amountStr;
   }
 
-  isInsufficient() {
+  bool isInsufficient() {
     if (speed.num == 0) return false;
     if (account == null) return true;
     final minCoinsNeeded = speed.num * 10;
@@ -541,7 +549,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     if (account is WalletConnectAccount) {
       CustomDialogs.loader(true, context,
-          title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+          title: Keys.weAreWaiting.tr(context),
+          message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }
@@ -552,126 +561,5 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       bidComment: comment,
     );
     CustomDialogs.loader(false, context);
-  }
-
-  void resetSpeed() {
-    speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
-    speedController.text = speed.num.toString();
-    updateAccountBalance();
-  }
-}
-
-class TopCard extends StatelessWidget {
-  final String minWait;
-  final Hangout B;
-
-  const TopCard({Key? key, required this.minWait, required this.B})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: Custom.getBoxDecoration(context),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            Keys.createABid.tr(context),
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          SizedBox(height: 5),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.timer,
-                size: 17,
-                color: Theme.of(context).errorColor,
-              ),
-              SizedBox(width: 2),
-              Text(
-                '${Keys.estWaitTime.tr(context)} $minWait',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme.of(context).errorColor),
-              ),
-            ],
-          ),
-          SizedBox(height: 15),
-          UserRulesWidget(
-            hangout: B,
-            onTapRules: null,
-          ),
-          SizedBox(height: 10),
-        ],
-      ),
-    );
-  }
-}
-
-class CustomSliderThumbRect extends SliderComponentShape {
-  final double? thumbRadius;
-  final BuildContext mainContext;
-  final int? min;
-  final int? max;
-
-  const CustomSliderThumbRect({
-    required this.mainContext,
-    this.thumbRadius,
-    this.min,
-    this.max,
-  });
-
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(thumbRadius!);
-  }
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset center, {
-    Animation<double>? activationAnimation,
-    Animation<double>? enableAnimation,
-    bool? isDiscrete,
-    TextPainter? labelPainter,
-    RenderBox? parentBox,
-    SliderThemeData? sliderTheme,
-    TextDirection? textDirection,
-    double? value,
-    double? textScaleFactor,
-    Size? sizeWithOverflow,
-  }) {
-    final Canvas canvas = context.canvas;
-
-    final rRect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-          center: center, width: kToolbarHeight, height: kToolbarHeight * 0.6),
-      Radius.circular(thumbRadius!),
-    );
-
-    final paint = Paint()
-      ..color = Theme.of(mainContext).cardColor
-      ..style = PaintingStyle.fill;
-
-    TextSpan span = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1,
-        text: '${getValue(value!)}s');
-
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr);
-    tp.layout();
-    Offset textCenter =
-        Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
-    canvas.drawRRect(rRect, paint);
-    tp.paint(canvas, textCenter);
-  }
-
-  String getValue(double value) {
-    return (min! + (max! - min!) * value).round().toString();
   }
 }
