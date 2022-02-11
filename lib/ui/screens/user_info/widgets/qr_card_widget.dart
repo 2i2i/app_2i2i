@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
+
 class QrCodeWidget extends StatelessWidget {
   final String message;
 
@@ -69,11 +71,11 @@ class QrCodeWidget extends StatelessWidget {
                         ),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Copied Link!')),
+                        SnackBar(content: Text(Keys.copiedLink.tr(context))),
                       );
                       Navigator.of(context).maybePop();
                     },
-                    child: Text('Copy'),
+                    child: Text(Keys.copy.tr(context)),
                   ),
                 ),
                 SizedBox(width: 20),
@@ -81,10 +83,10 @@ class QrCodeWidget extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       Share.share(
-                          'Come and hang out with me on 2i2i:\n$message');
+                          '${Keys.comeAndHangOut.tr(context)}:\n$message');
                       Navigator.of(context).maybePop();
                     },
-                    child: Text('Share'),
+                    child: Text(Keys.share.tr(context)),
                   ),
                 ),
               ],

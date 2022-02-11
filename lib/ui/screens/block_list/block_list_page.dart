@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/strings.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +27,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              Strings().blockList,
+              Keys.blockList.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 20),
@@ -45,7 +45,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                   if (blockList.isEmpty) {
                     return Center(
                       child: Text(
-                        'No Guests found',
+                        Keys.noGuestsFound.tr(context),
                         style: Theme.of(context).textTheme.subtitle2,
                       ),
                     );

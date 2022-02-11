@@ -23,18 +23,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 #  flutter_lints:
-  sentry_flutter: ^6.2.2
-  walletconnect_dart: ^0.0.6
+  sentry_flutter: ^6.3.0
+  walletconnect_dart: ^0.0.7
   algorand_dart: ^1.0.1
-  flutter_webrtc: ^0.8.1
-  just_audio: ^0.9.18
+  flutter_webrtc: ^0.8.2
+  just_audio: ^0.9.19
   flutter_riverpod: ^1.0.3
-  cloud_functions: ^3.2.6
+  cloud_functions: ^3.2.7
   firebase_auth: ^3.3.6
   flutter_secure_storage: ^5.0.2
-  flutterfire_ui: ^0.3.2
+  flutterfire_ui: ^0.3.3
   http: ^0.13.4
   url_launcher: ^6.0.18
   expansion_tile_card: ^2.0.0
@@ -42,20 +44,22 @@ dependencies:
   flutter_styled_toast: ^2.0.0
   flutter_rating_bar: ^4.0.0
   flutter_speed_dial: ^5.0.0+1
-  percent_indicator: ^4.0.0
+#  percent_indicator: ^4.0.0
   flutter_animator: ^3.2.1
   animate_countdown_text: ^1.1.3
   share_plus: ^3.0.4
-  image_picker: ^0.8.4+5
+  image_picker: ^0.8.4+7
   carousel_slider: ^4.0.0
   flutter_svg: ^1.0.3
-  shimmer: ^2.0.0
+#  shimmer: ^2.0.0
   go_router: ^3.0.1
+  intl: ^0.17.0
 
   firebase_app_check: ^0.0.6+5
   cached_network_image: ^3.2.0
   firebase_messaging: ^11.2.6
   device_info_plus: ^3.2.1
+  rich_text_controller: ^1.4.0
 
 
 dev_dependencies:

@@ -7,7 +7,7 @@ import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../infrastructure/commons/strings.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -29,7 +29,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('url-------------- \n ${Uri.base.toString()}');
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
     if (haveToWait(userPageBViewModel) || userPageBViewModel == null) {
       return WaitPage();
@@ -121,7 +120,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  Strings().join,
+                  Keys.join.tr(context),
                   style: Theme.of(context).textTheme.button?.copyWith(
                         color: Theme.of(context).cardColor,
                       ),

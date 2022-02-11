@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../../infrastructure/commons/strings.dart';
+import '../../infrastructure/commons/keys.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 import 'custom.dart';
@@ -101,7 +101,7 @@ class CustomDialogs {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            Strings().appRatingTitle,
+            Keys.appRatingTitle.tr(context),
             style: Theme.of(context).textTheme.headline4,
           ),
           SizedBox(height: 10),
@@ -117,7 +117,7 @@ class CustomDialogs {
         TextButton(
           onPressed: () =>
               Navigator.of(context, rootNavigator: rootNavigator).pop(),
-          child: Text(Strings().cancel),
+          child: Text(Keys.cancel.tr(context)),
         ),
         TextButton(
           style: TextButton.styleFrom(
@@ -127,7 +127,7 @@ class CustomDialogs {
             Navigator.of(context, rootNavigator: rootNavigator).pop();
             onPressed(totalRating / 5, ratingFeedBack.text);
           },
-          child: Text(Strings().appRatingSubmitButton),
+          child: Text(Keys.appRatingSubmitButton.tr(context)),
         )
       ],
       content: Container(

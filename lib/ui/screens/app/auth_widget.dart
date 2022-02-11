@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
 
@@ -79,9 +80,9 @@ class AuthWidget extends ConsumerWidget {
           }, loading: () {
             return WaitPage();
           }, error: (_, __) {
-            return const Scaffold(
+            return Scaffold(
               body: Center(
-                child: Text('error'),
+                child: Text(Keys.error.tr(context),style: Theme.of(context).textTheme.subtitle1),
               ),
             );
           });

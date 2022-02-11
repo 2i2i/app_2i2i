@@ -14,7 +14,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../infrastructure/commons/strings.dart';
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
@@ -187,7 +187,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          Strings().estMaxDuration,
+                          Keys.estMaxDuration.tr(context),
                           style: Theme.of(context).textTheme.caption,
                         ),
                         SizedBox(height: 4),
@@ -202,7 +202,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             children: [
                               SizedBox(width: 6),
                               Text(
-                                '$minMaxDuration secs',
+                                '$minMaxDuration ${Keys.secs.tr(context)}',
                                 style: Theme.of(context).textTheme.subtitle1,
                               ),
                               Expanded(
@@ -239,7 +239,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   ),
                                 ),
                               ),
-                              Text('$maxMaxDuration secs',
+                              Text('$maxMaxDuration ${Keys.secs.tr(context)}',
                                   style: Theme.of(context).textTheme.subtitle1),
                               SizedBox(width: 6),
                             ],
@@ -254,8 +254,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: CustomTextField(
-                      title: Strings().note,
-                      hintText: Strings().bidNote,
+                      title: Keys.note.tr(context),
+                      hintText: Keys.bidNote.tr(context),
                       onChanged: (String value) {
                         comment = value;
                       },
@@ -312,7 +312,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               children: [
                                 SizedBox(height: 12),
                                 Text(
-                                  'No account added',
+                                  Keys.noAccountAdded.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context).textTheme.subtitle1,
                                 ),
@@ -349,7 +349,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            Strings().swipeAndChangeAccount,
+                            Keys.swipeAndChangeAccount.tr(context),
                             maxLines: 2,
                             textAlign: TextAlign.start,
                             style: Theme.of(context).textTheme.caption,
@@ -363,7 +363,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             AddAccountOptionsWidgets(),
                           ),
                           child: Text(
-                            Strings().addAccount,
+                            Keys.addAccount.tr(context),
                           ),
                         )
                       ],
@@ -379,7 +379,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                           child: CustomTextField(
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
-                            title: Strings().speed,
+                            title: Keys.speed.tr(context),
                             hintText: "0",
                             suffixIcon: GestureDetector(
                               onTap: () {
@@ -392,7 +392,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                 children: [
                                   Center(
                                     child: Text(
-                                      '${Strings().algoSec}',
+                                      '${Keys.algoSec.tr(context)}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle2
@@ -436,7 +436,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             validator: (value) {
                               int num = int.tryParse(value ?? '') ?? 0;
                               if (num < widget.B.rule.minSpeed) {
-                                return 'Min support is ${widget.B.rule.minSpeed}';
+                                return '${Keys.minSupportIs.tr(context)} ${widget.B.rule.minSpeed}';
                               }
                               return null;
                             },
@@ -483,7 +483,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             size: 15,
                           ),
                           SizedBox(width: 3),
-                          Text('Wait Less'),
+                          Text(Keys.waitLess.tr(context)),
                         ],
                       ),
                     ),
@@ -522,9 +522,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   String getConfirmSliderText() {
     var amountStr = '${(amount.num / 1000000).toString()} A';
     if (isInsufficient()) {
-      return Strings().insufficientBalance + ' : ' + amountStr;
+      return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
     }
-    return Strings().addBid + ' : ' + amountStr;
+    return Keys.addBid.tr(context) + ' : ' + amountStr;
   }
 
   isInsufficient() {
@@ -541,7 +541,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     if (account is WalletConnectAccount) {
       CustomDialogs.loader(true, context,
-          title: 'We are waiting!', message: 'Please confirm in your wallet');
+          title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }
@@ -577,7 +577,7 @@ class TopCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            Strings().createABid,
+            Keys.createABid.tr(context),
             style: Theme.of(context).textTheme.headline5,
           ),
           SizedBox(height: 5),
@@ -591,7 +591,7 @@ class TopCard extends StatelessWidget {
               ),
               SizedBox(width: 2),
               Text(
-                'Est. Wait Time is $minWait',
+                '${Keys.estWaitTime.tr(context)} $minWait',
                 style: Theme.of(context)
                     .textTheme
                     .caption
