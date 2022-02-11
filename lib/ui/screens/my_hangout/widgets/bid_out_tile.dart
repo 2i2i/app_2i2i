@@ -1,6 +1,8 @@
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -54,50 +56,55 @@ class BidOutTile extends ConsumerWidget {
             Row(
               children: [
                 SizedBox(width: 4),
-                SizedBox(
-                  height: 55,
-                  width: 55,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                width: 0.3,
-                                color: Theme.of(context).disabledColor),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 20,
-                                spreadRadius: 0.5,
-                              )
-                            ]),
-                        alignment: Alignment.center,
-                        child: Text(
-                          firstNameChar,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6!
-                              .copyWith(
-                                  fontWeight: FontWeight.w600, fontSize: 20),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Container(
-                          height: 15,
-                          width: 15,
+                InkResponse(
+                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                    'uid': hangout.id,
+                  }),
+                  child: SizedBox(
+                    height: 55,
+                    width: 55,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 50,
                           decoration: BoxDecoration(
-                              color: statusColor,
-                              borderRadius: BorderRadius.circular(20),
-                              border:
-                                  Border.all(color: Colors.white, width: 2)),
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  width: 0.3,
+                                  color: Theme.of(context).disabledColor),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.08),
+                                  blurRadius: 20,
+                                  spreadRadius: 0.5,
+                                )
+                              ]),
+                          alignment: Alignment.center,
+                          child: Text(
+                            firstNameChar,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6!
+                                .copyWith(
+                                    fontWeight: FontWeight.w600, fontSize: 20),
+                          ),
                         ),
-                      ),
-                    ],
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            height: 15,
+                            width: 15,
+                            decoration: BoxDecoration(
+                                color: statusColor,
+                                borderRadius: BorderRadius.circular(20),
+                                border:
+                                    Border.all(color: Colors.white, width: 2)),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(width: 8),
