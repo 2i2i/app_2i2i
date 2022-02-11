@@ -109,6 +109,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         sound: true,
       );
 
+
       // TODO the following is not working yet
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         print('Got a message whilst in the foreground!');
