@@ -12,7 +12,6 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
@@ -182,7 +181,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     value: maxDuration.toDouble(),
                                     onChanged: (value) {
                                       maxDuration = value.round();
-                                      updateAccountBalance(myAccountPageViewModel);
+                                      updateAccountBalance(
+                                          myAccountPageViewModel);
                                     },
                                   ),
                                 ),
@@ -199,13 +199,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       )
                     ],
                   ),
-                  SizedBox(height: 14),
-                  CustomTextField(
-                    title: Keys.note.tr(context),
-                    hintText: Keys.bidNote.tr(context),
-                    onChanged: (String value) {
-                      comment = value;
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: CustomTextField(
+                      title: Keys.note.tr(context),
+                      hintText: Keys.bidNote.tr(context),
+                      onChanged: (String value) {
+                        comment = value;
+                      },
+                    ),
                   ),
                   Container(
                     constraints:
@@ -230,7 +232,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       .accounts![index].address),
                                   account:
                                       myAccountPageViewModel.accounts![index],
-                                  afterRefresh:()=> updateAccountBalance(myAccountPageViewModel),
+                                  afterRefresh: () => updateAccountBalance(
+                                      myAccountPageViewModel),
                                 ),
                               );
                             },
@@ -375,14 +378,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
                               if (num >= (hangoutB?.rule.minSpeed ?? 0)) {
-                                speed = Quantity(num: num, assetId: speed.assetId);
+                                speed =
+                                    Quantity(num: num, assetId: speed.assetId);
                                 updateAccountBalance(myAccountPageViewModel);
                               }
                             },
                             validator: (value) {
                               int num = int.tryParse(value ?? '') ?? 0;
-                              if (num < (hangoutB?.rule.minSpeed ?? 0)) {
-                                return '${Keys.minSupportIs.tr(context)} ${(hangoutB?.rule.minSpeed ?? 0)}';
+                              if (num < hangoutB!.rule.minSpeed) {
+                                return '${Keys.minSupportIs.tr(context)} ${hangoutB!.rule.minSpeed}';
                               }
                               return null;
                             },
@@ -399,7 +403,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         ],
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: Row(
           children: [
             Expanded(
@@ -545,7 +549,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     if (account is WalletConnectAccount) {
       CustomDialogs.loader(true, context,
-          title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+          title: Keys.weAreWaiting.tr(context),
+          message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }
@@ -557,77 +562,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     );
     CustomDialogs.loader(false, context);
   }
-
-  void resetSpeed() {
-    speed = Quantity(num: widget.B.rule.minSpeed, assetId: 0);
-    speedController.text = speed.num.toString();
-    updateAccountBalance();
-  }
-}
-
-class TopCard extends StatelessWidget {
-  final String minWait;
-  final Hangout B;
-
-  const TopCard({Key? key, required this.minWait, required this.B})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: Custom.getBoxDecoration(context),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            Keys.createABid.tr(context),
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          SizedBox(height: 5),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.timer,
-                size: 17,
-                color: Theme.of(context).errorColor,
-              ),
-              SizedBox(width: 2),
-              Text(
-                '${Keys.estWaitTime.tr(context)} $minWait',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme.of(context).errorColor),
-              ),
-            ],
-          ),
-          SizedBox(height: 15),
-          UserRulesWidget(
-            hangout: B,
-            onTapRules: null,
-          ),
-          SizedBox(height: 10),
-        ],
-      ),
-    );
-  }
-}
-
-class CustomSliderThumbRect extends SliderComponentShape {
-  final double? thumbRadius;
-  final BuildContext mainContext;
-  final int? min;
-  final int? max;
-
-  const CustomSliderThumbRect({
-    required this.mainContext,
-    this.thumbRadius,
-    this.min,
-    this.max,
-  });
-
 }
 
 

@@ -13,6 +13,12 @@ class Keys {
   static const String alertDefault = 'alertDefault';
   static const String alertCancel = 'alertCancel';
   static const String myReadBids = 'myReadBids';
+  static const String asGuest = 'As Guest';
+  static const String asHost = 'As Host';
+  static const String noBidFound = 'noBidFound';
+  static const String statusONLINE = 'ONLINE';
+  static const String statusOFFLINE = 'OFFLINE';
+  static const String statusIDLE = 'IDLE';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';
@@ -123,8 +129,6 @@ class Keys {
   static const String myProfile = 'myProfile';
   static const String bidIn = 'bidIn';
   static const String bidOut = 'bidOut';
-  static const String asGuest = 'As Guest';
-  static const String asHost = 'As Host';
   static const String noBidFound = 'noBidFound';
   static const String meetingsHistory = 'meetingsHistory';
   static const String share = 'share';
@@ -171,9 +175,6 @@ class Keys {
   static const String topSpeeds = 'Top Speeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
-  static const String statusONLINE = 'ONLINE';
-  static const String statusOFFLINE = 'OFFLINE';
-  static const String statusIDLE = 'IDLE';
 }
 
 extension CustomTranslation on String {
