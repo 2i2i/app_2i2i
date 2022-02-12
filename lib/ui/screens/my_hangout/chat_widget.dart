@@ -1,0 +1,156 @@
+import 'package:app_2i2i/infrastructure/models/comment_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../infrastructure/commons/theme.dart';
+import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
+import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/providers/all_providers.dart';
+import '../../commons/custom_profile_image_view.dart';
+
+class ChatWidget extends ConsumerStatefulWidget {
+  final Hangout hangout;
+
+  const ChatWidget({Key? key, required this.hangout}) : super(key: key);
+
+  @override
+  _ChatWidgetState createState() => _ChatWidgetState();
+}
+
+class _ChatWidgetState extends ConsumerState<ChatWidget> {
+  TextEditingController commentController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final userModelChanger = ref.watch(hangoutChangerProvider)!;
+    final currentUserId = ref.watch(myUIDProvider)!;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.only(top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(8)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: StreamBuilder(
+                  stream: FirestoreDatabase().getCommentList(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      List<CommentModel> commentList = snapshot.data;
+                      return ListView.builder(
+                        itemBuilder: (BuildContext context, int index) {
+                          CommentModel commentModel = commentList[index];
+                          final hangout =
+                              ref.watch(hangoutProvider(commentModel.userId!));
+                          if (hangout is AsyncLoading || hangout is AsyncError)
+                            return Container();
+
+                          Hangout userModel = hangout.value!;
+
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            // padding: EdgeInsets.all(8),
+                            // color: Colors.amber,
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: ProfileWidget(
+                                  stringPath: userModel.name,
+                                  radius: 44,
+                                  hideShadow: true,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.w800)),
+                              title: Text(userModel.name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .primaryColorLight)),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text((commentModel.message ?? ""),
+                                    textAlign: TextAlign.start,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.copyWith(
+                                            color: Theme.of(context)
+                                                .primaryColorLight)),
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: commentList.length,
+                        reverse: true,
+                      );
+                    }
+                    return Container(child: CircularProgressIndicator());
+                  },
+                ),
+              ),
+              Divider(
+                thickness: 0.5,
+                color: Colors.white,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: commentController,
+                      style: TextStyle(color: AppTheme().cardDarkColor),
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        hintText: 'Write a comment...',
+                        filled: true,
+                        fillColor: Theme.of(context).primaryColorLight,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        // suffixIcon: Icon(Icons.mic),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  InkResponse(
+                    onTap: () async {
+                      if (commentController.text.isNotEmpty) {
+                        await userModelChanger.addComment(CommentModel(
+                            message: commentController.text,
+                            userId: currentUserId,
+                            hostUid: widget.hangout.id,
+                            messageId: DateTime.now().millisecondsSinceEpoch));
+                        commentController.clear();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        radius: 23,
+                        child: SvgPicture.asset('assets/icons/send.svg',
+                            width: 20, height: 20),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}

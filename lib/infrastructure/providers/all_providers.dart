@@ -16,6 +16,7 @@ import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
+import '../models/comment_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
 import 'hangout_bid_provider/hangout_page_view_model.dart';
@@ -191,6 +192,12 @@ final meetingHistoryB =
   final database = ref.watch(databaseProvider);
   return database.meetingHistoryB(uid);
 });
+
+// final getCommentList =
+//     StreamProvider.family<List<CommentModel>, String>((ref, "e") {
+//   final database = ref.watch(databaseProvider);
+//   return database.getCommentList();
+// });
 
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;

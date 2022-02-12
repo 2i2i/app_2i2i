@@ -31,88 +31,82 @@ class ProfileWidget extends StatelessWidget {
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       hoverColor: Colors.transparent,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Container(
-            width: radius,
-            height: radius,
-            decoration: BoxDecoration(
-              boxShadow: !hideShadow ||
-                      stringPath.contains('http') ||
-                      stringPath.contains('https')
-                  ? [
-                      BoxShadow(
-                          offset: Offset(2, 4),
-                          blurRadius: 20,
-                          color: Theme.of(context).shadowColor,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: showBorder?Border.all(
-                      width: 0.3,
-                      color: Theme.of(context).disabledColor
-                    ):null,
-                    borderRadius: BorderRadius.circular(20)
+      child: Container(
+        width: radius,
+        height: radius,
+        decoration: BoxDecoration(
+          boxShadow: !hideShadow ||
+                  stringPath.contains('http') ||
+                  stringPath.contains('https')
+              ? [
+                  BoxShadow(
+                      offset: Offset(2, 4),
+                      blurRadius: 20,
+                      color: Theme.of(context).shadowColor,
                   ),
-                  child: Card(
-                    elevation: 6,
-                    shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Center(
-                      child: stringPath.contains('http') ||
-                              stringPath.contains('https')
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                imageUrl: stringPath,
-                                placeholder: (context, url) =>
-                                    CupertinoActivityIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                              ),
-                            )
-                          : Text(
-                              isRating
-                                  ? "${stringPath.toString().isNotEmpty ? stringPath : "0"}"
-                                  : "${stringPath.toString().isNotEmpty ? stringPath : "X"}"
-                                      .substring(0, 1)
-                                      .toUpperCase(),
-                              style: style ??
-                                  Theme.of(context)
-                                      .textTheme
-                                      .headline5,
-                            ),
-                    ),
+                ]
+              : null,
+        ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: showBorder?Border.all(
+                  width: 0.3,
+                  color: Theme.of(context).disabledColor
+                ):null,
+                borderRadius: BorderRadius.circular(20)
+              ),
+              child: Card(
+                elevation: 6,
+                shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Center(
+                  child: stringPath.contains('http') ||
+                          stringPath.contains('https')
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: stringPath,
+                            placeholder: (context, url) =>
+                                CupertinoActivityIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                        )
+                      : Text(
+                          isRating
+                              ? "${stringPath.toString().isNotEmpty ? stringPath : "0"}"
+                              : "${stringPath.toString().isNotEmpty ? stringPath : "X"}"
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                          style: style ??
+                              Theme.of(context)
+                                  .textTheme
+                                  .headline5,
+                        ),
+                ),
+              ),
+            ),
+            if (statusColor != null)
+              Positioned(
+                bottom: 1,
+                right: 1,
+                child: Container(
+                  width: 18,
+                  height: 18,
+                  child: Material(
+                    color: statusColor,
+                    shape: CircleBorder(
+                        side: BorderSide(color: Colors.white, width: 3)),
+                    // child: Icon(Icons.check, color: Colors.white,),
                   ),
                 ),
-                if (statusColor != null)
-                  Positioned(
-                    bottom: 1,
-                    right: 1,
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      child: Material(
-                        color: statusColor,
-                        shape: CircleBorder(
-                            side: BorderSide(color: Colors.white, width: 3)),
-                        // child: Icon(Icons.check, color: Colors.white,),
-                      ),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        ],
+              )
+          ],
+        ),
       ),
     );
   }

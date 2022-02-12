@@ -5,21 +5,20 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
-import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/hangout_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
   final Hangout hangout;
-  final GestureTapCallback? onTapFav;
   final bool isFav;
-
-  final onTapQr;
-  final onTapWallet;
-  final GestureTapCallback? onTapRules;
-
   final int? estWaitTime;
+
+  final GestureTapCallback? onTapFav;
+  final GestureTapCallback? onTapWallet;
+  final GestureTapCallback? onTapRules;
+  final GestureTapCallback? onTapQr;
+  final GestureTapCallback? onTapChat;
 
   const UserInfoWidget({
     Key? key,
@@ -29,7 +28,7 @@ class UserInfoWidget extends StatefulWidget {
     this.onTapRules,
     this.onTapQr,
     this.onTapWallet,
-    this.estWaitTime,
+    this.estWaitTime, this.onTapChat,
   }) : super(key: key);
 
   @override
@@ -41,9 +40,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final shortBio =
-        widget.hangout.bio; //user.bio.substring(shortBioStart, shortBioEnd);
-
+    final shortBio = widget.hangout.bio;
     var statusColor = AppTheme().green;
     if (widget.hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
@@ -75,25 +72,38 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
-                    Visibility(
-                      visible: widget.onTapWallet != null,
-                      child: IconButton(
-                        onPressed: widget.onTapWallet,
-                        icon: Icon(Icons.attach_money),
+                    InkResponse(
+                      onTap: widget.onTapChat,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                        child: Icon(Icons.chat_outlined,size: 25),
                       ),
                     ),
-                    IconButton(
-                      onPressed: widget.onTapQr,
-                      icon: Icon(Icons.qr_code),
+                    Visibility(
+                      visible: widget.onTapWallet != null,
+                      child: InkResponse(
+                        onTap: widget.onTapWallet,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                          child: Icon(Icons.attach_money, size: 25),
+                        ),
+                      ),
+                    ),
+                    InkResponse(
+                      onTap: widget.onTapQr,
+                      child: Icon(Icons.qr_code, size: 25),
                     ),
                     if (widget.onTapFav != null)
-                      IconButton(
-                        onPressed: widget.onTapFav,
-                        icon: Icon(
-                          widget.isFav
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          color: widget.isFav ? Colors.red : Colors.grey,
+                      InkResponse(
+                        onTap: widget.onTapFav,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                          child: Icon(
+                              widget.isFav
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: widget.isFav ? Colors.red : Colors.grey,
+                              size: 25),
                         ),
                       ),
                   ],

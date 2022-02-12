@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
+import '../../models/comment_model.dart';
 import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
@@ -378,4 +379,27 @@ class FirestoreDatabase {
       print(onError);
     });
   }
+
+  //chat
+  Stream<List<CommentModel>> getCommentList() {
+    return _service.collectionStream(
+      path: FirestorePath.getComment(),
+      builder: (data, documentId) => CommentModel.fromJson(data!),
+      queryBuilder: (query) => query.orderBy('messageId', descending: true),
+    );
+  }
+
+  Future<void> addComment(CommentModel commentModel) => _service
+          .setData(
+        path: FirestorePath.addComment('${commentModel.messageId}'),
+        data: commentModel.toJson(),
+        merge: true,
+      )
+          .catchError((onError) {
+        print(onError);
+      }).onError(
+        (error, stackTrace) {
+          print(error);
+        },
+      );
 }
