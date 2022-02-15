@@ -35,12 +35,12 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
               child: Builder(
                 builder: (BuildContext context) {
                   final myUid = ref.read(myUIDProvider)!;
-                  final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
-                  if (haveToWait(myHangoutAsyncValue)) {
+                  final myUserAsyncValue = ref.watch(userProvider(myUid));
+                  if (haveToWait(myUserAsyncValue)) {
                     return CupertinoActivityIndicator();
                   }
-                  final myHangout = myHangoutAsyncValue.value!;
-                  final blockList = myHangout.blocked;
+                  final myUser = myUserAsyncValue.value!;
+                  final blockList = myUser.blocked;
 
                   if (blockList.isEmpty) {
                     return Center(
@@ -55,14 +55,14 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                     shrinkWrap: true,
                     primary: false,
                     itemBuilder: (_, index) {
-                      final blockedHangoutAsyncValue =
-                          ref.watch(hangoutProvider(myUid));
-                      if (haveToWait(blockedHangoutAsyncValue)) {
+                      final blockedUserAsyncValue =
+                          ref.watch(userProvider(myUid));
+                      if (haveToWait(blockedUserAsyncValue)) {
                         return CupertinoActivityIndicator();
                       }
-                      final blockedHangout = blockedHangoutAsyncValue.value!;
+                      final blockedUser = blockedUserAsyncValue.value!;
                       return UserInfoTile(
-                        hangout: blockedHangout,
+                        user: blockedUser,
                         myUid: myUid,
                         isForBlockedUser: true,
                       );

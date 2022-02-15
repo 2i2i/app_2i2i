@@ -6,21 +6,21 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
-import '../../../../infrastructure/models/hangout_model.dart';
+import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoTile extends ConsumerWidget {
-  final Hangout hangout;
+  final UserModel user;
   final String myUid;
   final bool isForBlockedUser;
   final double? marginBottom;
 
   const UserInfoTile(
       {Key? key,
-      required this.hangout,
+      required this.user,
       this.marginBottom,
       required this.myUid,
       this.isForBlockedUser = false})
@@ -28,27 +28,27 @@ class UserInfoTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userModelChanger = ref.watch(hangoutChangerProvider)!;
-    if (hangout.name.isEmpty) return Container();
+    final userModelChanger = ref.watch(userChangerProvider)!;
+    if (user.name.isEmpty) return Container();
 
-    final name = hangout.name;
-    final bio = hangout.bio;
+    final name = user.name;
+    final bio = user.bio;
 
     var statusColor = AppTheme().green;
-    if (hangout.status == Keys.statusOFFLINE) statusColor = AppTheme().gray;
-    if (hangout.status == Keys.statusIDLE) statusColor = Colors.amber;
-    if (hangout.isInMeeting()) statusColor = AppTheme().red;
+    if (user.status == Keys.statusOFFLINE) statusColor = AppTheme().gray;
+    if (user.status == Keys.statusIDLE) statusColor = Colors.amber;
+    if (user.isInMeeting()) statusColor = AppTheme().red;
 
-    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
+    final myUserAsyncValue = ref.watch(userProvider(myUid));
     bool isFriend = false;
-    if (!haveToWait(myHangoutAsyncValue)) {
-      final myHangout = myHangoutAsyncValue.value!;
-      isFriend = myHangout.friends.contains(hangout.id);
+    if (!haveToWait(myUserAsyncValue)) {
+      final myUser = myUserAsyncValue.value!;
+      isFriend = myUser.friends.contains(user.id);
     }
 
     return InkResponse(
       onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-        'uid': hangout.id,
+        'uid': user.id,
       }),
       child: Container(
         margin: EdgeInsets.only(bottom: marginBottom ?? 0),
@@ -58,7 +58,7 @@ class UserInfoTile extends ConsumerWidget {
           child: Row(
             children: [
               ProfileWidget(
-                stringPath: hangout.name,
+                stringPath: user.name,
                 radius: 62,
                 hideShadow: true,
                 showBorder: true,
@@ -89,7 +89,7 @@ class UserInfoTile extends ConsumerWidget {
                             IgnorePointer(
                               ignoring: true,
                               child: RatingBar.builder(
-                                initialRating: hangout.rating * 5,
+                                initialRating: user.rating * 5,
                                 minRating: 1,
                                 direction: Axis.horizontal,
                                 tapOnlyMode: true,
@@ -108,7 +108,7 @@ class UserInfoTile extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(width: 6),
-                            Text('${(hangout.rating * 5).toStringAsFixed(1)}',
+                            Text('${(user.rating * 5).toStringAsFixed(1)}',
                                 style: Theme.of(context).textTheme.caption)
                           ],
                         ),
@@ -129,13 +129,13 @@ class UserInfoTile extends ConsumerWidget {
                         isForBlockedUser
                             ? IconButton(
                                 onPressed: () =>
-                                    userModelChanger.removeBlocked(hangout.id),
+                                    userModelChanger.removeBlocked(user.id),
                                 icon: Icon(Icons.remove_circle_rounded))
                             : IconButton(
                                 padding: EdgeInsets.zero,
                                 onPressed: () => isFriend
-                                    ? userModelChanger.removeFriend(hangout.id)
-                                    : userModelChanger.addFriend(hangout.id),
+                                    ? userModelChanger.removeFriend(user.id)
+                                    : userModelChanger.addFriend(user.id),
                                 icon: Icon(isFriend
                                     ? Icons.favorite_rounded
                                     : Icons.favorite_border_rounded),

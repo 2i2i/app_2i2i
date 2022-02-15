@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -210,7 +210,7 @@ class Meeting extends Equatable {
 
   final Lounge lounge;
 
-  final HangOutRule rule;
+  final Rule rule;
 
   @override
   List<Object> get props => [id];
@@ -279,7 +279,7 @@ class Meeting extends Equatable {
     final Lounge lounge =
         Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
 
-    final HangOutRule rule = HangOutRule.fromMap(data['rule']);
+    final Rule rule = Rule.fromMap(data['rule']);
 
     return Meeting(
       id: documentId,

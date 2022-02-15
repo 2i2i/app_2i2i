@@ -29,7 +29,7 @@ class MeetingHistoryTile extends ConsumerWidget {
     bool amA = meetingModel.A == currentUid;
 
     final hangout =
-        ref.watch(hangoutProvider(amA ? meetingModel.B : meetingModel.A)).value;
+        ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
     if (haveToWait(hangout)) {
       return CupertinoActivityIndicator();
     }

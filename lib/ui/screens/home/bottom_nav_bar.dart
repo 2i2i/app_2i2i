@@ -38,7 +38,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                         context.go(Routes.root);
                         break;
                       case 1:
-                        context.go(Routes.myHangout);
+                        context.go(Routes.myUser);
                         break;
                       case 2:
                         context.go(Routes.bidOut);

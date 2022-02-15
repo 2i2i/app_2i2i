@@ -15,7 +15,7 @@ class FAQPage extends StatefulWidget {
 class _FAQPageState extends State<FAQPage> {
   List<FAQData> faqs = [
     FAQData(title: 'What is 2i2i?', description: '2i2i is the place for you to hang out. Every user on 2i2i can be a Guest and a Host. 2i2i provides a safe and private space for Guests and Hosts to meet via live video calls.'),
-    FAQData(title: 'What is a Guest?', description: 'Guests join the hangout of a Host. By offering coins (called support) to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
+    FAQData(title: 'What is a Guest?', description: 'Guests join the room of a Host. By offering coins (called support) to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
     FAQData(title: 'What is a Host?', description: 'Hosts shared their time with Guests and earn coins (called support). The Host sets the minimum support they require.'),
     FAQData(title: 'What is a Chrony?', description: 'A Guest that offers exactly the minimum support to their Host. Chronies wait in chronological order.'),
     FAQData(title: 'What is a HighRoller?', description: 'A Guest that offers higher than the minimum support to their Host. HighRollers wait in the order of their support.'),

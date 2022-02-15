@@ -5,7 +5,7 @@ import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dio/dio.dart' as dio;
@@ -29,7 +29,7 @@ class AddBidPageViewModel {
 
   final String A;
   final FirebaseFunctions functions;
-  final Hangout B;
+  final UserModel B;
   final AlgorandService algorand;
   final AccountService accountService;
   final List<AbstractAccount> accounts;

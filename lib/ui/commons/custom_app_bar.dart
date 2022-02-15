@@ -23,7 +23,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.read(myUIDProvider)!;
-    final hangout = ref.watch(hangoutProvider(uid));
+    final user = ref.watch(userProvider(uid));
 
     return AppBar(
       backgroundColor: backgroundColor,
@@ -33,17 +33,17 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            !(haveToWait(hangout))
+            !(haveToWait(user))
                 ? RectangleBox(
                     // DEBUG - test db rules
-                    // onTap: () => runTests(hangout.value!.id),
+                    // onTap: () => runTests(user.value!.id),
                     // DEBUG - test db rules
                     onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':uid}),
                     radius: 46,
                     icon: StarWidget(
                       width: 20,
                       height: 32,
-                      value: hangout.value?.rating ?? 1,
+                      value: user.value?.rating ?? 1,
                       startColor: Theme.of(context).colorScheme.secondary,
                     ),
                   )

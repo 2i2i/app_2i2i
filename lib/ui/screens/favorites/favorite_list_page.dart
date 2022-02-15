@@ -24,11 +24,11 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
   Widget build(BuildContext context) {
     List<String> favList = [];
     final myUid = ref.read(myUIDProvider)!;
-    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
-    if (haveToWait(myHangoutAsyncValue)) {
+    final myUserAsyncValue = ref.watch(userProvider(myUid));
+    if (haveToWait(myUserAsyncValue)) {
       return WaitPage();
     }
-    favList = myHangoutAsyncValue.value!.friends;
+    favList = myUserAsyncValue.value!.friends;
 
     return Scaffold(
       appBar: CustomAppbar(
@@ -44,19 +44,19 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
           shrinkWrap: true,
           primary: false,
           itemBuilder: (_, index) {
-            final hangout = ref.watch(hangoutProvider(favList[index]));
-            if (haveToWait(hangout)) {
+            final user = ref.watch(userProvider(favList[index]));
+            if (haveToWait(user)) {
               return CupertinoActivityIndicator();
             }
             return UserInfoTile(
-              hangout: hangout.value!,
+              user: user.value!,
               myUid: myUid,
               isForBlockedUser: false,
             );
           },
           separatorBuilder: (BuildContext context, int index) {
-            /*final hangout = users[index];
-        if (hangout.id == mainUserID) {
+            /*final user = users[index];
+        if (user.id == mainUserID) {
           return Container();
         }*/
             return Divider(
@@ -71,11 +71,11 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
   Widget buildListView() {
     List<String> favList = [];
     final myUid = ref.read(myUIDProvider)!;
-    final myHangoutAsyncValue = ref.watch(hangoutProvider(myUid));
-    if (haveToWait(myHangoutAsyncValue)) {
+    final myUserAsyncValue = ref.watch(userProvider(myUid));
+    if (haveToWait(myUserAsyncValue)) {
       return WaitPage();
     }
-    favList = myHangoutAsyncValue.value!.friends;
+    favList = myUserAsyncValue.value!.friends;
 
     if (favList.isEmpty) {
       return Center(
@@ -89,19 +89,19 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
       shrinkWrap: true,
       primary: false,
       itemBuilder: (_, index) {
-        final hangout = ref.watch(hangoutProvider(favList[index]));
-        if (haveToWait(hangout)) {
+        final user = ref.watch(userProvider(favList[index]));
+        if (haveToWait(user)) {
           return CupertinoActivityIndicator();
         }
         return UserInfoTile(
-          hangout: hangout.value!,
+          user: user.value!,
           myUid: myUid,
           isForBlockedUser: false,
         );
       },
       separatorBuilder: (BuildContext context, int index) {
-        /*final hangout = users[index];
-        if (hangout.id == mainUserID) {
+        /*final user = users[index];
+        if (user.id == mainUserID) {
           return Container();
         }*/
         return Divider(

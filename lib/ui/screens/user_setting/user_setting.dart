@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
-import 'package:app_2i2i/infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,16 +14,16 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../create_bid/top_card_widget.dart';
 
 
-class HangoutSetting extends ConsumerStatefulWidget {
+class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
 
-  HangoutSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
 
   @override
-  _HangoutSettingState createState() => _HangoutSettingState();
+  _UserSettingState createState() => _UserSettingState();
 }
 
-class _HangoutSettingState extends ConsumerState<HangoutSetting> {
+class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController userNameEditController = TextEditingController();
   TextEditingController speedEditController = TextEditingController();
   TextEditingController hourEditController = TextEditingController();
@@ -111,10 +111,10 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   void setData() {
     final uid = ref.watch(myUIDProvider)!;
-    final hangout = ref.watch(hangoutProvider(uid));
+    final hangout = ref.watch(userProvider(uid));
     bool isLoaded = !(haveToWait(hangout));
     if (isLoaded) {
-      Hangout hangoutModel = hangout.asData!.value;
+      UserModel hangoutModel = hangout.asData!.value;
       userNameEditController.text = hangoutModel.name;
       bioEditController.text = hangoutModel.bio;
 
@@ -180,7 +180,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
         TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
       }, onMatch: (List<String> match) {},
     );
-    final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
+    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -194,7 +194,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             Text(
               widget.fromBottomSheet ?? false
                   ? Keys.setUpAccount.tr(context)
-                  : Keys.hangoutSettings.tr(context),
+                  : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
@@ -510,11 +510,11 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   }
 
   Future<void> onClickSave(
-      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) async {
+      MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
     bool validate = formKey.currentState?.validate() ?? false;
-    Hangout? hangout = myUserPageViewModel?.hangout;
+    UserModel? hangout = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
-      if (hangout is Hangout && !(widget.fromBottomSheet ?? false)) {
+      if (hangout is UserModel && !(widget.fromBottomSheet ?? false)) {
         int seconds = int.tryParse(secondEditController.text) ?? 0;
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
@@ -527,7 +527,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             : Lounge.highroller;
         final importances = findImportances(_importanceRatioValue!, lounge);
 
-        HangOutRule rule = HangOutRule(
+        Rule rule = Rule(
             minSpeed: int.parse(speedEditController.text),
             maxMeetingDuration: seconds,
             importance: {

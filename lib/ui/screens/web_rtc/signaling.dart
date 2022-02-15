@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
@@ -11,7 +11,7 @@ class Signaling {
   Signaling(
       {required this.meeting,
       required this.meetingChanger,
-      required this.hangoutChanger,
+      required this.userChanger,
       required this.amA,
       required this.localVideo,
       required this.remoteVideo}) {
@@ -57,7 +57,7 @@ class Signaling {
 
   final Meeting meeting;
   final MeetingChanger meetingChanger;
-  final HangoutChanger hangoutChanger;
+  final UserModelChanger userChanger;
   final bool amA;
   final RTCVideoRenderer localVideo;
   final RTCVideoRenderer remoteVideo;

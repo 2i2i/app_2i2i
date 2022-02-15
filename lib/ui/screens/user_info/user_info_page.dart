@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
-import '../my_hangout/chat_widget.dart';
+import '../my_user/chat_widget.dart';
 import 'other_bid_list.dart';
 import 'widgets/user_info_widget.dart';
 
@@ -38,26 +38,26 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     final A = ref.watch(myUIDProvider);
     bool amBlocked =
-        A == null || userPageBViewModel.hangout.blocked.contains(A);
+        A == null || userPageBViewModel.user.blocked.contains(A);
 
-    Hangout? hangoutA;
+    UserModel? userA;
     if (A is String) {
-      final hangoutAAsyncValue = ref.watch(hangoutProvider(A));
-      if (!haveToWait(hangoutAAsyncValue)) hangoutA = hangoutAAsyncValue.value;
+      final userAAsyncValue = ref.watch(userProvider(A));
+      if (!haveToWait(userAAsyncValue)) userA = userAAsyncValue.value;
     }
-    final userModelChanger = ref.watch(hangoutChangerProvider);
+    final userModelChanger = ref.watch(userChangerProvider);
     bool isFriend = false;
-    if (hangoutA is Hangout && hangoutA.friends.contains(widget.B))
+    if (userA is UserModel && userA.friends.contains(widget.B))
       isFriend = true;
 
-    final Hangout hangoutB = userPageBViewModel.hangout;
+    final UserModel userB = userPageBViewModel.user;
 
     final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.B));
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
     final bidInsSorted = combineQueues(
-        bidIns, hangoutB.loungeHistory, hangoutB.loungeHistoryIndex);
+        bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
 
     // show est. wait time?
     int? estWaitTime;
@@ -75,7 +75,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           }
 
           int duration = bidIn.speed.num == 0
-              ? hangoutB.rule.maxMeetingDuration
+              ? userB.rule.maxMeetingDuration
               : (bidIn.energy / bidIn.speed.num).round();
           totalDuration += duration;
         }
@@ -147,7 +147,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               padding: const EdgeInsets.only(
                   right: 20, left: 20, bottom: 14, top: 4),
               child: UserInfoWidget(
-                hangout: hangoutB,
+                user: userB,
                 isFav: isFriend,
                 estWaitTime: estWaitTime,
                 onTapQr: () {
@@ -161,13 +161,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                         decoration: Custom.getBoxDecoration(context,color: Colors.white),
                         child: QrCodeWidget(
                             message:
-                                'https://test.2i2i.app/user/${hangoutB.id}'),
+                                'https://test.2i2i.app/user/${userB.id}'),
                       ),
                     ),
                   );
                 },
                 onTapChat: () => CustomAlertWidget.showBidAlert(
-                    context, ChatWidget(hangout: hangoutB),
+                    context, ChatWidget(user: userB),
                     backgroundColor: Colors.transparent),
                 onTapFav: () {
                   if (userModelChanger != null) {
@@ -183,7 +183,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           ),
           Expanded(
             child: OtherBidInList(
-              hangout: hangoutB,
+              user: userB,
               bidIns: bidInsSorted,
             ),
           ),

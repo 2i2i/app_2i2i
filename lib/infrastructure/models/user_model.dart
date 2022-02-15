@@ -18,8 +18,8 @@ extension ParseToString on Lounge {
   }
 }
 
-class HangoutChanger {
-  HangoutChanger(this.database, this.uid);
+class UserModelChanger {
+  UserModelChanger(this.database, this.uid);
 
   final FirestoreDatabase database;
   final String uid;
@@ -29,7 +29,7 @@ class HangoutChanger {
     return database.updateUserHeartbeat(uid, status);
   }
 
-  Future updateSettings(Hangout hangout) => database.updateUser(hangout);
+  Future updateSettings(UserModel user) => database.updateUser(user);
   Future addComment(String targetUid, ChatModel chat) => database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
@@ -45,7 +45,7 @@ class HangoutChanger {
 }
 
 @immutable
-class HangOutRule extends Equatable {
+class Rule extends Equatable {
   static const defaultImportance = {
     // set also in cloud function userCreated
     Lounge.chrony: 1,
@@ -54,7 +54,7 @@ class HangOutRule extends Equatable {
     Lounge.lurker: 0,
   };
 
-  const HangOutRule({
+  const Rule({
     // set also in cloud function userCreated
     this.maxMeetingDuration = 300,
     this.minSpeed = 0,
@@ -65,7 +65,7 @@ class HangOutRule extends Equatable {
   final int minSpeed;
   final Map<Lounge, int> importance;
 
-  factory HangOutRule.fromMap(Map<String, dynamic> data) {
+  factory Rule.fromMap(Map<String, dynamic> data) {
     final int maxMeetingDuration = data['maxMeetingDuration'];
     final int minSpeed = data['minSpeed'];
 
@@ -76,7 +76,7 @@ class HangOutRule extends Equatable {
       importance[lounge] = x[k]! as int;
     }
 
-    return HangOutRule(
+    return Rule(
       maxMeetingDuration: maxMeetingDuration,
       minSpeed: minSpeed,
       importance: importance,
@@ -100,10 +100,10 @@ class HangOutRule extends Equatable {
 }
 
 @immutable
-class Hangout extends Equatable {
+class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
-  Hangout({
+  UserModel({
     // set also in cloud function userCreated
     required this.id,
     this.status = 'ONLINE',
@@ -113,7 +113,7 @@ class Hangout extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeat,
-    this.rule = const HangOutRule(),
+    this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
     this.loungeHistoryIndex = -1,
     this.blocked = const <String>[],
@@ -127,7 +127,7 @@ class Hangout extends Equatable {
   final String status;
 
   final String? meeting;
-  HangOutRule rule;
+  Rule rule;
 
   String name;
   String bio;
@@ -171,15 +171,15 @@ class Hangout extends Equatable {
   @override
   bool get stringify => true;
 
-  factory Hangout.fromMap(Map<String, dynamic>? data, String documentId) {
+  factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
-      log('Hangout.fromMap - data == null');
+      log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('Hangout.fromMap - data=$data');
-    // log('Hangout.fromMap - data=${data['bidsIn']}');
-    // log('Hangout.fromMap - data=${data['bidsIn'].runtimeType}');
+    // log('user.fromMap - data=$data');
+    // log('user.fromMap - data=${data['bidsIn']}');
+    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final String status = data['status'];
     final String? meeting = data['meeting'];
@@ -188,9 +188,9 @@ class Hangout extends Equatable {
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
-    final HangOutRule rule = data['rule'] == null
-        ? HangOutRule()
-        : HangOutRule.fromMap(data['rule']);
+    final Rule rule = data['rule'] == null
+        ? Rule()
+        : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
@@ -198,7 +198,7 @@ class Hangout extends Equatable {
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
 
-    return Hangout(
+    return UserModel(
       id: documentId,
       status: status,
       meeting: meeting,
@@ -235,7 +235,7 @@ class Hangout extends Equatable {
 
   @override
   String toString() {
-    return 'Hangout{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 
   bool isInMeeting() => meeting != null;

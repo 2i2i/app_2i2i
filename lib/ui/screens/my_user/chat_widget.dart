@@ -5,14 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_profile_image_view.dart';
 
 class ChatWidget extends ConsumerStatefulWidget {
-  final Hangout hangout;
+  final UserModel user;
 
-  const ChatWidget({Key? key, required this.hangout}) : super(key: key);
+  const ChatWidget({Key? key, required this.user}) : super(key: key);
 
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
@@ -23,9 +23,9 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final userModelChanger = ref.watch(hangoutChangerProvider)!;
+    final userModelChanger = ref.watch(userChangerProvider)!;
     final currentUserId = ref.watch(myUIDProvider)!;
-    final currentUserAsyncValue = ref.watch(hangoutProvider(currentUserId));
+    final currentUserAsyncValue = ref.watch(userProvider(currentUserId));
     final currentUser = currentUserAsyncValue.value!;
 
     return Column(
@@ -49,7 +49,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               children: [
                 Expanded(
                   child: StreamBuilder(
-                    stream: FirestoreDatabase().getChat(widget.hangout.id),
+                    stream: FirestoreDatabase().getChat(widget.user.id),
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
@@ -128,7 +128,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                     InkResponse(
                       onTap: () async {
                         if (commentController.text.isNotEmpty) {
-                          await userModelChanger.addComment(widget.hangout.id, ChatModel(
+                          await userModelChanger.addComment(widget.user.id, ChatModel(
                               message: commentController.text,
                               ts: DateTime.now().toUtc(),
                               writerName: currentUser.name,

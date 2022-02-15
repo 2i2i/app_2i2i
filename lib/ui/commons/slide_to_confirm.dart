@@ -11,7 +11,7 @@ class ConfirmationSlider extends StatefulWidget {
   final Color backgroundColor;
 
   /// The color of the background of the slider when it has been slide to the end. By giving a value here, the background color
-  /// will gradually change from backgroundColor to backgroundColorEnd when the hangout slides. Is not used by default.
+  /// will gradually change from backgroundColor to backgroundColorEnd when the user slides. Is not used by default.
   final Color? backgroundColorEnd;
 
   /// The color of the moving element of the slider. Defaults to Colors.blueAccent.
@@ -26,7 +26,7 @@ class ConfirmationSlider extends StatefulWidget {
   /// The shadow below the slider. Defaults to BoxShadow(color: Colors.black38, offset: Offset(0, 2),blurRadius: 2,spreadRadius: 0,).
   final BoxShadow? shadow;
 
-  /// The text showed below the foreground. Used to specify the functionality to the hangout. Defaults to "Slide to confirm".
+  /// The text showed below the foreground. Used to specify the functionality to the user. Defaults to "Slide to confirm".
   final String text;
 
   /// The style of the text. Defaults to TextStyle(color: Colors.black26, fontWeight: FontWeight.bold,).

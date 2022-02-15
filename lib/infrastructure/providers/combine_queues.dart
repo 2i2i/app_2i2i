@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // bidInsPublic comes sorted by ts
@@ -27,7 +27,7 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   final List<List<BidInPublic>> bidInsPublicSections = [];
   if (bidInsPublic.isEmpty) return bidInsPublicSections;
 
-  HangOutRule currentRule = bidInsPublic.first.rule;
+  Rule currentRule = bidInsPublic.first.rule;
   List<BidInPublic> currentSection = [];
   for (final bidIn in bidInsPublic) {
     if (bidIn.rule == currentRule)
@@ -56,7 +56,7 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
     throw Exception(
         'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
-  HangOutRule rule = bidInsPublic.first.rule; // same for all bids
+  Rule rule = bidInsPublic.first.rule; // same for all bids
   // if one side empty, return other side
   if (bidInsHighRollers.isEmpty || rule.importance[Lounge.highroller]! == 0)
     return bidInsChronies;
@@ -153,7 +153,7 @@ BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) =>
         'num': speed,
         'assetId': 0,
       }).toMap(),
-      'rule': HangOutRule.fromMap({
+      'rule': Rule.fromMap({
         'maxMeetingDuration': 300,
         'minSpeed': minSpeed,
         'importance': {

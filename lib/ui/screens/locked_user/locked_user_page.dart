@@ -21,11 +21,11 @@ class LockedUserPage extends ConsumerStatefulWidget {
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
   @override
   Widget build(BuildContext context) {
-    final lockedUserViewModel = ref.watch(lockedHangoutViewModelProvider);
+    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
     if (lockedUserViewModel == null) return WaitPage();
 
-    final hangoutModelChanger = ref.watch(hangoutChangerProvider);
-    if (hangoutModelChanger == null) return WaitPage();
+    final userModelChanger = ref.watch(userChangerProvider);
+    if (userModelChanger == null) return WaitPage();
 
     final meetingChanger = ref.watch(meetingChangerProvider);
 
@@ -50,8 +50,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
           child: CallPageWebsockets(
             meeting: lockedUserViewModel.meeting,
             meetingChanger: meetingChanger,
-            hangoutChanger: hangoutModelChanger,
-            hangout: lockedUserViewModel.hangout,
+            userChanger: userModelChanger,
+            user: lockedUserViewModel.user,
             onHangPhone: (uid, meetingId) {
               widget.onHangPhone?.call(uid, meetingId);
             },

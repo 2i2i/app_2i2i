@@ -25,8 +25,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
     final uid = ref.watch(myUIDProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if (uid == null) return WaitPage();
-    final hangout = ref.watch(hangoutProvider(uid));
-    if (haveToWait(hangout)) {
+    final user = ref.watch(userProvider(uid));
+    if (haveToWait(user)) {
       return WaitPage();
     }
 
@@ -56,7 +56,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 children: [
                   ListTile(
                     onTap: () {
-                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                      context.pushNamed(Routes.userSetting.nameFromPath());
                     },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -67,7 +67,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                         ),
                         Flexible(
                           child: Text(
-                            hangout.value?.name ?? '',
+                            user.value?.name ?? '',
                             style: Theme.of(context).textTheme.subtitle1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
@@ -82,7 +82,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ),
                   ListTile(
                     onTap: () {
-                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                      context.pushNamed(Routes.userSetting.nameFromPath());
                     },
                     title: Text(
                       Keys.bio.tr(context),

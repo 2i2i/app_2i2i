@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
@@ -10,7 +10,7 @@ import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
-import 'package:app_2i2i/ui/screens/hangout_setting/hangout_setting.dart';
+import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
@@ -18,9 +18,9 @@ import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
-import 'package:app_2i2i/ui/screens/my_hangout/hangout_bid_out_list.dart';
+import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
-import 'package:app_2i2i/ui/screens/my_hangout/my_hangout_page.dart';
+import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
@@ -80,11 +80,11 @@ class NamedRoutes {
         ),
       ),
       GoRoute(
-        name: Routes.myHangout.nameFromPath(),
-        path: Routes.myHangout,
+        name: Routes.myUser.nameFromPath(),
+        path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(MyHangoutPage()),
+          child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
       ),
@@ -164,12 +164,12 @@ class NamedRoutes {
         },
       ),
       GoRoute(
-        name: Routes.hangoutSetting.nameFromPath(),
-        path: Routes.hangoutSetting,
+        name: Routes.userSetting.nameFromPath(),
+        path: Routes.userSetting,
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(HangoutSetting(fromBottomSheet: false)),
+            child: getView(UserSetting(fromBottomSheet: false)),
           );
         },
       ),
@@ -331,11 +331,11 @@ class NamedRoutes {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);
             if (uid != null) {
-              final hangoutProviderVal = ref.watch(hangoutProvider(uid));
-              bool isLoaded = !(haveToWait(hangoutProviderVal));
-              if (isLoaded && hangoutProviderVal.asData?.value is Hangout) {
-                final Hangout hangout = hangoutProviderVal.asData!.value;
-                if (hangout.name.trim().isEmpty) {
+              final userProviderVal = ref.watch(userProvider(uid));
+              bool isLoaded = !(haveToWait(userProviderVal));
+              if (isLoaded && userProviderVal.asData?.value is UserModel) {
+                final UserModel user = userProviderVal.asData!.value;
+                if (user.name.trim().isEmpty) {
                   return BottomSheet(
                     enableDrag: true,
                     backgroundColor: Theme.of(context).cardColor,
@@ -353,7 +353,7 @@ class NamedRoutes {
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: HangoutSetting(
+                          child: UserSetting(
                             fromBottomSheet: true,
                           ),
                         ),
@@ -373,7 +373,7 @@ class NamedRoutes {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.watch(
-            lockedHangoutViewModelProvider); // lockedHangoutViewModelProvider just needs to run
+            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
         if (kIsWeb) {
           return FittedBox(
             fit: BoxFit.scaleDown,

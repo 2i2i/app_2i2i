@@ -6,11 +6,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
-import '../../../../infrastructure/models/hangout_model.dart';
+import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 class UserInfoWidget extends StatefulWidget {
-  final Hangout hangout;
+  final UserModel user;
   final bool isFav;
   final int? estWaitTime;
 
@@ -22,7 +22,7 @@ class UserInfoWidget extends StatefulWidget {
 
   const UserInfoWidget({
     Key? key,
-    required this.hangout,
+    required this.user,
     this.onTapFav,
     required this.isFav,
     this.onTapRules,
@@ -40,25 +40,25 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final shortBio = widget.hangout.bio;
+    final shortBio = widget.user.bio;
     var statusColor = AppTheme().green;
-    if (widget.hangout.status == Keys.statusOFFLINE) {
+    if (widget.user.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
     }
-    else if (widget.hangout.status == Keys.statusIDLE) {
+    else if (widget.user.status == Keys.statusIDLE) {
       statusColor = Colors.amber;
-    } else if (widget.hangout.isInMeeting()) {
+    } else if (widget.user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
 
-    final totalRating = removeDecimalZeroFormat(widget.hangout.rating * 5);
+    final totalRating = removeDecimalZeroFormat(widget.user.rating * 5);
 
     return Column(
       children: [
         Row(
           children: [
             ProfileWidget(
-              stringPath: widget.hangout.name,
+              stringPath: widget.user.name,
               statusColor: statusColor,
               radius: 80,
             ),
@@ -68,7 +68,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     Expanded(
                       child: Text(
-                        widget.hangout.name,
+                        widget.user.name,
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
@@ -114,13 +114,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     SizedBox(height: 2),
                     InkWell(
-                      onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':widget.hangout.id}),
+                      onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':widget.user.id}),
                       child: Row(
                         children: [
                           IgnorePointer(
                             ignoring: true,
                             child: RatingBar.builder(
-                              initialRating: widget.hangout.rating * 5,
+                              initialRating: widget.user.rating * 5,
                               minRating: 1,
                               direction: Axis.horizontal,
                               itemCount: 5,
@@ -202,7 +202,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             : Container(),
         SizedBox(height: 20),
         UserRulesWidget(
-          hangout: widget.hangout,
+          user: widget.user,
           onTapRules: widget.onTapRules,
         ),
         SizedBox(height: 10),
@@ -216,15 +216,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 }
 
 class UserRulesWidget extends StatelessWidget {
-  final Hangout hangout;
+  final UserModel user;
 
   final GestureTapCallback? onTapRules;
-  const UserRulesWidget({Key? key, required this.hangout, this.onTapRules})
+  const UserRulesWidget({Key? key, required this.user, this.onTapRules})
       : super(key: key);
 
   String importanceString() {
-    final c = hangout.rule.importance[Lounge.chrony]!;
-    final h = hangout.rule.importance[Lounge.highroller]!;
+    final c = user.rule.importance[Lounge.chrony]!;
+    final h = user.rule.importance[Lounge.highroller]!;
     final N = c + h;
     final isChrony = c <= h;
     final lounge = isChrony ? Lounge.chrony : Lounge.highroller;
@@ -247,7 +247,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${(hangout.rule.minSpeed/1000000).toStringAsFixed(2)} A/sec',
+                    '${(user.rule.minSpeed/1000000).toStringAsFixed(2)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
@@ -284,7 +284,7 @@ class UserRulesWidget extends StatelessWidget {
                 children: [
                   Text(
                     secondsToSensibleTimePeriod(
-                        hangout.rule.maxMeetingDuration),
+                        user.rule.maxMeetingDuration),
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),

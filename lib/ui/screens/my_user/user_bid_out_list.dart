@@ -41,7 +41,7 @@ class UserBidOut extends ConsumerWidget {
             onCancelClick: (bidOut) async {
               CustomDialogs.loader(true, context);
               final myHangoutPageViewModel =
-                  ref.read(myHangoutPageViewModelProvider);
+                  ref.read(myUserPageViewModelProvider);
               await myHangoutPageViewModel?.cancelOwnBid(bidOut: bidOut);
               CustomDialogs.loader(false, context);
             },

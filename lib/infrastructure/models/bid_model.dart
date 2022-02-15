@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -108,12 +108,12 @@ class BidIn extends Equatable {
   BidIn({
     required this.public,
     this.private,
-    this.hangout,
+    this.user,
   });
 
   final BidInPublic public;
   final BidInPrivate? private;
-  final Hangout? hangout;
+  final UserModel? user;
 
   @override
   List<Object> get props => [public.id];
@@ -157,7 +157,7 @@ class BidInPublic extends Equatable {
   final Quantity speed;
   final AlgorandNet net;
   final DateTime ts;
-  final HangOutRule rule;
+  final Rule rule;
   final int energy;
 
   @override
@@ -177,7 +177,7 @@ class BidInPublic extends Equatable {
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final DateTime ts = data['ts'].toDate();
-    final HangOutRule rule = HangOutRule.fromMap(data['rule']);
+    final Rule rule = Rule.fromMap(data['rule']);
     int energy = data['energy'];
 
     return BidInPublic(

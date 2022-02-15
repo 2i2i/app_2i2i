@@ -101,7 +101,7 @@ class Keys {
   static const String required = 'required';
   static const String enterValidData = 'enterValidData';
   static const String setUpAccount = 'setUpAccount';
-  static const String hangoutSettings = 'hangoutSettings';
+  static const String userSettings = 'userSettings';
   static const String userName = 'userName';
   static const String name = 'name';
   static const String bio = 'bio';

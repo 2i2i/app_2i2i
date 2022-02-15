@@ -43,13 +43,13 @@ class _AuthWidgetState extends ConsumerState<AuthWidget> {
                   showAuthActionSwitch: false,
                   actions: [
                     AuthStateChangeAction<SignedIn>(
-                      (context, hangout) {
+                      (context, user) {
                         Future.delayed(Duration.zero).then(
                           (value) {
                             ref
                                 .read(setupUserViewModelProvider)
                                 .createAuthAndStartAlgoRand(
-                                    firebaseUserId: hangout.hangout?.uid);
+                                    firebaseUserId: user.user?.uid);
                           },
                         );
                       },

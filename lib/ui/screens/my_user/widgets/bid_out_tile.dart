@@ -1,43 +1,35 @@
-import 'dart:math';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
-import '../../../../infrastructure/models/hangout_model.dart';
-import '../../../../infrastructure/routes/app_routes.dart';
+import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 
-class BidInTile extends StatelessWidget {
-  final List<BidIn> bidInList;
-  final int index;
+class BidOutTile extends ConsumerWidget {
+  final BidOut bidOut;
+  final void Function(BidOut bidOut) onCancelClick;
 
-  const BidInTile({Key? key, required this.bidInList, required this.index})
+  const BidOutTile(
+      {Key? key, required this.bidOut, required this.onCancelClick})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var statusColor = AppTheme().green;
+    String bidSpeed = "0";
 
-    BidIn bidIn = bidInList[index];
-
-    Hangout hangout = bidInList[index].hangout!;
-
-    int budgetCountInt = 0;
-    int totalDuration = 0;
-    for (int i = 0; i < index; i++) {
-      budgetCountInt += bidInList[i].public.energy;
-      int thisBidMaxDuration = bidInList[i].public.rule.maxMeetingDuration;
-      if (0 < bidInList[i].public.speed.num) {
-        final thisBidMaxDurationTmp =
-            (bidInList[i].public.energy / bidInList[i].public.speed.num)
-                .floor();
-        thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
-      }
-      totalDuration += thisBidMaxDuration;
+    final userAsyncValue = ref.watch(userProvider(bidOut.B));
+    if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
+      return CupertinoActivityIndicator();
     }
-    budgetCountInt += bidInList[index].public.energy;
-    final budgetCount = budgetCountInt / 1000000;
+
+    UserModel hangout = userAsyncValue.asData!.value;
+    bidSpeed = (bidOut.speed.num / 1000000).toString();
 
     if (hangout.status == Keys.statusOFFLINE) {
       statusColor = AppTheme().gray;
@@ -145,10 +137,10 @@ class BidInTile extends StatelessWidget {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: bidIn.public.speed.num.toString(),
+                    text: bidSpeed,
                     children: [
                       TextSpan(
-                        text: ' μAlgo/s',
+                        text: ' ALGO/sec',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
                               color: Theme.of(context)
@@ -183,40 +175,25 @@ class BidInTile extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
+                  IconButton(
+                      onPressed: () => onCancelClick(bidOut),
+                      icon: Icon(Icons.cancel)),
+                  Spacer(),
                   Expanded(
                     child: RichText(
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.end,
                       text: TextSpan(
-                        text: '${Keys.accumulatedSupport.tr(context)} ',
+                        text: '${Keys.speed.tr(context)} :',
                         children: [
                           TextSpan(
-                              text: ' $budgetCount',
+                              text: ' ${bidOut.energy}',
                               children: [],
                               style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
-                  ),
-                  Container(
-                    child: VerticalDivider(),
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: '${Keys.startsIn.tr(context)} ',
-                        children: [
-                          TextSpan(
-                              text:
-                                  ' ${secondsToSensibleTimePeriod(totalDuration)}',
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ),
-                  ),
+                  )
                 ],
               ),
             )

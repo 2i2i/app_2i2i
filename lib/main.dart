@@ -145,17 +145,16 @@ class _MainWidgetState extends ConsumerState<MainWidget>
 
 
   Future<void> updateHeartbeat(String status) async {
+    final userChanger = ref.watch(userChangerProvider);
     if (status == Keys.statusIDLE) {
       if (timer?.isActive ?? false) timer!.cancel();
-      final hangoutChanger = ref.watch(hangoutChangerProvider);
-      if (hangoutChanger == null) return;
-      await hangoutChanger.updateHeartbeat(status);
+      if (userChanger == null) return;
+      await userChanger.updateHeartbeat(status);
     } else {
       if (timer?.isActive ?? false) timer!.cancel();
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-        final hangoutChanger = ref.watch(hangoutChangerProvider);
-        if (hangoutChanger == null) return;
-        await hangoutChanger.updateHeartbeat(status);
+        if (userChanger == null) return;
+        await userChanger.updateHeartbeat(status);
       });
     }
   }
