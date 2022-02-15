@@ -4,6 +4,7 @@ class FirestorePath {
 
   static String token(String uid) => 'tokens/$uid';
   static String device(String uid) => 'devices/$uid';
+  static String chat(String uid) => 'users/$uid/chat';
 
   static String meetings() => 'meetings';
   static String topSpeeds() => 'topSpeeds';

@@ -5,12 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
+import 'chat_widget.dart';
 import 'hangout_bid_in_list.dart';
 
 class MyHangoutPage extends ConsumerStatefulWidget {
@@ -72,16 +75,21 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                             fit: BoxFit.scaleDown,
                               child: Container(
                                 decoration: Custom.getBoxDecoration(context,color: Colors.white),
-                                height: 400,
-                                  width: 350,
-                                  child: QrCodeWidget(message: 'https://test.2i2i.app/user/${hangout.id}'),
-                              ),
+                            height: 400,
+                            width: 350,
+                            child: QrCodeWidget(
+                                message:
+                                    'https://test.2i2i.app/user/${hangout.id}'),
                           ),
+                        ),
                       );
                     },
-                    onTapWallet: (){
+                    onTapWallet: () {
                       context.pushNamed(Routes.account.nameFromPath());
                     },
+                    onTapChat: () => CustomAlertWidget.showBidAlert(
+                        context, ChatWidget(hangout: hangout),
+                        backgroundColor: Colors.transparent),
                     isFav: true,
                   ),
                 ],

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
+import '../../models/chat_model.dart';
 import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
@@ -378,4 +379,20 @@ class FirestoreDatabase {
       print(onError);
     });
   }
+
+  //chat
+  Stream<List<ChatModel>> getChat(String uid) {
+    return _service.collectionStream(
+      path: FirestorePath.chat(uid),
+      builder: (data, documentId) => ChatModel.fromMap(data!),
+      queryBuilder: (query) => query.orderBy('ts', descending: true).limit(100),
+    );
+  }
+
+  Future<void> addChat(String uid, ChatModel chat) => _service.setData(
+        path: FirestorePath.chat(uid) +
+            '/' +
+            _service.newDocId(path: FirestorePath.chat(uid)),
+        data: chat.toMap(),
+      );
 }
