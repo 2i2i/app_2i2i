@@ -192,12 +192,6 @@ final meetingHistoryB =
   return database.meetingHistoryB(uid);
 });
 
-// final getCommentList =
-//     StreamProvider.family<List<CommentModel>, String>((ref, "e") {
-//   final database = ref.watch(databaseProvider);
-//   return database.getCommentList();
-// });
-
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
