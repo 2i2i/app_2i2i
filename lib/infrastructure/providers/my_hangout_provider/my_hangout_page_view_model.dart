@@ -23,7 +23,8 @@ class MyHangoutPageViewModel {
   Future<bool> acceptBid(BidIn bidIn) async {
     if (!bidIn.public.active) return false;
 
-    if (bidIn.hangout!.status == Keys.statusOFFLINE || bidIn.hangout!.isInMeeting()) {
+    if (bidIn.hangout!.status == Keys.statusOFFLINE ||
+        bidIn.hangout!.isInMeeting()) {
       await cancelNoShow(bidIn: bidIn);
       return false;
     }
@@ -41,12 +42,13 @@ class MyHangoutPageViewModel {
   }
 
   Future cancelNoShow({required BidIn bidIn}) async {
-    return database.cancelBid(A: bidIn.private!.A, B: hangout.id, bidId: bidIn.public.id);
+    return database.cancelBid(
+        A: bidIn.private!.A, B: hangout.id, bidId: bidIn.public.id);
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
     if (!bidOut.active) return;
-    
+
     if (bidOut.speed.num == 0) {
       return database.cancelBid(A: hangout.id, B: bidOut.B, bidId: bidOut.id);
     }
@@ -55,5 +57,6 @@ class MyHangoutPageViewModel {
     await cancelBid({'bidId': bidOut.id});
   }
 
-  Future updateHangout(Hangout hangout) => hangoutChanger.updateSettings(hangout);
+  Future updateHangout(Hangout hangout) =>
+      hangoutChanger.updateSettings(hangout);
 }
