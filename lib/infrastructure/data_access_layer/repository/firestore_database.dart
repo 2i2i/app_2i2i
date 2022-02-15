@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
-import '../../models/comment_model.dart';
+import '../../models/chat_model.dart';
 import '../../models/hangout_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';

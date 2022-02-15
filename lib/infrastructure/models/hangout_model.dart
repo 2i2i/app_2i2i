@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/models/comment_model.dart';
+import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import '../data_access_layer/repository/firestore_database.dart';
