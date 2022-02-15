@@ -33,17 +33,31 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
+      
+      // create meeting
       final meetingDocRef = _service.firestore
           .collection(FirestorePath.meetings())
           .doc(meeting.id);
-
-      final lockObj = {'meeting': meeting.id};
-
       transaction.set(meetingDocRef, meeting.toMap());
+      
+      // lock users
+      final lockObj = {'meeting': meeting.id};
       final userADocRef = _service.firestore.doc(FirestorePath.user(meeting.A));
       transaction.update(userADocRef, lockObj);
       final userBDocRef = _service.firestore.doc(FirestorePath.user(meeting.B));
       transaction.update(userBDocRef, lockObj);
+
+      // deactivate bids
+      final bidOutRef =
+          _service.firestore.doc(FirestorePath.bidOut(meeting.A, meeting.id));
+      final bidInPublicRef =
+          _service.firestore.doc(FirestorePath.bidInPublic(meeting.B, meeting.id));
+      final bidInPrivateRef =
+          _service.firestore.doc(FirestorePath.bidInPrivate(meeting.B, meeting.id));
+      final bidObj = {'active': false};
+      transaction.update(bidOutRef, bidObj);
+      transaction.update(bidInPublicRef, bidObj);
+      transaction.update(bidInPrivateRef, bidObj);
 
       return Future.value();
     });
@@ -51,17 +65,13 @@ class FirestoreDatabase {
 
   Future addBid(BidOut bidOut, BidIn bidIn) async {
     return _service.runTransaction((transaction) {
-      final bidOutRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidOuts(bidIn.private!.A))
-          .doc(bidOut.id);
 
-      final bidInPublicRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPublic(bidOut.B))
-          .doc(bidOut.id);
-
-      final bidInPrivateRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPrivate(bidOut.B))
-          .doc(bidOut.id);
+      final bidOutRef =
+          _service.firestore.doc(FirestorePath.bidOut(bidIn.private!.A, bidOut.id));
+      final bidInPublicRef =
+          _service.firestore.doc(FirestorePath.bidInPublic(bidOut.B, bidOut.id));
+      final bidInPrivateRef =
+          _service.firestore.doc(FirestorePath.bidInPrivate(bidOut.B, bidOut.id));
 
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(
@@ -76,21 +86,18 @@ class FirestoreDatabase {
   Future cancelBid(
       {required String A, required String B, required String bidId}) async {
     return _service.runTransaction((transaction) {
-      final bidOutRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidOuts(A))
-          .doc(bidId);
-      final bidInPublicRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPublic(B))
-          .doc(bidId);
-      final bidInPrivateRef = FirebaseFirestore.instance
-          .collection(FirestorePath.bidInsPrivate(B))
-          .doc(bidId);
+      final bidOutRef =
+          _service.firestore.doc(FirestorePath.bidOut(A, bidId));
+      final bidInPublicRef =
+          _service.firestore.doc(FirestorePath.bidInPublic(B, bidId));
+      final bidInPrivateRef =
+          _service.firestore.doc(FirestorePath.bidInPrivate(B, bidId));
+      
       final obj = {'active': false};
-      final setOptions = SetOptions(merge: true);
 
-      transaction.set(bidOutRef, obj, setOptions);
-      transaction.set(bidInPublicRef, obj, setOptions);
-      transaction.set(bidInPrivateRef, obj, setOptions);
+      transaction.update(bidOutRef, obj);
+      transaction.update(bidInPublicRef, obj);
+      transaction.update(bidInPrivateRef, obj);
 
       return Future.value();
     });
