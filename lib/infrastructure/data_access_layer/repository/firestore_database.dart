@@ -381,25 +381,18 @@ class FirestoreDatabase {
   }
 
   //chat
-  Stream<List<CommentModel>> getCommentList() {
+  Stream<List<ChatModel>> getChat(String uid) {
     return _service.collectionStream(
-      path: FirestorePath.getComment(),
-      builder: (data, documentId) => CommentModel.fromJson(data!),
-      queryBuilder: (query) => query.orderBy('messageId', descending: true),
+      path: FirestorePath.chat(uid),
+      builder: (data, documentId) => ChatModel.fromMap(data!),
+      queryBuilder: (query) => query.orderBy('ts', descending: true).limit(100),
     );
   }
 
-  Future<void> addComment(CommentModel commentModel) => _service
-          .setData(
-        path: FirestorePath.addComment('${commentModel.messageId}'),
-        data: commentModel.toJson(),
-        merge: true,
-      )
-          .catchError((onError) {
-        print(onError);
-      }).onError(
-        (error, stackTrace) {
-          print(error);
-        },
+  Future<void> addChat(String uid, ChatModel chat) => _service.setData(
+        path: FirestorePath.chat(uid) +
+            '/' +
+            _service.newDocId(path: FirestorePath.chat(uid)),
+        data: chat.toMap(),
       );
 }

@@ -25,16 +25,20 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
   Widget build(BuildContext context) {
     final userModelChanger = ref.watch(hangoutChangerProvider)!;
     final currentUserId = ref.watch(myUIDProvider)!;
+    final currentUserAsyncValue = ref.watch(hangoutProvider(currentUserId));
+    final currentUser = currentUserAsyncValue.value!;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             height: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
+            margin: EdgeInsets.only(
+                top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
                 color: Colors.transparent,
@@ -45,20 +49,14 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               children: [
                 Expanded(
                   child: StreamBuilder(
-                    stream: FirestoreDatabase().getCommentList(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    stream: FirestoreDatabase().getChat(widget.hangout.id),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        List<CommentModel> commentList = snapshot.data;
+                        List<ChatModel> chatList = snapshot.data;
                         return ListView.builder(
                           itemBuilder: (BuildContext context, int index) {
-                            CommentModel commentModel = commentList[index];
-                            final hangout =
-                                ref.watch(hangoutProvider(commentModel.userId!));
-                            if (hangout is AsyncLoading || hangout is AsyncError)
-                              return Container();
-
-                            Hangout userModel = hangout.value!;
+                            ChatModel chat = chatList[index];
 
                             return Container(
                               margin: EdgeInsets.symmetric(vertical: 4),
@@ -68,7 +66,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                 dense: true,
                                 contentPadding: EdgeInsets.zero,
                                 leading: ProfileWidget(
-                                    stringPath: userModel.name,
+                                    stringPath: chat.writerName,
                                     radius: 44,
                                     hideShadow: true,
                                     style: Theme.of(context)
@@ -76,7 +74,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                         .bodyText2
                                         ?.copyWith(
                                             fontWeight: FontWeight.w800)),
-                                title: Text(userModel.name,
+                                title: Text(chat.writerName,
                                     style: Theme.of(context)
                                         .textTheme
                                         .caption
@@ -85,7 +83,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                                 .primaryColorLight)),
                                 subtitle: Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text((commentModel.message ?? ""),
+                                  child: Text(chat.message,
                                       textAlign: TextAlign.start,
                                       style: Theme.of(context)
                                           .textTheme
@@ -97,7 +95,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                               ),
                             );
                           },
-                          itemCount: commentList.length,
+                          itemCount: chatList.length,
                           reverse: true,
                         );
                       }
@@ -130,11 +128,11 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                     InkResponse(
                       onTap: () async {
                         if (commentController.text.isNotEmpty) {
-                          await userModelChanger.addComment(CommentModel(
+                          await userModelChanger.addComment(widget.hangout.id, ChatModel(
                               message: commentController.text,
-                              userId: currentUserId,
-                              hostUid: widget.hangout.id,
-                              messageId: DateTime.now().millisecondsSinceEpoch));
+                              ts: DateTime.now().toUtc(),
+                              writerName: currentUser.name,
+                              writerUid: currentUserId));
                           commentController.clear();
                         }
                       },

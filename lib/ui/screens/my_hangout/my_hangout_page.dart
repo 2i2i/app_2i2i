@@ -10,7 +10,6 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/hangout_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
-import '../../../infrastructure/routes/named_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';

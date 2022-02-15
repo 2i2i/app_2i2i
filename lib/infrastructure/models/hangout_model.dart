@@ -30,7 +30,7 @@ class HangoutChanger {
   }
 
   Future updateSettings(Hangout hangout) => database.updateUser(hangout);
-  Future addComment(CommentModel commentModel) => database.addComment(commentModel);
+  Future addComment(String targetUid, ChatModel chat) => database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
