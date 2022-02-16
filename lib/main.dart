@@ -27,7 +27,10 @@ import 'ui/screens/localization/app_localization.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG
+// DEBUG3
+
+
+import 'package:uni_links/uni_links.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,9 +88,12 @@ class _MainWidgetState extends ConsumerState<MainWidget>
     with WidgetsBindingObserver {
   Timer? timer;
 
+
+
   @override
   void initState() {
     super.initState();
+    _handleIncomingLinks();
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
@@ -136,6 +142,20 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         });
       }
     });
+  }
+
+  void _handleIncomingLinks() {
+    if (!kIsWeb) {
+      // It will handle app links while the app is already started - be it in
+      // the foreground or in the background.
+      StreamSubscription _sub = uriLinkStream.listen((Uri? uri) {
+        if (!mounted) return;
+        print('got uri: $uri');
+      }, onError: (Object err) {
+        if (!mounted) return;
+        print('got err: $err');
+      });
+    }
   }
 
   Future<void> updateHeartbeat(Status status) async {

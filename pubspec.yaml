@@ -40,6 +40,7 @@ dependencies:
   flutterfire_ui: ^0.3.3
   http: ^0.13.4
   url_launcher: ^6.0.18
+  uni_links: ^0.5.1
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0
   flutter_styled_toast: ^2.0.0
