@@ -5,7 +5,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_acco
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -83,7 +83,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   TextEditingController speedController = TextEditingController();
   PageController controller = PageController(initialPage: 0);
 
-  Hangout? hangoutB;
+  UserModel? userB;
 
   @override
   void initState() {
@@ -105,10 +105,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       );
     }
 
-    hangoutB = userPageBViewModel.hangout;
+    userB = userPageBViewModel.user;
 
     final addBidPageViewModel = ref
-        .watch(addBidPageViewModelProvider(userPageBViewModel.hangout).state)
+        .watch(addBidPageViewModelProvider(userPageBViewModel.user).state)
         .state;
 
     if (addBidPageViewModel == null || (addBidPageViewModel.submitting))
@@ -125,7 +125,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TopCard(minWait: calcWaitTime(), B: hangoutB!),
+          TopCard(minWait: calcWaitTime(), B: userB!),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -377,7 +377,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             ),
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
-                              if (num >= (hangoutB?.rule.minSpeed ?? 0)) {
+                              if (num >= (userB?.rule.minSpeed ?? 0)) {
                                 speed =
                                     Quantity(num: num, assetId: speed.assetId);
                                 updateAccountBalance(myAccountPageViewModel);
@@ -385,8 +385,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             },
                             validator: (value) {
                               int num = int.tryParse(value ?? '') ?? 0;
-                              if (num < hangoutB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${hangoutB!.rule.minSpeed}';
+                              if (num < userB!.rule.minSpeed) {
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed}';
                               }
                               return null;
                             },
@@ -448,7 +448,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
-    speed = Quantity(num: hangoutB?.rule.minSpeed ?? 0, assetId: 0);
+    speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
     speedController.text = speed.num.toString();
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       account = myAccountPageViewModel.accounts!.first;
@@ -460,7 +460,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     }
 
     final availableBalance = _accountBalance - _minAccountBalance;
-    maxMaxDuration = hangoutB?.rule.maxMeetingDuration ?? 0;
+    maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
     if (speed.num != 0) {
       final availableMaxDuration = max(
           0,
@@ -486,15 +486,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         net: AlgorandNet.testnet,
         ts: now,
         energy: amount.num,
-        rule: hangoutB!.rule);
+        rule: userB!.rule);
 
     final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
-        hangoutB?.loungeHistory ?? [], hangoutB?.loungeHistoryIndex ?? 0);
+        userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
 
     int waitTime = 0;
     for (final bidIn in sortedBidIns) {
       if (bidIn.id == tmpBidIn.id) break;
-      int bidDuration = hangoutB?.rule.maxMeetingDuration ?? 0;
+      int bidDuration = userB?.rule.maxMeetingDuration ?? 0;
       if (bidIn.speed.num != 0)
         bidDuration =
             min((bidIn.energy / bidIn.speed.num).round(), bidDuration);
@@ -506,11 +506,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   Future onAddBid() async {
-    if (isInsufficient() && hangoutB == null) {
+    if (isInsufficient() && userB == null) {
       return;
     }
     final addBidPageViewModel =
-        ref.read(addBidPageViewModelProvider(hangoutB!).state).state;
+        ref.read(addBidPageViewModelProvider(userB!).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await addBid(addBidPageViewModel: addBidPageViewModel);

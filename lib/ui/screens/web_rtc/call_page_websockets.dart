@@ -4,7 +4,7 @@ import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/providers/web_rtc_provider/call_screen_provider.dart';
@@ -18,10 +18,10 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
-  final Hangout hangout;
+  final UserModel user;
   final Function onHangPhone;
   final MeetingChanger meetingChanger;
-  final HangoutChanger hangoutChanger;
+  final UserModelChanger userChanger;
 
   static String tag = 'call_sample';
   final String host = 'demo.cloudwebrtc.com';
@@ -29,9 +29,9 @@ class CallPageWebsockets extends ConsumerStatefulWidget {
     // required this.host,
     required this.meeting,
     required this.meetingChanger,
-    required this.hangoutChanger,
+    required this.userChanger,
     required this.onHangPhone,
-    required this.hangout,
+    required this.user,
   });
 
   @override
@@ -55,7 +55,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     super.initState();
     initRenderers();
 
-    amA = widget.meeting.A == widget.hangout.id;
+    amA = widget.meeting.A == widget.user.id;
     localId = amA ? widget.meeting.A : widget.meeting.B;
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
 
@@ -333,8 +333,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     _initTimers();
 
     callScreenModel = ref.watch(callScreenProvider);
-    final hangout = ref.watch(hangoutProvider(localId));
-    if (haveToWait(hangout)) {
+    final user = ref.watch(userProvider(localId));
+    if (haveToWait(user)) {
       return Center(child: CircularProgressIndicator());
     }
 

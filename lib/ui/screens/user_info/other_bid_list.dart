@@ -1,12 +1,12 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import 'widgets/other_bid_tile.dart';
 
 class OtherBidInList extends ConsumerWidget {
-  OtherBidInList({required this.hangout, required this.bidIns});
-  final Hangout hangout;
+  OtherBidInList({required this.user, required this.bidIns});
+  final UserModel user;
   final List<BidInPublic> bidIns;
 
   @override
@@ -22,7 +22,7 @@ class OtherBidInList extends ConsumerWidget {
       itemBuilder: (_, ix) {
         return OtherBidTile(
           bidIn: bidIns[ix],
-          hangout: hangout,
+          user: user,
         );
       },
     );

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../commons/custom.dart';
 import '../user_info/widgets/user_info_widget.dart';
 
 class TopCard extends StatelessWidget {
   final String minWait;
-  final Hangout B;
+  final UserModel B;
 
   const TopCard({Key? key, required this.minWait, required this.B})
       : super(key: key);
@@ -45,7 +45,7 @@ class TopCard extends StatelessWidget {
           ),
           SizedBox(height: 15),
           UserRulesWidget(
-            hangout: B,
+            user: B,
             onTapRules: null,
           ),
           SizedBox(height: 10),

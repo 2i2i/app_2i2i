@@ -7,23 +7,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'chat_widget.dart';
-import 'hangout_bid_in_list.dart';
+import 'user_bid_in_list.dart';
 
-class MyHangoutPage extends ConsumerStatefulWidget {
-  const MyHangoutPage({Key? key}) : super(key: key);
+class MyUserPage extends ConsumerStatefulWidget {
+  const MyUserPage({Key? key}) : super(key: key);
 
   @override
-  _MyHangoutPageState createState() => _MyHangoutPageState();
+  _MyUserPageState createState() => _MyUserPageState();
 }
 
-class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
+class _MyUserPageState extends ConsumerState<MyUserPage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
@@ -41,12 +41,12 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
 
   @override
   Widget build(BuildContext context) {
-    final myHangoutPageViewModel = ref.watch(myHangoutPageViewModelProvider);
-    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.hangout == null) {
+    final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
+    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.user == null) {
       return WaitPage();
     }
 
-    Hangout hangout = myHangoutPageViewModel!.hangout;
+    UserModel user = myHangoutPageViewModel!.user;
     return Scaffold(
       body: Column(
         children: [
@@ -64,9 +64,9 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                 children: [
                   SizedBox(height: 8),
                   UserInfoWidget(
-                    hangout: hangout,
+                    user: user,
                     onTapRules: (){
-                      context.pushNamed(Routes.hangoutSetting.nameFromPath());
+                      context.pushNamed(Routes.userSetting.nameFromPath());
                     },
                     onTapQr: (){
                       showDialog(
@@ -79,7 +79,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                             width: 350,
                             child: QrCodeWidget(
                                 message:
-                                    'https://test.2i2i.app/user/${hangout.id}'),
+                                    'https://test.2i2i.app/user/${user.id}'),
                           ),
                         ),
                       );
@@ -88,7 +88,7 @@ class _MyHangoutPageState extends ConsumerState<MyHangoutPage>
                       context.pushNamed(Routes.account.nameFromPath());
                     },
                     onTapChat: () => CustomAlertWidget.showBidAlert(
-                        context, ChatWidget(hangout: hangout),
+                        context, ChatWidget(user: user),
                         backgroundColor: Colors.transparent),
                     isFav: true,
                   ),

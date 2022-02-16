@@ -16,9 +16,6 @@ class Keys {
   static const String asGuest = 'As Guest';
   static const String asHost = 'As Host';
   static const String noBidFound = 'noBidFound';
-  static const String statusONLINE = 'ONLINE';
-  static const String statusOFFLINE = 'OFFLINE';
-  static const String statusIDLE = 'IDLE';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';
@@ -101,7 +98,7 @@ class Keys {
   static const String required = 'required';
   static const String enterValidData = 'enterValidData';
   static const String setUpAccount = 'setUpAccount';
-  static const String hangoutSettings = 'hangoutSettings';
+  static const String userSettings = 'userSettings';
   static const String userName = 'userName';
   static const String name = 'name';
   static const String bio = 'bio';

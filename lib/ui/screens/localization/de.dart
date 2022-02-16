@@ -86,7 +86,7 @@ class de {
       Keys.required: 'Erforderlich',
       Keys.enterValidData: 'Bitte gültige Daten eingeben',
       Keys.setUpAccount: 'Wer bist du?',
-      Keys.hangoutSettings: 'Host-Einstellungen',
+      Keys.userSettings: 'Host-Einstellungen',
       Keys.userName: 'Nutzername',
       Keys.name: 'Nutzername',
       Keys.bio: 'Ihre Interessen (verwenden Sie Hashtags)',

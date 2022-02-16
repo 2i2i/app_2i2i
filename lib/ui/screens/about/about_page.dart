@@ -47,8 +47,8 @@ class AboutPage extends StatelessWidget {
         children: [
           paragraph(context, 'What is 2i2i', [
             '• 2i2i is a blockchain based market for live video calls.',
-            '• Each hangout can bid to have a live video call with another hangout.',
-            '• If the bid is accepted by the hangout, a smart contract keeps and distributes the coins at the end of the call, according to the call duration.'
+            '• Each user can bid to have a live video call with another user.',
+            '• If the bid is accepted by the user, a smart contract keeps and distributes the coins at the end of the call, according to the call duration.'
           ]),
           paragraph(context, 'Target audience', [
             '• Anyone with an internet connection can earn coins by talking.',
@@ -56,7 +56,7 @@ class AboutPage extends StatelessWidget {
           ]),
           paragraph(context, 'Zero credit risk', [
             '• 2i2i never gets your coins.',
-            '• The coins are transfered from one hangout to another via a smart contract.'
+            '• The coins are transfered from one user to another via a smart contract.'
           ]),
           paragraph(context, 'Full privacy', [
             '• The live video calls are end-to-end encrypted and peer-to-peer.',

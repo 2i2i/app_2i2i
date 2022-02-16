@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
-import 'package:app_2i2i/infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,17 +13,16 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../create_bid/top_card_widget.dart';
 
-
-class HangoutSetting extends ConsumerStatefulWidget {
+class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
 
-  HangoutSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
 
   @override
-  _HangoutSettingState createState() => _HangoutSettingState();
+  _UserSettingState createState() => _UserSettingState();
 }
 
-class _HangoutSettingState extends ConsumerState<HangoutSetting> {
+class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController userNameEditController = TextEditingController();
   TextEditingController speedEditController = TextEditingController();
   TextEditingController hourEditController = TextEditingController();
@@ -42,7 +41,6 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
-
 
   RichTextController? bioTextController;
 
@@ -97,7 +95,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
     final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
         ? Lounge.chrony
         : Lounge.highroller;
-    return '~ every $ratio$postfix is a ${lounge.name()}';
+    return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
   String minSpeedString() {
@@ -111,23 +109,23 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
 
   void setData() {
     final uid = ref.watch(myUIDProvider)!;
-    final hangout = ref.watch(hangoutProvider(uid));
-    bool isLoaded = !(haveToWait(hangout));
+    final userAsyncValue = ref.watch(userProvider(uid));
+    bool isLoaded = !(haveToWait(userAsyncValue));
     if (isLoaded) {
-      Hangout hangoutModel = hangout.asData!.value;
-      userNameEditController.text = hangoutModel.name;
-      bioEditController.text = hangoutModel.bio;
+      UserModel user = userAsyncValue.asData!.value;
+      userNameEditController.text = user.name;
+      bioEditController.text = user.bio;
 
-      speedEditController.text = hangoutModel.rule.minSpeed.toString();
-      secondEditController.text = getSec(hangoutModel.rule.maxMeetingDuration);
-      minuteEditController.text = getMin(hangoutModel.rule.maxMeetingDuration);
-      hourEditController.text = getHour(hangoutModel.rule.maxMeetingDuration);
+      speedEditController.text = user.rule.minSpeed.toString();
+      secondEditController.text = getSec(user.rule.maxMeetingDuration);
+      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
+      hourEditController.text = getHour(user.rule.maxMeetingDuration);
 
-      imageUrl = hangout.asData!.value.name;
+      imageUrl = userAsyncValue.asData!.value.name;
 
       // importance
-      final c = hangoutModel.rule.importance[Lounge.chrony]!;
-      final h = hangoutModel.rule.importance[Lounge.highroller]!;
+      final c = user.rule.importance[Lounge.chrony]!;
+      final h = user.rule.importance[Lounge.highroller]!;
       final N = c + h;
       _importanceRatioValue = N / c;
       double x = _importanceRatioValue! - 2.0;
@@ -175,12 +173,13 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   @override
   Widget build(BuildContext context) {
     bioTextController ??= RichTextController(
-      patternMatchMap:{
+      patternMatchMap: {
         RegExp(r"(?:#)[a-zA-Z0-9]+"):
-        TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
-      }, onMatch: (List<String> match) {},
+            TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+      },
+      onMatch: (List<String> match) {},
     );
-    final myUserPageViewModel = ref.watch(myHangoutPageViewModelProvider);
+    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -194,7 +193,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             Text(
               widget.fromBottomSheet ?? false
                   ? Keys.setUpAccount.tr(context)
-                  : Keys.hangoutSettings.tr(context),
+                  : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
@@ -209,9 +208,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               controller: userNameEditController,
               textInputAction: TextInputAction.next,
               autofocus: false,
-              style: TextStyle(
-                color: AppTheme().cardDarkColor
-              ),
+              style: TextStyle(color: AppTheme().cardDarkColor),
               onChanged: (value) {
                 imageUrl = value;
                 setState(() {});
@@ -241,9 +238,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
               maxLines: 4,
-              style: TextStyle(
-                  color: AppTheme().cardDarkColor
-              ),
+              style: TextStyle(color: AppTheme().cardDarkColor),
               decoration: InputDecoration(
                 filled: true,
                 // fillColor: Theme.of(context).primaryColorLight,
@@ -268,9 +263,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                     controller: speedEditController,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
-                    style: TextStyle(
-                        color: AppTheme().cardDarkColor
-                    ),
+                    style: TextStyle(color: AppTheme().cardDarkColor),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     autofocus: false,
                     validator: (value) {
@@ -307,9 +300,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               controller: hourEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -343,9 +334,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                               controller: minuteEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -376,9 +365,7 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
                             child: TextFormField(
                               textAlign: TextAlign.center,
                               controller: secondEditController,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               inputFormatters: [
@@ -510,16 +497,16 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
   }
 
   Future<void> onClickSave(
-      MyHangoutPageViewModel? myUserPageViewModel, BuildContext context) async {
+      MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
     bool validate = formKey.currentState?.validate() ?? false;
-    Hangout? hangout = myUserPageViewModel?.hangout;
+    UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
-      if (hangout is Hangout && !(widget.fromBottomSheet ?? false)) {
+      if (user is UserModel && !(widget.fromBottomSheet ?? false)) {
         int seconds = int.tryParse(secondEditController.text) ?? 0;
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
-        hangout.setNameOrBio(
+        user.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
@@ -527,19 +514,19 @@ class _HangoutSettingState extends ConsumerState<HangoutSetting> {
             : Lounge.highroller;
         final importances = findImportances(_importanceRatioValue!, lounge);
 
-        HangOutRule rule = HangOutRule(
+        Rule rule = Rule(
             minSpeed: int.parse(speedEditController.text),
             maxMeetingDuration: seconds,
             importance: {
               Lounge.chrony: importances[Lounge.chrony]!,
               Lounge.highroller: importances[Lounge.highroller]!,
             });
-        hangout.rule = rule;
+        user.rule = rule;
       } else {
-        hangout!.setNameOrBio(
+        user!.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
       }
-      await myUserPageViewModel?.updateHangout(hangout);
+      await myUserPageViewModel?.updateHangout(user);
       Navigator.of(context).maybePop();
     }
   }

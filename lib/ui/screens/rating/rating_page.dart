@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/models/hangout_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
@@ -19,12 +19,12 @@ class RatingPage extends ConsumerStatefulWidget {
 }
 
 class _RatingPageState extends ConsumerState<RatingPage> {
-  Hangout? hangout;
+  UserModel? user;
 
   @override
   Widget build(BuildContext context) {
 
-    hangout = ref.watch(userPageViewModelProvider(widget.uid))?.hangout;
+    user = ref.watch(userPageViewModelProvider(widget.uid))?.user;
 
     final ratingListAsyncValue = ref.watch(ratingListProvider(widget.uid));
 
@@ -39,7 +39,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     }
 
     final ratingList = ratingListAsyncValue.asData!.value;
-    final totalRating = (hangout!.rating * 5).toStringAsFixed(1);
+    final totalRating = (user!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(),

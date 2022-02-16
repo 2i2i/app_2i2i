@@ -2,7 +2,7 @@ class Routes {
   static const root = '/';
 
   static const search = '/search';
-  static const myHangout = '/myHangout';
+  static const myUser = '/myUser';
   static const setting = '/setting';
   static const bidOut = '/bidOut';
 
@@ -14,7 +14,7 @@ class Routes {
   static const top = '/top';
   static const blocks = '/blocks';
   static const favorites = '/favorites';
-  static const hangoutSetting = '/hangoutSetting';
+  static const userSetting = '/userSetting';
   static const recover = '/recover';
   static const createLocalAccount = '/createLocalAccount';
 
@@ -34,8 +34,8 @@ extension name on String{
         return 'root';
       case Routes.search:
         return 'search';
-      case Routes.myHangout:
-        return 'myHangout';
+      case Routes.myUser:
+        return 'myUser';
       case Routes.bidOut:
         return 'bidOut';
       case Routes.login:
@@ -50,8 +50,8 @@ extension name on String{
         return 'favorites';
       case Routes.setting:
         return 'setting';
-      case Routes.hangoutSetting:
-        return 'hangoutSetting';
+      case Routes.userSetting:
+        return 'userSetting';
       case Routes.recover:
         return 'recover';
       case Routes.user:

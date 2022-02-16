@@ -86,7 +86,7 @@ class ar{
       Keys.required: 'مطلوب',
       Keys.enterValidData: "الرجاء إدخال بيانات صحيحة" ,
       Keys.setUpAccount: 'من أنت؟',
-      Keys.hangoutSettings: "إعدادات المضيف",
+      Keys.userSettings: "إعدادات المضيف",
       Keys.userName: 'اسم المستخدم',
       Keys.name: 'اسم المستخدم',
       Keys.bio: "اهتماماتك (استخدم علامات التصنيف)" ,

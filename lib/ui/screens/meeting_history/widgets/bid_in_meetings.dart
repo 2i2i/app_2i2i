@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
-import '../../my_hangout/widgets/meeting_history_tile.dart';
+import '../../my_user/widgets/meeting_history_tile.dart';
 
 class BidInMeetings extends ConsumerWidget {
   final List<Meeting?> meetingListA;

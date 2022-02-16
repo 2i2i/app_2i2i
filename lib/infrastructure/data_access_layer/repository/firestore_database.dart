@@ -5,7 +5,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
-import '../../models/hangout_model.dart';
+import '../../models/user_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
 import '../services/logging.dart';
@@ -24,12 +24,6 @@ class FirestoreDatabase {
   final _service = FirestoreService.instance;
 
   String newDocId({required String path}) => _service.newDocId(path: path);
-
-  // Future<void> setTestA() => _service.setData(
-  //       path: FirestorePath.testA(),
-  //       data: {},
-  //       merge: true,
-  //     );
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
@@ -166,16 +160,6 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  // Future<void> setUser(Hangout hangout) async {
-  //   log('setUser - user=$hangout - map=${hangout.toMap()}');
-  //   _service.setData(
-  //     path: FirestorePath.user(hangout.id),
-  //     data: hangout.toMap(),
-  //     merge: true,
-  //   );
-  //   log('setUser - done');
-  // }
-
   Future<void> addRating(String uid, String meetingId, RatingModel rating) =>
       _service.setData(
         path: FirestorePath.newRating(uid, meetingId),
@@ -224,21 +208,21 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<Hangout> userStream({required String uid}) => _service.documentStream(
+  Stream<UserModel> userStream({required String uid}) => _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
-          return Hangout.fromMap(data, documentId);
+          return UserModel.fromMap(data, documentId);
         },
       );
 
-  Future<void> updateUser(Hangout user) => _service.setData(
+  Future<void> updateUser(UserModel user) => _service.setData(
         path: FirestorePath.user(user.id),
         data: user.toMap(),
         merge: true,
       );
 
-  Future<Hangout?> getUser(String uid) async {
+  Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
         await _service.getData(path: FirestorePath.user(uid));
     if (documentSnapshot.exists) {
@@ -246,7 +230,7 @@ class FirestoreDatabase {
       final data = documentSnapshot.data();
       if (data is Map) {
         try {
-          return Hangout.fromMap(data.cast<String, dynamic>(), id);
+          return UserModel.fromMap(data.cast<String, dynamic>(), id);
         } catch (e) {
           return null;
         }
@@ -255,11 +239,11 @@ class FirestoreDatabase {
     return null;
   }
 
-  Stream<List<Hangout>> usersStream({List<String> tags = const <String>[]}) {
+  Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
     return _service.collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) => Hangout.fromMap(data, documentId),
+      builder: (data, documentId) => UserModel.fromMap(data, documentId),
       queryBuilder: tags.isEmpty
           ? null
           : (query) => query.where('tags', arrayContainsAny: tags),

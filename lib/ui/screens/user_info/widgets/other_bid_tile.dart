@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/keys.dart';
@@ -8,9 +8,9 @@ import '../../../../infrastructure/models/bid_model.dart';
 
 class OtherBidTile extends ConsumerWidget {
   final BidInPublic bidIn;
-  final Hangout hangout;
+  final UserModel user;
 
-  const OtherBidTile({Key? key, required this.bidIn, required this.hangout})
+  const OtherBidTile({Key? key, required this.bidIn, required this.user})
       : super(key: key);
 
   @override

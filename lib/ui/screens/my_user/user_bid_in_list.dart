@@ -2,14 +2,14 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/infrastructure/models/hangout_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/my_hangout_provider/my_hangout_page_view_model.dart';
+import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import '../home/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
 
@@ -23,14 +23,14 @@ class UserBidInsList extends ConsumerWidget {
 
   final Widget titleWidget;
   final String noBidsText;
-  final MyHangoutPageViewModel myHangoutPageViewModel;
+  final MyUserPageViewModel myHangoutPageViewModel;
 
   final void Function(BidIn bidIn) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers = ref
-        .watch(bidInsWithHangoutsProvider(myHangoutPageViewModel.hangout.id));
+        .watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -40,8 +40,8 @@ class UserBidInsList extends ConsumerWidget {
       floatingActionButton: InkResponse(
         onTap: () async {
           for (BidIn bidIn in bidIns) {
-            Hangout? hangout = bidIn.hangout;
-            if (hangout == null) {
+            UserModel? user = bidIn.user;
+            if (user == null) {
               return;
             }
 
