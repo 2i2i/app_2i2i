@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterfire_ui/i10n.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/screens/localization/app_localization.dart';
@@ -30,27 +31,13 @@ import 'ui/screens/localization/app_localization.dart';
 // DEBUG
 
 Future<void> main() async {
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
   }
-  // await FirebaseAppCheck.instance.activate(
-  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
-  // );
-  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
-  //region DEBUG
-  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
-  //endregion DEBUG
+  FirebaseNotifications();
 
   await SentryFlutter.init((options) {
     options.dsn =
