@@ -13,7 +13,6 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../create_bid/top_card_widget.dart';
 
-
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
 
@@ -42,7 +41,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
-
 
   RichTextController? bioTextController;
 
@@ -97,7 +95,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
         ? Lounge.chrony
         : Lounge.highroller;
-    return '~ every $ratio$postfix is a ${lounge.name()}';
+    return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
   String minSpeedString() {
@@ -175,10 +173,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   @override
   Widget build(BuildContext context) {
     bioTextController ??= RichTextController(
-      patternMatchMap:{
+      patternMatchMap: {
         RegExp(r"(?:#)[a-zA-Z0-9]+"):
-        TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
-      }, onMatch: (List<String> match) {},
+            TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+      },
+      onMatch: (List<String> match) {},
     );
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
@@ -209,9 +208,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               controller: userNameEditController,
               textInputAction: TextInputAction.next,
               autofocus: false,
-              style: TextStyle(
-                color: AppTheme().cardDarkColor
-              ),
+              style: TextStyle(color: AppTheme().cardDarkColor),
               onChanged: (value) {
                 imageUrl = value;
                 setState(() {});
@@ -241,9 +238,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
               maxLines: 4,
-              style: TextStyle(
-                  color: AppTheme().cardDarkColor
-              ),
+              style: TextStyle(color: AppTheme().cardDarkColor),
               decoration: InputDecoration(
                 filled: true,
                 // fillColor: Theme.of(context).primaryColorLight,
@@ -268,9 +263,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     controller: speedEditController,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
-                    style: TextStyle(
-                        color: AppTheme().cardDarkColor
-                    ),
+                    style: TextStyle(color: AppTheme().cardDarkColor),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     autofocus: false,
                     validator: (value) {
@@ -307,9 +300,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               controller: hourEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -343,9 +334,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               controller: minuteEditController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(2),
@@ -376,9 +365,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                             child: TextFormField(
                               textAlign: TextAlign.center,
                               controller: secondEditController,
-                              style: TextStyle(
-                                  color: AppTheme().cardDarkColor
-                              ),
+                              style: TextStyle(color: AppTheme().cardDarkColor),
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               inputFormatters: [

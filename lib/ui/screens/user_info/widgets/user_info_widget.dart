@@ -28,7 +28,8 @@ class UserInfoWidget extends StatefulWidget {
     this.onTapRules,
     this.onTapQr,
     this.onTapWallet,
-    this.estWaitTime, this.onTapChat,
+    this.estWaitTime,
+    this.onTapChat,
   }) : super(key: key);
 
   @override
@@ -44,8 +45,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
-    }
-    else if (widget.user.status == Status.IDLE) {
+    } else if (widget.user.status == Status.IDLE) {
       statusColor = Colors.amber;
     } else if (widget.user.isInMeeting()) {
       statusColor = AppTheme().red;
@@ -75,8 +75,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
-                        child: Icon(Icons.chat_outlined,size: 25),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 4),
+                        child: Icon(Icons.chat_outlined, size: 25),
                       ),
                     ),
                     Visibility(
@@ -84,7 +85,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: InkResponse(
                         onTap: widget.onTapWallet,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
                           child: Icon(Icons.attach_money, size: 25),
                         ),
                       ),
@@ -97,7 +99,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       InkResponse(
                         onTap: widget.onTapFav,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
                           child: Icon(
                               widget.isFav
                                   ? Icons.favorite_rounded
@@ -114,7 +117,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     SizedBox(height: 2),
                     InkWell(
-                      onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':widget.user.id}),
+                      onTap: () => context.pushNamed(
+                          Routes.ratings.nameFromPath(),
+                          params: {'uid': widget.user.id}),
                       child: Row(
                         children: [
                           IgnorePointer(
@@ -170,7 +175,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         builder:
                             (BuildContext context, bool value, Widget? child) {
                           return Text(
-                            value ? Keys.less.tr(context) : Keys.seeMore.tr(context),
+                            value
+                                ? Keys.less.tr(context)
+                                : Keys.seeMore.tr(context),
                             style: Theme.of(context).textTheme.caption,
                           );
                         },
@@ -230,7 +237,7 @@ class UserRulesWidget extends StatelessWidget {
     final lounge = isChrony ? Lounge.chrony : Lounge.highroller;
     final ratio = (isChrony ? N / c : N / h).round();
     final postfix = ordinalIndicator(ratio);
-    return '~ every $ratio$postfix is a ${lounge.name()}';
+    return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
   @override
@@ -247,7 +254,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${(user.rule.minSpeed/1000000).toStringAsFixed(2)} A/sec',
+                    '${(user.rule.minSpeed / 1000000)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
@@ -283,8 +290,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    secondsToSensibleTimePeriod(
-                        user.rule.maxMeetingDuration),
+                    secondsToSensibleTimePeriod(user.rule.maxMeetingDuration),
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
