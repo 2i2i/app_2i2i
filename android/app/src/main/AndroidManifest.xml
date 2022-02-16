@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="app_2i2i"
+        android:label="2i2i"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
