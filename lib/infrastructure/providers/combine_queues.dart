@@ -56,6 +56,11 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
     throw Exception(
         'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
+  // sort highrollers by speed
+  bidInsHighRollers.sort((b1, b2) {
+    return b2.speed.num.compareTo(b1.speed.num);
+  });
+
   Rule rule = bidInsPublic.first.rule; // same for all bids
   // if one side empty, return other side
   if (bidInsHighRollers.isEmpty || rule.importance[Lounge.highroller]! == 0)
@@ -65,11 +70,6 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
   final N = rule.importance.values
       .fold(0, (int previousValue, int element) => previousValue + element);
   double targetChronyRatio = rule.importance[Lounge.chrony]! / N;
-
-  // sort highrollers by speed
-  bidInsHighRollers.sort((b1, b2) {
-    return b2.speed.num.compareTo(b1.speed.num);
-  });
 
   // loop
   List<BidInPublic> bidInsSorted = [];
