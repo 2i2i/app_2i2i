@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:453884442411:android:a362b97025c871e098776e",
+        "mobilesdk_app_id": "1:453884442411:android:9a4a826f15c2bf8498776e",
         "android_client_info": {
-          "package_name": "app.i2i2.test"
+          "package_name": "app.i2i2"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "453884442411-3t14hd6fn9bodfledaip71e439cfn351.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.i2i2.test"
+              }
             }
           ]
         }
