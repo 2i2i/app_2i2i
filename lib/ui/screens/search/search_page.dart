@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
@@ -73,7 +74,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         onPressed: () {
                           _searchController.text = '';
                           _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state =  <String>[];
+                          ref.watch(searchFilterProvider.state).state =
+                              <String>[];
                         },
                         iconSize: 20,
                         icon: Icon(
@@ -89,7 +91,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim();
-                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state =
+                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -101,9 +104,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   int usersSort(UserModel u1, UserModel u2, List<String> keywords) {
-    if (u1.status == 'ONLINE' && u2.status != 'ONLINE') return -1;
-    if (u1.status != 'ONLINE' && u2.status == 'ONLINE') return 1;
-    // both ONLINE xor OFFLINE
+
+    if (u1.status == Status.ONLINE && u2.status != Status.ONLINE) return -1;
+    if (u1.status != Status.ONLINE && u2.status == Status.ONLINE) return 1;
+    if (u1.status == Status.IDLE && u2.status != Status.IDLE) return -1;
+    if (u1.status != Status.IDLE && u2.status == Status.IDLE) return 1;
+    // both ONLINE xor neither
     if (u1.isInMeeting() && !u2.isInMeeting()) return 1;
     if (!u1.isInMeeting() && u2.isInMeeting()) return -1;
     // both inMeeting xor not

@@ -28,19 +28,19 @@ class BidOutTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
-    UserModel hangout = userAsyncValue.asData!.value;
+    UserModel user = userAsyncValue.asData!.value;
     bidSpeed = (bidOut.speed.num / 1000000).toString();
 
-    if (hangout.status == Keys.statusOFFLINE) {
+    if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    if (hangout.status == Keys.statusIDLE) {
+    if (user.status == Status.IDLE) {
       statusColor = Colors.amber;
     }
-    if (hangout.isInMeeting()) {
+    if (user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = hangout.name;
+    String firstNameChar = user.name;
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
@@ -58,7 +58,7 @@ class BidOutTile extends ConsumerWidget {
                 SizedBox(width: 4),
                 InkResponse(
                   onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-                    'uid': hangout.id,
+                    'uid': user.id,
                   }),
                   child: SizedBox(
                     height: 55,
@@ -114,7 +114,7 @@ class BidOutTile extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        hangout.name,
+                        user.name,
                         maxLines: 2,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
@@ -124,7 +124,7 @@ class BidOutTile extends ConsumerWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        hangout.bio,
+                        user.bio,
                         maxLines: 2,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,

@@ -25,12 +25,6 @@ class FirestoreDatabase {
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
-  // Future<void> setTestA() => _service.setData(
-  //       path: FirestorePath.testA(),
-  //       data: {},
-  //       merge: true,
-  //     );
-
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
       

@@ -46,7 +46,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
       return WaitPage();
     }
 
-    UserModel hangout = myHangoutPageViewModel!.user;
+    UserModel user = myHangoutPageViewModel!.user;
     return Scaffold(
       body: Column(
         children: [
@@ -64,7 +64,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                 children: [
                   SizedBox(height: 8),
                   UserInfoWidget(
-                    user: hangout,
+                    user: user,
                     onTapRules: (){
                       context.pushNamed(Routes.userSetting.nameFromPath());
                     },
@@ -79,7 +79,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                             width: 350,
                             child: QrCodeWidget(
                                 message:
-                                    'https://test.2i2i.app/user/${hangout.id}'),
+                                    'https://test.2i2i.app/user/${user.id}'),
                           ),
                         ),
                       );
@@ -88,7 +88,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                       context.pushNamed(Routes.account.nameFromPath());
                     },
                     onTapChat: () => CustomAlertWidget.showBidAlert(
-                        context, ChatWidget(user: hangout),
+                        context, ChatWidget(user: user),
                         backgroundColor: Colors.transparent),
                     isFav: true,
                   ),

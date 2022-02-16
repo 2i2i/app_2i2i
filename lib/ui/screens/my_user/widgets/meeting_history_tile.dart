@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,22 +29,22 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     bool amA = meetingModel.A == currentUid;
 
-    final hangout =
+    final user =
         ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
-    if (haveToWait(hangout)) {
+    if (haveToWait(user)) {
       return CupertinoActivityIndicator();
     }
 
-    if (hangout?.status == Keys.statusOFFLINE) {
+    if (user?.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    if (hangout?.status == Keys.statusIDLE) {
+    if (user?.status == Status.IDLE) {
       statusColor = Colors.amber;
     }
-    if (hangout?.isInMeeting() ?? false) {
+    if (user?.isInMeeting() ?? false) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = hangout?.name ?? '';
+    String firstNameChar = user?.name ?? '';
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
@@ -116,7 +117,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      hangout!.name,
+                      user!.name,
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,

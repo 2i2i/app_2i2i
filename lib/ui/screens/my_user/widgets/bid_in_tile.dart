@@ -21,7 +21,7 @@ class BidInTile extends StatelessWidget {
 
     BidIn bidIn = bidInList[index];
 
-    UserModel hangout = bidInList[index].user!;
+    UserModel user = bidInList[index].user!;
 
     int budgetCountInt = 0;
     int totalDuration = 0;
@@ -39,16 +39,16 @@ class BidInTile extends StatelessWidget {
     budgetCountInt += bidInList[index].public.energy;
     final budgetCount = budgetCountInt / 1000000;
 
-    if (hangout.status == Keys.statusOFFLINE) {
+    if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    if (hangout.status == Keys.statusIDLE) {
+    if (user.status == Status.IDLE) {
       statusColor = Colors.amber;
     }
-    if (hangout.isInMeeting()) {
+    if (user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = hangout.name;
+    String firstNameChar = user.name;
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
@@ -66,7 +66,7 @@ class BidInTile extends StatelessWidget {
                 SizedBox(width: 4),
                 InkResponse(
                   onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-                    'uid': hangout.id,
+                    'uid': user.id,
                   }),
                   child: SizedBox(
                     height: 55,
@@ -122,7 +122,7 @@ class BidInTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        hangout.name,
+                        user.name,
                         maxLines: 2,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
@@ -132,7 +132,7 @@ class BidInTile extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        hangout.bio,
+                        user.bio,
                         maxLines: 2,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,

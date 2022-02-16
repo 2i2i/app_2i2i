@@ -16,9 +16,6 @@ class Keys {
   static const String asGuest = 'As Guest';
   static const String asHost = 'As Host';
   static const String noBidFound = 'noBidFound';
-  static const String statusONLINE = 'ONLINE';
-  static const String statusOFFLINE = 'OFFLINE';
-  static const String statusIDLE = 'IDLE';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';

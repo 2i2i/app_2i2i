@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -35,8 +33,8 @@ class UserInfoTile extends ConsumerWidget {
     final bio = user.bio;
 
     var statusColor = AppTheme().green;
-    if (user.status == Keys.statusOFFLINE) statusColor = AppTheme().gray;
-    if (user.status == Keys.statusIDLE) statusColor = Colors.amber;
+    if (user.status == Status.OFFLINE) statusColor = AppTheme().gray;
+    if (user.status == Status.IDLE) statusColor = Colors.amber;
     if (user.isInMeeting()) statusColor = AppTheme().red;
 
     final myUserAsyncValue = ref.watch(userProvider(myUid));

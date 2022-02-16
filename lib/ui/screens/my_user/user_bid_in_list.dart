@@ -40,8 +40,8 @@ class UserBidInsList extends ConsumerWidget {
       floatingActionButton: InkResponse(
         onTap: () async {
           for (BidIn bidIn in bidIns) {
-            UserModel? hangout = bidIn.user;
-            if (hangout == null) {
+            UserModel? user = bidIn.user;
+            if (user == null) {
               return;
             }
 

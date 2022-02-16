@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
-extension ParseToString on Lounge {
+extension ParseToStringLounge on Lounge {
   String toStringEnum() {
     return this.toString().split('.').last;
   }
@@ -18,19 +18,25 @@ extension ParseToString on Lounge {
   }
 }
 
+enum Status { ONLINE, IDLE, OFFLINE }
+
+extension ParseToStringStatus on Status {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+}
+
 class UserModelChanger {
   UserModelChanger(this.database, this.uid);
 
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat(String status) async {
-    // final status = 'ONLINE';
-    return database.updateUserHeartbeat(uid, status);
-  }
-
+  Future updateHeartbeat(Status status) =>
+      database.updateUserHeartbeat(uid, status.toStringEnum());
   Future updateSettings(UserModel user) => database.updateUser(user);
-  Future addComment(String targetUid, ChatModel chat) => database.addChat(targetUid, chat);
+  Future addComment(String targetUid, ChatModel chat) =>
+      database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
@@ -106,7 +112,7 @@ class UserModel extends Equatable {
   UserModel({
     // set also in cloud function userCreated
     required this.id,
-    this.status = 'ONLINE',
+    this.status = Status.ONLINE,
     this.meeting,
     this.name = '',
     this.bio = '',
@@ -124,7 +130,7 @@ class UserModel extends Equatable {
 
   final String id;
   final DateTime? heartbeat;
-  final String status;
+  final Status status;
 
   final String? meeting;
   Rule rule;
@@ -181,16 +187,16 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn']}');
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final String status = data['status'];
+    final Status status =
+        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
-    final Rule rule = data['rule'] == null
-        ? Rule()
-        : Rule.fromMap(data['rule']);
+    final Rule rule =
+        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
@@ -217,7 +223,7 @@ class UserModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'status': status,
+      'status': status.toStringEnum(),
       'meeting': meeting,
       'bio': bio,
       'name': name,

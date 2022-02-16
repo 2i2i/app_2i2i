@@ -42,10 +42,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   Widget build(BuildContext context) {
     final shortBio = widget.user.bio;
     var statusColor = AppTheme().green;
-    if (widget.user.status == Keys.statusOFFLINE) {
+    if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    else if (widget.user.status == Keys.statusIDLE) {
+    else if (widget.user.status == Status.IDLE) {
       statusColor = Colors.amber;
     } else if (widget.user.isInMeeting()) {
       statusColor = AppTheme().red;

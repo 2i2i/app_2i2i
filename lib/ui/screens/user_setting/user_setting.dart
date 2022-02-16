@@ -111,23 +111,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   void setData() {
     final uid = ref.watch(myUIDProvider)!;
-    final hangout = ref.watch(userProvider(uid));
-    bool isLoaded = !(haveToWait(hangout));
+    final userAsyncValue = ref.watch(userProvider(uid));
+    bool isLoaded = !(haveToWait(userAsyncValue));
     if (isLoaded) {
-      UserModel hangoutModel = hangout.asData!.value;
-      userNameEditController.text = hangoutModel.name;
-      bioEditController.text = hangoutModel.bio;
+      UserModel user = userAsyncValue.asData!.value;
+      userNameEditController.text = user.name;
+      bioEditController.text = user.bio;
 
-      speedEditController.text = hangoutModel.rule.minSpeed.toString();
-      secondEditController.text = getSec(hangoutModel.rule.maxMeetingDuration);
-      minuteEditController.text = getMin(hangoutModel.rule.maxMeetingDuration);
-      hourEditController.text = getHour(hangoutModel.rule.maxMeetingDuration);
+      speedEditController.text = user.rule.minSpeed.toString();
+      secondEditController.text = getSec(user.rule.maxMeetingDuration);
+      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
+      hourEditController.text = getHour(user.rule.maxMeetingDuration);
 
-      imageUrl = hangout.asData!.value.name;
+      imageUrl = userAsyncValue.asData!.value.name;
 
       // importance
-      final c = hangoutModel.rule.importance[Lounge.chrony]!;
-      final h = hangoutModel.rule.importance[Lounge.highroller]!;
+      final c = user.rule.importance[Lounge.chrony]!;
+      final h = user.rule.importance[Lounge.highroller]!;
       final N = c + h;
       _importanceRatioValue = N / c;
       double x = _importanceRatioValue! - 2.0;
@@ -512,14 +512,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
     bool validate = formKey.currentState?.validate() ?? false;
-    UserModel? hangout = myUserPageViewModel?.user;
+    UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
-      if (hangout is UserModel && !(widget.fromBottomSheet ?? false)) {
+      if (user is UserModel && !(widget.fromBottomSheet ?? false)) {
         int seconds = int.tryParse(secondEditController.text) ?? 0;
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
-        hangout.setNameOrBio(
+        user.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
@@ -534,12 +534,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               Lounge.chrony: importances[Lounge.chrony]!,
               Lounge.highroller: importances[Lounge.highroller]!,
             });
-        hangout.rule = rule;
+        user.rule = rule;
       } else {
-        hangout!.setNameOrBio(
+        user!.setNameOrBio(
             name: userNameEditController.text, bio: bioEditController.text);
       }
-      await myUserPageViewModel?.updateHangout(hangout);
+      await myUserPageViewModel?.updateHangout(user);
       Navigator.of(context).maybePop();
     }
   }
