@@ -104,7 +104,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   int usersSort(UserModel u1, UserModel u2, List<String> keywords) {
-
+    // status
     if (u1.status == Status.ONLINE && u2.status != Status.ONLINE) return -1;
     if (u1.status != Status.ONLINE && u2.status == Status.ONLINE) return 1;
     if (u1.status == Status.IDLE && u2.status != Status.IDLE) return -1;
@@ -114,6 +114,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     if (!u1.isInMeeting() && u2.isInMeeting()) return -1;
     // both inMeeting xor not
 
+    // keywords
     if (keywords.isNotEmpty) {
       final u1Tags = UserModel.tagsFromBio(u1.bio).toSet();
       final u2Tags = UserModel.tagsFromBio(u2.bio).toSet();
@@ -124,10 +125,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       if (u1Match < u2Match) return 1;
     }
 
+    // rating
     if (u2.rating < u1.rating) return -1;
     if (u1.rating < u2.rating) return 1;
 
-    return -1;
+    // name
+    return u1.name.compareTo(u2.name);
   }
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
