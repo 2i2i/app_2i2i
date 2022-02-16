@@ -89,6 +89,7 @@ flutter:
     - assets/2i2i_letter.png
     - assets/video_call.mp3
     - assets/stopwatch.png
+    - ios/Podfile
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
