@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 // import 'utils/random_string.dart';
@@ -8,7 +9,7 @@ import './utils/device_info.dart'
     if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart'
     if (dart.library.js) './utils/websocket_web.dart';
-// import './utils/turn.dart' if (dart.library.js) './utils/turn_web.dart';
+import './utils/turn.dart' if (dart.library.js) './utils/turn_web.dart';
 
 enum SignalingState {
   ConnectionOpen,
@@ -245,7 +246,7 @@ class SignalingWebSockets {
       case 'bye':
         {
           var sessionId = data['session_id'];
-          print('bye: ' + sessionId);
+          log('bye: ' + sessionId);
           var session = _sessions.remove(sessionId);
           if (session != null) {
             onCallStateChange?.call(session, CallState.CallStateBye);
@@ -255,7 +256,7 @@ class SignalingWebSockets {
         break;
       case 'keepalive':
         {
-          print('keepalive response!');
+          log('keepalive response!');
         }
         break;
       default:
@@ -267,7 +268,7 @@ class SignalingWebSockets {
     var url = 'https://$_host:$_port/ws';
     _socket = SimpleWebSocket(url);
 
-    print('connect to $url');
+    log('connect to $url');
 
     // if (_turnCredential == null) {
     //   try {
@@ -292,7 +293,7 @@ class SignalingWebSockets {
     // }
 
     _socket?.onOpen = () {
-      print('onOpen');
+      log('onOpen');
       onSignalingStateChange?.call(SignalingState.ConnectionOpen);
       _send('new', {
         'name': DeviceInfo.label,
@@ -302,12 +303,12 @@ class SignalingWebSockets {
     };
 
     _socket?.onMessage = (message) {
-      print('Received data: ' + message);
+      log('Received data: ' + message);
       onMessage(_decoder.convert(message));
     };
 
     _socket?.onClose = (int code, String reason) {
-      print('Closed by server [$code => $reason]!');
+      log('Closed by server [$code => $reason]!');
       onSignalingStateChange?.call(SignalingState.ConnectionClosed);
     };
 
@@ -346,7 +347,7 @@ class SignalingWebSockets {
     var newSession = session ?? Session(sid: sessionId, pid: peerId);
     if (media != 'data')
       _localStream = await createStream(media, screenSharing);
-    print(_iceServers);
+    log(_iceServers.toString());
     RTCPeerConnection pc = await createPeerConnection({
       ..._iceServers,
       ...{'sdpSemantics': sdpSemantics}
@@ -487,7 +488,7 @@ class SignalingWebSockets {
         'media': media,
       });
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
   }
 
@@ -503,7 +504,7 @@ class SignalingWebSockets {
         'session_id': session.sid,
       });
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
   }
 
