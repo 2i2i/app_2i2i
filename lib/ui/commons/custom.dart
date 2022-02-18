@@ -7,11 +7,20 @@ class Custom{
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-            offset: Offset(2, 4),
-            blurRadius: 8,
-            color: Colors.black12.withOpacity(0.1),
+          offset: Offset(2, 4),
+          blurRadius: 8,
+          color: Colors.black12.withOpacity(0.1),
         ),
       ],
     );
+  }
+
+  static String validateValueData(String value) {
+    Pattern pattern = r'[0-9][A-Z]\w+';
+    RegExp regex = new RegExp(pattern.toString());
+    if (regex.hasMatch(value)) {
+      return regex.firstMatch(value)?.group(0) ?? "";
+    }
+    return "";
   }
 }

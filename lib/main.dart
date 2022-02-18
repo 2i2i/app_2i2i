@@ -6,22 +6,22 @@
 // createRoom - A
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import "package:universal_html/html.dart" as html;
 import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutterfire_ui/i10n.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'infrastructure/providers/all_providers.dart';
-import 'infrastructure/routes/named_routes.dart';
-import 'ui/screens/localization/app_localization.dart';
+import 'package:uni_links/uni_links.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -29,8 +29,13 @@ import 'ui/screens/localization/app_localization.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG3
 
+import "package:universal_html/html.dart" as html;
 
-import 'package:uni_links/uni_links.dart';
+import 'infrastructure/providers/all_providers.dart';
+import 'infrastructure/routes/app_routes.dart';
+import 'infrastructure/routes/named_routes.dart';
+import 'ui/commons/custom.dart';
+import 'ui/screens/localization/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,9 +98,9 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   void initState() {
     super.initState();
-    _handleIncomingLinks();
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      _handleIncomingLinks();
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
@@ -145,17 +150,28 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   }
 
   void _handleIncomingLinks() {
-    if (!kIsWeb) {
-      // It will handle app links while the app is already started - be it in
-      // the foreground or in the background.
-      StreamSubscription _sub = uriLinkStream.listen((Uri? uri) {
-        if (!mounted) return;
-        print('got uri: $uri');
-      }, onError: (Object err) {
-        if (!mounted) return;
-        print('got err: $err');
-      });
+    deepLinks().then((valueData) {
+      if (valueData.isNotEmpty) {
+        String userId = Custom.validateValueData(valueData);
+        if (userId.isNotEmpty) {
+          Future.delayed(Duration(seconds: 1)).then((value) {
+            context.pushNamed(Routes.user.nameFromPath(), params: {
+              'uid': userId,
+            });
+          });
+        }
+      }
+    });
+  }
+
+  Future<String> deepLinks() async {
+    try {
+      final initialLink = await getInitialLink();
+      return initialLink ?? "";
+    } on PlatformException {
+      print('Error');
     }
+    return "";
   }
 
   Future<void> updateHeartbeat(Status status) async {

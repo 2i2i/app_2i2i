@@ -41,5 +41,27 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	 <key>com.apple.developer.associated-domains</key>
+      <array>
+        <string>applinks:test.2i2i.app</string>
+      </array>
+
+	<key>FlutterDeepLinkingEnabled</key>
+    <true/>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string>test.2i2i.app</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+        <string>https</string>
+        </array>
+        </dict>
+    </array>
+
 </dict>
 </plist>
