@@ -136,18 +136,17 @@ class FirestoreDatabase {
       Meeting meeting, Map<String, dynamic> data) async {
     return _service.runTransaction((transaction) {
       final userARef =
-          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.A));
+          _service.firestore.doc(FirestorePath.user(meeting.A));
       final userBRef =
-          FirebaseFirestore.instance.doc(FirestorePath.user(meeting.B));
+          _service.firestore.doc(FirestorePath.user(meeting.B));
       final meetingRef =
-          FirebaseFirestore.instance.doc(FirestorePath.meeting(meeting.id));
+          _service.firestore.doc(FirestorePath.meeting(meeting.id));
 
       final obj = {'meeting': null};
-      final setOptions = SetOptions(merge: true);
 
-      transaction.set(meetingRef, data, setOptions);
-      transaction.set(userARef, obj, setOptions);
-      transaction.set(userBRef, obj, setOptions);
+      transaction.update(meetingRef, data);
+      transaction.update(userARef, obj);
+      transaction.update(userBRef, obj);
 
       return Future.value();
     });

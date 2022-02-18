@@ -318,7 +318,7 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text(AlgorandNet.testnet.name + ' - v5' + (updateAvailable ? ' - update: reload page' : '')),
+          title: Text(AlgorandNet.testnet.name + ' - v8' + (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2
