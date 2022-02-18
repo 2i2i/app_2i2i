@@ -1,16 +1,18 @@
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uni_links/uni_links.dart';
 
 import '../../commons/custom.dart';
+import '../../commons/custom_dialogs.dart';
 
 ValueNotifier<int> currentIndex = ValueNotifier(0);
+String previousRoute = '';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -22,10 +24,12 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-
-    });
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      // if (Platform.isIOS) {
+      //   await Custom.deepLinks(context, mounted);
+      // }
+    });
   }
 
 
