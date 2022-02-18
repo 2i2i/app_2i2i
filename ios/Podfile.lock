@@ -389,11 +389,6 @@ PODS:
   - Firebase/Messaging (8.11.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 8.11.0)
-  - firebase_app_check (0.0.6-5):
-    - Firebase/CoreOnly (~> 8.11.0)
-    - firebase_core
-    - FirebaseAppCheck (~> 8.11.0-beta)
-    - Flutter
   - firebase_auth (3.3.6):
     - Firebase/Auth (= 8.11.0)
     - firebase_core
@@ -413,10 +408,6 @@ PODS:
     - Firebase/Messaging (= 8.11.0)
     - firebase_core
     - Flutter
-  - FirebaseAppCheck (8.11.0-beta):
-    - FirebaseCore (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.7)
-    - PromisesObjC (< 3.0, >= 1.2)
   - FirebaseAuth (8.11.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
@@ -536,8 +527,6 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.0)
-  - image_picker (0.0.1):
-    - Flutter
   - just_audio (0.0.1):
     - Flutter
   - leveldb-library (1.22.1)
@@ -577,7 +566,6 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
@@ -588,7 +576,6 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
-  - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -609,7 +596,6 @@ SPEC REPOS:
     - FBSDKCoreKit_Basics
     - FBSDKLoginKit
     - Firebase
-    - FirebaseAppCheck
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
@@ -643,8 +629,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/cloud_functions/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
-  firebase_app_check:
-    :path: ".symlinks/plugins/firebase_app_check/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -665,8 +649,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
   google_sign_in:
     :path: ".symlinks/plugins/google_sign_in/ios"
-  image_picker:
-    :path: ".symlinks/plugins/image_picker/ios"
   just_audio:
     :path: ".symlinks/plugins/just_audio/ios"
   package_info_plus:
@@ -699,13 +681,11 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: a6a92ca628e05f86f458a4721574c5ddfb058ba3
   FBSDKLoginKit: 7467b7f988ca4fdf48f12a839bcfce4264752429
   Firebase: 44dd9724c84df18b486639e874f31436eaa9a20c
-  firebase_app_check: b8a70895e0686640e68f1c786541518ccd30fdfd
   firebase_auth: ccdb84a0d52a2d7897898ae8121689da6e13d71f
   firebase_core: 443bccfd6aa6b42f07be365b500773dc69db2d87
   firebase_database: 0ae3ce8034d44bd151770534edefef869df88b04
   firebase_dynamic_links: f3436f43908547e9a7aa75fb66889c92fc91ff56
   firebase_messaging: 8dc3a6f069774a0bf4dac04dd79fdaffcb62e145
-  FirebaseAppCheck: 533dc5089466b73349aa63ffdf468a387a67fd26
   FirebaseAuth: d96d73aba85d192d7a7aa0b86dd6d7f8ec170b4b
   FirebaseCore: 2f4f85b453cc8fea4bb2b37e370007d2bcafe3f0
   FirebaseCoreDiagnostics: 3b40dfadef5b90433a60ae01f01e90fe87aa76aa
@@ -728,7 +708,6 @@ SPEC CHECKSUMS:
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
-  image_picker: 541dcbb3b9cf32d87eacbd957845d8651d6c62c3
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libyuv: 5f79ced0ee66e60a612ca97de1e6ccacd187a437
