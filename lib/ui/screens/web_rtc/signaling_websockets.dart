@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 // import 'utils/random_string.dart';
@@ -43,7 +42,7 @@ class SignalingWebSockets {
   SimpleWebSocket? _socket;
   var _host;
   var _port = 8086;
-  // var _turnCredential;
+  var _turnCredential;
   Map<String, Session> _sessions = {};
   MediaStream? _localStream;
   List<MediaStream> _remoteStreams = <MediaStream>[];
@@ -58,7 +57,6 @@ class SignalingWebSockets {
       onDataChannelMessage;
   Function(Session session, RTCDataChannel dc)? onDataChannel;
 
-
   String get sdpSemantics =>
       WebRTC.platformIsWindows ? 'plan-b' : 'unified-plan';
 
@@ -71,19 +69,19 @@ class SignalingWebSockets {
           "stun:to-turn2.xirsys.com"
         ]
       },
-      {
-        'username':
-            "FC8kkN9vySomIqAm3MJvZx-hcrOQA1jiBquXw0MZy7HF5RjTZigp8TkX5bHxm6SxAAAAAGH8T0MyaTJp",
-        'credential': "f826b9aa-853b-11ec-8e4a-0242ac140004",
-        'urls': [
-          "turn:to-turn2.xirsys.com:80?transport=udp",
-          "turn:to-turn2.xirsys.com:3478?transport=udp",
-          "turn:to-turn2.xirsys.com:80?transport=tcp",
-          "turn:to-turn2.xirsys.com:3478?transport=tcp",
-          "turns:to-turn2.xirsys.com:443?transport=tcp",
-          "turns:to-turn2.xirsys.com:5349?transport=tcp"
-        ]
-      }
+      // {
+      //   'username':
+      //       "FC8kkN9vySomIqAm3MJvZx-hcrOQA1jiBquXw0MZy7HF5RjTZigp8TkX5bHxm6SxAAAAAGH8T0MyaTJp",
+      //   'credential': "f826b9aa-853b-11ec-8e4a-0242ac140004",
+      //   'urls': [
+      //     "turn:to-turn2.xirsys.com:80?transport=udp",
+      //     "turn:to-turn2.xirsys.com:3478?transport=udp",
+      //     "turn:to-turn2.xirsys.com:80?transport=tcp",
+      //     "turn:to-turn2.xirsys.com:3478?transport=tcp",
+      //     "turns:to-turn2.xirsys.com:443?transport=tcp",
+      //     "turns:to-turn2.xirsys.com:5349?transport=tcp"
+      //   ]
+      // }
     ]
   };
   // Map<String, dynamic> _iceServers = {
@@ -246,7 +244,7 @@ class SignalingWebSockets {
       case 'bye':
         {
           var sessionId = data['session_id'];
-          log('bye: ' + sessionId);
+          print('bye: ' + sessionId);
           var session = _sessions.remove(sessionId);
           if (session != null) {
             onCallStateChange?.call(session, CallState.CallStateBye);
@@ -256,7 +254,7 @@ class SignalingWebSockets {
         break;
       case 'keepalive':
         {
-          log('keepalive response!');
+          print('keepalive response!');
         }
         break;
       default:
@@ -268,32 +266,39 @@ class SignalingWebSockets {
     var url = 'https://$_host:$_port/ws';
     _socket = SimpleWebSocket(url);
 
-    log('connect to $url');
+    print('connect to $url');
 
-    // if (_turnCredential == null) {
-    //   try {
-    //     _turnCredential = await getTurnCredential(_host, _port);
-    //     /*{
-    //         "username": "1584195784:mbzrxpgjys",
-    //         "password": "isyl6FF6nqMTB9/ig5MrMRUXqZg",
-    //         "ttl": 86400,
-    //         "uris": ["turn:127.0.0.1:19302?transport=udp"]
-    //       }
-    //     */
-    //     _iceServers = {
-    //       'iceServers': [
-    //         {
-    //           'urls': _turnCredential['uris'][0],
-    //           'username': _turnCredential['username'],
-    //           'credential': _turnCredential['password']
-    //         },
-    //       ]
-    //     };
-    //   } catch (e) {}
-    // }
+    if (_turnCredential == null) {
+      try {
+        _turnCredential = await getTurnCredential(_host, _port);
+        /*{
+            "username": "1584195784:mbzrxpgjys",
+            "password": "isyl6FF6nqMTB9/ig5MrMRUXqZg",
+            "ttl": 86400,
+            "uris": ["turn:127.0.0.1:19302?transport=udp"]
+          }
+        */
+        _iceServers = {
+          'iceServers': [
+            {
+              'urls': [
+                "stun:stun1.l.google.com:19302",
+                "stun:stun2.l.google.com:19302",
+                "stun:to-turn2.xirsys.com"
+              ]
+            },
+            {
+              'urls': _turnCredential['uris'][0],
+              'username': _turnCredential['username'],
+              'credential': _turnCredential['password']
+            },
+          ]
+        };
+      } catch (e) {}
+    }
 
     _socket?.onOpen = () {
-      log('onOpen');
+      print('onOpen');
       onSignalingStateChange?.call(SignalingState.ConnectionOpen);
       _send('new', {
         'name': DeviceInfo.label,
@@ -303,12 +308,12 @@ class SignalingWebSockets {
     };
 
     _socket?.onMessage = (message) {
-      log('Received data: ' + message);
+      print('Received data: ' + message);
       onMessage(_decoder.convert(message));
     };
 
     _socket?.onClose = (int code, String reason) {
-      log('Closed by server [$code => $reason]!');
+      print('Closed by server [$code => $reason]!');
       onSignalingStateChange?.call(SignalingState.ConnectionClosed);
     };
 
@@ -347,7 +352,7 @@ class SignalingWebSockets {
     var newSession = session ?? Session(sid: sessionId, pid: peerId);
     if (media != 'data')
       _localStream = await createStream(media, screenSharing);
-    log(_iceServers.toString());
+    print(_iceServers);
     RTCPeerConnection pc = await createPeerConnection({
       ..._iceServers,
       ...{'sdpSemantics': sdpSemantics}
@@ -488,7 +493,7 @@ class SignalingWebSockets {
         'media': media,
       });
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
     }
   }
 
@@ -504,7 +509,7 @@ class SignalingWebSockets {
         'session_id': session.sid,
       });
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
     }
   }
 
