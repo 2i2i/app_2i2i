@@ -37,8 +37,9 @@ dependencies:
   cloud_functions: ^3.2.7
   firebase_auth: ^3.3.7
   flutter_secure_storage: ^5.0.2
-  flutterfire_ui: ^0.3.4
+#  flutterfire_ui: ^0.3.4
   http: ^0.13.4
+  cloud_firestore: ^3.1.8
   url_launcher: ^6.0.20
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0

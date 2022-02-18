@@ -112,6 +112,7 @@ class UserModel extends Equatable {
   UserModel({
     // set also in cloud function userCreated
     required this.id,
+    required this.token,
     this.status = Status.ONLINE,
     this.meeting,
     this.name = '',
@@ -129,6 +130,7 @@ class UserModel extends Equatable {
   }
 
   final String id;
+  final String token;
   final DateTime? heartbeat;
   final Status status;
 
@@ -190,6 +192,7 @@ class UserModel extends Equatable {
     final Status status =
         Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final String? meeting = data['meeting'];
+    final String firebaseToken = data['token'] ?? '';
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
@@ -206,6 +209,7 @@ class UserModel extends Equatable {
 
     return UserModel(
       id: documentId,
+      token: firebaseToken,
       status: status,
       meeting: meeting,
       name: name,
@@ -225,6 +229,7 @@ class UserModel extends Equatable {
     return {
       'status': status.toStringEnum(),
       'meeting': meeting,
+      'token': token,
       'bio': bio,
       'name': name,
       'tags': _tags,
@@ -241,7 +246,7 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, token: $token, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
   }
 
   bool isInMeeting() => meeting != null;

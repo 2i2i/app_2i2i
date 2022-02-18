@@ -7,6 +7,7 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutterfire_ui/i10n.dart';
+// import 'package:flutterfire_ui/i10n.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -31,11 +32,11 @@ import 'ui/screens/localization/app_localization.dart';
 // DEBUG
 
 Future<void> main() async {
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
   }
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   FirebaseNotifications();
 

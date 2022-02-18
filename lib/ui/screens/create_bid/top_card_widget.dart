@@ -58,10 +58,10 @@ class TopCard extends StatelessWidget {
 class CustomSliderThumbRect extends SliderComponentShape {
   final double? thumbRadius;
   final BuildContext mainContext;
-  final int? min;
-  final int? max;
+  int? min;
+  int? max;
 
-  const CustomSliderThumbRect({
+  CustomSliderThumbRect({
     required this.mainContext,
     this.thumbRadius,
     this.min,
@@ -116,6 +116,8 @@ class CustomSliderThumbRect extends SliderComponentShape {
   }
 
   String getValue(double value) {
+    min ??=0;
+    max ??=0;
     return (min! + (max! - min!) * value).round().toString();
   }
 }
