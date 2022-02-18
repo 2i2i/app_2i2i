@@ -25,13 +25,13 @@ import 'infrastructure/routes/named_routes.dart';
 import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG
 
-Future<void> main() async {
-  final String _host = '34.122.51.239';
+void testSocket() async {
+  final String _host = 'webrtc.2i2i.app';
   var _port = 8086;
   SimpleWebSocket? _socket;
   var url = 'https://$_host:$_port/ws';
@@ -49,11 +49,13 @@ Future<void> main() async {
   };
 
   await _socket.connect();
+}
 
-  // WidgetsFlutterBinding.ensureInitialized();
-  // if (!kIsWeb) {
-  //   await Firebase.initializeApp();
-  // }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
 
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
@@ -75,22 +77,22 @@ Future<void> main() async {
   //   });
   //endregion DEBUG
 
-  // await SentryFlutter.init((options) {
-  //   options.dsn =
-  //       'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  // }, appRunner: () {
-  //   FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //     FlutterSecureStorage().read(key: 'language').then((local) {
-  //       return runApp(
-  //         ProviderScope(
-  //           child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
-  //         ),
-  //       );
-  //     });
-  //   });
-  // }).onError((error, stackTrace) {
-  //   print(error);
-  // });
+  await SentryFlutter.init((options) {
+    options.dsn =
+        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+  }, appRunner: () {
+    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+      FlutterSecureStorage().read(key: 'language').then((local) {
+        return runApp(
+          ProviderScope(
+            child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+          ),
+        );
+      });
+    });
+  }).onError((error, stackTrace) {
+    print(error);
+  });
 }
 
 class MainWidget extends ConsumerStatefulWidget {
