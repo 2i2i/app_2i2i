@@ -7,6 +7,7 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/screens/web_rtc/utils/websocket_web.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -29,11 +30,33 @@ import 'ui/screens/localization/app_localization.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG
 
+void testSocket() async {
+  final String _host = 'webrtc.2i2i.app';
+  var _port = 8086;
+  SimpleWebSocket? _socket;
+  var url = 'https://$_host:$_port/ws';
+  _socket = SimpleWebSocket(url);
+  _socket.onOpen = () {
+    print('onOpen');
+  };
+
+  _socket.onMessage = (message) {
+    print('Received data: ' + message);
+  };
+
+  _socket.onClose = (int code, String reason) {
+    print('Closed by server [$code => $reason]!');
+  };
+
+  await _socket.connect();
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
   }
+
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
@@ -44,12 +67,14 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
+  //     FlutterSecureStorage().read(key: 'language').then((local) {
+  //       return runApp(
+  //         ProviderScope(
+  //           child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+  //         ),
+  //       );
+  //     });
+  //   });
   //endregion DEBUG
 
   await SentryFlutter.init((options) {
