@@ -1,10 +1,13 @@
 // order of bid ins: status (online->locked->offline), friends->non-friends, speed
 // do not show bid ins of blocked users
 
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
@@ -29,8 +32,8 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref
-        .watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+    final bidInsWithUsers =
+        ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -39,15 +42,28 @@ class UserBidInsList extends ConsumerWidget {
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () async {
-          for (BidIn bidIn in bidIns) {
-            UserModel? user = bidIn.user;
-            if (user == null) {
-              return;
-            }
+          bool camera = await Permission.camera.request().isGranted;
+          bool microphone = await Permission.microphone.request().isGranted;
+          if (camera && microphone) {
+            for (BidIn bidIn in bidIns) {
+              UserModel? user = bidIn.user;
+              if (user == null) {
+                return;
+              }
+              String? token;
+              try {
+                final database = ref.watch(databaseProvider);
+                token = await database.getTokenFromId(bidIn.user!.id);
+              } catch (e) {
+                print(e);
+              }
 
-            final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIn);
-            if (acceptedBid) break;
+              final acceptedBid =
+              await myHangoutPageViewModel.acceptBid(bidIn, token: token);
+              if (acceptedBid) break;
+            }
           }
+
         },
         child: Container(
           width: kToolbarHeight * 1.15,

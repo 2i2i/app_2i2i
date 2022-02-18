@@ -215,6 +215,16 @@ class FirestoreDatabase {
         },
       );
 
+
+  Future<String> getTokenFromId(String uid) async {
+    DocumentSnapshot snapshot = await _service.getData(path:FirestorePath.token(uid));
+    if(snapshot.data() is Map) {
+      Map data = snapshot.data() as Map;
+      return data['token'] ?? '';
+    }
+    return '';
+  }
+
   Future<void> updateUser(UserModel user) => _service.setData(
         path: FirestorePath.user(user.id),
         data: user.toMap(),

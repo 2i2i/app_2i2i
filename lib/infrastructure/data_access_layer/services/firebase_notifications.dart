@@ -18,58 +18,12 @@ class FirebaseNotifications {
   }
 
   void firebaseCloudMessagingListeners() {
-    getNotificationToken().then((value) => print(value));
-
     FirebaseMessaging.instance.requestPermission(sound: true, badge: true, alert: true);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("Handling a onMessage message: ${message.messageId}");
-      String title = message.notification?.title??'';
-      String body = message.notification?.body??'';
-      String? imageUrl;
-      Map data = message.data;
-      String type = data['type']??'';
-      if(data['imageUrl'] != null){
-        imageUrl = data['imageUrl'];
-      }
-      AwesomeNotifications().createNotification(
-          content: NotificationContent(
-            id: 10,
-            channelKey: 'call_channel',
-            title: title,
-            body: body,
-            category: NotificationCategory.Call,
-            largeIcon: imageUrl,
-            wakeUpScreen: true,
-            fullScreenIntent: true,
-            autoDismissible: false,
-            backgroundColor: Colors.white,
-            payload: data.cast<String,String>(),
-          ),
-          actionButtons: [
-            NotificationActionButton(
-                key: 'ACCEPT',
-                label: 'Answer',
-                color: Colors.green,
-                autoDismissible: true
-            ),
-            NotificationActionButton(
-                key: 'REJECT',
-                label: 'Decline',
-                color: Colors.green,
-                isDangerousOption: true,
-                autoDismissible: true
-            ),
-          ]
-      );
+
     });
-
-  }
-
-  Future<String?> getNotificationToken() async {
-    var token = await messaging.getToken();
-    print('Firebase token: \n $token');
-    return token;
   }
 
   Future<void> awesomeNotificationSetup() async {
@@ -107,23 +61,13 @@ class FirebaseNotifications {
       }
     });
 
+
     AwesomeNotifications().actionStream.listen((receivedAction) {
       print('AwesomeNotifications().actionStream ${receivedAction.payload}');
-      if(receivedAction.channelKey == 'call_channel'){
+      if (receivedAction.channelKey == 'call_channel') {
         switch (receivedAction.buttonKeyPressed) {
+          case 'view':
 
-          case 'REJECT':
-            AndroidForegroundService.stopForeground();
-            break;
-
-          case 'ACCEPT':
-            AndroidForegroundService.stopForeground();
-          // loadSingletonPage(targetPage: PAGE_PHONE_CALL, receivedAction: receivedAction);
-            break;
-
-          default:
-            AndroidForegroundService.stopForeground();
-          // loadSingletonPage(targetPage: PAGE_PHONE_CALL, receivedAction: receivedAction);
             break;
         }
         return;
@@ -135,6 +79,9 @@ class FirebaseNotifications {
     Map map = {
       "to": token,
       "notification": {"title": title, "body": message},
+      "mutable_content": true,
+      "content_available": true,
+      "priority": "high",
       "data": data,
     };
     if (token.isNotEmpty) {
@@ -143,10 +90,11 @@ class FirebaseNotifications {
     }
     try {
       await post(
-        Uri.parse('https://api.rnfirebase.io/messaging/send'),
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'key=AAAAaa2e9ys:APA91bHjXVbNkKrkNC6_HxcFYuVal_IMNFxK7738gFxTu87_ACZ8HUeGQd3dkvRwiTmqtfjDd30fMV-d5XiHr_BBTGKOLJdH0OgKs1B9Q6eAXgWadZeiv2hV2E4ydmyb7Ar6Ykl86UlD',
+          'Authorization':
+              'key=AAAAaa2e9ys:APA91bHjXVbNkKrkNC6_HxcFYuVal_IMNFxK7738gFxTu87_ACZ8HUeGQd3dkvRwiTmqtfjDd30fMV-d5XiHr_BBTGKOLJdH0OgKs1B9Q6eAXgWadZeiv2hV2E4ydmyb7Ar6Ykl86UlD',
         },
         body: jsonEncode(map),
       );
@@ -155,21 +103,22 @@ class FirebaseNotifications {
       print(e);
     }
   }
-
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
-  String title = message.notification?.title??'';
-  String body = message.notification?.body??'';
+
   String? imageUrl;
   Map data = message.data;
-  String type = data['type']??'';
-  if(data['imageUrl'] != null){
+  String title = data['title'] ?? (message.notification?.title ?? '');
+  String body = data['body'] ?? (message.notification?.body ?? '');
+  String type = data['type'] ?? '';
+  if (data['imageUrl'] != null) {
     imageUrl = data['imageUrl'];
   }
-  AwesomeNotifications().createNotification(
-      content: NotificationContent(
+  if (type == 'Call') {
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
           id: 10,
           channelKey: 'call_channel',
           title: title,
@@ -178,24 +127,19 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           largeIcon: imageUrl,
           wakeUpScreen: true,
           fullScreenIntent: true,
-          autoDismissible: false,
+          autoDismissible: true,
           backgroundColor: Colors.white,
-          payload: data.cast<String,String>(),
-      ),
-      actionButtons: [
-        NotificationActionButton(
-            key: 'ACCEPT',
-            label: 'Answer',
-            color: Colors.green,
-            autoDismissible: true
+          customSound: 'resource://raw/video_call',
+          payload: data.cast<String, String>(),
         ),
-        NotificationActionButton(
-            key: 'REJECT',
-            label: 'Decline',
-            color: Colors.green,
-            isDangerousOption: true,
-            autoDismissible: true
-        ),
-      ]
-  );
+        actionButtons: [
+          NotificationActionButton(
+              key: 'view',
+              label: 'View',
+              color: Colors.green,
+              autoDismissible: true,
+          ),
+        ],
+    );
+  }
 }

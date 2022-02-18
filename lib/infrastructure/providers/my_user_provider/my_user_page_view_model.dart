@@ -21,7 +21,7 @@ class MyUserPageViewModel {
   final UserModelChanger userChanger;
   final AccountService accountService;
 
-  Future<bool> acceptBid(BidIn bidIn) async {
+  Future<bool> acceptBid(BidIn bidIn, {String? token}) async {
     if (!bidIn.public.active) return false;
 
     if (bidIn.user!.status == Status.OFFLINE ||
@@ -38,12 +38,13 @@ class MyUserPageViewModel {
     final meeting = Meeting.newMeeting(
         id: bidIn.public.id, B: user.id, addrB: addrB, bidIn: bidIn);
     await database.acceptBid(meeting);
-    if(bidIn.user != null) {
+    if(token != null) {
+
       Map data = {
         'route':Routes.lock,
         'type':'Call',
       };
-      await FirebaseNotifications().sendNotification(bidIn.user!.token, bidIn.user?.name ?? '', 'Incoming video call',data);
+      await FirebaseNotifications().sendNotification(token, bidIn.user?.name ?? '', 'Incoming video call',data);
     }
     return true;
   }
