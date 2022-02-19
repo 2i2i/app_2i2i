@@ -27,6 +27,7 @@ class FirebaseNotifications {
   }
 
   Future<void> awesomeNotificationSetup() async {
+    FirebaseMessaging.instance.getToken().then((value) => print(value));
     await Firebase.initializeApp();
     await AwesomeNotifications().initialize(
       null,
@@ -75,10 +76,10 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token, String title, String message, Map data) async {
+  Future sendNotification(String token,Map data) async {
     Map map = {
       "to": token,
-      "notification": {"title": title, "body": message},
+      "notification": {},
       "mutable_content": true,
       "content_available": true,
       "priority": "high",

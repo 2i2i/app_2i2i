@@ -220,6 +220,7 @@ class FirestoreDatabase {
     DocumentSnapshot snapshot = await _service.getData(path:FirestorePath.token(uid));
     if(snapshot.data() is Map) {
       Map data = snapshot.data() as Map;
+      print('\n\n${data['token']}\n\n');
       return data['token'] ?? '';
     }
     return '';

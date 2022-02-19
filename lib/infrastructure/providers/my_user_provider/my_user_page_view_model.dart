@@ -24,8 +24,7 @@ class MyUserPageViewModel {
   Future<bool> acceptBid(BidIn bidIn, {String? token}) async {
     if (!bidIn.public.active) return false;
 
-    if (bidIn.user!.status == Status.OFFLINE ||
-        bidIn.user!.isInMeeting()) {
+    if (/*bidIn.user!.status == Status.OFFLINE ||*/bidIn.user!.isInMeeting()) {
       await cancelNoShow(bidIn: bidIn);
       return false;
     }
@@ -43,8 +42,10 @@ class MyUserPageViewModel {
       Map data = {
         'route':Routes.lock,
         'type':'Call',
+        "title": bidIn.user?.name ?? '',
+        "body": 'Incoming video call'
       };
-      await FirebaseNotifications().sendNotification(token, bidIn.user?.name ?? '', 'Incoming video call',data);
+      await FirebaseNotifications().sendNotification(token,data);
     }
     return true;
   }
