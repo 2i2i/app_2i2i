@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:app_2i2i/ui/screens/localization/cn.dart';
-import 'package:app_2i2i/ui/screens/localization/es.dart';
-import 'package:app_2i2i/ui/screens/localization/kr.dart';
 import 'package:flutter/material.dart';
 
-import 'ar.dart';
-import 'de.dart';
-import 'en.dart';
+import 'package:app_2i2i/ui/screens/localization/en.dart';
+import 'package:app_2i2i/ui/screens/localization/zh.dart';
+import 'package:app_2i2i/ui/screens/localization/es.dart';
+import 'package:app_2i2i/ui/screens/localization/ar.dart';
+import 'package:app_2i2i/ui/screens/localization/de.dart';
+import 'package:app_2i2i/ui/screens/localization/ko.dart';
 
 class ApplicationLocalizations {
   final Locale appLocale;
@@ -27,8 +27,8 @@ class ApplicationLocalizations {
       case 'en':
         map = en().data();
         break;
-      case 'cn':
-        map = cn().data();
+      case 'zh':
+        map = zh().data();
         break;
       case 'es':
         map = es().data();
@@ -39,8 +39,8 @@ class ApplicationLocalizations {
       case 'de':
         map = de().data();
         break;
-      case 'kr':
-        map = kr().data();
+      case 'ko':
+        map = ko().data();
         break;
     }
     _localizedStrings = map.cast();
@@ -52,10 +52,11 @@ class ApplicationLocalizations {
   }
 }
 
-class ApplicationLocalizationsDelegate extends LocalizationsDelegate<ApplicationLocalizations> {
+class ApplicationLocalizationsDelegate
+    extends LocalizationsDelegate<ApplicationLocalizations> {
   @override
   bool isSupported(Locale locale) {
-    return ['ar', 'en', 'de'].contains(locale.languageCode);
+    return ['en', 'zh', 'es', 'ar', 'de', 'ko'].contains(locale.languageCode);
   }
 
   @override
