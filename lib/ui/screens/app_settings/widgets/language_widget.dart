@@ -12,11 +12,12 @@ class LanguagePage extends ConsumerStatefulWidget {
 class _LanguagePageState extends ConsumerState<LanguagePage> {
   List languageList = [
     {'title': 'English', 'languageCode': 'en', 'countryCode': ''},
-    {'title': 'Chinese', 'languageCode': 'zh', 'countryCode': ''},
-    {'title': 'Spanish', 'languageCode': 'es', 'countryCode': ''},
-    {'title': 'Arabic', 'languageCode': 'ar', 'countryCode': ''},
-    {'title': 'German', 'languageCode': 'de', 'countryCode': ''},
-    {'title': 'Korean', 'languageCode': 'ko', 'countryCode': ''},
+    {'title': '汉语', 'languageCode': 'zh', 'countryCode': ''},
+    {'title': 'Español', 'languageCode': 'es', 'countryCode': ''},
+    {'title': 'عَرَبِيّ', 'languageCode': 'ar', 'countryCode': ''},
+    {'title': 'Deutsch', 'languageCode': 'de', 'countryCode': ''},
+    {'title': '日本語', 'languageCode': 'ja', 'countryCode': ''},
+    {'title': '한국어', 'languageCode': 'ko', 'countryCode': ''},
   ];
 
   int selectedIndex = 0;

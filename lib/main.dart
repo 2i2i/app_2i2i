@@ -191,6 +191,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         Locale('es', ''),
         Locale('ar', ''),
         Locale("de", ''),
+        Locale("ja", ''),
         Locale('ko', ''),
       ],
       locale: appSettingModel.locale,
