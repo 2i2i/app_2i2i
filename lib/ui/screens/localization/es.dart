@@ -1,6 +1,6 @@
 import '../../../infrastructure/commons/keys.dart';
 
-class en {
+class es {
   Map data() {
     return {
       Keys.aboutYou: 'Sobre ti',

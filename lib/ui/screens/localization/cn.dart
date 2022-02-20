@@ -1,6 +1,6 @@
 import '../../../infrastructure/commons/keys.dart';
 
-class en {
+class cn {
   Map data() {
     return {
       Keys.aboutYou: '关于你',

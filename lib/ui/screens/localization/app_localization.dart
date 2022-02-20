@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:app_2i2i/ui/screens/localization/cn.dart';
+import 'package:app_2i2i/ui/screens/localization/es.dart';
+import 'package:app_2i2i/ui/screens/localization/kr.dart';
 import 'package:flutter/material.dart';
 
 import 'ar.dart';
@@ -24,11 +27,20 @@ class ApplicationLocalizations {
       case 'en':
         map = en().data();
         break;
+      case 'cn':
+        map = cn().data();
+        break;
+      case 'es':
+        map = es().data();
+        break;
       case 'ar':
         map = ar().data();
         break;
       case 'de':
         map = de().data();
+        break;
+      case 'kr':
+        map = kr().data();
         break;
     }
     _localizedStrings = map.cast();

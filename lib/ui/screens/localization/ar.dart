@@ -1,6 +1,6 @@
 import '../../../infrastructure/commons/keys.dart';
 
-class ar{
+class ar {
   Map data(){
     return {
       Keys.aboutYou: 'حولك',
