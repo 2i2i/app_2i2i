@@ -13,7 +13,7 @@ class ar {
       Keys.less: 'أقل',
       Keys.importance: 'أهمية',
       Keys.chrony: "Chrony",
-      Keys.highRoller: 'الأسطوانة عالية',
+      Keys.highRoller: 'HighRoller',
       Keys.theme: 'سمة',
       Keys.light: 'خفيفة',
       Keys.dark: 'داكن',

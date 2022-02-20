@@ -7,6 +7,7 @@ import 'package:app_2i2i/ui/screens/localization/zh.dart';
 import 'package:app_2i2i/ui/screens/localization/es.dart';
 import 'package:app_2i2i/ui/screens/localization/ar.dart';
 import 'package:app_2i2i/ui/screens/localization/de.dart';
+import 'package:app_2i2i/ui/screens/localization/ja.dart';
 import 'package:app_2i2i/ui/screens/localization/ko.dart';
 
 class ApplicationLocalizations {
@@ -39,6 +40,9 @@ class ApplicationLocalizations {
       case 'de':
         map = de().data();
         break;
+      case 'ja':
+        map = ja().data();
+        break;
       case 'ko':
         map = ko().data();
         break;
@@ -56,7 +60,7 @@ class ApplicationLocalizationsDelegate
     extends LocalizationsDelegate<ApplicationLocalizations> {
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'zh', 'es', 'ar', 'de', 'ko'].contains(locale.languageCode);
+    return ['en', 'zh', 'es', 'ar', 'de', 'ja', 'ko'].contains(locale.languageCode);
   }
 
   @override
