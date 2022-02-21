@@ -27,27 +27,6 @@ import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
-void testSocket() async {
-  final String _host = 'webrtc.2i2i.app';
-  var _port = 8086;
-  SimpleWebSocket? _socket;
-  var url = 'https://$_host:$_port/ws';
-  _socket = SimpleWebSocket(url);
-  _socket.onOpen = () {
-    print('onOpen');
-  };
-
-  _socket.onMessage = (message) {
-    print('Received data: ' + message);
-  };
-
-  _socket.onClose = (int code, String reason) {
-    print('Closed by server [$code => $reason]!');
-  };
-
-  await _socket.connect();
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
@@ -212,9 +191,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale("de", "AT"),
-        Locale('ar', 'AR'),
+        Locale('en', ''),
+        Locale('zh', ''),
+        Locale('es', ''),
+        Locale('ar', ''),
+        Locale("de", ''),
+        Locale("ja", ''),
+        Locale('ko', ''),
       ],
       scaffoldMessengerKey: _scaffoldMessengerKey,
       locale: appSettingModel.locale,
