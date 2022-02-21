@@ -21,7 +21,6 @@ import "package:universal_html/html.dart" as html;
 // import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG3
 
-
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
@@ -160,12 +159,9 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         });
       }
 
-      if (Platform.isAndroid) {
-        Custom.deepLinks(context, mounted);
-      }
+      await Custom.deepLinks(context, mounted);
     });
   }
-
 
   Future<void> updateHeartbeat(Status status) async {
     if (status == Status.IDLE) {

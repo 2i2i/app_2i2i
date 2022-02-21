@@ -22,15 +22,6 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      // if (Platform.isIOS) {
-      //   await Custom.deepLinks(context, mounted);
-      // }
-    });
-  }
 
 
 
