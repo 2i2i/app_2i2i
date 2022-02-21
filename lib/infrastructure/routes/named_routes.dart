@@ -43,22 +43,24 @@ class NamedRoutes {
     redirect: (state) {
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
-      bool validForPrevious = !goingToLocked && state.location != Routes.root && state.location != previousRouteLocation;
-      if(validForPrevious){
+      bool validForPrevious = !goingToLocked &&
+          state.location != Routes.root &&
+          state.location != previousRouteLocation;
+      if (validForPrevious) {
         previousRouteLocation = state.location;
       }
       if (locked && goingToLocked) {
         return null;
       } else if (!locked && goingToLocked) {
-        if(previousRouteLocation?.isNotEmpty??false){
+        if (previousRouteLocation?.isNotEmpty ?? false) {
           return previousRouteLocation;
         }
         return Routes.root;
       } else if (locked) {
         return Routes.lock;
       }
-      if(previousRouteLocation is String){
-        if(showRating.value['show'] == true) {
+      if (previousRouteLocation is String) {
+        if (showRating.value['show'] == true) {
           String a = '$previousRouteLocation';
           previousRouteLocation = null;
           print('========== $a');
@@ -318,7 +320,9 @@ class NamedRoutes {
         appBar: AppBar(
           leading: Container(),
           toolbarHeight: 20,
-          title: Text(AlgorandNet.testnet.name + ' - v5' + (updateAvailable ? ' - update: reload page' : '')),
+          title: Text(AlgorandNet.testnet.name +
+              ' - v13' +
+              (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
               .bodyText2
@@ -374,7 +378,9 @@ class NamedRoutes {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.watch(
             lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb) {
+        if (kIsWeb &&
+            defaultTargetPlatform != TargetPlatform.iOS &&
+            defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

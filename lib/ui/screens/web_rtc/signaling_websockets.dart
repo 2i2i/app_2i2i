@@ -57,7 +57,6 @@ class SignalingWebSockets {
       onDataChannelMessage;
   Function(Session session, RTCDataChannel dc)? onDataChannel;
 
-
   String get sdpSemantics =>
       WebRTC.platformIsWindows ? 'plan-b' : 'unified-plan';
 
@@ -281,6 +280,13 @@ class SignalingWebSockets {
     //     */
     //     _iceServers = {
     //       'iceServers': [
+    //         {
+    //           'urls': [
+    //             "stun:stun1.l.google.com:19302",
+    //             "stun:stun2.l.google.com:19302",
+    //             "stun:to-turn2.xirsys.com"
+    //           ]
+    //         },
     //         {
     //           'urls': _turnCredential['uris'][0],
     //           'username': _turnCredential['username'],

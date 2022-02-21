@@ -24,9 +24,8 @@ class CallPageWebsockets extends ConsumerStatefulWidget {
   final UserModelChanger userChanger;
 
   static String tag = 'call_sample';
-  final String host = 'demo.cloudwebrtc.com';
+  final String host = 'webrtc.2i2i.app';
   CallPageWebsockets({
-    // required this.host,
     required this.meeting,
     required this.meetingChanger,
     required this.userChanger,

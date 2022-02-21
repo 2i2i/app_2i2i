@@ -34,6 +34,7 @@ Future<void> main() async {
   if (!kIsWeb) {
     await Firebase.initializeApp();
   }
+
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
   // );
@@ -44,12 +45,14 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
+  //     FlutterSecureStorage().read(key: 'language').then((local) {
+  //       return runApp(
+  //         ProviderScope(
+  //           child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+  //         ),
+  //       );
+  //     });
+  //   });
   //endregion DEBUG
 
   await SentryFlutter.init((options) {
@@ -181,9 +184,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale("de", "AT"),
-        Locale('ar', 'AR'),
+        Locale('en', ''),
+        Locale('zh', ''),
+        Locale('es', ''),
+        Locale('ar', ''),
+        Locale("de", ''),
+        Locale("ja", ''),
+        Locale('ko', ''),
       ],
       locale: appSettingModel.locale,
       localizationsDelegates: [
