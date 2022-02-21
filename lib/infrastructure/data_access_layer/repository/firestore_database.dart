@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -104,14 +105,18 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Future<void> updateToken(String uid, String token) => _service.setData(
-        path: FirestorePath.token(uid),
-        data: {
-          'token': token,
-          'ts': FieldValue.serverTimestamp(),
-        },
-        merge: true,
-      );
+  Future<void> updateToken(String uid, String token) {
+    _service.setData(
+      path: FirestorePath.token(uid),
+      data: {
+        'token': token,
+        'isIos': Platform.isIOS,
+        'ts': FieldValue.serverTimestamp(),
+      },
+      merge: true,
+    );
+    return Future.value();
+  }
 
   Future<void> updateUserHeartbeat(String uid, String status) =>
       _service.setData(
@@ -216,14 +221,13 @@ class FirestoreDatabase {
       );
 
 
-  Future<String> getTokenFromId(String uid) async {
+  Future<Map?> getTokenFromId(String uid) async {
     DocumentSnapshot snapshot = await _service.getData(path:FirestorePath.token(uid));
     if(snapshot.data() is Map) {
       Map data = snapshot.data() as Map;
       print('\n\n${data['token']}\n\n');
-      return data['token'] ?? '';
+      return data;
     }
-    return '';
   }
 
   Future<void> updateUser(UserModel user) => _service.setData(

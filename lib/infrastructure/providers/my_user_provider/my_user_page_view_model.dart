@@ -21,7 +21,7 @@ class MyUserPageViewModel {
   final UserModelChanger userChanger;
   final AccountService accountService;
 
-  Future<bool> acceptBid(BidIn bidIn, {String? token}) async {
+  Future<bool> acceptBid(BidIn bidIn, {String? token, bool isIos = false}) async {
     if (!bidIn.public.active) return false;
 
     if (/*bidIn.user!.status == Status.OFFLINE ||*/bidIn.user!.isInMeeting()) {
@@ -45,7 +45,7 @@ class MyUserPageViewModel {
         "title": bidIn.user?.name ?? '',
         "body": 'Incoming video call'
       };
-      await FirebaseNotifications().sendNotification(token,data);
+      await FirebaseNotifications().sendNotification(token,data,isIos);
     }
     return true;
   }

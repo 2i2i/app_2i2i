@@ -64,7 +64,7 @@ class FirebaseNotifications {
 
 
     AwesomeNotifications().actionStream.listen((receivedAction) {
-      print('AwesomeNotifications().actionStream ${receivedAction.payload}');
+      print('AwesomeNotifications().actionStream ${receivedAction.payload.toString()}');
       if (receivedAction.channelKey == 'call_channel') {
         switch (receivedAction.buttonKeyPressed) {
           case 'view':
@@ -76,16 +76,21 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token,Map data) async {
+  Future sendNotification(String token,Map data,bool isIos) async {
+    var notification = {};
+    if(isIos){
+      notification['title'] = data['title'];
+      notification['body'] = data['body'];
+    }
     Map map = {
       "to": token,
-      "notification": {},
+      "notification": notification,
       "mutable_content": true,
       "content_available": true,
       "priority": "high",
       "data": data,
     };
-    if (token.isNotEmpty) {
+    if (token.isEmpty) {
       print('Unable to send FCM message, no token exists.');
       return;
     }

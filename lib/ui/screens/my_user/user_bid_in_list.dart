@@ -57,15 +57,18 @@ class UserBidInsList extends ConsumerWidget {
                 return;
               }
               String? token;
+              bool isIos = false;
               try {
                 final database = ref.watch(databaseProvider);
-                token = await database.getTokenFromId(bidIn.user!.id);
+                Map map  = await database.getTokenFromId(bidIn.user!.id)??{};
+                token = map['token'];
+                isIos = map['isIos']??false;
               } catch (e) {
                 print(e);
               }
 
               final acceptedBid =
-              await myHangoutPageViewModel.acceptBid(bidIn, token: token);
+              await myHangoutPageViewModel.acceptBid(bidIn, token: token,isIos: isIos);
               if (acceptedBid) break;
             }
           }
