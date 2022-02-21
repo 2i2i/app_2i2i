@@ -125,12 +125,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
             //check after for 2 sec that is it still in background
             Future.delayed(Duration(seconds: 2)).then((value) async {
               if (html.document.visibilityState != 'visible') {
-                print('======\n\n\n\n background \n\n\n\n=====');
                 await updateHeartbeat(Status.IDLE);
               }
             });
           } else {
-            print('======\n\n\n\n Foreground \n\n\n\n=====');
             updateHeartbeat(Status.ONLINE);
           }
         });
