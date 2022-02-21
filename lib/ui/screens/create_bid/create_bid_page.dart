@@ -93,16 +93,21 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         var val = int.tryParse(speedController.text)??0;
         if(val < speed.num) {
           speedController.text = speed.num.toString();
+          try {
+            updateAccountBalance(myAccountPageViewModel);
+          } catch (e) {
+            print(e);
+          }
         }
       }
     });
     ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
-
+  late final myAccountPageViewModel;
   @override
   Widget build(BuildContext context) {
-    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
 
     if (haveToWait(myAccountPageViewModel) ||
@@ -463,6 +468,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         var val = int.tryParse(speedController.text)??0;
         if(val < speed.num) {
           speedController.text = speed.num.toString();
+          updateAccountBalance(myAccountPageViewModel);
         }
     }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
