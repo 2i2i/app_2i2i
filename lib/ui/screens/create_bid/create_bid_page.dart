@@ -84,9 +84,18 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   PageController controller = PageController(initialPage: 0);
 
   UserModel? userB;
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
+    focusNode.addListener(() {
+      if(!focusNode.hasFocus){
+        var val = int.tryParse(speedController.text)??0;
+        if(val < speed.num) {
+          speedController.text = speed.num.toString();
+        }
+      }
+    });
     ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
@@ -327,6 +336,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                           padding: const EdgeInsets.only(
                               top: 8, left: 10, right: 10),
                           child: CustomTextField(
+                            focusNode:focusNode,
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
                             title: Keys.speed.tr(context),
@@ -449,7 +459,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
     speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
-    speedController.text = speed.num.toString();
+    if(!focusNode.hasFocus) {
+        var val = int.tryParse(speedController.text)??0;
+        if(val < speed.num) {
+          speedController.text = speed.num.toString();
+        }
+    }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       account = myAccountPageViewModel.accounts!.first;
     }
