@@ -93,21 +93,18 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         var val = int.tryParse(speedController.text)??0;
         if(val < speed.num) {
           speedController.text = speed.num.toString();
-          try {
-            updateAccountBalance(myAccountPageViewModel);
-          } catch (e) {
-            print(e);
-          }
+          var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+          updateAccountBalance(myAccountPageViewModel);
         }
       }
     });
     ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
-  late final myAccountPageViewModel;
+
   @override
   Widget build(BuildContext context) {
-    myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
 
     if (haveToWait(myAccountPageViewModel) ||
