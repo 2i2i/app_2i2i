@@ -173,9 +173,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale("de", "AT"),
-        Locale('ar', 'AR'),
+        Locale('en', ''),
+        Locale('zh', ''),
+        Locale('es', ''),
+        Locale('ar', ''),
+        Locale("de", ''),
+        Locale("ja", ''),
+        Locale('ko', ''),
       ],
       locale: appSettingModel.locale,
       localizationsDelegates: [
