@@ -1,3 +1,13 @@
+// A -> B
+// main actions:
+// createBid - A
+// acceptBid - B
+// acceptMeeting - A
+// createRoom - A
+// import 'package:http/http.dart' as html;
+// import 'dart:html' as html;
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import "package:universal_html/html.dart" as html;
 import 'dart:async';
 import 'dart:io';
 
@@ -25,27 +35,6 @@ import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
-
-void testSocket() async {
-  final String _host = 'webrtc.2i2i.app';
-  var _port = 8086;
-  SimpleWebSocket? _socket;
-  var url = 'https://$_host:$_port/ws';
-  _socket = SimpleWebSocket(url);
-  _socket.onOpen = () {
-    print('onOpen');
-  };
-
-  _socket.onMessage = (message) {
-    print('Received data: ' + message);
-  };
-
-  _socket.onClose = (int code, String reason) {
-    print('Closed by server [$code => $reason]!');
-  };
-
-  await _socket.connect();
-}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,8 +95,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
     with WidgetsBindingObserver {
   Timer? timer;
 
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -148,12 +135,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
             //check after for 2 sec that is it still in background
             Future.delayed(Duration(seconds: 2)).then((value) async {
               if (html.document.visibilityState != 'visible') {
-                print('======\n\n\n\n background \n\n\n\n=====');
                 await updateHeartbeat(Status.IDLE);
               }
             });
           } else {
-            print('======\n\n\n\n Foreground \n\n\n\n=====');
             updateHeartbeat(Status.ONLINE);
           }
         });
@@ -208,11 +193,14 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale("de", "AT"),
-        Locale('ar', 'AR'),
+        Locale('en', ''),
+        Locale('zh', ''),
+        Locale('es', ''),
+        Locale('ar', ''),
+        Locale("de", ''),
+        Locale("ja", ''),
+        Locale('ko', ''),
       ],
-      scaffoldMessengerKey: _scaffoldMessengerKey,
       locale: appSettingModel.locale,
       localizationsDelegates: [
         ApplicationLocalizationsDelegate(),

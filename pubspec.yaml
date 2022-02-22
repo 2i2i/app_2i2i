@@ -33,6 +33,7 @@ dependencies:
   algorand_dart: ^1.0.1
   flutter_webrtc: ^0.8.2
   just_audio: ^0.9.19
+  # just_audio_libwinmedia: ^0.0.4 # needed for Windows
   flutter_riverpod: ^1.0.3
   cloud_functions: ^3.2.7
   firebase_auth: ^3.3.6
@@ -49,15 +50,14 @@ dependencies:
   flutter_animator: ^3.2.1
   animate_countdown_text: ^1.1.3
   share_plus: ^3.0.4
-  image_picker: ^0.8.4+7
+  #image_picker: ^0.8.4+7
   cloud_firestore: ^3.1.8
   carousel_slider: ^4.0.0
   flutter_svg: ^1.0.3
 #  shimmer: ^2.0.0
   go_router: ^3.0.1
   intl: ^0.17.0
-
-  firebase_app_check: ^0.0.6+5
+  # firebase_app_check: ^0.0.6+5 # add once works with firestore / needs iOS/Android setup
   cached_network_image: ^3.2.0
   firebase_messaging: ^11.2.6
   device_info_plus: ^3.2.1
