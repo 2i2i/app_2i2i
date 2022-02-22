@@ -28,7 +28,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
-  TextEditingController bioEditController = TextEditingController();
+  RichTextController bioTextController = RichTextController(
+    patternMatchMap: {
+      RegExp(r"(?:#)[a-zA-Z0-9]+"):
+          TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+    },
+    onMatch: (List<String> match) {},
+  );
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -41,8 +47,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   static const double _importanceSliderMaxHalf = 5.0;
   double? _importanceRatioValue;
   double? _importanceSliderValue;
-
-  RichTextController? bioTextController;
 
   @override
   void initState() {
@@ -114,7 +118,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     if (isLoaded) {
       UserModel user = userAsyncValue.asData!.value;
       userNameEditController.text = user.name;
-      bioEditController.text = user.bio;
+      bioTextController.text = user.bio;
 
       speedEditController.text = user.rule.minSpeed.toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
@@ -172,13 +176,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   @override
   Widget build(BuildContext context) {
-    bioTextController ??= RichTextController(
-      patternMatchMap: {
-        RegExp(r"(?:#)[a-zA-Z0-9]+"):
-            TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
-      },
-      onMatch: (List<String> match) {},
-    );
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
@@ -507,7 +504,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
         user.setNameOrBio(
-            name: userNameEditController.text, bio: bioEditController.text);
+            name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
             ? Lounge.chrony
@@ -524,7 +521,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user.rule = rule;
       } else {
         user!.setNameOrBio(
-            name: userNameEditController.text, bio: bioEditController.text);
+            name: userNameEditController.text, bio: bioTextController.text);
       }
       await myUserPageViewModel?.updateHangout(user);
       Navigator.of(context).maybePop();
