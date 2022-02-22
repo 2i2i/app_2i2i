@@ -189,7 +189,6 @@ class AppTheme{
       primaryColor: primaryDarkColor,
       primaryColorLight: secondaryDarkColor,
       primaryColorDark: secondaryTextColor,
-      primaryColorBrightness: Brightness.dark,
       scaffoldBackgroundColor: primaryDarkColor,
       iconTheme: IconThemeData(color: primaryColor),
       cardColor: cardDarkColor,
