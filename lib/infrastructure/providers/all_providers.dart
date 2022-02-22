@@ -2,8 +2,8 @@
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,13 +18,13 @@ import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
-import 'user_bid_provider/user_page_view_model.dart';
 import 'history_provider/history_view_model.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
 import 'ringing_provider/ringing_page_view_model.dart';
 import 'setup_user_provider/setup_user_view_model.dart';
+import 'user_bid_provider/user_page_view_model.dart';
 import 'web_rtc_provider/call_screen_provider.dart';
 
 final firebaseAuthProvider =
@@ -64,9 +64,8 @@ final userPageViewModelProvider =
   // log('userPageViewModelProvider - functions=$functions');
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
-  if (user is AsyncLoading) return null;
-  return UserPageViewModel(
-      functions: functions, user: user.asData!.value);
+  if (user is AsyncLoading || user is AsyncError) return null;
+  return UserPageViewModel(user: user.asData!.value);
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
@@ -131,19 +130,14 @@ final callScreenProvider =
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
 final myUserPageViewModelProvider = Provider((ref) {
-  // log('myUserPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
-  // log('myUserPageViewModelProvider - functions=$functions');
   final database = ref.watch(databaseProvider);
-  // log('myUserPageViewModelProvider - database=$database');
   final uid = ref.watch(myUIDProvider)!;
-  // log('myUserPageViewModelProvider - uid=$uid');
   final user = ref.watch(userProvider(uid));
   if (user is AsyncError || user is AsyncLoading) {
     return null;
   }
 
-  // log('myUserPageViewModelProvider - user=$user');
   final userChanger = ref.watch(userChangerProvider);
   if (userChanger == null) return null;
 
@@ -152,8 +146,6 @@ final myUserPageViewModelProvider = Provider((ref) {
   }
 
   final accountService = ref.watch(accountServiceProvider);
-
-  // log('myUserPageViewModelProvider - 2');
 
   return MyUserPageViewModel(
     database: database,

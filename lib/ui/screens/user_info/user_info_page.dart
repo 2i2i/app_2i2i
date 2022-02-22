@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
-import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/wait_page.dart';
@@ -31,14 +31,17 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
-    if (haveToWait(userPageBViewModel) || userPageBViewModel == null) {
+    // final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
+    final userPageBDataViewModel = ref.watch(userProvider(widget.B));
+    if (haveToWait(userPageBDataViewModel) || userPageBDataViewModel == null) {
       return WaitPage();
     }
 
+    final userPageBViewModel = userPageBDataViewModel.value;
+
     final A = ref.watch(myUIDProvider);
     bool amBlocked =
-        A == null || userPageBViewModel.user.blocked.contains(A);
+        A == null || userPageBViewModel!.blocked.contains(A);
 
     UserModel? userA;
     if (A is String) {
@@ -50,7 +53,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     if (userA is UserModel && userA.friends.contains(widget.B))
       isFriend = true;
 
-    final UserModel userB = userPageBViewModel.user;
+    final UserModel userB = userPageBViewModel!;
 
     final bidInsAsyncValue = ref.watch(bidInsPublicProvider(widget.B));
     if (haveToWait(bidInsAsyncValue)) return WaitPage();

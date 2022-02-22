@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/screens/web_rtc/utils/websocket_web.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -14,13 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import "package:universal_html/html.dart" as html;
-
-// DEBUG
-// import 'package:cloud_functions/cloud_functions.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG3
-
 
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/routes/named_routes.dart';
@@ -91,8 +82,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
@@ -138,10 +128,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           }
         });
       }
-
-      if (Platform.isAndroid) {
-        Custom.deepLinks(context, mounted);
-      }
+      await Custom.deepLinks(context, mounted);
     });
   }
 

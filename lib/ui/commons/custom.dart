@@ -1,3 +1,4 @@
+import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,8 @@ class Custom {
     Pattern pattern = r'[0-9][A-Z]\w+';
     RegExp regex = new RegExp(pattern.toString());
     if (value.isNotEmpty && regex.hasMatch(value)) {
-      return regex.firstMatch(value)?.group(0) ?? "";
+      print(regex.firstMatch(value)?.group(0));
+      return "88NxG5Op6tTBbH3qw8BGPDxjdgR2";
     }
     return "";
   }
@@ -43,7 +45,8 @@ class Custom {
           if (uri != null && uri.toString().isNotEmpty) {
             if (!mounted) return;
             mainUrl = uri.toString();
-            navigatePage(mainUrl, context);
+            navigate.value = mainUrl;
+            // navigatePage(mainUrl, context);
             mainUrl = '';
           }
         }
@@ -52,7 +55,8 @@ class Custom {
           if (!mounted) return;
           if (uri.toString().isNotEmpty) {
             mainUrl = uri.toString();
-            navigatePage(mainUrl, context);
+            navigate.value = mainUrl;
+            // navigatePage(mainUrl, context);
           }
         });
       } catch (e) {
@@ -66,6 +70,7 @@ class Custom {
     if (userId.isNotEmpty) {
       Future.delayed(Duration(seconds: 1)).then((value) {
         try {
+          print(context);
           context.pushNamed(Routes.user.nameFromPath(), params: {
             'uid': userId,
           });

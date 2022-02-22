@@ -9,10 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../commons/custom.dart';
-import '../../commons/custom_dialogs.dart';
 
 ValueNotifier<int> currentIndex = ValueNotifier(0);
 String previousRoute = '';
+ValueNotifier<String> navigate = ValueNotifier("");
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -22,17 +22,44 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
+
+
+
+
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      // if (Platform.isIOS) {
-      //   await Custom.deepLinks(context, mounted);
-      // }
+    // WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    //   if (Platform.isIOS) {
+    //     await Custom.deepLinks(context, mounted);
+    //   }
+    // });`
+    navigate.addListener(() {
+      if (navigate.value.isNotEmpty) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) async {
+          if (mounted) {
+            Future.delayed(Duration(seconds: 1))
+                .then((value) => navigatePage(navigate.value, context));
+          }
+        });
+      }
     });
+    super.initState();
   }
 
-
+  static navigatePage(String mainUrl, BuildContext context) {
+    String userId = Custom.validateValueData(mainUrl);
+    if (userId.isNotEmpty) {
+      try {
+        context.go(Routes.root);
+        context.goNamed(Routes.user.nameFromPath(), params: {
+          'uid': userId,
+        });
+        navigate.value = '';
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

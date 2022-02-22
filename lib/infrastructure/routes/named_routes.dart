@@ -10,27 +10,28 @@ import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
-import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
-import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
+import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../ui/commons/custom.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -376,8 +377,7 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(
-            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        ref.watch(lockedUserViewModelProvider);
         if (kIsWeb &&
             defaultTargetPlatform != TargetPlatform.iOS &&
             defaultTargetPlatform != TargetPlatform.android) {
