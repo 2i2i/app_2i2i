@@ -9,11 +9,7 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:async';
-import 'dart:io';
-
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/screens/web_rtc/utils/websocket_web.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +19,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import "package:universal_html/html.dart" as html;
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';

@@ -1,10 +1,7 @@
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:uni_links/uni_links.dart';
 
-import '../../infrastructure/routes/app_routes.dart';
 ValueNotifier<String> userIdNav = ValueNotifier("");
 class Custom {
   static getBoxDecoration(BuildContext context,
@@ -25,7 +22,7 @@ class Custom {
   static Future<void> deepLinks(BuildContext context, bool mounted) async {
     if (!kIsWeb) {
       try {
-        String mainUrl = '';
+        // String mainUrl = '';
 
         bool _initialUriIsHandled = false;
         if (!_initialUriIsHandled) {
@@ -61,18 +58,18 @@ class Custom {
     }
   }
 
-  static void navigatePage(String userId, BuildContext context) {
-    return;
-    if (userId.isNotEmpty) {
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        try {
-          context.pushNamed(Routes.user.nameFromPath(), params: {
-            'uid': userId,
-          });
-        } catch (e) {
-          print(e);
-        }
-      });
-    }
-  }
+  // static void navigatePage(String userId, BuildContext context) {
+  //   return;
+  //   if (userId.isNotEmpty) {
+  //     Future.delayed(Duration(seconds: 1)).then((value) {
+  //       try {
+  //         context.pushNamed(Routes.user.nameFromPath(), params: {
+  //           'uid': userId,
+  //         });
+  //       } catch (e) {
+  //         print(e);
+  //       }
+  //     });
+  //   }
+  // }
 }
