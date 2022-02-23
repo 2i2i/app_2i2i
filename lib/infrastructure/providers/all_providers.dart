@@ -25,7 +25,6 @@ import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
 import 'ringing_provider/ringing_page_view_model.dart';
 import 'setup_user_provider/setup_user_view_model.dart';
-import 'web_rtc_provider/call_screen_provider.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -124,9 +123,6 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   return AppSettingModel(storage: storage);
 });
-
-final callScreenProvider =
-    ChangeNotifierProvider<CallScreenModel>((ref) => CallScreenModel());
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
