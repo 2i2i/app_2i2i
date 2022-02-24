@@ -1,8 +1,11 @@
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
+import 'package:go_router/go_router.dart';
 
 bool showed = false;
 class AuthWidget extends ConsumerStatefulWidget {
@@ -14,6 +17,18 @@ class AuthWidget extends ConsumerStatefulWidget {
 }
 
 class _AuthWidgetState extends ConsumerState<AuthWidget> {
+  @override
+  void initState() {
+    userIdNav.addListener(() {
+      if(userIdNav.value.isNotEmpty){
+        context.pushNamed(Routes.user.nameFromPath(),params: {
+          'uid':userIdNav.value
+        });
+        userIdNav.value = '';
+      }
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final authStateChanges = ref.watch(authStateChangesProvider);

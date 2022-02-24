@@ -11,12 +11,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/utils/websocket_web.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:flutterfire_ui/i10n.dart';
@@ -30,7 +31,12 @@ import 'ui/screens/localization/app_localization.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG
+// DEBUG3
+
+import 'infrastructure/providers/all_providers.dart';
+import 'infrastructure/routes/named_routes.dart';
+import 'ui/commons/custom.dart';
+import 'ui/screens/localization/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,16 +121,16 @@ class _MainWidgetState extends ConsumerState<MainWidget>
             //check after for 2 sec that is it still in background
             Future.delayed(Duration(seconds: 2)).then((value) async {
               if (html.document.visibilityState != 'visible') {
-                print('======\n\n\n\n background \n\n\n\n=====');
                 await updateHeartbeat(Status.IDLE);
               }
             });
           } else {
-            print('======\n\n\n\n Foreground \n\n\n\n=====');
             updateHeartbeat(Status.ONLINE);
           }
         });
       }
+
+      await Custom.deepLinks(context, mounted);
     });
   }
 

@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
   final AutovalidateMode? autovalidateMode;
+  final FocusNode? focusNode;
   final FormFieldValidator<String>? validator;
   const CustomTextField(
       {Key? key,
@@ -19,7 +20,7 @@ class CustomTextField extends StatelessWidget {
       this.suffixIcon,
       this.autovalidateMode,
       this.controller,
-      this.onChanged})
+      this.onChanged, this.focusNode})
       : super(key: key);
 
   @override
@@ -33,6 +34,7 @@ class CustomTextField extends StatelessWidget {
         ),
         SizedBox(height: 4),
         TextFormField(
+          focusNode: focusNode,
           controller: controller,
           autovalidateMode: autovalidateMode,
           validator: validator,

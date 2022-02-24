@@ -5,7 +5,9 @@ import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
 ValueNotifier<int> currentIndex = ValueNotifier(0);
+String previousRoute = '';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
+
 
 
   @override
