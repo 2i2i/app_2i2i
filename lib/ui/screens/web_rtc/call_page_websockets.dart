@@ -329,11 +329,16 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   Widget build(BuildContext context) {
     _initTimers();
 
-    // callScreenModel = ref.watch(callScreenProvider);
+    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
     final user = ref.watch(userProvider(localId));
-    if (haveToWait(user)) {
+    if (haveToWait(user) || lockedUserViewModel == null) {
       return Center(child: CircularProgressIndicator());
     }
+    final List<MeetingStatusWithTS> meetingStatus = lockedUserViewModel.meeting.statusHistory;
+    print('\n\n$meetingStatus\n\n');
+    bool isActive = meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) && meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
+
+
 
     return Scaffold(
       key: _scaffoldKey,
@@ -545,6 +550,22 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
+              Visibility(
+                  visible: !isActive,
+                  child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Text('Connecting...',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              ?.copyWith(color: Colors.white)),
+                    ),
+                  ),
+              )
             ],
           ),
         );
