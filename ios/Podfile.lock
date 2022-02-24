@@ -647,7 +647,7 @@ SPEC CHECKSUMS:
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
+  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
   WebRTC-SDK: 166b0e161d93d4b961f410bf7966a634f42aa17d
 
 PODFILE CHECKSUM: 0e3152a64d59767a6af2f5be3ba4a4e4bdab1d1d
