@@ -388,7 +388,7 @@ class RatingModel {
       throw StateError('missing data for id: $documentId');
     }
 
-    final double rating = data['rating'];
+    final double rating = double.parse(data['rating'].toString());
     final String? comment = data['comment'];
 
     return RatingModel(

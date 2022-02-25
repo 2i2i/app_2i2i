@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.i2i2.test">
+    package="app.i2i2">
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -10,16 +10,27 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+
     <application
         android:label="2i2i"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="true" />
@@ -33,7 +44,6 @@
                     android:pathPrefix="/"
                     android:scheme="https" />
             </intent-filter>
-
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -54,6 +64,10 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
 
 
         </activity>
@@ -62,5 +76,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <service
+            android:name="me.carda.awesome_notifications.services.ForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="phoneCall"
+            android:stopWithTask="true" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
     </application>
 </manifest>

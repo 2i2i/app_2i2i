@@ -2,10 +2,11 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';

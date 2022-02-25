@@ -1,18 +1,22 @@
 import 'dart:async';
+import 'dart:core';
+
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
+import '../../../main.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
@@ -57,6 +61,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
 
     _connect();
+
+
   }
 
   initRenderers() async {
@@ -69,7 +75,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _localRenderer.srcObject!
           .getTracks()
           .forEach((element) async => await element.stop());
-      await _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject!.dispose();
       _localRenderer.srcObject = null;
     }
     _localRenderer.dispose();
@@ -78,12 +84,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _remoteRenderer.srcObject!
           .getTracks()
           .forEach((element) async => await element.stop());
-      await _remoteRenderer.srcObject!.dispose();
+       _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
     _remoteRenderer.dispose();
 
-    setState(() {});
+    if (mounted) setState(() {});
 
     _signaling?.close();
     budgetTimer?.cancel();
@@ -329,11 +335,15 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   Widget build(BuildContext context) {
     _initTimers();
 
-    // callScreenModel = ref.watch(callScreenProvider);
+    final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
     final user = ref.watch(userProvider(localId));
-    if (haveToWait(user)) {
+    if (haveToWait(user) || lockedUserViewModel == null) {
       return Center(child: CircularProgressIndicator());
     }
+    final List<MeetingStatusWithTS> meetingStatus = lockedUserViewModel.meeting.statusHistory;
+    bool isActive = meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) && meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
+
+
 
     return Scaffold(
       key: _scaffoldKey,
@@ -545,6 +555,22 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
+              Visibility(
+                  visible: !isActive,
+                  child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Text('Connecting...',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              ?.copyWith(color: Colors.white)),
+                    ),
+                  ),
+              )
             ],
           ),
         );

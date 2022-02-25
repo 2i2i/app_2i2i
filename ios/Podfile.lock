@@ -340,6 +340,8 @@ PODS:
     - abseil/meta/type_traits
   - audio_session (0.0.1):
     - Flutter
+  - awesome_notifications (0.0.3):
+    - Flutter
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -370,7 +372,7 @@ PODS:
   - Firebase/Messaging (8.11.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 8.11.0)
-  - firebase_auth (3.3.6):
+  - firebase_auth (3.3.7):
     - Firebase/Auth (= 8.11.0)
     - firebase_core
     - Flutter
@@ -494,6 +496,8 @@ PODS:
     - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
+  - permission_handler_apple (9.0.2):
+    - Flutter
   - PromisesObjC (2.0.0)
   - Sentry (7.9.0):
     - Sentry/Core (= 7.9.0)
@@ -515,6 +519,7 @@ PODS:
 
 DEPENDENCIES:
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
+  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -527,6 +532,7 @@ DEPENDENCIES:
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -561,6 +567,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
+  awesome_notifications:
+    :path: ".symlinks/plugins/awesome_notifications/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   cloud_functions:
@@ -585,6 +593,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   sentry_flutter:
     :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
@@ -599,12 +609,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
+  awesome_notifications: 04530aafec8dac4635244ed4b4072f4aea6cc938
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   cloud_firestore: 8bd22e19f6ccf3a0d1976ea298e0ce37c9ad5839
   cloud_functions: c024d02ed3046e5ee7f8cd03e6c306c56044678c
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Firebase: 44dd9724c84df18b486639e874f31436eaa9a20c
-  firebase_auth: ccdb84a0d52a2d7897898ae8121689da6e13d71f
+  firebase_auth: 20bf788012988ef04ce608fada5b8d8cd1069302
   firebase_core: 443bccfd6aa6b42f07be365b500773dc69db2d87
   firebase_messaging: 8dc3a6f069774a0bf4dac04dd79fdaffcb62e145
   FirebaseAuth: d96d73aba85d192d7a7aa0b86dd6d7f8ec170b4b
@@ -629,15 +640,16 @@ SPEC CHECKSUMS:
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
+  permission_handler_apple: d21b38e1a4b2e041c63af9568f9165e114e507a6
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Sentry: 2f7e91f247cfb05b05bd01e0b5d0692557a7687b
   sentry_flutter: 7c3cb050dc23563a4ea5db438c83afdb460a2ae6
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
+  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
   WebRTC-SDK: 166b0e161d93d4b961f410bf7966a634f42aa17d
 
-PODFILE CHECKSUM: 7c02a0060431ce3326601ebad0a062fbdb4b7f69
+PODFILE CHECKSUM: 0e3152a64d59767a6af2f5be3ba4a4e4bdab1d1d
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2

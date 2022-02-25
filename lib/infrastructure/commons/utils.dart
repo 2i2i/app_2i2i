@@ -120,7 +120,20 @@ num getMaxDuration({required num budget, required num speed}) {
   }
   return (budget / speed).floor();
 }
+extension NoRoundingDecimal on double {
+  String toDecimalAsFixed(int toDecimal) {
+    var right;
+    try {
+      right = this.toString().split(".")[1].padRight(toDecimal, "0").substring(0, toDecimal);
+    } catch (e) {
+      right = "00";
+    }
+    var left = this.toString().split(".")[0];
 
+    double number = double.parse(left + "." + right);
+    return number.toStringAsFixed(toDecimal);
+  }
+}
 String getDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
