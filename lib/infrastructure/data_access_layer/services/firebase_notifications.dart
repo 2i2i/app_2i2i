@@ -1,11 +1,13 @@
 import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
+import '../../../main.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -18,14 +20,15 @@ class FirebaseNotifications {
   void firebaseCloudMessagingListeners() {
     FirebaseMessaging.instance.requestPermission(sound: true, badge: true, alert: true);
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("Handling a onMessage message: ${message.messageId}");
-
     });
   }
 
   Future<void> awesomeNotificationSetup() async {
-    FirebaseMessaging.instance.getToken().then((value) => print(value));
+    FirebaseMessaging.instance
+        .getToken()
+        .then((value) => print("\n\nMobile Token ======= $value \n\n"));
     await Firebase.initializeApp();
     await AwesomeNotifications().initialize(
       null,
@@ -121,7 +124,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     imageUrl = data['imageUrl'];
   }
   if (type == 'Call') {
-    AwesomeNotifications().createNotification(
+    if (Platform.isIOS) {
+      await platform.invokeMethod('notification');
+    } else {
+      AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 10,
           channelKey: 'call_channel',
@@ -138,12 +144,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         ),
         actionButtons: [
           NotificationActionButton(
-              key: 'view',
-              label: 'View',
-              color: Colors.green,
-              autoDismissible: true,
+            key: 'view',
+            label: 'View',
+            color: Colors.green,
+            autoDismissible: true,
           ),
         ],
-    );
+      );
+    }
   }
 }
