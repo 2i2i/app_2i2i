@@ -414,11 +414,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                             child: SliderTheme(
                               data: SliderTheme.of(context).copyWith(
                                 activeTrackColor: Theme.of(context).cardColor,
-                                inactiveTrackColor:
-                                    Theme.of(context).disabledColor,
+                                inactiveTrackColor: Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
                                   mainContext: context,
                                   thumbRadius: 15,
+                                  min: 0,
+                                  max: (_importanceSliderMaxHalf * 2).toInt(),
                                 ),
                               ),
                               child: _importanceSliderValue == null
@@ -428,18 +429,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                       max: _importanceSliderMaxHalf * 2.0,
                                       value: _importanceSliderValue!,
                                       onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue =
-                                              (_importanceSliderValue! -
-                                                              _importanceSliderMaxHalf)
-                                                          .abs() *
-                                                      (_importanceSliderMaxHalf *
-                                                              2.0 -
-                                                          2.0) /
-                                                      _importanceSliderMaxHalf +
-                                                  2.0;
-                                        });
+                                        print('value $value');
+                                        _importanceSliderValue = value;
+                                        var a = (_importanceSliderValue! - _importanceSliderMaxHalf).abs();
+                                        var b = _importanceSliderMaxHalf * 2.0 - 2.0;
+                                        var c = _importanceSliderMaxHalf + 2.0;
+                                        _importanceRatioValue = a * b / c;
+                                        setState(() {});
                                       },
                                     ),
                             ),
