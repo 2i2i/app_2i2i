@@ -421,7 +421,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             Expanded(
               child: ElevatedButton(
                 onPressed: isInsufficient() ? null : () => onAddBid(),
-                child: Text(getConfirmSliderText()),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(isInsufficient()
+                      ? Theme.of(context).errorColor
+                      : Theme.of(context).colorScheme.secondary),
+                ),
+                child: Text(getConfirmSliderText(),style: TextStyle(
+                  color: isInsufficient()?Theme.of(context).primaryColorDark:Theme.of(context).primaryColor
+                )),
               ),
             ),
             ValueListenableBuilder(
@@ -547,7 +554,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / 1000000).toString()} A';
+    var amountStr = '${(amount.num / 1000000).toDecimalAsFixed(3)} A';
     if (isInsufficient()) {
       var val = int.tryParse(speedController.text)??0;
       bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
