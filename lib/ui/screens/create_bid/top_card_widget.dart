@@ -60,12 +60,14 @@ class CustomSliderThumbRect extends SliderComponentShape {
   final BuildContext mainContext;
   int? min;
   int? max;
+  final bool showValue;
 
   CustomSliderThumbRect({
     required this.mainContext,
     this.thumbRadius,
     this.min,
     this.max,
+    this.showValue = true,
   });
 
   @override
@@ -102,7 +104,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
 
     TextSpan span = new TextSpan(
         style: Theme.of(mainContext).textTheme.subtitle1,
-        text: '${getValue(value!)}s');
+        text: showValue ? '${getValue(value!)}s' : '');
 
     TextPainter tp = new TextPainter(
         text: span,

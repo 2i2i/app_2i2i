@@ -419,6 +419,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                 thumbShape: CustomSliderThumbRect(
                                   mainContext: context,
                                   thumbRadius: 15,
+                                  showValue: false,
                                 ),
                               ),
                               child: _importanceSliderValue == null
