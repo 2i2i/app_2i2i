@@ -90,7 +90,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 // suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
-                value = value.trim();
+                value = value.trim().toLowerCase();
                 ref.watch(searchFilterProvider.state).state =
                     value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },

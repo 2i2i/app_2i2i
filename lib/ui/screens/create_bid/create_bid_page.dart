@@ -554,7 +554,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / 1000000).toDecimalAsFixed(3)} A';
+    var amountStr = '${(amount.num / 1000000).toString()} A';
     if (isInsufficient()) {
       var val = int.tryParse(speedController.text)??0;
       bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
