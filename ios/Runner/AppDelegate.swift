@@ -17,7 +17,8 @@ import CallKit
                                                        binaryMessenger: controller.binaryMessenger)
         notificationChannel?.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            self.createNotification()
+            let args = call.arguments as? Dictionary<String, Any>
+            self.createNotification(value: args?["name"] as! String)
         })
         
         GeneratedPluginRegistrant.register(with: self)
@@ -29,9 +30,8 @@ import CallKit
         super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
     }
     
-    func createNotification() {
-        let config = CXProviderConfiguration(localizedName: "My App")
-        config.ringtoneSound = "ringtone.caf"
+    func createNotification(value: String) {
+        let config = CXProviderConfiguration(localizedName: "2i2i")
         if #available(iOS 11.0, *) {
             config.includesCallsInRecents = false
         } else {
@@ -45,7 +45,7 @@ import CallKit
         let provider = CXProvider(configuration: config)
         provider.setDelegate(self, queue: nil)
         let update = CXCallUpdate()
-        update.remoteHandle = CXHandle(type: .generic, value: "Pete Za")
+        update.remoteHandle = CXHandle(type: .generic, value: value)
         update.hasVideo = true
         update.supportsGrouping = false
         update.supportsUngrouping = false

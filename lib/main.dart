@@ -134,24 +134,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
 
       await Custom.deepLinks(context, mounted);
 
-      platform.setMethodCallHandler((MethodCall methodCall) async {
-        ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
-        if (ringingPageViewModel == null) {
-          return;
-        }
-        switch (methodCall.method) {
-          case 'CUT':
-            ringingPageViewModel!.endMeeting(MeetingStatus.END_A);
-            break;
-          case 'ANSWER':
-            ringingPageViewModel!.acceptMeeting();
-            break;
-          case 'MUTE':
-            break;
-          default:
-            throw MissingPluginException('notImplemented');
-        }
-      });
+
     });
   }
 

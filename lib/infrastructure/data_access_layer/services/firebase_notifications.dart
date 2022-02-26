@@ -125,7 +125,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
   if (type == 'Call') {
     if (Platform.isIOS) {
-      await platform.invokeMethod('notification');
+      await platform.invokeMethod('notification', {'name': data['title']});
     } else {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
