@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -13,6 +14,7 @@ import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
+import '../../../main.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../home/wait_page.dart';
 import 'ripples_animation.dart';
@@ -37,6 +39,26 @@ class RingingPageState extends ConsumerState<RingingPage> {
   @override
   void initState() {
     super.initState();
+
+    platform.setMethodCallHandler((MethodCall methodCall) async {
+
+      if (ringingPageViewModel == null) {
+        return;
+      }
+      switch (methodCall.method) {
+        case 'CUT':
+          ringingPageViewModel!.endMeeting(MeetingStatus.END_A);
+          break;
+        case 'ANSWER':
+          ringingPageViewModel!.acceptMeeting();
+          break;
+        case 'MUTE':
+          break;
+        default:
+          throw MissingPluginException('notImplemented');
+      }
+    });
+
     start();
   }
 

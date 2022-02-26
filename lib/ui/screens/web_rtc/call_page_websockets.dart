@@ -12,11 +12,8 @@ import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
-import '../../../main.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
@@ -54,13 +51,17 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   initState() {
     super.initState();
-    initRenderers();
+    WidgetsBinding.instance?.addPostFrameCallback((_){
+      initRenderers();
 
-    amA = widget.meeting.A == widget.user.id;
-    localId = amA ? widget.meeting.A : widget.meeting.B;
-    remoteId = amA ? widget.meeting.B : widget.meeting.A;
+      amA = widget.meeting.A == widget.user.id;
+      localId = amA ? widget.meeting.A : widget.meeting.B;
+      remoteId = amA ? widget.meeting.B : widget.meeting.A;
 
-    _connect();
+      _connect();
+
+    });
+
 
 
   }
@@ -499,59 +500,62 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                      color: Colors.white38,
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleButton(
-                          icon: Icons.call_end,
-                          iconColor: Colors.white,
-                          backgroundColor: AppTheme().red,
-                          onTap: () {
-                            // if (budgetTimer?.isActive ?? false) {
-                            //   budgetTimer?.cancel();
-                            // }
-                            final reason =
-                                amA ? MeetingStatus.END_A : MeetingStatus.END_B;
-                            // await signaling?.hangUp(reason: reason);
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                        color: Colors.white38,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleButton(
+                            icon: Icons.call_end,
+                            iconColor: Colors.white,
+                            backgroundColor: AppTheme().red,
+                            onTap: () {
+                              // if (budgetTimer?.isActive ?? false) {
+                              //   budgetTimer?.cancel();
+                              // }
+                              final reason =
+                                  amA ? MeetingStatus.END_A : MeetingStatus.END_B;
+                              // await signaling?.hangUp(reason: reason);
 
-                            // await disposeInit();
+                              // await disposeInit();
 
-                            _hangUp(reason);
-                          }),
-                      CircleButton(
-                        // icon: callScreenModel?.isAudioEnabled ?? false
-                        icon: isAudioEnabled
-                            ? Icons.mic_rounded
-                            : Icons.mic_off_rounded,
-                        onTap: _muteAudio,
-                        // () => callScreenModel!.muteAudio(
-                        //     signaling: signaling!,
-                        //     localRenderer: _localRenderer)),
-                      ),
-                      // CircleButton(
-                      //     icon: callScreenModel?.isVideoEnabled ?? false
-                      //         ? Icons.videocam_rounded
-                      //         : Icons.videocam_off_rounded,
-                      //     onTap: _muteVideo,
-                      // // () => callScreenModel!
-                      // //     .muteVideo(signaling: signaling!)),
-                      // ),
-                      // CircleButton(
-                      //     icon: Icons.cameraswitch_rounded,
-                      //     onTap: _switchCamera,
-                      //     // () => callScreenModel!.cameraSwitch(
-                      //     //     context: context, signaling: signaling!)),
-                      // ),
-                    ],
+                              _hangUp(reason);
+                            }),
+                        CircleButton(
+                          // icon: callScreenModel?.isAudioEnabled ?? false
+                          icon: isAudioEnabled
+                              ? Icons.mic_rounded
+                              : Icons.mic_off_rounded,
+                          onTap: _muteAudio,
+                          // () => callScreenModel!.muteAudio(
+                          //     signaling: signaling!,
+                          //     localRenderer: _localRenderer)),
+                        ),
+                        // CircleButton(
+                        //     icon: callScreenModel?.isVideoEnabled ?? false
+                        //         ? Icons.videocam_rounded
+                        //         : Icons.videocam_off_rounded,
+                        //     onTap: _muteVideo,
+                        // // () => callScreenModel!
+                        // //     .muteVideo(signaling: signaling!)),
+                        // ),
+                        // CircleButton(
+                        //     icon: Icons.cameraswitch_rounded,
+                        //     onTap: _switchCamera,
+                        //     // () => callScreenModel!.cameraSwitch(
+                        //     //     context: context, signaling: signaling!)),
+                        // ),
+                      ],
+                    ),
                   ),
                 ),
               ),
