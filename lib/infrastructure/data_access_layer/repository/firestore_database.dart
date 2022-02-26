@@ -28,13 +28,12 @@ class FirestoreDatabase {
 
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
-      
       // create meeting
       final meetingDocRef = _service.firestore
           .collection(FirestorePath.meetings())
           .doc(meeting.id);
       transaction.set(meetingDocRef, meeting.toMap());
-      
+
       // lock users
       final lockObj = {'meeting': meeting.id};
       final userADocRef = _service.firestore.doc(FirestorePath.user(meeting.A));
@@ -45,10 +44,10 @@ class FirestoreDatabase {
       // deactivate bids
       final bidOutRef =
           _service.firestore.doc(FirestorePath.bidOut(meeting.A, meeting.id));
-      final bidInPublicRef =
-          _service.firestore.doc(FirestorePath.bidInPublic(meeting.B, meeting.id));
-      final bidInPrivateRef =
-          _service.firestore.doc(FirestorePath.bidInPrivate(meeting.B, meeting.id));
+      final bidInPublicRef = _service.firestore
+          .doc(FirestorePath.bidInPublic(meeting.B, meeting.id));
+      final bidInPrivateRef = _service.firestore
+          .doc(FirestorePath.bidInPrivate(meeting.B, meeting.id));
       final bidObj = {'active': false};
       transaction.update(bidOutRef, bidObj);
       transaction.update(bidInPublicRef, bidObj);
@@ -60,13 +59,12 @@ class FirestoreDatabase {
 
   Future addBid(BidOut bidOut, BidIn bidIn) async {
     return _service.runTransaction((transaction) {
-
-      final bidOutRef =
-          _service.firestore.doc(FirestorePath.bidOut(bidIn.private!.A, bidOut.id));
-      final bidInPublicRef =
-          _service.firestore.doc(FirestorePath.bidInPublic(bidOut.B, bidOut.id));
-      final bidInPrivateRef =
-          _service.firestore.doc(FirestorePath.bidInPrivate(bidOut.B, bidOut.id));
+      final bidOutRef = _service.firestore
+          .doc(FirestorePath.bidOut(bidIn.private!.A, bidOut.id));
+      final bidInPublicRef = _service.firestore
+          .doc(FirestorePath.bidInPublic(bidOut.B, bidOut.id));
+      final bidInPrivateRef = _service.firestore
+          .doc(FirestorePath.bidInPrivate(bidOut.B, bidOut.id));
 
       transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
       transaction.set(
@@ -81,13 +79,12 @@ class FirestoreDatabase {
   Future cancelBid(
       {required String A, required String B, required String bidId}) async {
     return _service.runTransaction((transaction) {
-      final bidOutRef =
-          _service.firestore.doc(FirestorePath.bidOut(A, bidId));
+      final bidOutRef = _service.firestore.doc(FirestorePath.bidOut(A, bidId));
       final bidInPublicRef =
           _service.firestore.doc(FirestorePath.bidInPublic(B, bidId));
       final bidInPrivateRef =
           _service.firestore.doc(FirestorePath.bidInPrivate(B, bidId));
-      
+
       final obj = {'active': false};
 
       transaction.update(bidOutRef, obj);
@@ -140,10 +137,8 @@ class FirestoreDatabase {
   Future meetingEndUnlockUser(
       Meeting meeting, Map<String, dynamic> data) async {
     return _service.runTransaction((transaction) {
-      final userARef =
-          _service.firestore.doc(FirestorePath.user(meeting.A));
-      final userBRef =
-          _service.firestore.doc(FirestorePath.user(meeting.B));
+      final userARef = _service.firestore.doc(FirestorePath.user(meeting.A));
+      final userBRef = _service.firestore.doc(FirestorePath.user(meeting.B));
       final meetingRef =
           _service.firestore.doc(FirestorePath.meeting(meeting.id));
 
@@ -212,7 +207,8 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<UserModel> userStream({required String uid}) => _service.documentStream(
+  Stream<UserModel> userStream({required String uid}) =>
+      _service.documentStream(
         path: FirestorePath.user(uid),
         builder: (data, documentId) {
           data ??= {};
@@ -220,14 +216,15 @@ class FirestoreDatabase {
         },
       );
 
-
   Future<Map?> getTokenFromId(String uid) async {
-    DocumentSnapshot snapshot = await _service.getData(path:FirestorePath.token(uid));
-    if(snapshot.data() is Map) {
+    DocumentSnapshot snapshot =
+        await _service.getData(path: FirestorePath.token(uid));
+    if (snapshot.data() is Map) {
       Map data = snapshot.data() as Map;
       print('\n\n${data['token']}\n\n');
       return data;
     }
+    return null;
   }
 
   Future<void> updateUser(UserModel user) => _service.setData(

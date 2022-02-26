@@ -321,7 +321,7 @@ class NamedRoutes {
           leading: Container(),
           toolbarHeight: 20,
           title: Text(AlgorandNet.testnet.name +
-              ' - v16' +
+              ' - v17' +
               (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
