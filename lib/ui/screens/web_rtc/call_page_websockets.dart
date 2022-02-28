@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -106,7 +107,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     widget.onHangPhone(remoteId, widget.meeting.id);
 
-    await platform.invokeMethod('CUT_CALL');
+    if (Platform.isIOS) {
+      await platform.invokeMethod('CUT_CALL');
+    }
   }
 
   @override

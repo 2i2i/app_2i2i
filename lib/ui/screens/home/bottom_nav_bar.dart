@@ -21,14 +21,6 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
-  void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      CustomDialogs.showToastMessage(context, "Main Screen");
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: isUserLocked,
