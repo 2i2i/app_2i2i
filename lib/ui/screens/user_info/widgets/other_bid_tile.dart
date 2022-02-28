@@ -5,21 +5,22 @@ import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/models/bid_model.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 
 class OtherBidTile extends ConsumerWidget {
   final BidInPublic bidIn;
-  final UserModel user;
 
-  const OtherBidTile({Key? key, required this.bidIn, required this.user})
+  const OtherBidTile({Key? key, required this.bidIn})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(myUIDProvider);
     int duration = bidIn.speed.num == 0
         ? bidIn.rule.maxMeetingDuration
         : (bidIn.energy / bidIn.speed.num).round();
 
-    return Card(
+    Widget userItem = Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -39,21 +40,21 @@ class OtherBidTile extends ConsumerWidget {
                     text: ' μAlgo/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
-                        ),
-                  )
-                ],
-                style: Theme.of(context).textTheme.headline6?.copyWith(
                       color: Theme.of(context)
                           .textTheme
                           .headline6
                           ?.color
                           ?.withOpacity(0.7),
                     ),
+                  )
+                ],
+                style: Theme.of(context).textTheme.headline6?.copyWith(
+                  color: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      ?.color
+                      ?.withOpacity(0.7),
+                ),
               ),
             ),
             subtitle: Padding(
@@ -74,6 +75,30 @@ class OtherBidTile extends ConsumerWidget {
             ),
             trailing: Icon(Icons.call_made_rounded, color: AppTheme().red),
           )),
+    );
+    return userItem;
+
+  }
+
+  Widget coverWidget(Widget child, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          border: Border.all(color: Theme.of(context).colorScheme.secondary),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Text(
+              'Your Bid',
+              style: Theme.of(context).textTheme.caption,
+              textAlign: TextAlign.end,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

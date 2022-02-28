@@ -41,280 +41,10 @@ class CallPageWebsockets extends ConsumerStatefulWidget {
 
 class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   SignalingWebSockets? _signaling;
-  // List<dynamic> _peers = [];
   String? _selfId;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-  // bool _inCalling = false;
   Session? _session;
-
-  // ignore: unused_element
-  _CallPageWebsocketsState();
-
-  @override
-  initState() {
-    super.initState();
-    initRenderers();
-
-    amA = widget.meeting.A == widget.user.id;
-    localId = amA ? widget.meeting.A : widget.meeting.B;
-    remoteId = amA ? widget.meeting.B : widget.meeting.A;
-
-    _connect();
-
-
-  }
-
-  initRenderers() async {
-    await _localRenderer.initialize();
-    await _remoteRenderer.initialize();
-  }
-
-  Future outnit({MeetingStatus? endReason}) async {
-    if (_localRenderer.srcObject != null) {
-      _localRenderer.srcObject!
-          .getTracks()
-          .forEach((element) async => await element.stop());
-      _localRenderer.srcObject!.dispose();
-      _localRenderer.srcObject = null;
-    }
-    _localRenderer.dispose();
-
-    if (_remoteRenderer.srcObject != null) {
-      _remoteRenderer.srcObject!
-          .getTracks()
-          .forEach((element) async => await element.stop());
-       _remoteRenderer.srcObject!.dispose();
-      _remoteRenderer.srcObject = null;
-    }
-    _remoteRenderer.dispose();
-
-    if (mounted) setState(() {});
-
-    _signaling?.close();
-    budgetTimer?.cancel();
-    progressTimer?.cancel();
-
-    // _inCalling = false;
-    _session = null;
-
-    if (endReason is MeetingStatus)
-      await widget.meetingChanger.endMeeting(widget.meeting, endReason);
-
-    widget.onHangPhone(remoteId, widget.meeting.id);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    outnit();
-    super.dispose();
-  }
-
-  @override
-  deactivate() {
-    outnit();
-    super.deactivate();
-    // _signaling?.close();
-    // _localRenderer.dispose();
-    // _remoteRenderer.dispose();
-
-    // budgetTimer?.cancel();
-    // progressTimer?.cancel();
-    // widget.onHangPhone(remoteId, widget.meeting.id);
-  }
-
-  void _connect() {
-    _signaling ??= SignalingWebSockets(widget.host, localId)..connect();
-    _signaling?.onSignalingStateChange = (SignalingState state) {
-      log(K + '_signaling?.onSignalingStateChange - state=$state');
-      switch (state) {
-        case SignalingState.ConnectionClosed:
-        case SignalingState.ConnectionError:
-        case SignalingState.ConnectionOpen:
-          break;
-      }
-    };
-
-    _signaling?.onCallStateChange = (Session session, CallState state) {
-      log(K + '_signaling?.onCallStateChange - state=$state');
-      switch (state) {
-        case CallState.CallStateNew:
-          setState(() {
-            _session = session;
-            // _inCalling = true;
-          });
-
-          log(K +
-              '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
-          if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
-            return widget.meetingChanger.roomCreatedMeeting(
-                widget.meeting.id, _session!.sid + '-' + _session!.pid);
-
-          break;
-        case CallState.CallStateBye:
-          // return outnit();
-          setState(() => outnit());
-          // setState(() {
-          //   _localRenderer.srcObject = null;
-          //   _remoteRenderer.srcObject = null;
-          //   // _inCalling = false;
-          //   _session = null;
-          // });
-          break;
-        case CallState.CallStateInvite:
-        case CallState.CallStateConnected:
-        case CallState.CallStateRinging:
-      }
-    };
-
-    _signaling?.onPeersUpdate = ((event) {
-      log(K + '_signaling?.onPeersUpdate - event[self]=${event['self']}');
-      log(K + '_signaling?.onPeersUpdate - event[peers]=${event['peers']}');
-      setState(() {
-        _selfId = event['self'];
-        // _peers = event['peers'];
-      });
-
-      if (amA) _invitePeer(remoteId, false);
-    });
-
-    _signaling?.onLocalStream = ((stream) {
-      log(K + '_signaling?.onLocalStream - stream=$stream');
-      _localRenderer.srcObject = stream;
-    });
-
-    _signaling?.onAddRemoteStream = ((_, stream) {
-      log(K +
-          '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
-      _remoteRenderer.srcObject = stream;
-
-      if (amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
-        return widget.meetingChanger
-            .remoteReceivedByAMeeting(widget.meeting.id);
-      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
-        return widget.meetingChanger
-            .remoteReceivedByBMeeting(widget.meeting.id);
-    });
-
-    _signaling?.onRemoveRemoteStream = ((_, stream) {
-      log(K + '_signaling?.onRemoveRemoteStream - stream=$stream');
-      _remoteRenderer.srcObject = null;
-    });
-  }
-
-  // _invitePeer(BuildContext context, String peerId, bool useScreen) async {
-  _invitePeer(String peerId, bool useScreen) {
-    if (_signaling != null && peerId != _selfId) {
-      _signaling?.invite(peerId, 'video', useScreen);
-    }
-  }
-
-  _hangUp(MeetingStatus reason) async {
-    // if (budgetTimer?.isActive ?? false) {
-    //   budgetTimer?.cancel();
-    // }
-
-    if (_session != null) {
-      _signaling?.bye(_session!.sid);
-    }
-
-    return outnit(endReason: reason);
-  }
-
-  // _switchCamera() {
-  //   _signaling?.switchCamera();
-  // }
-
-  _muteAudio() {
-    _signaling?.muteAudio();
-    setState(() {
-      isAudioEnabled = !isAudioEnabled;
-    });
-  }
-
-  // _muteVideo() {
-  //   _signaling?.muteVideo();
-  // }
-
-  // _buildRow(context, peer) {
-  //   var self = (peer['id'] == _selfId);
-  //   return ListBody(children: <Widget>[
-  //     ListTile(
-  //       title: Text(self
-  //           ? peer['name'] + ', ID: ${peer['id']} ' + ' [Your self]'
-  //           : peer['name'] + ', ID: ${peer['id']} '),
-  //       onTap: null,
-  //       trailing: SizedBox(
-  //           width: 100.0,
-  //           child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: <Widget>[
-  //                 IconButton(
-  //                   icon: Icon(self ? Icons.close : Icons.videocam,
-  //                       color: self ? Colors.grey : Colors.black),
-  //                   onPressed: () => _invitePeer(context, peer['id'], false),
-  //                   tooltip: 'Video calling',
-  //                 ),
-  //                 IconButton(
-  //                   icon: Icon(self ? Icons.close : Icons.screen_share,
-  //                       color: self ? Colors.grey : Colors.black),
-  //                   onPressed: () => _invitePeer(context, peer['id'], true),
-  //                   tooltip: 'Screen sharing',
-  //                 )
-  //               ])),
-  //       subtitle: Text('[' + peer['user_agent'] + ']'),
-  //     ),
-  //     Divider()
-  //   ]);
-  // }
-
-  Future<void> _initTimers() async {
-    // no timer for free call
-    if (widget.meeting.start == null) return;
-    if (budgetTimer?.isActive ?? false) return;
-
-    final maxDuration = widget.meeting.maxDuration();
-    // log(X + 'maxDuration=$maxDuration');
-    final duration = getDurationLeft(maxDuration);
-    // log(X + 'duration=$duration');
-    budgetTimer = Timer(Duration(seconds: duration), () {
-      // log(X + 'budgetTimer');
-      progressTimer?.cancel();
-      _hangUp(MeetingStatus.END_TIMER);
-      // signaling?.hangUp(reason: MeetingStatus.END_TIMER);
-    });
-
-    progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      double percentage = (timer.tick * 100) / maxDuration;
-      progress.value = 100 - percentage;
-      if (timer.tick >= maxDuration) progressTimer?.cancel();
-      showCountDown(duration);
-    });
-  }
-
-  int getDurationLeft(int maxDuration) {
-    final DateTime maxEndTime =
-        widget.meeting.start!.add(Duration(seconds: maxDuration));
-    final durationObj = maxEndTime.difference(DateTime.now().toUtc());
-    return durationObj.inSeconds;
-  }
-
-  void showCountDown(int duration) {
-    if (countDownTimerDate != null) {
-      return;
-    }
-    final maxDuration = widget.meeting.maxDuration();
-    final duration = getDurationLeft(maxDuration);
-    log(' ====== $duration');
-    if (duration <= 100) {
-      countDownTimerDate =
-          DateTime.now().toUtc().add(Duration(seconds: duration));
-      if (mounted) {
-        setState(() {});
-      }
-    }
-  }
 
   late bool amA;
   late String localId;
@@ -322,7 +52,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   Timer? budgetTimer;
   Timer? progressTimer;
-  // CallScreenModel? callScreenModel;
 
   ValueNotifier<double> progress = ValueNotifier(100);
   DateTime? countDownTimerDate;
@@ -330,6 +59,18 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool isAudioEnabled = true;
+
+  _CallPageWebsocketsState();
+
+  @override
+  initState() {
+    super.initState();
+    initRenderers();
+    amA = widget.meeting.A == widget.user.id;
+    localId = amA ? widget.meeting.A : widget.meeting.B;
+    remoteId = amA ? widget.meeting.B : widget.meeting.A;
+    _connect();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -486,7 +227,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                       child: Center(
                         child: AnimateCountdownText(
                           dateTime:
-                              countDownTimerDate ?? DateTime.now().toUtc(),
+                          countDownTimerDate ?? DateTime.now().toUtc(),
                           format: _formatHMS,
                           animationType: AnimationType.scaleIn,
                           characterTextStyle: Theme.of(context)
@@ -520,7 +261,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                             //   budgetTimer?.cancel();
                             // }
                             final reason =
-                                amA ? MeetingStatus.END_A : MeetingStatus.END_B;
+                            amA ? MeetingStatus.END_A : MeetingStatus.END_B;
                             // await signaling?.hangUp(reason: reason);
 
                             // await disposeInit();
@@ -556,20 +297,20 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                 ),
               ),
               Visibility(
-                  visible: !isActive,
-                  child: Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: Text('Connecting...',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(color: Colors.white)),
-                    ),
+                visible: !isActive,
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text('Connecting...',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            ?.copyWith(color: Colors.white)),
                   ),
+                ),
               )
             ],
           ),
@@ -654,9 +395,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   Widget videoView(
       {required double height,
-      required double width,
-      required RTCVideoRenderer renderer,
-      bool mirror = false}) {
+        required double width,
+        required RTCVideoRenderer renderer,
+        bool mirror = false}) {
     return Container(
       width: width,
       height: height,
@@ -667,7 +408,204 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     );
   }
 
+  Future initRenderers() async {
+    await _localRenderer.initialize();
+    await _remoteRenderer.initialize();
+  }
+
+  Future outInit({MeetingStatus? endReason}) async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+      _localRenderer.srcObject!.dispose();
+      _localRenderer.srcObject = null;
+    }
+    _localRenderer.dispose();
+
+    if (_remoteRenderer.srcObject != null) {
+      _remoteRenderer.srcObject!
+          .getTracks()
+          .forEach((element) async => await element.stop());
+       _remoteRenderer.srcObject!.dispose();
+      _remoteRenderer.srcObject = null;
+    }
+    _remoteRenderer.dispose();
+
+    if (mounted) setState(() {});
+
+    _signaling?.close();
+    budgetTimer?.cancel();
+    progressTimer?.cancel();
+
+    // _inCalling = false;
+    _session = null;
+
+    if (endReason is MeetingStatus)
+      await widget.meetingChanger.endMeeting(widget.meeting, endReason);
+
+    widget.onHangPhone(remoteId, widget.meeting.id);
+  }
+
+  void _connect() {
+    _signaling ??= SignalingWebSockets(widget.host, localId)..connect();
+    _signaling?.onSignalingStateChange = (SignalingState state) {
+      log(K + '_signaling?.onSignalingStateChange - state=$state');
+      switch (state) {
+        case SignalingState.ConnectionClosed:
+        case SignalingState.ConnectionError:
+        case SignalingState.ConnectionOpen:
+          break;
+      }
+    };
+
+    _signaling?.onCallStateChange = (Session session, CallState state) {
+      log(K + '_signaling?.onCallStateChange - state=$state');
+      switch (state) {
+        case CallState.CallStateNew:
+          setState(() {
+            _session = session;
+          });
+
+          log(K +
+              '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
+          if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
+            return widget.meetingChanger.roomCreatedMeeting(
+                widget.meeting.id, _session!.sid + '-' + _session!.pid);
+
+          break;
+        case CallState.CallStateBye:
+          setState(() => outInit());
+          break;
+        case CallState.CallStateInvite:
+        case CallState.CallStateConnected:
+        case CallState.CallStateRinging:
+      }
+    };
+
+    _signaling?.onPeersUpdate = ((event) {
+      log(K + '_signaling?.onPeersUpdate - event[self]=${event['self']}');
+      log(K + '_signaling?.onPeersUpdate - event[peers]=${event['peers']}');
+      setState(() {
+        _selfId = event['self'];
+      });
+
+      if (amA) _invitePeer(remoteId, false);
+    });
+
+    _signaling?.onLocalStream = ((stream) {
+      log(K + '_signaling?.onLocalStream - stream=$stream');
+      _localRenderer.srcObject = stream;
+    });
+
+    _signaling?.onAddRemoteStream = ((_, stream) {
+      log(K +
+          '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
+      _remoteRenderer.srcObject = stream;
+
+      if (amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
+        return widget.meetingChanger
+            .remoteReceivedByAMeeting(widget.meeting.id);
+      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
+        return widget.meetingChanger
+            .remoteReceivedByBMeeting(widget.meeting.id);
+    });
+
+    _signaling?.onRemoveRemoteStream = ((_, stream) {
+      log(K + '_signaling?.onRemoveRemoteStream - stream=$stream');
+      _remoteRenderer.srcObject = null;
+    });
+  }
+
+  _invitePeer(String peerId, bool useScreen) {
+    if (_signaling != null && peerId != _selfId) {
+      _signaling?.invite(peerId, 'video', useScreen);
+    }
+  }
+
+  _hangUp(MeetingStatus reason) async {
+    // if (budgetTimer?.isActive ?? false) {
+    //   budgetTimer?.cancel();
+    // }
+
+    if (_session != null) {
+      _signaling?.bye(_session!.sid);
+    }
+
+    return outInit(endReason: reason);
+  }
+
+  _switchCamera() {
+    _signaling?.switchCamera();
+  }
+
+  _muteAudio() {
+    _signaling?.muteAudio();
+    setState(() {
+      isAudioEnabled = !isAudioEnabled;
+    });
+  }
+
+  Future<void> _initTimers() async {
+    // no timer for free call
+    if (widget.meeting.start == null) return;
+    if (budgetTimer?.isActive ?? false) return;
+
+    final maxDuration = widget.meeting.maxDuration();
+    // log(X + 'maxDuration=$maxDuration');
+    final duration = getDurationLeft(maxDuration);
+    // log(X + 'duration=$duration');
+    budgetTimer = Timer(Duration(seconds: duration), () {
+      // log(X + 'budgetTimer');
+      progressTimer?.cancel();
+      _hangUp(MeetingStatus.END_TIMER);
+      // signaling?.hangUp(reason: MeetingStatus.END_TIMER);
+    });
+
+    progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      double percentage = (timer.tick * 100) / maxDuration;
+      progress.value = 100 - percentage;
+      if (timer.tick >= maxDuration) progressTimer?.cancel();
+      showCountDown(duration);
+    });
+  }
+
+  int getDurationLeft(int maxDuration) {
+    final DateTime maxEndTime =
+        widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final durationObj = maxEndTime.difference(DateTime.now().toUtc());
+    return durationObj.inSeconds;
+  }
+
+  void showCountDown(int duration) {
+    if (countDownTimerDate != null) {
+      return;
+    }
+    final maxDuration = widget.meeting.maxDuration();
+    final duration = getDurationLeft(maxDuration);
+    log(' ====== $duration');
+    if (duration <= 100) {
+      countDownTimerDate =
+          DateTime.now().toUtc().add(Duration(seconds: duration));
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
   DurationFormat _formatHMS(Duration duration) => DurationFormat(
         second: "${duration.inSeconds}",
       );
+
+  @override
+  void dispose() {
+    outInit();
+    super.dispose();
+  }
+
+  @override
+  deactivate() {
+    outInit();
+    super.deactivate();
+  }
 }

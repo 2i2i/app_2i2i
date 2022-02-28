@@ -22,7 +22,6 @@ class OtherBidInList extends ConsumerWidget {
       itemBuilder: (_, ix) {
         return OtherBidTile(
           bidIn: bidIns[ix],
-          user: user,
         );
       },
     );
