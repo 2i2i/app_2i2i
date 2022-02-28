@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
+import '../../../main.dart';
+
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
@@ -103,6 +105,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
     widget.onHangPhone(remoteId, widget.meeting.id);
+
+    await platform.invokeMethod('CUT_CALL');
   }
 
   @override
@@ -210,6 +214,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _signaling?.invite(peerId, 'video', useScreen);
     }
   }
+
 
   _hangUp(MeetingStatus reason) async {
     // if (budgetTimer?.isActive ?? false) {
@@ -500,6 +505,22 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
+              Visibility(
+                visible: !isActive,
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text('Connecting...',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            ?.copyWith(color: Colors.white)),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Align(
@@ -559,22 +580,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
-              Visibility(
-                  visible: !isActive,
-                  child: Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: Text('Connecting...',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(color: Colors.white)),
-                    ),
-                  ),
-              )
+
             ],
           ),
         );
