@@ -38,7 +38,7 @@ class zh {
       Keys.fav: '收藏夹',
       Keys.scanQr: '扫描 QR',
       Keys.about: '关于',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: '利用 WalletConnect\n(例如 Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: '行',

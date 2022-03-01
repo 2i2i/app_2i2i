@@ -38,7 +38,7 @@ class ja {
       Keys.fav: 'お気に入り',
       Keys.scanQr: 'QRをスキャン',
       Keys.about: 'だいたい',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: '使用する WalletConnect\n(e.g. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'わかった',
