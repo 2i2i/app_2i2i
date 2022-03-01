@@ -20,7 +20,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import "package:universal_html/html.dart" as html;
+import 'package:universal_html/html.dart';
 
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
@@ -86,6 +86,12 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   void initState() {
     super.initState();
+
+    if (kIsWeb) {
+      window.addEventListener('focus', onFocus);
+      window.addEventListener('blur', onBlur);
+    }
+
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
@@ -117,20 +123,20 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           NamedRoutes.updateAvailable = true;
         }
       });
-      if (kIsWeb) {
-        html.document.addEventListener('visibilitychange', (event) {
-          if (html.document.visibilityState != 'visible') {
-            //check after for 2 sec that is it still in background
-            Future.delayed(Duration(seconds: 2)).then((value) async {
-              if (html.document.visibilityState != 'visible') {
-                await updateHeartbeat(Status.IDLE);
-              }
-            });
-          } else {
-            updateHeartbeat(Status.ONLINE);
-          }
-        });
-      }
+      // if (kIsWeb) {
+      //   html.document.addEventListener('visibilitychange', (event) {
+      //     if (html.document.visibilityState != 'visible') {
+      //       //check after for 2 sec that is it still in background
+      //       Future.delayed(Duration(seconds: 2)).then((value) async {
+      //         if (html.document.visibilityState != 'visible') {
+      //           await updateHeartbeat(Status.IDLE);
+      //         }
+      //       });
+      //     } else {
+      //       updateHeartbeat(Status.ONLINE);
+      //     }
+      //   });
+      // }
 
       await Custom.deepLinks(context, mounted);
 
@@ -153,6 +159,14 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         }
       });
     });
+  }
+
+  void onFocus(Event e) {
+    didChangeAppLifecycleState(AppLifecycleState.resumed);
+  }
+
+  void onBlur(Event e) {
+    didChangeAppLifecycleState(AppLifecycleState.paused);
   }
 
   Future<void> updateHeartbeat(Status status) async {

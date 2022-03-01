@@ -12,11 +12,8 @@ import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
-import '../../../main.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
@@ -421,7 +418,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _localRenderer.srcObject!.dispose();
       _localRenderer.srcObject = null;
     }
-    _localRenderer.dispose();
+    await _localRenderer.dispose();
 
     if (_remoteRenderer.srcObject != null) {
       _remoteRenderer.srcObject!
@@ -430,11 +427,11 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
        _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
-    _remoteRenderer.dispose();
+    await _remoteRenderer.dispose();
 
     if (mounted) setState(() {});
 
-    _signaling?.close();
+    await _signaling?.close();
     budgetTimer?.cancel();
     progressTimer?.cancel();
 
@@ -475,7 +472,10 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          setState(() => outInit());
+          outInit();
+          if (this.mounted) {
+            setState(() {});
+          }
           break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
