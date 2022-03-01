@@ -38,7 +38,7 @@ class es {
       Keys.fav: 'Favoritos',
       Keys.scanQr: 'Escanear QR',
       Keys.about: 'Sobre',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: 'Usar WalletConnect\n(e.g. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
