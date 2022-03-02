@@ -7,6 +7,10 @@ import CallKit
     
     var notificationChannel: FlutterMethodChannel? = nil
     
+    
+    var provider: CXProvider? = nil
+    var uuid = UUID()
+    
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -14,11 +18,18 @@ import CallKit
         
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
-                                                       binaryMessenger: controller.binaryMessenger)
+                                                   binaryMessenger: controller.binaryMessenger)
         notificationChannel?.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            let args = call.arguments as? Dictionary<String, Any>
-            self.createNotification(value: args?["name"] as! String)
+            
+            if(call.method == "INCOMING_CALL"){
+                let args = call.arguments as? Dictionary<String, Any>
+                self.createNotification(value: args?["name"] as! String)
+            }else if(call.method == "CUT_CALL"){
+                self.provider?.reportCall(with: self.uuid, endedAt: Date(), reason: .remoteEnded)
+            }
+            
+            
         })
         
         GeneratedPluginRegistrant.register(with: self)
@@ -42,8 +53,8 @@ import CallKit
         config.maximumCallsPerCallGroup = 1
         
         
-        let provider = CXProvider(configuration: config)
-        provider.setDelegate(self, queue: nil)
+        provider = CXProvider(configuration: config)
+        provider?.setDelegate(self, queue: nil)
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .generic, value: value)
         update.hasVideo = true
@@ -52,7 +63,8 @@ import CallKit
         update.supportsHolding = false
         update.supportsDTMF = false
         
-        provider.reportNewIncomingCall(with: UUID(), update: update, completion: { error in })
+        provider?.reportNewIncomingCall(with: uuid, update: update, completion: { error in })
+        
         
     }
     
