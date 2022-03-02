@@ -159,6 +159,10 @@ class es {
       Keys.topSpeeds: 'Velocidades máximas',
       Keys.topDurations: 'Duraciones principales',
       Keys.language: 'Idioma de la aplicación',
+      Keys.inviteFriend: 'Comparta el enlace de su perfil con\nsu amigo e invítelo a unirse a 2i2i',
+      Keys.joinInvite: 'Tu amigo e invita a unirte a 2i2i.',
+      Keys.joinOtherRoom: 'Ve y únete a las habitaciones de algunas personas',
+      Keys.beFirstJoin: 'Sé el primero en unirse a esta habitación.',
     };
   }
 }

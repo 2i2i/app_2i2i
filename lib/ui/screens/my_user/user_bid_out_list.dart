@@ -29,10 +29,8 @@ class UserBidOut extends ConsumerWidget {
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
-      body: ListView.builder(
+      body:bidOutList.isNotEmpty? ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        //primary: false,
-        //physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: bidOutList.length,
         itemBuilder: (_, ix) {
@@ -47,6 +45,15 @@ class UserBidOut extends ConsumerWidget {
             },
           );
         },
+      ):Center(
+        child: Text(
+            Keys.joinOtherRoom.tr(context),
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1?.copyWith(
+              color: Theme.of(context).disabledColor
+            )),
       ),
     );
   }

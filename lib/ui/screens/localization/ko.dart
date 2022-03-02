@@ -161,6 +161,10 @@ class ko {
       Keys.topSpeeds: '최고 속도',
       Keys.topDurations: '최고 기간',
       Keys.language: '앱 언어',
+      Keys.inviteFriend: '프로필 링크를 친구에게\n공유하고 2i2i 가입 초대',
+      Keys.joinInvite: '2i2i 가입을 위한 친구 및 초대',
+      Keys.joinOtherRoom: '가서 몇몇 사람들의 방에 참여하기',
+      Keys.beFirstJoin: '이 방에 가장 먼저 참여하세요',
     };
   }
 }

@@ -159,6 +159,10 @@ class ar {
       Keys.topSpeeds: "أعلى السرعات",
       Keys.topDurations: "المدد الأعلى",
       Keys.language: "لغة التطبيق",
+      Keys.inviteFriend: 'شارك رابط ملفك الشخصي مع n\ صديقك وادعُه للانضمام 2i2i',
+      Keys.joinInvite: 'صديقك ودعوتك للانضمام 2i2i',
+      Keys.joinOtherRoom: 'اذهب وانضم إلى غرف بعض الناس',
+      Keys.beFirstJoin: 'كن أول من ينضم إلى هذه الغرفة',
     };
   }
 }

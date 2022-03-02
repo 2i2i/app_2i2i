@@ -159,6 +159,10 @@ class ja {
       Keys.topSpeeds: 'トップスピード',
       Keys.topDurations: 'トップ期間',
       Keys.language: 'アプリの言語',
+      Keys.inviteFriend: 'プロフィールリンクを\n友達と共有し、2i2iに招待します',
+      Keys.joinInvite: 'あなたの友人と2i2iに参加するための招待',
+      Keys.joinOtherRoom: '行って、何人かの人の部屋に参加する',
+      Keys.beFirstJoin: 'この部屋に最初に参加する',
     };
   }
 }

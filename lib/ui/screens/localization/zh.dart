@@ -159,6 +159,10 @@ class zh {
       Keys.topSpeeds: '最高速度',
       Keys.topDurations: '热门持续时间',
       Keys.language: '应用语言',
+      Keys.inviteFriend: '将您的个人资料链接分享给\n您的朋友并邀请加入 2i2i',
+      Keys.joinInvite: '您的朋友和邀请加入 2i2i',
+      Keys.joinOtherRoom: '去加入一些人的房间',
+      Keys.beFirstJoin: '成为第一个加入此房间的人',
     };
   }
 }

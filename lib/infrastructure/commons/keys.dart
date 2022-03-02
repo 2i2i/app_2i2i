@@ -172,6 +172,10 @@ class Keys {
   static const String topSpeeds = 'Top Speeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
+  static const String inviteFriend = 'inviteFriend';
+  static const String joinInvite = 'joinInvite';
+  static const String joinOtherRoom = 'joinOtherRoom';
+  static const String beFirstJoin = 'beFirstJoin';
 }
 
 extension CustomTranslation on String {
