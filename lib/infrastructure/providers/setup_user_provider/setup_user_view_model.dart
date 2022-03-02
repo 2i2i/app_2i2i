@@ -95,7 +95,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    final account = await LocalAccount.create(
+    LocalAccount account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);
@@ -105,8 +105,9 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
-    await giftALGO({'account': account});
+    final HttpsCallable giftALGO =
+        FirebaseFunctions.instance.httpsCallable('giftALGO');
+    await giftALGO({'account': account.address});
     return account.updateBalances();
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
