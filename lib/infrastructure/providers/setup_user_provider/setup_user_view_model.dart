@@ -95,7 +95,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    LocalAccount account = await LocalAccount.create(
+    final LocalAccount account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);
