@@ -115,6 +115,8 @@ class ja {
       Keys.bidIn: '入札する',
       Keys.bidOut: '待っている',
       Keys.noBidFound: '入札が見つかりません',
+      Keys.noMeetingsFound: '会議が見つかりません',
+      Keys.roomIsEmpty: 'あなたの部屋は空です',
       Keys.meetingsHistory: '会議の履歴',
       Keys.history: '歴史',
       Keys.friendList: '友達リスト',
@@ -159,9 +161,9 @@ class ja {
       Keys.topSpeeds: 'トップスピード',
       Keys.topDurations: 'トップ期間',
       Keys.language: 'アプリの言語',
-      Keys.inviteFriend: 'プロフィールリンクを\n友達と共有し、2i2iに招待します',
-      Keys.joinInvite: 'あなたの友人と2i2iに参加するための招待',
-      Keys.joinOtherRoom: '行って、何人かの人の部屋に参加する',
+      Keys.inviteFriend: 'プロフィールリンクをフォロワーと共有して、ここでフォロワーに会いましょう',
+      Keys.joinInvite: '2i2iで私と一緒にたむろ',
+      Keys.joinOtherRoom: '一部の人の部屋に参加してください',
       Keys.beFirstJoin: 'この部屋に最初に参加する',
     };
   }

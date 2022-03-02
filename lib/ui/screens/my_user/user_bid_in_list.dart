@@ -44,7 +44,7 @@ class UserBidInsList extends ConsumerWidget {
           onTap: () async {
             bool camera = true;
             bool microphone = true;
-            if(!kIsWeb){
+            if (!kIsWeb) {
               camera = await Permission.camera.request().isGranted;
               microphone = await Permission.microphone.request().isGranted;
             }
@@ -59,19 +59,18 @@ class UserBidInsList extends ConsumerWidget {
                 bool isIos = false;
                 try {
                   final database = ref.watch(databaseProvider);
-                  Map map  = await database.getTokenFromId(bidIn.user!.id)??{};
+                  Map map = await database.getTokenFromId(bidIn.user!.id) ?? {};
                   token = map['token'];
-                  isIos = map['isIos']??false;
+                  isIos = map['isIos'] ?? false;
                 } catch (e) {
                   print(e);
                 }
 
-                final acceptedBid =
-                await myHangoutPageViewModel.acceptBid(bidIn, token: token,isIos: isIos);
+                final acceptedBid = await myHangoutPageViewModel
+                    .acceptBid(bidIn, token: token, isIos: isIos);
                 if (acceptedBid) break;
               }
             }
-
           },
           child: Container(
             width: kToolbarHeight * 1.15,
@@ -119,7 +118,7 @@ class UserBidInsList extends ConsumerWidget {
                 );
               },
             )
-          : NoBidPage(noBidsText: Keys.noBidFound.tr(context)),
+          : NoBidPage(noBidsText: Keys.roomIsEmpty.tr(context)),
     );
   }
 

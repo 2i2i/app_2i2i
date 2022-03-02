@@ -16,6 +16,8 @@ class Keys {
   static const String asGuest = 'As Guest';
   static const String asHost = 'As Host';
   static const String noBidFound = 'noBidFound';
+  static const String noMeetingsFound = 'noMeetingsFound';
+  static const String roomIsEmpty = 'roomIsEmpty';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';

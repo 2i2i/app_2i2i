@@ -115,6 +115,8 @@ class de {
       Keys.bidIn: 'Mitbieten',
       Keys.bidOut: 'Warten',
       Keys.noBidFound: 'Keine Gebote gefunden',
+      Keys.noMeetingsFound: 'Keine Besprechungen gefunden',
+      Keys.roomIsEmpty: 'Dein Zimmer ist leer',
       Keys.meetingsHistory: 'Besprechungsverlauf',
       Keys.history: 'Geschichte',
       Keys.friendList: 'Freundesliste',
@@ -159,9 +161,9 @@ class de {
       Keys.topSpeeds: 'Höchstgeschwindigkeiten',
       Keys.topDurations: 'Top-Dauern',
       Keys.language: 'App-Sprache',
-      Keys.inviteFriend: 'Teilen Sie Ihren Profillink mit \nIhrem Freund und laden Sie ihn ein, 2i2i beizutreten',
-      Keys.joinInvite: 'Dein Freund und Einladung zum Beitritt zu 2i2i',
-      Keys.joinOtherRoom: 'Gehen Sie und treten Sie den Räumen einiger Leute bei',
+      Keys.inviteFriend: 'Teilen Sie Ihren Profillink mit Ihren Followern, um sie hier zu treffen',
+      Keys.joinInvite: 'Hang out with me on 2i2i',
+      Keys.joinOtherRoom: 'Bitte treten Sie den Räumen einiger Leute bei',
       Keys.beFirstJoin: 'Seien Sie der Erste, der diesem Raum beitritt',
     };
   }
