@@ -7,6 +7,7 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -33,11 +34,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
+    await FirebaseAppCheck.instance.activate();
+  }else{
+    await FirebaseAppCheck.instance.activate(
+      webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze'
+    );
   }
-  // await FirebaseAppCheck.instance.activate(
-  //   webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze',
-  // );
-  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
@@ -135,6 +139,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           }
         });
       }
+
+      FirebaseAppCheck.instance.onTokenChange.listen((token) {
+        print(token);
+      });
     });
   }
 
