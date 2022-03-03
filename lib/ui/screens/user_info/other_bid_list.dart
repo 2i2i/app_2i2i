@@ -1,6 +1,8 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import 'widgets/other_bid_tile.dart';
 
@@ -15,10 +17,18 @@ class OtherBidInList extends ConsumerWidget {
   }
 
   Widget _bidsListView(WidgetRef ref, BuildContext context) {
-    if (bidIns.isEmpty) return Container();
+    if (bidIns.isEmpty)
+      return Center(
+        child: Text(Keys.beFirstJoin.tr(context),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.subtitle1?.copyWith(
+              color: Theme.of(context).disabledColor
+            )),
+      );
     return ListView.builder(
       itemCount: bidIns.length,
-      padding: const EdgeInsets.only(top: 10,left: 10,right: 10,bottom: kToolbarHeight),
+      padding: const EdgeInsets.only(
+          top: 10, left: 10, right: 10, bottom: kToolbarHeight),
       itemBuilder: (_, ix) {
         return OtherBidTile(
           bidIn: bidIns[ix],
