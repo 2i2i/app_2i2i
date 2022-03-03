@@ -1,4 +1,4 @@
-package com.app.i2i2
+package app.i2i2
 
 import android.os.Bundle
 import com.google.firebase.FirebaseApp

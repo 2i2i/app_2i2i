@@ -8,7 +8,5 @@
 	<array>
 		<string>applinks:test.2i2i.app</string>
 	</array>
-	<key>com.apple.developer.devicecheck.appattest-environment</key>
-	<string>production</string>
 </dict>
 </plist>

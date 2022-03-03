@@ -22,7 +22,7 @@
         android:label="2i2i"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.app.i2i2.MainActivity"
+            android:name=".MainActivity"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
             android:launchMode="singleTop"

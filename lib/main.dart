@@ -49,14 +49,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
-  }
-  await FirebaseAppCheck.instance.activate(
-      webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze'
+    await FirebaseAppCheck.instance.activate(
+        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze'
     );
 
-  String? token = await FirebaseAppCheck.instance.getToken(true);
-  print(token);
-  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+    String? token = await FirebaseAppCheck.instance.getToken();
+    print('\n token----> $token \n');
+    await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+  }
+
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 

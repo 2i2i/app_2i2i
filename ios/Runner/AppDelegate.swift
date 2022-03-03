@@ -1,6 +1,5 @@
 import UIKit
 import Flutter
-import Firebase
 import CallKit
 
 @UIApplicationMain
@@ -12,9 +11,7 @@ import CallKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        let providerFactory = AppCheckDebugProviderFactory()
-        AppCheck.setAppCheckProviderFactory(providerFactory)
-        
+
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
                                                    binaryMessenger: controller.binaryMessenger)
