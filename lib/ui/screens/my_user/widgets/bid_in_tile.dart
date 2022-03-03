@@ -148,7 +148,7 @@ class BidInTile extends StatelessWidget {
                     text: bidIn.public.speed.num.toString(),
                     children: [
                       TextSpan(
-                        text: ' μAlgo/s',
+                        text: '\nμAlgo/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
                               color: Theme.of(context)
