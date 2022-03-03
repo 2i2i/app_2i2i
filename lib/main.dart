@@ -11,13 +11,10 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -26,20 +23,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import "package:universal_html/html.dart" as html;
 
-import "package:universal_html/html.dart" as html;
-
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
-
-// DEBUG
-// import 'package:cloud_functions/cloud_functions.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG3
-
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
@@ -47,17 +35,16 @@ var platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   if (!kIsWeb) {
     await Firebase.initializeApp();
     await FirebaseAppCheck.instance.activate(
-        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze'
-    );
-
+        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
     String? token = await FirebaseAppCheck.instance.getToken();
     print('\n token----> $token \n');
-    await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
   }
 
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -65,7 +52,7 @@ Future<void> main() async {
 
   await SentryFlutter.init((options) {
     options.dsn =
-        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+    'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
   }, appRunner: () {
     FlutterSecureStorage().read(key: 'theme_mode').then((value) {
       FlutterSecureStorage().read(key: 'language').then((local) {
