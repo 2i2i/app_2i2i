@@ -54,7 +54,9 @@ Future<void> main() async {
       webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze'
     );
 
-  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+  String? token = await FirebaseAppCheck.instance.getToken(true);
+  print(token);
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
