@@ -38,7 +38,7 @@ class ar {
       Keys.fav: "المفضلة",
       Keys.scanQr: "مسح QR",
       Keys.about: 'عن',
-      Keys.aboutPageUrl: "https://shorturl.at/hilqL" ,
+      Keys.aboutPageUrl: "https://about.2i2i.app" ,
       Keys.scanInWalletConnect: "استخدام WalletConnect \ n (على سبيل المثال Algorand Wallet)" ,
       Keys.appName: "2i2i",
       Keys.ok: 'موافق',

@@ -38,7 +38,7 @@ class de {
       Keys.fav: 'Favoriten',
       Keys.scanQr: 'QR scannen',
       Keys.about: 'Etwa',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: 'WalletConnect verwenden\n(z. B. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
