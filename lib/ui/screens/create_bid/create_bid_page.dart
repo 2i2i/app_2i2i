@@ -84,9 +84,20 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   PageController controller = PageController(initialPage: 0);
 
   UserModel? userB;
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
+    focusNode.addListener(() {
+      if(!focusNode.hasFocus){
+        var val = int.tryParse(speedController.text)??0;
+        if(val < speed.num) {
+          speedController.text = speed.num.toString();
+          var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+          updateAccountBalance(myAccountPageViewModel);
+        }
+      }
+    });
     ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
@@ -327,6 +338,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                           padding: const EdgeInsets.only(
                               top: 8, left: 10, right: 10),
                           child: CustomTextField(
+                            focusNode:focusNode,
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
                             title: Keys.speed.tr(context),
@@ -377,11 +389,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             ),
                             onChanged: (String value) {
                               final num = int.tryParse(value) ?? 0;
+                              print('num $num = ${(num >= (userB?.rule.minSpeed ?? 0))}');
                               if (num >= (userB?.rule.minSpeed ?? 0)) {
-                                speed =
-                                    Quantity(num: num, assetId: speed.assetId);
-                                updateAccountBalance(myAccountPageViewModel);
+                                speed = Quantity(num: num, assetId: speed.assetId);
                               }
+                              updateAccountBalance(myAccountPageViewModel);
                             },
                             validator: (value) {
                               int num = int.tryParse(value ?? '') ?? 0;
@@ -409,7 +421,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             Expanded(
               child: ElevatedButton(
                 onPressed: isInsufficient() ? null : () => onAddBid(),
-                child: Text(getConfirmSliderText()),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(isInsufficient()
+                      ? Theme.of(context).errorColor
+                      : Theme.of(context).colorScheme.secondary),
+                ),
+                child: Text(getConfirmSliderText(),style: TextStyle(
+                  color: isInsufficient()?Theme.of(context).primaryColorDark:Theme.of(context).primaryColor
+                )),
               ),
             ),
             ValueListenableBuilder(
@@ -448,8 +467,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
-    speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
-    speedController.text = speed.num.toString();
+    var val = int.tryParse(speedController.text)??0;
+    bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
+    if(isLessVal){
+      speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
+    }else{
+      speed = Quantity(num: val, assetId: 0);
+    }
+    if(!focusNode.hasFocus) {
+      speedController.text = speed.num.toString();
+    }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       account = myAccountPageViewModel.accounts!.first;
     }
@@ -461,16 +488,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
     final availableBalance = _accountBalance - _minAccountBalance;
     maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
-    if (speed.num != 0) {
-      final availableMaxDuration = max(
-          0,
-          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
-              .floor());
+    if (val != 0) {
+      final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
     }
     maxDuration = min(maxDuration, maxMaxDuration);
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    var amountStr = '${(amount.num / 1000000).toString()} A';
+    print('ammount $amountStr');
     setState(() {});
   }
 
@@ -530,12 +556,22 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   String getConfirmSliderText() {
     var amountStr = '${(amount.num / 1000000).toString()} A';
     if (isInsufficient()) {
-      return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
+      var val = int.tryParse(speedController.text)??0;
+      bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
+      if(isLessVal){
+        return Keys.addBid.tr(context) + ' : ' + amountStr;
+      }else {
+        return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
+      }
     }
     return Keys.addBid.tr(context) + ' : ' + amountStr;
   }
 
   bool isInsufficient() {
+    var val = int.tryParse(speedController.text)??0;
+    bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
+    print('isLessVal $isLessVal');
+    if(isLessVal) return true;
     if (speed.num == 0) return false;
     if (account == null) return true;
     final minCoinsNeeded = speed.num * 10;
@@ -543,6 +579,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     final minAccountBalanceNeeded =
         _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
     if (_accountBalance < minAccountBalanceNeeded) return true;
+
     return false;
   }
 

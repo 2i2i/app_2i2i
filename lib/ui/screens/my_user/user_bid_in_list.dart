@@ -3,8 +3,11 @@
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
@@ -29,8 +32,8 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref
-        .watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+    final bidInsWithUsers =
+        ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -39,15 +42,36 @@ class UserBidInsList extends ConsumerWidget {
     return Scaffold(
       floatingActionButton: InkResponse(
         onTap: () async {
-          for (BidIn bidIn in bidIns) {
-            UserModel? user = bidIn.user;
-            if (user == null) {
-              return;
-            }
-
-            final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIn);
-            if (acceptedBid) break;
+          bool camera = true;
+          bool microphone = true;
+          if(!kIsWeb){
+            camera = await Permission.camera.request().isGranted;
+            microphone = await Permission.microphone.request().isGranted;
           }
+
+          if (camera && microphone) {
+            for (BidIn bidIn in bidIns) {
+              UserModel? user = bidIn.user;
+              if (user == null) {
+                return;
+              }
+              String? token;
+              bool isIos = false;
+              try {
+                final database = ref.watch(databaseProvider);
+                Map map  = await database.getTokenFromId(bidIn.user!.id)??{};
+                token = map['token'];
+                isIos = map['isIos']??false;
+              } catch (e) {
+                print(e);
+              }
+
+              final acceptedBid =
+              await myHangoutPageViewModel.acceptBid(bidIn, token: token,isIos: isIos);
+              if (acceptedBid) break;
+            }
+          }
+
         },
         child: Container(
           width: kToolbarHeight * 1.15,

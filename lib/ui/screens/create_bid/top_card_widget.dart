@@ -58,14 +58,16 @@ class TopCard extends StatelessWidget {
 class CustomSliderThumbRect extends SliderComponentShape {
   final double? thumbRadius;
   final BuildContext mainContext;
-  final int? min;
-  final int? max;
+  int? min;
+  int? max;
+  final bool showValue;
 
-  const CustomSliderThumbRect({
+  CustomSliderThumbRect({
     required this.mainContext,
     this.thumbRadius,
     this.min,
     this.max,
+    this.showValue = true,
   });
 
   @override
@@ -75,19 +77,19 @@ class CustomSliderThumbRect extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        Animation<double>? activationAnimation,
-        Animation<double>? enableAnimation,
-        bool? isDiscrete,
-        TextPainter? labelPainter,
-        RenderBox? parentBox,
-        SliderThemeData? sliderTheme,
-        TextDirection? textDirection,
-        double? value,
-        double? textScaleFactor,
-        Size? sizeWithOverflow,
-      }) {
+    PaintingContext context,
+    Offset center, {
+    Animation<double>? activationAnimation,
+    Animation<double>? enableAnimation,
+    bool? isDiscrete,
+    TextPainter? labelPainter,
+    RenderBox? parentBox,
+    SliderThemeData? sliderTheme,
+    TextDirection? textDirection,
+    double? value,
+    double? textScaleFactor,
+    Size? sizeWithOverflow,
+  }) {
     final Canvas canvas = context.canvas;
 
     final rRect = RRect.fromRectAndRadius(
@@ -102,7 +104,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
 
     TextSpan span = new TextSpan(
         style: Theme.of(mainContext).textTheme.subtitle1,
-        text: '${getValue(value!)}s');
+        text: showValue ? '${getValue(value!)}s' : '');
 
     TextPainter tp = new TextPainter(
         text: span,
@@ -110,12 +112,14 @@ class CustomSliderThumbRect extends SliderComponentShape {
         textDirection: TextDirection.ltr);
     tp.layout();
     Offset textCenter =
-    Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+        Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
     canvas.drawRRect(rRect, paint);
     tp.paint(canvas, textCenter);
   }
 
   String getValue(double value) {
+    min ??= 0;
+    max ??= 0;
     return (min! + (max! - min!) * value).round().toString();
   }
 }

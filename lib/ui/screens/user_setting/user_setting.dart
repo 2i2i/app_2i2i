@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
-  TextEditingController bioEditController = TextEditingController();
+  RichTextController bioTextController = RichTextController(
+    patternMatchMap: {
+      RegExp(r"(?:#)[a-zA-Z0-9]+"):
+          TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+    },
+    onMatch: (List<String> match) {},
+  );
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -42,8 +49,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   double? _importanceRatioValue;
   double? _importanceSliderValue;
 
-  RichTextController? bioTextController;
-
   @override
   void initState() {
     super.initState();
@@ -53,28 +58,44 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   }
 
   Map<Lounge, int> findImportances(double ratio, Lounge lounge) {
+    // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
     final a = ratio - 1.0;
+    // log(X + 'findImportances: a=$a');
 
     int small = 1;
     double largeDouble = a * small;
     int largeInt = largeDouble.round();
 
+    // log(X +
+    //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
     int minSmall = small;
     int minLarge = largeInt;
     double minError = (largeDouble - largeInt).abs();
+
+    // log(X +
+    //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
 
     while (small < _importanceSliderMaxHalf * 2.0) {
       small++;
       largeDouble = a * small;
       largeInt = largeDouble.round();
+      // log(X +
+      //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
       if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
       final error = (largeDouble - largeInt).abs();
+      // log(X + 'findImportances: error=$error');
       if (error < minError) {
         minSmall = small;
         minLarge = largeInt;
         minError = error;
+        // log(X +
+        //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
       }
     }
+    // log(X +
+    //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
 
     return lounge == Lounge.chrony
         ? {
@@ -114,7 +135,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     if (isLoaded) {
       UserModel user = userAsyncValue.asData!.value;
       userNameEditController.text = user.name;
-      bioEditController.text = user.bio;
+      bioTextController.text = user.bio;
 
       speedEditController.text = user.rule.minSpeed.toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
@@ -172,13 +193,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   @override
   Widget build(BuildContext context) {
-    bioTextController ??= RichTextController(
-      patternMatchMap: {
-        RegExp(r"(?:#)[a-zA-Z0-9]+"):
-            TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
-      },
-      onMatch: (List<String> match) {},
-    );
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
 
     Widget body = SingleChildScrollView(
@@ -422,6 +436,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                 thumbShape: CustomSliderThumbRect(
                                   mainContext: context,
                                   thumbRadius: 15,
+                                  showValue: false,
                                 ),
                               ),
                               child: _importanceSliderValue == null
@@ -442,6 +457,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                                           2.0) /
                                                       _importanceSliderMaxHalf +
                                                   2.0;
+                                          // log(X +
+                                          //     '_importanceSliderValue=$_importanceSliderValue');
+                                          // log(X +
+                                          //     '_importanceRatioValue=$_importanceRatioValue');
                                         });
                                       },
                                     ),
@@ -507,7 +526,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
         user.setNameOrBio(
-            name: userNameEditController.text, bio: bioEditController.text);
+            name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
             ? Lounge.chrony
@@ -524,7 +543,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user.rule = rule;
       } else {
         user!.setNameOrBio(
-            name: userNameEditController.text, bio: bioEditController.text);
+            name: userNameEditController.text, bio: bioTextController.text);
       }
       await myUserPageViewModel?.updateHangout(user);
       Navigator.of(context).maybePop();

@@ -11,26 +11,39 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import "package:universal_html/html.dart" as html;
 
+import "package:universal_html/html.dart" as html;
+
+import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
+import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
+import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
-import 'ui/screens/localization/app_localization.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG
+// DEBUG3
+
+import 'ui/commons/custom.dart';
+import 'ui/screens/localization/app_localization.dart';
+
+var platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,18 +56,9 @@ Future<void> main() async {
 
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
-  //region DEBUG
-  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-  //   return runApp(
-  //     ProviderScope(
-  //       child: MainWidget(themeMode: value ?? "AUTO"),
-  //     ),
-  //   );
-  // });
-  //endregion DEBUG
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  FirebaseNotifications();
 
   await SentryFlutter.init((options) {
     options.dsn =
@@ -88,6 +92,7 @@ class MainWidget extends ConsumerStatefulWidget {
 class _MainWidgetState extends ConsumerState<MainWidget>
     with WidgetsBindingObserver {
   Timer? timer;
+  RingingPageViewModel? ringingPageViewModel;
 
   @override
   void initState() {
@@ -129,12 +134,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
             //check after for 2 sec that is it still in background
             Future.delayed(Duration(seconds: 2)).then((value) async {
               if (html.document.visibilityState != 'visible') {
-                print('======\n\n\n\n background \n\n\n\n=====');
                 await updateHeartbeat(Status.IDLE);
               }
             });
           } else {
-            print('======\n\n\n\n Foreground \n\n\n\n=====');
             updateHeartbeat(Status.ONLINE);
           }
         });
@@ -142,6 +145,27 @@ class _MainWidgetState extends ConsumerState<MainWidget>
 
 
 
+
+      await Custom.deepLinks(context, mounted);
+
+      platform.setMethodCallHandler((MethodCall methodCall) async {
+        ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
+        if (ringingPageViewModel == null) {
+          return;
+        }
+        switch (methodCall.method) {
+          case 'CUT':
+            ringingPageViewModel!.endMeeting(MeetingStatus.END_A);
+            break;
+          case 'ANSWER':
+            ringingPageViewModel!.acceptMeeting();
+            break;
+          case 'MUTE':
+            break;
+          default:
+            throw MissingPluginException('notImplemented');
+        }
+      });
     });
   }
 
@@ -185,14 +209,19 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
+
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale("de", "AT"),
-        Locale('ar', 'AR'),
+        Locale('en', ''),
+        Locale('zh', ''),
+        Locale('es', ''),
+        Locale('ar', ''),
+        Locale("de", ''),
+        Locale("ja", ''),
+        Locale('ko', ''),
       ],
       locale: appSettingModel.locale,
       localizationsDelegates: [
