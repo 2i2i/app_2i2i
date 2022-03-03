@@ -41,6 +41,10 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
+
+      if(state.location.contains(Routes.user.nameFromPath())){
+        currentIndex.value = 0;
+      }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
       bool validForPrevious = !goingToLocked &&
