@@ -9,9 +9,10 @@ import Firebase
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-      let providerFactory = AppCheckDebugProviderFactory()
-      AppCheck.setAppCheckProviderFactory(providerFactory)
+     
     GeneratedPluginRegistrant.register(with: self)
+    let providerFactory = AppCheckDebugProviderFactory()
+    AppCheck.setAppCheckProviderFactory(providerFactory)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
