@@ -41,9 +41,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      CustomDialogs.showToastMessage(context, "Ringin Screen");
-    });
     platform.setMethodCallHandler((MethodCall methodCall) async {
 
       if (ringingPageViewModel == null) {
