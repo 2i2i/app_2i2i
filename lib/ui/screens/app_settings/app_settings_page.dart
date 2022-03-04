@@ -251,11 +251,29 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       Icons.navigate_next,
                     ),
                   ),
+                  ListTile(
+                    title: Text(
+                      Keys.appVersion.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    subtitle: Text('Update Available',style: Theme.of(context).textTheme.caption?.copyWith(
+                      color: Colors.amber
+                    )),
+                    iconColor: Colors.amber,
+                    trailing: RotatedBox(
+                      quarterTurns: 1,
+                      child: Icon(
+                        Icons.arrow_circle_left_rounded,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: 20),
-
+            Text('${Keys.appVersion.tr(context)}: v23',textAlign: TextAlign.center,style: Theme.of(context).textTheme.caption?.copyWith(
+                color: Theme.of(context).disabledColor
+            )),
             //lgout
             /*Text(
               'Logout',

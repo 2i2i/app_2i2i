@@ -165,6 +165,7 @@ class es {
       Keys.joinInvite: 'Tu amigo e invita a unirte a 2i2i',
       Keys.joinOtherRoom: 'Únase a las salas de algunas personas',
       Keys.beFirstJoin: 'Sé el primero en unirse a esta habitación.',
+      Keys.appVersion: 'Versión'
     };
   }
 }

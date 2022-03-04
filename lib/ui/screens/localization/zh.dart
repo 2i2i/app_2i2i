@@ -165,6 +165,7 @@ class zh {
       Keys.joinInvite: '在 2i2i 上和我一起出去玩',
       Keys.joinOtherRoom: '请加入一些人的房间',
       Keys.beFirstJoin: '成为第一个加入此房间的人',
+      Keys.appVersion: '版本'
     };
   }
 }

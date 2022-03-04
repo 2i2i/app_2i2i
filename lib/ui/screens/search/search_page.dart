@@ -140,6 +140,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     if (haveToWait(userListProvider)) {
       return WaitPage(isCupertino: true);
     }
+
     List<UserModel?> userList = userListProvider.value!;
     userList.removeWhere((element) => element == null);
     userList.removeWhere((element) => element?.id == mainUserID);
