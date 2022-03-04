@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
+import '../../../main.dart';
+
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
@@ -52,19 +54,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_){
+    amA = widget.meeting.A == widget.user.id;
+    localId = amA ? widget.meeting.A : widget.meeting.B;
+    remoteId = amA ? widget.meeting.B : widget.meeting.A;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       initRenderers();
-
-      amA = widget.meeting.A == widget.user.id;
-      localId = amA ? widget.meeting.A : widget.meeting.B;
-      remoteId = amA ? widget.meeting.B : widget.meeting.A;
-
       _connect();
-
     });
-
-
-
   }
 
   initRenderers() async {
