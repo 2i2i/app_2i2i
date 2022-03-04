@@ -77,7 +77,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
       final finishFuture = finish();
-      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
+      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
       await Future.wait([finishFuture, endMeetingFuture]);
     });
   }
