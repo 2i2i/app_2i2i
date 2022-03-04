@@ -10,6 +10,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -131,28 +132,9 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           }
         });
       }
-
       await Custom.deepLinks(context, mounted);
-
-      platform.setMethodCallHandler((MethodCall methodCall) async {
-        ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
-        if (ringingPageViewModel == null) {
-          return;
-        }
-        switch (methodCall.method) {
-          case 'CUT':
-            ringingPageViewModel!.endMeeting(MeetingStatus.END_A);
-            break;
-          case 'ANSWER':
-            ringingPageViewModel!.acceptMeeting();
-            break;
-          case 'MUTE':
-            break;
-          default:
-            throw MissingPluginException('notImplemented');
-        }
-      });
     });
+
   }
 
   Future<void> updateHeartbeat(Status status) async {
@@ -195,6 +177,9 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
+
+
+
 
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),

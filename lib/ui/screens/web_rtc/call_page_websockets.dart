@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -14,6 +15,8 @@ import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
+import '../../../main.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
@@ -51,15 +54,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   initState() {
     super.initState();
-    initRenderers();
-
     amA = widget.meeting.A == widget.user.id;
     localId = amA ? widget.meeting.A : widget.meeting.B;
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
-
-    _connect();
-
-
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      initRenderers();
+      _connect();
+    });
   }
 
   initRenderers() async {
@@ -99,6 +100,10 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
     widget.onHangPhone(remoteId, widget.meeting.id);
+
+    if (Platform.isIOS) {
+      await platform.invokeMethod('CUT_CALL');
+    }
   }
 
   @override
@@ -206,6 +211,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _signaling?.invite(peerId, 'video', useScreen);
     }
   }
+
 
   _hangUp(MeetingStatus reason) async {
     // if (budgetTimer?.isActive ?? false) {
@@ -496,78 +502,82 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
+              Visibility(
+                visible: !isActive,
                 child: Container(
-                  margin: EdgeInsets.all(8),
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                      color: Colors.white38,
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleButton(
-                          icon: Icons.call_end,
-                          iconColor: Colors.white,
-                          backgroundColor: AppTheme().red,
-                          onTap: () {
-                            // if (budgetTimer?.isActive ?? false) {
-                            //   budgetTimer?.cancel();
-                            // }
-                            final reason =
-                                amA ? MeetingStatus.END_A : MeetingStatus.END_B;
-                            // await signaling?.hangUp(reason: reason);
-
-                            // await disposeInit();
-
-                            _hangUp(reason);
-                          }),
-                      CircleButton(
-                        // icon: callScreenModel?.isAudioEnabled ?? false
-                        icon: isAudioEnabled
-                            ? Icons.mic_rounded
-                            : Icons.mic_off_rounded,
-                        onTap: _muteAudio,
-                        // () => callScreenModel!.muteAudio(
-                        //     signaling: signaling!,
-                        //     localRenderer: _localRenderer)),
-                      ),
-                      // CircleButton(
-                      //     icon: callScreenModel?.isVideoEnabled ?? false
-                      //         ? Icons.videocam_rounded
-                      //         : Icons.videocam_off_rounded,
-                      //     onTap: _muteVideo,
-                      // // () => callScreenModel!
-                      // //     .muteVideo(signaling: signaling!)),
-                      // ),
-                      // CircleButton(
-                      //     icon: Icons.cameraswitch_rounded,
-                      //     onTap: _switchCamera,
-                      //     // () => callScreenModel!.cameraSwitch(
-                      //     //     context: context, signaling: signaling!)),
-                      // ),
-                    ],
+                  height: double.infinity,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text('Connecting...',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            ?.copyWith(color: Colors.white)),
                   ),
                 ),
               ),
-              Visibility(
-                  visible: !isActive,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
                   child: Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: Text('Connecting...',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(color: Colors.white)),
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                        color: Colors.white38,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleButton(
+                            icon: Icons.call_end,
+                            iconColor: Colors.white,
+                            backgroundColor: AppTheme().red,
+                            onTap: () {
+                              // if (budgetTimer?.isActive ?? false) {
+                              //   budgetTimer?.cancel();
+                              // }
+                              final reason =
+                                  amA ? MeetingStatus.END_A : MeetingStatus.END_B;
+                              // await signaling?.hangUp(reason: reason);
+
+                              // await disposeInit();
+
+                              _hangUp(reason);
+                            }),
+                        CircleButton(
+                          // icon: callScreenModel?.isAudioEnabled ?? false
+                          icon: isAudioEnabled
+                              ? Icons.mic_rounded
+                              : Icons.mic_off_rounded,
+                          onTap: _muteAudio,
+                          // () => callScreenModel!.muteAudio(
+                          //     signaling: signaling!,
+                          //     localRenderer: _localRenderer)),
+                        ),
+                        // CircleButton(
+                        //     icon: callScreenModel?.isVideoEnabled ?? false
+                        //         ? Icons.videocam_rounded
+                        //         : Icons.videocam_off_rounded,
+                        //     onTap: _muteVideo,
+                        // // () => callScreenModel!
+                        // //     .muteVideo(signaling: signaling!)),
+                        // ),
+                        // CircleButton(
+                        //     icon: Icons.cameraswitch_rounded,
+                        //     onTap: _switchCamera,
+                        //     // () => callScreenModel!.cameraSwitch(
+                        //     //     context: context, signaling: signaling!)),
+                        // ),
+                      ],
                     ),
                   ),
-              )
+                ),
+              ),
+
             ],
           ),
         );

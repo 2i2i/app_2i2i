@@ -19,6 +19,8 @@ class LockedUserPage extends ConsumerStatefulWidget {
 }
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
+
+
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
