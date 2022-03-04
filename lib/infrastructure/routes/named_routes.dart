@@ -41,6 +41,9 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
+      if (state.location.contains(Routes.user.nameFromPath())) {
+        currentIndex.value = 0;
+      }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
       bool validForPrevious = !goingToLocked &&
@@ -321,7 +324,7 @@ class NamedRoutes {
           leading: Container(),
           toolbarHeight: 20,
           title: Text(AlgorandNet.testnet.name +
-              ' - v19' +
+              ' - v23' +
               (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme

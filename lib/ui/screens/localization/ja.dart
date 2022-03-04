@@ -38,7 +38,7 @@ class ja {
       Keys.fav: 'お気に入り',
       Keys.scanQr: 'QRをスキャン',
       Keys.about: 'だいたい',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: '使用する WalletConnect\n(e.g. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'わかった',
@@ -115,6 +115,8 @@ class ja {
       Keys.bidIn: '入札する',
       Keys.bidOut: '待っている',
       Keys.noBidFound: '入札が見つかりません',
+      Keys.noMeetingsFound: '会議が見つかりません',
+      Keys.roomIsEmpty: 'あなたの部屋は空です',
       Keys.meetingsHistory: '会議の履歴',
       Keys.history: '歴史',
       Keys.friendList: '友達リスト',
@@ -159,6 +161,10 @@ class ja {
       Keys.topSpeeds: 'トップスピード',
       Keys.topDurations: 'トップ期間',
       Keys.language: 'アプリの言語',
+      Keys.inviteFriend: 'プロフィールリンクをフォロワーと共有して、ここでフォロワーに会いましょう',
+      Keys.joinInvite: '2i2iで私と一緒にたむろ',
+      Keys.joinOtherRoom: '一部の人の部屋に参加してください',
+      Keys.beFirstJoin: 'この部屋に最初に参加する',
     };
   }
 }

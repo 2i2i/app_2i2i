@@ -16,8 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-import '../../../main.dart';
-
 class CallPageWebsockets extends ConsumerStatefulWidget {
   final Meeting meeting;
   final UserModel user;
