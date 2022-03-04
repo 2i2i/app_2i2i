@@ -16,7 +16,7 @@ class BidInMeetings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if(meetingListA.isEmpty){
-      return Center(child: Text(Keys.noBidFound.tr(context),style: Theme.of(context).textTheme.subtitle1,));
+      return Center(child: Text(Keys.noMeetingsFound.tr(context),style: Theme.of(context).textTheme.subtitle1,));
     }
     return ListView.builder(
       itemCount: meetingListA.length,

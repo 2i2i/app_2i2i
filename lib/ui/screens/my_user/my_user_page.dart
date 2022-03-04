@@ -105,7 +105,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   Keys.bidsIn.tr(context),
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                noBidsText: Keys.noBidFound.tr(context),
                 onTap: (x) => {}, //myUserPageViewModel.acceptBid,
               ),
             ),
