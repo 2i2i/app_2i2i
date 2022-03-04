@@ -115,6 +115,8 @@ class ar {
       Keys.bidIn: "المزايدة في",
       Keys.bidOut: 'منتظر',
       Keys.noBidFound: "لم يتم العثور على عروض أسعار",
+      Keys.noMeetingsFound: 'لم يتم العثور على اجتماعات',
+      Keys.roomIsEmpty: 'غرفتك فارغة',
       Keys.meetingsHistory: "تاريخ الاجتماعات",
       Keys.history: 'تاريخ',
       Keys.friendList: 'قائمة الاصدقاء',
@@ -159,6 +161,11 @@ class ar {
       Keys.topSpeeds: "أعلى السرعات",
       Keys.topDurations: "المدد الأعلى",
       Keys.language: "لغة التطبيق",
+    Keys.inviteFriend:
+          'شارك رابط ملفك الشخصي مع متابعيك لمقابلتهم هنا',
+      Keys.joinInvite: 'تسكع معي على 2i2i',
+      Keys.joinOtherRoom: 'يرجى الانضمام إلى بعض غرف الناس',
+      Keys.beFirstJoin: 'كن أول من ينضم إلى هذه الغرفة',
     };
   }
 }
