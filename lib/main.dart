@@ -156,13 +156,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       if (timer?.isActive ?? false) timer!.cancel();
       final userChanger = ref.watch(userChangerProvider);
       if (userChanger == null) return;
-      await userChanger.updateHeartbeat(status);
+      await userChanger.updateHeartbeatBackground(status);
     } else {
       if (timer?.isActive ?? false) timer!.cancel();
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
         final userChanger = ref.watch(userChangerProvider);
         if (userChanger == null) return;
-        await userChanger.updateHeartbeat(status);
+        await userChanger.updateHeartbeatForeground(status);
       });
     }
   }
