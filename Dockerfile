@@ -3,9 +3,9 @@
 
 FROM node:16
 
-RUN echo "9"
+RUN echo "10"
 
-RUN apk add --no-cache bash
+# RUN apk add --no-cache bash
 
 # Install Dependencies.
 RUN apt update -y
