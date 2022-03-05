@@ -1,9 +1,11 @@
 # docker run --name app_builder --rm -i -t debian bash
 # docker run --name 4134a2aa81ea --rm -i -t 4134a2aa81ea bash
 
-FROM node:14-alpine
+FROM node:16
 
-RUN echo "4"
+RUN echo "5"
+
+# RUN apk add --no-cache bash
 
 # copy source code to docker
 COPY . /app
@@ -23,7 +25,6 @@ ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
 RUN flutter config  --no-analytics
 
 # Install Python and Java and pre-cache emulator dependencies.
-# RUN apk add --no-cache bash
 # RUN apk add --no-cache python3 py3-pip openjdk11-jre bash && \
 # RUN apk add --no-cache python3 py3-pip openjdk11-jre bash && \
     # npm install -g firebase-tools && \
