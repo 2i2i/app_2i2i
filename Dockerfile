@@ -3,7 +3,7 @@
 
 FROM node:14-alpine
 
-RUN echo "hi"
+RUN echo "1"
 
 # ARG SSH_PRIVATE_KEY
 
@@ -26,3 +26,4 @@ COPY . /app
 RUN echo $(pwd)
 
 RUN echo $(ls -al)
+RUN echo $(ls /app -al)
