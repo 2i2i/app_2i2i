@@ -3,7 +3,7 @@
 
 FROM node:16
 
-RUN echo "5"
+RUN echo "6"
 
 # RUN apk add --no-cache bash
 
@@ -17,7 +17,7 @@ RUN apt install -y git
 
 # Install Flutter.
 ENV FLUTTER_ROOT="/opt/flutter"
-RUN git clone https://github.com/flutter/flutter "${FLUTTER_ROOT}"
+RUN git clone -b 2.10.3 https://github.com/flutter/flutter "${FLUTTER_ROOT}"
 ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
 ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
 
