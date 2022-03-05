@@ -3,9 +3,9 @@
 
 FROM node:16
 
-RUN echo "7"
+RUN echo "9"
 
-# RUN apk add --no-cache bash
+RUN apk add --no-cache bash
 
 # Install Dependencies.
 RUN apt update -y
@@ -15,7 +15,7 @@ RUN apt install -y git
 ENV FLUTTER_ROOT="/opt/flutter"
 RUN git clone -b 2.10.3 https://github.com/flutter/flutter "${FLUTTER_ROOT}"
 ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
-ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
+# ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
 
 # Disable analytics and crash reporting on the builder.
 RUN flutter config  --no-analytics
@@ -34,6 +34,7 @@ COPY . /app
 WORKDIR /app
 
 RUN flutter build web
+RUN firebase use test
 RUN firebase deploy --only hosting
 
 RUN echo $(pwd)
