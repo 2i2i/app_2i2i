@@ -115,26 +115,22 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, String status) =>
+  Future<void> updateUserHeartbeatFromBackground(String uid) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
           'heartbeatBackground':FieldValue.serverTimestamp(),
-          'heartbeat': FieldValue.serverTimestamp(),
-          'status': status,
         },
         merge: true,
       ).catchError((onError){
         print('\n\n ===== Error update hr bg === \n\n');
       });
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, String status) =>
+  Future<void> updateUserHeartbeatFromForeground(String uid) =>
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
           'heartbeatForeground':FieldValue.serverTimestamp(),
-          'heartbeat': FieldValue.serverTimestamp(),
-          'status': status,
         },
         merge: true,
       ).catchError((onError){

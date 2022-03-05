@@ -153,13 +153,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       if (timer?.isActive ?? false) timer!.cancel();
       final userChanger = ref.watch(userChangerProvider);
       if (userChanger == null) return;
-      await userChanger.updateHeartbeatBackground(status);
+      await userChanger.updateHeartbeatBackground();
     } else {
       if (timer?.isActive ?? false) timer!.cancel();
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
         final userChanger = ref.watch(userChangerProvider);
         if (userChanger == null) return;
-        await userChanger.updateHeartbeatForeground(status);
+        await userChanger.updateHeartbeatForeground();
       });
     }
   }
@@ -175,12 +175,16 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        await updateHeartbeat(Status.ONLINE);
+        //region foreground
+        updateHeartbeat(Status.ONLINE);
+        //endregion
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        await updateHeartbeat(Status.IDLE);
+        updateHeartbeat(Status.IDLE);
+        break;
+      default:
         break;
     }
   }
