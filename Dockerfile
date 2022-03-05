@@ -3,24 +3,17 @@
 
 FROM node:14-alpine
 
-RUN echo "3"
+RUN echo "1"
 
-# copy source code to docker
+# ARG SSH_PRIVATE_KEY
+
+# RUN mkdir -p ~/.ssh && umask 0077 && echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa \
+# && git config --global url."git@github.com:".insteadOf https://github.com/ \
+# && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# ENV GOPRIVATE github.com/ghchinoy/robotreadme
+
 COPY . /app
-WORKDIR /app
-
-# Install Dependencies.
-RUN apt update -y
-RUN apt install -y git
-
-# Install Flutter.
-ENV FLUTTER_ROOT="/opt/flutter"
-RUN git clone https://github.com/flutter/flutter "${FLUTTER_ROOT}"
-ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
-ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
-
-# Disable analytics and crash reporting on the builder.
-RUN flutter config  --no-analytics
 
 # Install Python and Java and pre-cache emulator dependencies.
 # RUN apk add --no-cache bash
