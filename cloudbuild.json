@@ -1,7 +1,7 @@
 {
   "steps": [
    {
-      "name": "gcr.io/i2i-test/firebase",
+      "name": "gcr.io/i2i-test/cloudbuild",
       "args": [
          "deploy",
          "--project",
