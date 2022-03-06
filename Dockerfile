@@ -4,9 +4,18 @@
 
 FROM node:16
 
-RUN echo "12"
+RUN echo "14"
 
-RUN echo ${FIREBASE_TOKEN}
+RUN echo 1
+ADD test.bash /usr/bin
+RUN echo 2
+RUN chmod +x /usr/bin/test.bash
+RUN echo 3
+RUN /usr/bin/test.bash
+RUN echo 4
+ENTRYPOINT [ "/usr/bin/test.bash" ]
+
+# RUN echo ${FIREBASE_TOKEN}
 
 # RUN apk add --no-cache bash
 
