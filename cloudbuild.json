@@ -1,18 +1,14 @@
 {
   "steps": [
    {
-      "name": "gcr.io/i2i-test/cloudbuild",
-      "entrypoint": "bash",
+      "name": "gcr.io/i2i-test/firebase",
       "args": [
-        "-c",
-        "flutter build web && firebase deploy --only hosting --token $$FIREBASE_TOKEN"
-      ],
-      "secretENV": ["FIREBASE_TOKEN"]
-  }],
-  "availableSecrets": {
-    "secretManager": [{
-      "versionName": "projects/i2i-test/secrets/FIREBASE_TOKEN/versions/1",
-      "env": "FIREBASE_TOKEN"
-  }]
+         "deploy",
+         "--project",
+         "i2i-test",
+         "--only",
+         "hosting"
+       ]
   }
+  ]
 }
