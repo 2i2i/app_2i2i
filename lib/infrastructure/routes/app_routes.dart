@@ -8,6 +8,8 @@ class Routes {
 
   static const account = '/account';
   static const faq = '/faq';
+  static const imi = '/imi';
+  static const solli = '/solli';
   static const language = '/language';
   static const login = '/login';
   static const lock = '/lock';
@@ -27,8 +29,8 @@ class Routes {
   static const meetingHistory = '/meetingHistory';
 }
 
-extension name on String{
-  String nameFromPath(){
+extension name on String {
+  String nameFromPath() {
     switch (this) {
       case Routes.root:
         return 'root';
@@ -66,6 +68,10 @@ extension name on String{
         return 'account';
       case Routes.faq:
         return 'faq';
+      case Routes.imi:
+        return 'imi';
+      case Routes.solli:
+        return 'solli';
       case Routes.language:
         return 'language';
       case Routes.meetingHistory:
