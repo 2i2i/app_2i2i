@@ -24,7 +24,7 @@ We believe that we have developed an efficient market system to allow everyone i
 We are working on the patent and on bringing the app to mainnet and to release a governance token and to offer a fiat on-ramp.
 '''),
     const SuccessData(
-        title: 'Reached the Encode Algorand Hackathon top 10 finale',
+        title: 'Encode Algorand Hackathon 3rd prize',
         timestamp: 1633500600,
         description: '''
 Encode is an organisation that helps with the adoption of blockchains by running courses and hackathons.
@@ -374,7 +374,7 @@ The trading system that I created has won several awards over the years, includi
         timestamp: 1370044800,
         description: '''
 I joined a competition called 'Quiz on Korea'. I managed to (barely) win the Swiss national competition.
-This made me the Swiss representative at the international 'Quiz on Korea' world championships in Seoul. I did not do well at the finals, but still consider it a success to have made that far.
+This made me the Swiss representative at the international 'Quiz on Korea' world championships in Seoul. I did not do well at the finals, but still consider it a success to have made it that far.
             '''),
     SuccessData(
         title: 'Intercontinental move to Canada',
@@ -407,7 +407,7 @@ We believe that we have developed an efficient market system to allow everyone i
 We are working on the patent and on bringing the app to mainnet and to release a governance token and to offer a fiat on-ramp.
 '''),
     const SuccessData(
-        title: 'Reached the Encode Algorand Hackathon top 10 finale',
+        title: 'Encode Algorand Hackathon 3rd prize',
         timestamp: 1633500600,
         description: '''
 Encode is an organisation that helps with the adoption of blockchains by running courses and hackathons.
