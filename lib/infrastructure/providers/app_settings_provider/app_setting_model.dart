@@ -14,6 +14,24 @@ class AppSettingModel extends ChangeNotifier {
   Locale? locale;
 
   bool isAutoModeEnable = false;
+  bool isAudioEnabled = true;
+  bool isVideoEnabled = true;
+  bool swapVideo = false;
+
+  void setAudioStatus(bool value) {
+    isAudioEnabled = value;
+    notifyListeners();
+  }
+
+  void setVideoStatus(bool value) {
+    isVideoEnabled = value;
+    notifyListeners();
+  }
+
+  void setSwapVideo(bool value) {
+    swapVideo = value;
+    notifyListeners();
+  }
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);

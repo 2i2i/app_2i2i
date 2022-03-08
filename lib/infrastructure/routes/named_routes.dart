@@ -26,6 +26,7 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/test_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,6 +75,16 @@ class NamedRoutes {
     },
     initialLocation: Routes.root,
     routes: [
+      GoRoute(
+        name: Routes.test.nameFromPath(),
+        path: Routes.test,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(TestScreen()),
+          // child: getView(WaitPage()),
+          // child: Scaffold(),
+        ),
+      ),
       GoRoute(
         name: Routes.root.nameFromPath(),
         path: Routes.root,

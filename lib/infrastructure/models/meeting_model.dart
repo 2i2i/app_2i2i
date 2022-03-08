@@ -151,8 +151,39 @@ class MeetingChanger {
 
   Future remoteReceivedByAMeeting(String meetingId) =>
       normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
+
   Future remoteReceivedByBMeeting(String meetingId) =>
       normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
+
+  Future muteVideo(String meetingId,
+      {required bool amA, required bool videoStatus}) async {
+    Map<String, dynamic> data = {};
+    if (amA) {
+      data = {
+        'isVideoMuteA': videoStatus,
+      };
+    } else {
+      data = {
+        'isVideoMuteB': videoStatus,
+      };
+    }
+    return database.updateCallStatus(meetingId, data);
+  }
+
+  Future muteAudio(String meetingId,
+      {required bool amA, required bool audioStatus}) async {
+    Map<String, dynamic> data = {};
+    if (amA) {
+      data = {
+        'isAudioMuteA': audioStatus,
+      };
+    } else {
+      data = {
+        'isAudioMuteB': audioStatus,
+      };
+    }
+    return database.updateCallStatus(meetingId, data);
+  }
 }
 
 @immutable
@@ -179,12 +210,17 @@ class Meeting extends Equatable {
     required this.coinFlowsA,
     required this.coinFlowsB,
     required this.lounge,
+    required this.isVideoMuteA,
+    required this.isVideoMuteB,
   });
 
   final String id;
 
   final bool active; // status is not END_*
-  final bool settled; // after END
+  final bool settled; //
+
+  final bool isVideoMuteA;
+  final bool isVideoMuteB;
 
   final String A;
   final String B;
@@ -240,6 +276,8 @@ class Meeting extends Equatable {
 
     final String A = data['A'];
     final String B = data['B'];
+    final bool isVideoMuteA = data['isVideoMuteA'] ?? false;
+    final bool isVideoMuteB = data['isVideoMuteB'] ?? false;
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
@@ -284,27 +322,28 @@ class Meeting extends Equatable {
 
     return Meeting(
       id: documentId,
-      lounge: lounge,
-      active: active,
-      settled: settled,
-      A: A,
-      B: B,
-      addrA: addrA,
-      addrB: addrB,
-      energy: energy,
-      start: start,
-      end: end,
-      duration: duration,
-      txns: txns,
-      status: status,
-      statusHistory: statusHistory,
-      net: net,
-      speed: speed,
-      room: room,
-      coinFlowsA: coinFlowsA,
-      coinFlowsB: coinFlowsB,
-      rule: rule,
-    );
+        lounge: lounge,
+        active: active,
+        settled: settled,
+        A: A,
+        B: B,
+        addrA: addrA,
+        addrB: addrB,
+        energy: energy,
+        start: start,
+        end: end,
+        duration: duration,
+        txns: txns,
+        status: status,
+        statusHistory: statusHistory,
+        net: net,
+        speed: speed,
+        room: room,
+        coinFlowsA: coinFlowsA,
+        coinFlowsB: coinFlowsB,
+        rule: rule,
+        isVideoMuteA: isVideoMuteA,
+        isVideoMuteB: isVideoMuteB);
   }
 
   // used by acceptBid, as B
@@ -346,6 +385,8 @@ class Meeting extends Equatable {
       coinFlowsA: [],
       coinFlowsB: [],
       rule: bidIn.public.rule,
+      isVideoMuteB: false,
+      isVideoMuteA: false
     );
   }
 

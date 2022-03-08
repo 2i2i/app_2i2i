@@ -21,11 +21,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import "package:universal_html/html.dart" as html;
+
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
-
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -174,10 +174,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
-
-
-
-
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
