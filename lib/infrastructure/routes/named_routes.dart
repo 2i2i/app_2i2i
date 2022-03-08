@@ -8,6 +8,8 @@ import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
+import 'package:app_2i2i/ui/screens/cv/cv_page.dart';
+import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
@@ -31,7 +33,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -119,6 +120,28 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(FAQPage()),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.imi.nameFromPath(),
+        path: Routes.imi,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(CVPage(
+            person: CVPerson.imi,
+          )),
+          // child: Scaffold(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.solli.nameFromPath(),
+        path: Routes.solli,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(CVPage(
+            person: CVPerson.solli,
+          )),
           // child: Scaffold(),
         ),
       ),
@@ -335,7 +358,7 @@ class NamedRoutes {
           leading: Container(),
           toolbarHeight: 20,
           title: Text(AlgorandNet.testnet.name +
-              ' - v26' +
+              ' - v28' +
               (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme
