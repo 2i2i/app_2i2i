@@ -18,6 +18,12 @@ class AppSettingModel extends ChangeNotifier {
   bool isVideoEnabled = true;
   bool swapVideo = false;
 
+  void appInit() {
+    isVideoEnabled = true;
+    isAudioEnabled = true;
+    notifyListeners();
+  }
+
   void setAudioStatus(bool value) {
     isAudioEnabled = value;
     notifyListeners();
