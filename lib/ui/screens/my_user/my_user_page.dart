@@ -79,7 +79,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                             width: 350,
                             child: QrCodeWidget(
                                 message:
-                                    'https://test.2i2i.app/user/${user.id}'),
+                                    'https://2i2i.app/user/${user.id}'),
                           ),
                         ),
                       );

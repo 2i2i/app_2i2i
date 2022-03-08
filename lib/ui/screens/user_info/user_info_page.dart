@@ -174,7 +174,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                         decoration: Custom.getBoxDecoration(context,
                             color: Colors.white),
                         child: QrCodeWidget(
-                            message: 'https://test.2i2i.app/user/${userB.id}'),
+                            message: 'https://2i2i.app/user/${userB.id}'),
                       ),
                     ),
                   );

@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
@@ -343,11 +344,11 @@ class NamedRoutes {
   static Widget getView(Widget page) {
     Widget widget = AuthWidget(
       homePageBuilder: (context) => Scaffold(
-        appBar: AppBar(
+        appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? AppBar() : AppBar(
           leading: Container(),
           toolbarHeight: 20,
           title: Text(AlgorandNet.testnet.name +
-              ' - v28' +
+              ' - v29' +
               (updateAvailable ? ' - update: reload page' : '')),
           titleTextStyle: Theme.of(context)
               .textTheme

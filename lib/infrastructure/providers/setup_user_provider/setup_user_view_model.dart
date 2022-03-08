@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -107,8 +108,11 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
     final HttpsCallable giftALGO =
         FirebaseFunctions.instance.httpsCallable('giftALGO');
-    await giftALGO({'account': account.address});
-    return account.updateBalances();
+    
+    if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
+      await giftALGO({'account': account.address});
+      return account.updateBalances(net: AlgorandNet.testnet);
+    }
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,

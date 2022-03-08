@@ -183,21 +183,14 @@ abstract class AbstractAccount {
     return 100000 * (1 + asaCount);
   }
 
-  Future<void> updateBalances() async {
+  Future<void> updateBalances({required AlgorandNet net}) async {
     log('updateBalances');
-    // final mainnetAssetHoldings = await accountService.getAssetHoldings(
-    //     address: address, net: AlgorandNet.mainnet);
-    // final mainnetBalances = mainnetAssetHoldings
-    //     .map((assetHolding) =>
-    //         Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
-    //     .toList();
-    final testnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.testnet);
-    final testnetBalances = testnetAssetHoldings
+    final assetHoldings = await accountService.getAssetHoldings(
+        address: address, net: net);
+    balances = assetHoldings
         .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
+            Balance(assetHolding: assetHolding, net: net))
         .toList();
-    balances = testnetBalances;
   }
 
   Future<bool> isOptedInToASA(

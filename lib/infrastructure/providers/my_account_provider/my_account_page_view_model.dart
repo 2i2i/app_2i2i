@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:flutter/cupertino.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
@@ -40,7 +41,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<void> saveLocalAccount(LocalAccount account) async {
     await account.storeAccount(account.account);
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     updateAccounts();
   }
 

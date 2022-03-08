@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
@@ -28,7 +29,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._createAndStoreAccount();
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
@@ -59,7 +60,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromStorage(numAccount);
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
@@ -75,7 +76,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromMnemonic(mnemonic);
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
