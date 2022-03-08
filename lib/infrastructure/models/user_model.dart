@@ -1,8 +1,30 @@
+import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum Lounge { chrony, highroller, eccentric, lurker }
+
+extension ParseToStringLounge on Lounge {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+
+  String name() {
+    final s = toStringEnum();
+    return "${s[0].toUpperCase()}${s.substring(1).toLowerCase()}";
+  }
+}
+
+enum Status { ONLINE, IDLE, OFFLINE }
+
+extension ParseToStringStatus on Status {
+  String toStringEnum() {
+    return this.toString().split('.').last;
+  }
+}
 
 class UserModelChanger {
   UserModelChanger(this.database, this.uid);
@@ -10,28 +32,11 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat() async {
-    final status = 'ONLINE';
-    await database.updateUserHeartbeat(uid, status);
-  }
-
-  Future updateNameAndBio(String name, String bio) async {
-    final tags = UserModel.tagsFromBio(bio);
-    final Map<String, dynamic> data = {
-      'name': name,
-      'bio': bio,
-      'tags': [name, ...tags]
-    };
-    final user = await database.getUser(uid);
-    if (user == null) {
-      data['status'] = 'ONLINE';
-      data['meeting'] = null;
-      data['rating'] = 1;
-      data['numRatings'] = 0;
-      data['heartbeat'] = DateTime.now().toUtc();
-    }
-    await database.updateUserNameAndBio(uid, data);
-  }
+  Future updateHeartbeat(Status status) =>
+      database.updateUserHeartbeat(uid, status.toStringEnum());
+  Future updateSettings(UserModel user) => database.updateUser(user);
+  Future addComment(String targetUid, ChatModel chat) =>
+      database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
@@ -46,42 +51,125 @@ class UserModelChanger {
 }
 
 @immutable
+class Rule extends Equatable {
+  static const defaultImportance = {
+    // set also in cloud function userCreated
+    Lounge.chrony: 1,
+    Lounge.highroller: 4,
+    Lounge.eccentric: 0,
+    Lounge.lurker: 0,
+  };
+
+  const Rule({
+    // set also in cloud function userCreated
+    this.maxMeetingDuration = 300,
+    this.minSpeed = 0,
+    this.importance = defaultImportance,
+  });
+
+  final int maxMeetingDuration;
+  final int minSpeed;
+  final Map<Lounge, int> importance;
+
+  factory Rule.fromMap(Map<String, dynamic> data) {
+    final int maxMeetingDuration = data['maxMeetingDuration'];
+    final int minSpeed = data['minSpeed'];
+
+    final Map<Lounge, int> importance = {};
+    final Map<String, dynamic> x = data['importance'];
+    for (final k in x.keys) {
+      final lounge = Lounge.values.firstWhere((l) => l.toStringEnum() == k);
+      importance[lounge] = x[k]! as int;
+    }
+
+    return Rule(
+      maxMeetingDuration: maxMeetingDuration,
+      minSpeed: minSpeed,
+      importance: importance,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'maxMeetingDuration': maxMeetingDuration,
+      'minSpeed': minSpeed,
+      'importance':
+          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+    };
+  }
+
+  int importanceSize() =>
+      importance.values.reduce((value, element) => value + element);
+
+  @override
+  List<Object> get props => [maxMeetingDuration, minSpeed, importance];
+}
+
+@immutable
 class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
   UserModel({
+    // set also in cloud function userCreated
     required this.id,
-    this.status = 'ONLINE',
+    this.status = Status.ONLINE,
     this.meeting,
     this.name = '',
     this.bio = '',
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeat,
+    this.rule = const Rule(),
+    this.loungeHistory = const <Lounge>[],
+    this.loungeHistoryIndex = -1,
+    this.blocked = const <String>[],
+    this.friends = const <String>[],
   }) {
-    _tags = tagsFromBio(bio);
+    setTags();
   }
 
   final String id;
-  final String status;
-  final String? meeting;
-  final String bio;
-  final String name;
-  late final List<String> _tags;
-  final double rating;
-  final int numRatings;
   final DateTime? heartbeat;
+  final Status status;
 
+  final String? meeting;
+  Rule rule;
+
+  String name;
+  String bio;
+  late List<String> _tags;
+  void setTags() {
+    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+  }
+
+  // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
+  // (?<=#)[a-zA-Z0-9]+ -> (?:#)[a-zA-Z0-9]+
   static List<String> tagsFromBio(String bio) {
-    RegExp r = RegExp(r"(?<=#)[a-zA-Z0-9]+");
+    RegExp r = RegExp(r"(?:#)[a-zA-Z0-9]+");
     final matches = r.allMatches(bio).toList();
     final List<String> tags = [];
     for (final m in matches) {
-      final t = bio.substring(m.start, m.end);
+      final t = bio.substring(m.start + 1, m.end).toLowerCase();
       tags.add(t);
     }
     return tags;
   }
+
+  void setNameOrBio({String? name, String? bio}) {
+    if (name is String) this.name = name.trim();
+    if (bio is String) this.bio = bio.trim();
+    if (name is String || bio is String) setTags();
+  }
+
+  final double rating;
+  final int numRatings;
+
+  final List<Lounge>
+      loungeHistory; // actually circular array containing recent 100 lounges
+  final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
+
+  final List<String> blocked;
+  final List<String> friends;
 
   @override
   List<Object> get props => [id];
@@ -91,37 +179,51 @@ class UserModel extends Equatable {
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
-      log('UserModel.fromMap - data == null');
+      log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('UserModel.fromMap - data=$data');
-    // log('UserModel.fromMap - data=${data['bidsIn']}');
-    // log('UserModel.fromMap - data=${data['bidsIn'].runtimeType}');
+    // log('user.fromMap - data=$data');
+    // log('user.fromMap - data=${data['bidsIn']}');
+    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    var status = data['status'];
-    var meeting = data['meeting'];
-    var name = data['name'] ?? '';
-    var bio = data['bio'] ?? '';
-    final rating = double.tryParse(data['rating'].toString()) ?? 1;
-    final numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
+    final Status status =
+        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final String? meeting = data['meeting'];
+    final String name = data['name'] ?? '';
+    final String bio = data['bio'] ?? '';
+    final double rating = double.tryParse(data['rating'].toString()) ?? 1;
+    final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeat = data['heartbeat']?.toDate();
+    final Rule rule =
+        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
+        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
+
+    final List<String> blocked = List.castFrom(data['blocked'] as List);
+    final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
       id: documentId,
-      status: status ?? '',
+      status: status,
       meeting: meeting,
       name: name,
       bio: bio,
       rating: rating,
       numRatings: numRatings,
       heartbeat: heartbeat,
+      rule: rule,
+      loungeHistory: loungeHistory,
+      loungeHistoryIndex: loungeHistoryIndex,
+      blocked: blocked,
+      friends: friends,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'status': status,
+      'status': status.toStringEnum(),
       'meeting': meeting,
       'bio': bio,
       'name': name,
@@ -129,6 +231,11 @@ class UserModel extends Equatable {
       'rating': rating,
       'numRatings': numRatings,
       'heartbeat': heartbeat,
+      'rule': rule.toMap(),
+      'loungeHistory': loungeHistory.map((e) => e.index).toList(),
+      'loungeHistoryIndex': loungeHistoryIndex,
+      'blocked': blocked,
+      'friends': friends,
     };
   }
 
@@ -138,39 +245,6 @@ class UserModel extends Equatable {
   }
 
   bool isInMeeting() => meeting != null;
-}
-
-class UserModelPrivate {
-  UserModelPrivate({
-    this.blocked = const <String>[],
-    this.friends = const <String>[],
-  });
-
-  final List<String> blocked;
-  final List<String> friends;
-
-  factory UserModelPrivate.fromMap(
-      Map<String, dynamic>? data, String documentId) {
-    if (data == null) {
-      log('UserModelPrivate.fromMap - data == null');
-      throw StateError('missing data for uid: $documentId');
-    }
-
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
-
-    return UserModelPrivate(
-      blocked: blocked,
-      friends: friends,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'blocked': blocked,
-      'friends': friends,
-    };
-  }
 }
 
 extension ParseToDate on String {

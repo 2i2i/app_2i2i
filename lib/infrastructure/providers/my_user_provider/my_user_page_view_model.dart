@@ -1,64 +1,71 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/cupertino.dart';
-
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 
 class MyUserPageViewModel {
-  MyUserPageViewModel(
-      {required this.database,
-      required this.functions,
-      required this.user,
-      required this.accountService,
-      required this.userModelChanger});
+  MyUserPageViewModel({
+    required this.database,
+    required this.functions,
+    required this.user,
+    required this.accountService,
+    required this.userChanger,
+  });
   final UserModel user;
   final FirestoreDatabase database;
   final FirebaseFunctions functions;
-  final UserModelChanger userModelChanger;
+  final UserModelChanger userChanger;
   final AccountService accountService;
 
-  Future acceptBid(BidIn bidIn, BidInPrivate bidInPrivate) async {
+  Future<bool> acceptBid(BidIn bidIn, {String? token, bool isIos = false}) async {
+    if (!bidIn.public.active) return false;
+
+    if (/*bidIn.user!.status == Status.OFFLINE ||*/bidIn.user!.isInMeeting()) {
+      await cancelNoShow(bidIn: bidIn);
+      return false;
+    }
+
     String? addrB;
-    if (bidIn.speed.num != 0) {
+    if (bidIn.public.speed.num != 0) {
       final account = await accountService.getMainAccount();
       addrB = account.address;
     }
     final meeting = Meeting.newMeeting(
-        uid: user.id,
-        addrB: addrB,
-        bidIn: bidIn,
-        bidInPrivate: bidInPrivate);
-    database.acceptBid(meeting);
+        id: bidIn.public.id, B: user.id, addrB: addrB, bidIn: bidIn);
+    await database.acceptBid(meeting);
+    if(token != null) {
+
+      Map data = {
+        'route':Routes.lock,
+        'type':'Call',
+        "title": bidIn.user?.name ?? '',
+        "body": 'Incoming video call'
+      };
+      await FirebaseNotifications().sendNotification(token,data,isIos);
+    }
+    return true;
   }
 
-  // TODO clean separation into firestore_service and firestore_database
-  Future cancelBid({required String bidId, required String B}) async {
-    final bidOutRef = FirebaseFirestore.instance
-        .collection('users/${user.id}/bidOuts')
-        .doc(bidId);
-    final bidInRef =
-        FirebaseFirestore.instance.collection('users/$B/bidIns').doc(bidId);
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, {'active': false}, SetOptions(merge: true));
-      transaction.set(bidInRef, {'active': false}, SetOptions(merge: true));
-    });
+  Future cancelNoShow({required BidIn bidIn}) async {
+    return database.cancelBid(
+        A: bidIn.private!.A, B: user.id, bidId: bidIn.public.id);
   }
 
-  Future changeNameAndBio(String name, String bio) async {
-    await userModelChanger.updateNameAndBio(name, bio);
+  Future cancelOwnBid({required BidOut bidOut}) async {
+    if (!bidOut.active) return;
+
+    if (bidOut.speed.num == 0) {
+      return database.cancelBid(A: user.id, B: bidOut.B, bidId: bidOut.id);
+    }
+    // 0 < speed
+    final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+    await cancelBid({'bidId': bidOut.id});
   }
 
-  Future setUserPrivate(
-      {required BuildContext context,
-      required String uid,
-      required UserModelPrivate userPrivate}) async {
-    CustomDialogs.loader(true, context);
-    await database.setUserPrivate(uid: uid, userPrivate: userPrivate);
-    CustomDialogs.loader(false, context);
-  }
+  Future updateHangout(UserModel user) =>
+      userChanger.updateSettings(user);
 }

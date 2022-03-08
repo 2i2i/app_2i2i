@@ -1,40 +1,38 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
 
 enum MeetingStatus {
-  INIT, // B accepts bid
+  ACCEPTED_B, // B accepts bid
   // check that enough time passed
   // currently, 3 timers: 30s after INIT / 60s after TXN_CREATED / MAX_DURATION after A/B_RECEIVED_REMOTE
-  ACCEPTED, // A accepts meeting after B accepts bid
-  TXN_CREATED, // A created txn
-  TXN_SIGNED, // A created txn
-  TXN_SENT, // A confirmed txn
-  TXN_CONFIRMED, // algorand confirmed txn
+  ACCEPTED_A, // A accepts meeting after B accepts bid
   ROOM_CREATED, // rtc room created
-  A_RECEIVED_REMOTE, // A received remote stream of B
-  B_RECEIVED_REMOTE, // B received remote stream of A
+  RECEIVED_REMOTE_A, // A received remote stream of B
+  RECEIVED_REMOTE_B, // B received remote stream of A
   CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
-  END_TXN_FAILED, // txn failed
-  END_TIMER,
+  END_TIMER_RINGING_PAGE,
+  END_TIMER_CALL_PAGE,
   END_A, // A hangs up
   END_B, // B hangs up
   END_DISCONNECT, // disconnected
 }
 
-// INIT -> END_TIMER
-// INIT -> END_A
-// INIT -> END_B
-// INIT -> ACCEPTED -> TXN_CREATED -> END_TIMER
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SENT -> END_TXN_FAILED
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_A
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED-> END_B
-// INIT -> ACCEPTED -> TXN_CREATED -> TXN_SIGNED -> TXN_SENT -> TXN_CONFIRMED -> ROOM_CREATED -> A_RECEIVED_REMOTE -> B_RECEIVED_REMOTE -> CALL_STARTED -> END_TIMER
-// always possible to get END_DISCONNECT_*
+// ACCEPTED_B -> END_TIMER_RINGING_PAGE
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_A/B
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_TIMER_CALL_PAGE
+// always possible to get END_DISCONNECT
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
     return this.toString().split('.').last;
@@ -68,6 +66,7 @@ class TopMeeting extends Equatable {
     required this.name,
     required this.duration,
     required this.speed,
+    required this.ts,
   });
 
   final String id;
@@ -75,6 +74,7 @@ class TopMeeting extends Equatable {
   final String name;
   final int duration;
   final Quantity speed;
+  final DateTime ts;
 
   @override
   List<Object> get props => [id];
@@ -82,14 +82,21 @@ class TopMeeting extends Equatable {
   @override
   bool get stringify => true;
 
-  factory TopMeeting.fromMap(Map<String, dynamic> data) {
-    final id = data['id'] as String;
+  factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    if (data == null) {
+      log('TopMeeting.fromMap - data == null');
+      throw StateError('missing data for id: $documentId');
+    }
+
+    final id = documentId;
     final B = data['B'] as String;
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
+    final DateTime ts = data['ts'].toDate();
+
     return TopMeeting(
-        id: id, B: B, name: name, duration: duration, speed: speed);
+        id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
 }
 
@@ -106,10 +113,10 @@ class MeetingChanger {
       'statusHistory': FieldValue.arrayUnion([
         {'value': status.toStringEnum(), 'ts': DateTime.now().toUtc()}
       ]),
-      'isActive': false,
+      'active': false,
       'end': now,
     };
-    return database.updateMeeting(meeting.id, data);
+    return database.meetingEndUnlockUser(meeting, data);
   }
 
   Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
@@ -127,51 +134,7 @@ class MeetingChanger {
   }
 
   Future acceptMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED);
-  Future acceptFreeCallMeeting(String meetingId) async {
-    final now = DateTime.now().toUtc();
-    final Map<String, dynamic> data = {
-      'status': MeetingStatus.TXN_CONFIRMED.toStringEnum(),
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': MeetingStatus.ACCEPTED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_CREATED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_SIGNED.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_SENT.toStringEnum(), 'ts': now},
-        {'value': MeetingStatus.TXN_CONFIRMED.toStringEnum(), 'ts': now},
-      ]),
-    };
-    return database.updateMeeting(meetingId, data);
-  }
-
-  Future txnCreatedMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_CREATED);
-  Future txnSignedMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.TXN_SIGNED);
-  Future txnSentMeeting(String meetingId, MeetingTxns txns) {
-    final now = DateTime.now().toUtc();
-    final statusString = MeetingStatus.TXN_SENT.toStringEnum();
-    final Map<String, dynamic> data = {
-      'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': statusString, 'ts': now}
-      ]),
-      'txns': txns.toMap(),
-    };
-    return database.updateMeeting(meetingId, data);
-  }
-
-  Future txnConfirmedMeeting(String meetingId, int budget) {
-    final now = DateTime.now().toUtc();
-    final statusString = MeetingStatus.TXN_CONFIRMED.toStringEnum();
-    final Map<String, dynamic> data = {
-      'status': statusString,
-      'statusHistory': FieldValue.arrayUnion([
-        {'value': statusString, 'ts': now}
-      ]),
-      'budget': budget,
-    };
-    return database.updateMeeting(meetingId, data);
-  }
+      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED_A);
 
   Future roomCreatedMeeting(String meetingId, String room) {
     final now = DateTime.now().toUtc();
@@ -187,64 +150,68 @@ class MeetingChanger {
   }
 
   Future remoteReceivedByAMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.A_RECEIVED_REMOTE);
+      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
   Future remoteReceivedByBMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.B_RECEIVED_REMOTE);
+      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
 }
 
 @immutable
 class Meeting extends Equatable {
   Meeting({
     required this.id,
-    required this.isActive,
-    required this.isSettled,
+    required this.active,
+    required this.settled,
     required this.A,
     required this.B,
     required this.addrA,
     required this.addrB,
-    required this.budget,
+    required this.energy,
     required this.start,
     required this.end,
     required this.duration,
+    required this.rule,
     required this.txns,
     required this.status,
     required this.statusHistory,
     required this.net,
     required this.speed,
-    required this.bid,
     required this.room,
     required this.coinFlowsA,
     required this.coinFlowsB,
+    required this.lounge,
   });
 
   final String id;
 
-  final bool isActive; // status is not END_*
-  final bool isSettled; // after END
+  final bool active; // status is not END_*
+  final bool settled; // after END
 
   final String A;
   final String B;
   final String? addrA; // set if 0 < speed
   final String? addrB; // set if 0 < speed
 
-  final int? budget; // [coins]; 0 for speed == 0
+  final Map<String, int?> energy; // MAX = A + CREATOR + B
+
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
 
-  // null in free call
-  final MeetingTxns txns;
+  final Map<String, String> txns;
 
   final MeetingStatus status;
   final List<MeetingStatusWithTS> statusHistory;
 
   final AlgorandNet net;
   final Quantity speed;
-  final String bid;
   final String? room;
 
   final List<Quantity> coinFlowsA;
   final List<Quantity> coinFlowsB;
+
+  final Lounge lounge;
+
+  final Rule rule;
 
   @override
   List<Object> get props => [id];
@@ -256,9 +223,10 @@ class Meeting extends Equatable {
   bool amB(String uid) => uid == B;
   String peerId(String uid) => uid == A ? B : A;
 
-  int? maxDuration() {
-    if (budget == null) return null;
-    return (budget! / speed.num).floor();
+  int maxDuration() {
+    if (speed.num == 0) return rule.maxMeetingDuration;
+    final fundedMaxDuration = (energy['MAX']! / speed.num).round();
+    return min(rule.maxMeetingDuration, fundedMaxDuration);
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
@@ -267,20 +235,27 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
-    final bool isActive = data['isActive'] as bool;
-    final bool isSettled = data['isSettled'] as bool;
+    final bool active = data['active'] as bool;
+    final bool settled = data['settled'] as bool;
 
     final String A = data['A'];
     final String B = data['B'];
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
-    final int? budget = data['budget'];
+    final Map<String, int?> energy = {};
+    for (final String k in data['energy'].keys) {
+      energy[k] = data['energy'][k] as int?;
+    }
+
     final DateTime? start = data['start']?.toDate();
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
-    final MeetingTxns txns = MeetingTxns.fromMap(data['txns']);
+    final Map<String, String> txns = {};
+    for (final String k in data['txns'].keys) {
+      txns[k] = data['txns'][k] as String;
+    }
 
     final MeetingStatus status = MeetingStatus.values
         .firstWhere((e) => e.toStringEnum() == data['status']);
@@ -295,7 +270,6 @@ class Meeting extends Equatable {
     final AlgorandNet net =
         AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final Quantity speed = Quantity.fromMap(data['speed']);
-    final String bid = data['bid'];
     final String? room = data['room'];
 
     final List<Quantity> coinFlowsA = List<Quantity>.from(
@@ -303,15 +277,21 @@ class Meeting extends Equatable {
     final List<Quantity> coinFlowsB = List<Quantity>.from(
         data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
+    final Lounge lounge =
+        Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
+
+    final Rule rule = Rule.fromMap(data['rule']);
+
     return Meeting(
       id: documentId,
-      isActive: isActive,
-      isSettled: isSettled,
+      lounge: lounge,
+      active: active,
+      settled: settled,
       A: A,
       B: B,
       addrA: addrA,
       addrB: addrB,
-      budget: budget,
+      energy: energy,
       start: start,
       end: end,
       duration: duration,
@@ -320,69 +300,78 @@ class Meeting extends Equatable {
       statusHistory: statusHistory,
       net: net,
       speed: speed,
-      bid: bid,
       room: room,
       coinFlowsA: coinFlowsA,
       coinFlowsB: coinFlowsB,
+      rule: rule,
     );
   }
 
   // used by acceptBid, as B
   factory Meeting.newMeeting({
-    required String uid,
+    required String id,
+    required String B,
     required String? addrB,
     required BidIn bidIn,
-    required BidInPrivate bidInPrivate,
   }) {
     return Meeting(
-      id: '',
-      isActive: true,
-      isSettled: false,
-      A: bidInPrivate.A,
-      B: uid,
-      addrA: bidInPrivate.addrA,
+      id: id,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed
+          ? Lounge.chrony
+          : Lounge.highroller,
+      active: true,
+      settled: false,
+      A: bidIn.private!.A,
+      B: B,
+      addrA: bidIn.private!.addrA,
       addrB: addrB,
-      budget: bidIn.speed.num == 0 ? 0 : null,
+      energy: {
+        'MAX': bidIn.public.energy,
+        'A': null,
+        'CREATOR': null,
+        'B': null,
+      },
       start: null,
       end: null,
       duration: null,
-      txns: MeetingTxns(),
-      status: MeetingStatus.INIT,
+      txns: {},
+      status: MeetingStatus.ACCEPTED_B,
       statusHistory: [
         MeetingStatusWithTS(
-            value: MeetingStatus.INIT, ts: DateTime.now().toUtc())
+            value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())
       ],
-      net: bidIn.net,
-      speed: bidIn.speed,
-      bid: bidIn.id,
+      net: bidIn.public.net,
+      speed: bidIn.public.speed,
       room: null,
       coinFlowsA: [],
       coinFlowsB: [],
+      rule: bidIn.public.rule,
     );
   }
 
   Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
-      'isActive': isActive,
-      'isSettled': isSettled,
+      'active': active,
+      'settled': settled,
       'A': A,
       'B': B,
       'addrA': addrA,
       'addrB': addrB,
-      'budget': budget,
+      'energy': energy,
       'start': start,
       'end': end,
       'duration': duration,
-      'txns': txns.toMap(),
+      'txns': txns,
       'status': status.toStringEnum(),
       'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
-      'bid': bid,
       'room': room,
       'coinFlowsA': coinFlowsA,
       'coinFlowsB': coinFlowsB,
+      'lounge': lounge.toStringEnum(),
+      'rule': rule.toMap(),
     };
   }
 }
@@ -400,7 +389,7 @@ class RatingModel {
       throw StateError('missing data for id: $documentId');
     }
 
-    final double rating = data['rating'];
+    final double rating = double.parse(data['rating'].toString());
     final String? comment = data['comment'];
 
     return RatingModel(
@@ -415,48 +404,4 @@ class RatingModel {
       'comment': comment,
     };
   }
-}
-
-class MeetingTxns {
-  MeetingTxns(
-      {this.group,
-      this.lockALGO,
-      this.lockASA,
-      this.state,
-      this.unlock,
-      this.optIn});
-  String? group;
-  String? lockALGO;
-  String? lockASA;
-  String? state;
-  String? unlock;
-  String? optIn;
-  factory MeetingTxns.fromMap(Map<String, dynamic> data) {
-    final String? group = data['group'];
-    final String? lockALGO = data['lockALGO'];
-    final String? lockASA = data['lockASA'];
-    final String? state = data['state'];
-    final String? unlock = data['unlock'];
-    final String? optIn = data['optIn'];
-    return MeetingTxns(
-      group: group,
-      lockALGO: lockALGO,
-      lockASA: lockASA,
-      state: state,
-      unlock: unlock,
-      optIn: optIn,
-    );
-  }
-  Map<String, dynamic> toMap() {
-    return {
-      'group': group,
-      'lockALGO': lockALGO,
-      'lockASA': lockASA,
-      'state': state,
-      'unlock': unlock,
-      'optIn': optIn,
-    };
-  }
-
-  String? lockId({required bool isALGO}) => isALGO ? lockALGO : lockASA;
 }

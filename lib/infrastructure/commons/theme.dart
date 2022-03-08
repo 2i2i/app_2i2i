@@ -25,12 +25,13 @@ class AppTheme{
 
   Color secondaryColor = Color(0xFF23d67d);
   Color shaDowColor = Color(0xFFDCF9EB);
-  Color secondaryDarkColor = Color(0xFF00a350);
+  Color secondaryDarkColor = Color(0xFF23D67D);
 
   Color primaryTextColor = Color(0xFF000000);
   Color secondaryTextColor = Color(0xFFffffff);
 
-  Color cardDarkColor = Colors.grey.shade800;
+  Color cardDarkColor = Colors.grey.shade900;
+  // Color cardDarkColor = Colors.black38;
   Color disableColor = Color(0xFF979592);
   Color tabColor = Color.fromRGBO(118, 118, 128, 0.12);
   Color tabTextColor = Color.fromRGBO(153, 153, 153, 1);
@@ -41,9 +42,13 @@ class AppTheme{
   Color warningColor = Color(0xFFFEEBEB);
   Color redColor = Color(0xFFF92A2A);
 
+  Color lightSecondaryTextColor = Color(0xff8E8E93);
+  Color lightPrimaryTextColor = Colors.black;
+
+  Color darkSecondaryTextColor = Colors.white;
+
   ThemeData mainTheme(BuildContext context) {
     return ThemeData(
-      fontFamily: 'SofiaPro',
       brightness: Brightness.light,
       primaryColor: primaryColor,
       primaryColorLight: primaryLightColor,
@@ -63,43 +68,25 @@ class AppTheme{
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 0,
-          selectedLabelStyle: TextStyle(
-            fontFamily: 'SofiaPro',
-            fontSize: 10.0,
-            fontWeight: FontWeight.normal,
-          ),
-          unselectedLabelStyle: TextStyle(
-            fontFamily: 'SofiaPro',
-            fontSize: 10.0,
-            fontWeight: FontWeight.normal,
-          ),
           selectedItemColor: secondaryColor,
           unselectedItemColor: disableColor,
           backgroundColor: primaryLightColor,
-          selectedIconTheme: IconThemeData(color: Colors.white)),
+          selectedIconTheme: IconThemeData(color: Colors.white),
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-            primary: secondaryColor,
-            padding: EdgeInsets.all(kIsWeb?22:14),
-            textStyle: TextStyle(
-              fontFamily: 'SofiaPro',
-              fontSize: 17.0,
-              fontWeight: FontWeight.w400,
-            )),
+          primary: secondaryColor,
+          padding: EdgeInsets.all(kIsWeb ? 22 : 14),
+        ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          primary: secondaryColor,
-          padding: EdgeInsets.all(kIsWeb?22:14),
-          textStyle: TextStyle(
-            fontFamily: 'SofiaPro',
-            fontSize: 17.0,
-            fontWeight: FontWeight.w400,
-          ),
-          side:BorderSide(color: secondaryColor),
-          shape:RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          )
+            primary: secondaryColor,
+            padding: EdgeInsets.all(kIsWeb?22:14),
+            side:BorderSide(color: secondaryColor),
+            shape:RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            )
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -116,117 +103,251 @@ class AppTheme{
         iconColor: fillColor,
         labelStyle: TextStyle(color: secondaryColor),
         border: OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(10.0),
-            borderSide: BorderSide.none),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
         errorBorder: OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(10.0),
-            borderSide: BorderSide.none),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
         focusedErrorBorder: OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(10.0),
-            borderSide: BorderSide.none),
-        enabledBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(10.0),
-            borderSide: BorderSide.none),
-        focusedBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(10.0),
-            borderSide: BorderSide.none),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
       ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: secondaryColor),
+      fontFamily: 'SofiaPro',
       textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Color(0xFF48484A),
-          fontSize: 34,
-          letterSpacing: 0.37,
+        headline4: TextStyle(
           fontStyle: FontStyle.normal,
           fontWeight: FontWeight.w600,
-        )
-      )
+          fontSize: 34,
+          // color: Color(0xff8E8E93),
+        ),
+        headline5: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 28,
+          // color: Color(0xff8E8E93),
+        ),
+        headline6: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          // color: Colors.black,
+        ),
+        subtitle1: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 16,
+          // color: Color(0xff8E8E93),
+        ),
+        subtitle2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 14,
+          // color: Colors.black,
+        ),
+        bodyText1: TextStyle(
+          // fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          fontSize: 16,
+          color: lightSecondaryTextColor,
+        ),
+        bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          // fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.black,
+        ),
+        /*bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          // color: Colors.black,
+        ),*/
+        caption: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 12,
+          // color: Color(0xff8E8E93),
+        ),
+      ),
     );
   }
 
   ThemeData darkTheme(BuildContext context) {
     return ThemeData(
-        brightness: Brightness.dark,
-        appBarTheme: appBarTheme(true,context),
-        primaryColor: primaryDarkColor,
-        primaryColorLight: secondaryDarkColor,
-        primaryColorDark: secondaryTextColor,
-        scaffoldBackgroundColor: primaryDarkColor,
-        iconTheme: IconThemeData(color: primaryColor),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(primary: Colors.white),
+      brightness: Brightness.dark,
+      appBarTheme: appBarTheme(true, context,textColor: darkSecondaryTextColor),
+      primaryColor: primaryDarkColor,
+      primaryColorLight: secondaryDarkColor,
+      primaryColorDark: secondaryTextColor,
+      scaffoldBackgroundColor: primaryDarkColor,
+      iconTheme: IconThemeData(color: primaryColor),
+      cardColor: cardDarkColor,
+      shadowColor: fillColor,
+
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        elevation: 0,
+        selectedItemColor: secondaryDarkColor,
+        unselectedItemColor: disableColor,
+        backgroundColor: primaryDarkColor,
+        selectedIconTheme: IconThemeData(color: secondaryDarkColor),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          primary: secondaryDarkColor,
+          padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            selectedItemColor: primaryColor,
-            unselectedItemColor: disableColor,
-            backgroundColor: Colors.grey[800],
-            selectedIconTheme: IconThemeData(color: primaryColor)),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-              primary: cardDarkColor,
-              padding: EdgeInsets.all(24),
-              textStyle: TextStyle(
-                fontFamily: 'SofiaPro',
-                fontSize: 17.0,
-                fontWeight: FontWeight.w600,
-              ),
-          ),
-        ),
+      ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            primary: cardDarkColor,
-            padding: EdgeInsets.all(24),
-            textStyle: TextStyle(
-              fontFamily: 'SofiaPro',
-              fontSize: 17.0,
-              fontWeight: FontWeight.w600,
-            ),
+              primary: secondaryDarkColor,
+              padding: EdgeInsets.all(kIsWeb?22:14),
+              side:BorderSide(color: secondaryDarkColor),
+              shape:RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              )
           ),
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: primaryLightColor,
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          primary: secondaryDarkColor,
+          padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
-        tabBarTheme: TabBarTheme(
-          indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0), color: primaryColor),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryLightColor,
+      ),
+
+      tabBarTheme: TabBarTheme(
+        indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(25.0),
+          color: primaryColor,
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(color: primaryLightColor),
-          enabledBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryLightColor),
-          ),
-          focusedBorder: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: primaryLightColor),
-          ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: shaDowColor,
+        iconColor: fillColor,
+        labelStyle: TextStyle(color: primaryDarkColor),
+        hintStyle: TextStyle(color: primaryDarkColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
         ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: primaryLightColor),
-        colorScheme: ColorScheme.dark(secondary: primaryColor),
-        fontFamily: 'SofiaPro',
-        textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Color(0xff48484A),
-          fontSize: 34,
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+      ),
+
+      colorScheme: ColorScheme.dark(secondary: secondaryDarkColor),
+
+      textSelectionTheme: TextSelectionThemeData(cursorColor: primaryDarkColor),
+      fontFamily: 'SofiaPro',
+      textTheme: TextTheme(
+
+        headline4: TextStyle(
           fontStyle: FontStyle.normal,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.37,
+          fontSize: 34,
+          color: darkSecondaryTextColor,
         ),
-      )
+        headline5: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 28,
+          color: darkSecondaryTextColor,
+          // color: Color(0xff8E8E93),
+        ),
+        headline6: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: darkSecondaryTextColor,
+        ),
+        subtitle1: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 16,
+          color: darkSecondaryTextColor,
+          // color: Color(0xff8E8E93),
+        ),
+        subtitle2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 14,
+          color: darkSecondaryTextColor,
+          // color: Colors.black,
+        ),
+        bodyText1: TextStyle(
+          // fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          fontSize: 16,
+          color: darkSecondaryTextColor,
+        ),
+        bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          // fontWeight: FontWeight.bold,
+          fontSize: 14,
+          // color: Colors.black,
+          color: darkSecondaryTextColor,
+        ),
+        /*bodyText2: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          // color: Colors.black,
+        ),*/
+        caption: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 12,
+          color: darkSecondaryTextColor,
+          // color: Color(0xff8E8E93),
+        ),
+        button: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 17,
+            color: darkSecondaryTextColor
+            // color: Color(0xff8E8E93),
+            ),
+      ),
     );
   }
 
-  AppBarTheme appBarTheme(bool dark,BuildContext context) => AppBarTheme(
-      elevation: 0,
-      backgroundColor: !dark ? primaryColor : primaryDarkColor,
-      iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
-      titleTextStyle: TextStyle(
-        color: Color(0xff48484A),
-        fontSize: 34,
-        fontStyle: FontStyle.normal,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.37,
-      ),
+  AppBarTheme appBarTheme(bool dark,BuildContext context,{Color? textColor}) => AppBarTheme(
+    elevation: 0,
+    backgroundColor: !dark ? primaryColor : null,
+    iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
+
+    titleTextStyle: TextStyle(
+      fontStyle: FontStyle.normal,
+      fontWeight: FontWeight.w800,
+      fontSize: 28,
+      color: textColor,
+      // color: Color(0xff8E8E93),
+    ),
   );
 
 /*ThemeMode getThemeMode() {

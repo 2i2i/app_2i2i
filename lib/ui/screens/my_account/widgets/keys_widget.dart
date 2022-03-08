@@ -2,7 +2,8 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../infrastructure/commons/strings.dart';
+
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../commons/custom_dialogs.dart';
@@ -15,7 +16,7 @@ class KeysWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Theme.of(context).primaryColorLight,
+      backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(14.0))),
@@ -23,43 +24,52 @@ class KeysWidget extends StatelessWidget {
       insetPadding: EdgeInsets.zero,
       actionsPadding: EdgeInsets.zero,
       content: Container(
-        width: MediaQuery.of(context).size.height * 0.35,
+        width: MediaQuery.of(context).size.height * 0.40,
+        height: MediaQuery.of(context).size.width * 1.0,
         margin: EdgeInsets.all(22),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 4),
-            Text(
-              'Please read carefully',
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle1!
-                  .copyWith(fontWeight: FontWeight.w800),
-            ),
-            SizedBox(height: 8),
-            RichText(
-              text: TextSpan(
-                  text:
-                      'Write down your recovery passphase(1-25 words). This is the',
-                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                      fontWeight: FontWeight.normal,
-                      color: Theme.of(context).disabledColor),
+            titleMessage(context),
+            keyListWidget(context),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget titleMessage(BuildContext context){
+    return Column(
+      children: [
+        SizedBox(height: 4),
+        Text(
+          Keys.pleaseReadCarefully.tr(context),
+          style: Theme.of(context)
+              .textTheme
+              .headline6,
+        ),
+        SizedBox(height: 8),
+        RichText(
+          text: TextSpan(
+              text:
+              Keys.writeDownRecovery.tr(context),
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  color: AppTheme().lightSecondaryTextColor,
+                  ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: ' only way to recover your account in future.',
+                      text: ' ${Keys.recoverAccount.tr(context)}',
                       style: Theme.of(context)
                           .textTheme
-                          .bodyText2!
-                          .copyWith(fontWeight: FontWeight.w500),
-                    )
-                  ]),
-            ),
-            SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                  color: AppTheme().warningColor,
-                  borderRadius: BorderRadius.circular(8)),
-              padding: EdgeInsets.all(14),
+                          .bodyText2,
+                )
+              ]),
+        ),
+        SizedBox(height: 14),
+        Container(
+          decoration: BoxDecoration(
+              color: AppTheme().warningColor,
+              borderRadius: BorderRadius.circular(8)),
+          padding: EdgeInsets.all(12),
               child: Column(
                 children: [
                   Row(
@@ -73,86 +83,108 @@ class KeysWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        'Warning',
+                        Keys.warning.tr(context),
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme().redColor),
+                            color: AppTheme().redColor,
+                        ),
                       )
                     ],
-                  ),
+              ),
                   SizedBox(height: 8),
                   Text(
-                    'Do not share these words with anyone, as it grants full access to your account',
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: AppTheme().redColor),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            keyListWidget(context),
-          ],
+                    Keys.doNotShare.tr(context),
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        color: AppTheme().redColor,
+                    ),
+                  ),
+
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
   Widget keyListWidget(BuildContext context) {
-    return FutureBuilder(
-      builder:
-          (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.hasData) {
-          List perhaps = snapshot.data;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                childAspectRatio: 5,
-                padding: EdgeInsets.all(8),
-                children:
-                List.generate(perhaps.length, (index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor:
-                      Theme.of(context).primaryColor,
-                      radius: 10,
-                      child: Text(
-                        '${index + 1}',
-                        style: Theme.of(context).textTheme.caption,
+    return Expanded(
+      child: FutureBuilder(
+        builder:
+            (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            List perhaps = snapshot.data;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 8),
+                Expanded(
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    primary: false,
+                    crossAxisCount: 2,
+                    childAspectRatio: 5,
+                    padding: EdgeInsets.all(8),
+                    children:
+                    List.generate(perhaps.length, (index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                          Theme.of(context).primaryColor,
+                          radius: 10,
+                          child: Text(
+                            '${index + 1}',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        minLeadingWidth: 10,
+                        title: Text(
+                          '${perhaps[index]}',
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        child: Text(Keys.close.tr(context)),
+                        style: ElevatedButton.styleFrom(
+                            primary: AppTheme().redColor),
                       ),
                     ),
-                    minLeadingWidth: 10,
-                    title: Text(
-                      '${perhaps[index]}',
-                      style: Theme.of(context).textTheme.bodyText2,
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (perhaps.isNotEmpty) {
+                            Clipboard.setData(
+                                ClipboardData(text: perhaps.join(' ')));
+                            CustomDialogs.showToastMessage(
+                                context, Keys.copyMessage.tr(context));
+                          }
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text(Keys.copy.tr(context)),
+                        style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).shadowColor),
+                      ),
                     ),
-                  );
-                }),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  if(perhaps.isNotEmpty) {
-                    Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                    CustomDialogs.showToastMessage(context, Strings().copyMessage);
-                  }
-                    Navigator.of(context,rootNavigator: true).pop();
-                },
-                child: Text('Copy and Done'),
-                style: ElevatedButton.styleFrom(primary: Theme.of(context).shadowColor),
-              )
-            ],
+                  ],
+                )
+              ],
+            );
+          }
+          return WaitPage(
+            height: MediaQuery.of(context).size.height / 2,
           );
-        }
-        return WaitPage(
-          height: MediaQuery.of(context).size.height / 2,
-        );
-      },
-      future: account.mnemonic(),
+        },
+        future: account.mnemonic(),
+      ),
     );
   }
 }

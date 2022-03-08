@@ -1,7 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
+import '../../../infrastructure/commons/keys.dart';
 import 'widgets/top_speeds_page.dart';
 import 'widgets/top_durations_page.dart';
 
@@ -18,12 +17,12 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = new TabController(length: 2, vsync: this);
+    controller =  TabController(length: 2, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return  Scaffold(
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -32,16 +31,18 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SvgPicture.asset(
-                  'assets/icons/hip_logo.svg',
+                Image.asset(
+                  'assets/icons/hip_logo_p.png',
                   height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.height * 0.18,
                 ),
-                Text('Who’s Top?'.toUpperCase(),
+                Text(Keys.whoTop.tr(context).toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
-                        .headline5!
-                        .copyWith(fontWeight: FontWeight.bold)),
+                        .headline5?.copyWith(
+                      color: AppTheme().lightSecondaryTextColor
+                    ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
                   decoration: BoxDecoration(
@@ -59,12 +60,12 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                     tabs: [
                       Container(
                           child: Tab(
-                            text: 'Top Speeds',
+                            text: Keys.topSpeeds.tr(context),
                           ),
                           height: kRadialReactionRadius + 12),
                       Container(
                           child: Tab(
-                            text: 'Top Durations',
+                            text: Keys.topDurations.tr(context),
                           ),
                           height: kRadialReactionRadius + 12),
                     ],

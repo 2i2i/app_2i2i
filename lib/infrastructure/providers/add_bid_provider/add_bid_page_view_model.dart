@@ -1,9 +1,15 @@
+import 'dart:async';
 
+import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -12,7 +18,7 @@ import '../../data_access_layer/services/logging.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
-    required this.uid,
+    required this.A,
     required this.database,
     required this.functions,
     required this.algorand,
@@ -21,7 +27,7 @@ class AddBidPageViewModel {
     required this.accountService,
   });
 
-  final String uid;
+  final String A;
   final FirebaseFunctions functions;
   final UserModel B;
   final AlgorandService algorand;
@@ -31,51 +37,95 @@ class AddBidPageViewModel {
 
   bool submitting = false;
 
-  String duration(AbstractAccount account, int speedNum, Balance balance) {
-    if (speedNum == 0) {
-      return 'forever';
-    }
-    final budget = balance.assetHolding.amount;
-    final seconds = budget / speedNum;
+  String duration(AbstractAccount account, Quantity speed, Quantity balance) {
+    if (speed.num == 0) return 'forever';
+    final seconds = balance.num / speed.num;
     return secondsToSensibleTimePeriod(seconds.round());
   }
 
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
     required AbstractAccount? account,
-    required Balance? balance,
-    required int speedNum,
-    String note = '',
+    required Quantity amount,
+    required Quantity speed,
+    String? bidComment,
+    BuildContext? context,
+    Function? timeout,
   }) async {
-    log('AddBidPageViewModel - addBid');
+    log('AddBidPageViewModel - addBid - amount.assetId=${amount.assetId}');
 
-    final int speedAssetId = speedNum == 0 ? 0 : balance!.assetHolding.assetId;
-    log('AddBidPageViewModel - addBid - speedAssetId=$speedAssetId');
+    if (speed.num < B.rule.minSpeed) return;
+    // throw Exception('speed.num < B.rule.minSpeed');
 
-    final speed = Quantity(num: speedNum, assetId: speedAssetId);
-    final addrA = speed.num == 0 ? null : account?.address;
+    if (B.blocked.contains(A)) return;
 
-    // TODO clean separation into firestore_service and firestore_database
     final net = AlgorandNet.testnet;
-    final bidId = database.newDocId(path: 'users/$uid/bidOuts');
-    final bidOutRef =
-        FirebaseFirestore.instance.collection('users/$uid/bidOuts').doc(bidId);
-    final bidOut = BidOut(id: bidId, B: B.id, speed: speed, net: net);
-    final bidInRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
-        .doc(bidId);
-    final bidIn = BidIn(id: bidId, speed: speed, net: net);
-    final bidInPrivateRef = FirebaseFirestore.instance
-        .collection('users/${B.id}/bidIns')
-        .doc(bidId)
-        .collection('private')
-        .doc('main');
-    final bidInPrivate = BidInPrivate(A: uid, addrA: addrA,comment: note);
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(bidOutRef, bidOut.toMap(), SetOptions(merge: false));
-      transaction.set(bidInRef, bidIn.toMap(), SetOptions(merge: false));
-      transaction.set(
-          bidInPrivateRef, bidInPrivate.toMap(), SetOptions(merge: false));
-    });
+    final String? addrA = speed.num == 0 ? null : account!.address;
+    final bidId = database.newDocId(
+        path: FirestorePath
+            .meetings()); // new bid id comes from meetings to avoid collision
+
+    // lock coins
+    Map<String, String> txns = {};
+    if (speed.num != 0) {
+      final note =
+          bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
+      try {
+        txns = await algorand
+            .lockCoins(account: account!, net: net, amount: amount, note: note)
+            .timeout(Duration(seconds: 60));
+      } on TimeoutException catch (e) {
+        log('AlgorandException  ${e.message}');
+        timeout?.call();
+        return;
+      } on AlgorandException catch (ex) {
+        final cause = ex.cause;
+        if (cause is dio.DioError) {
+          final message = cause.response?.data['message'];
+          if (context != null) {
+            CustomAlertWidget.showErrorDialog(
+                context, Keys.errorWhileAddBid.tr(context),
+                errorStacktrace: '$message');
+          }
+          log('AlgorandException ' + message);
+        }
+        return;
+      } catch (e) {
+        print('AlgorandException catch $e');
+      }
+    }
+
+    final bidOut = BidOut(
+      id: bidId,
+      B: B.id,
+      speed: speed,
+      net: net,
+      txns: txns,
+      active: true,
+      addrA: addrA,
+      energy: amount.num,
+      comment: bidComment,
+    );
+    final bidInPublic = BidInPublic(
+      id: bidId,
+      speed: speed,
+      net: net,
+      active: true,
+      ts: DateTime.now().toUtc(),
+      rule: B.rule,
+      energy: amount.num,
+    );
+
+    final bidInPrivate = BidInPrivate(
+      id: bidId,
+      active: true,
+      A: A,
+      addrA: addrA,
+      comment: bidComment,
+      txns: txns,
+    );
+
+    BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
+    return database.addBid(bidOut, bidIn);
   }
 }

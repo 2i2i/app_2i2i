@@ -1,30 +1,54 @@
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutterfire_ui/auth.dart';
-
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../home/wait_page.dart';
+import 'package:go_router/go_router.dart';
 
-class AuthWidget extends ConsumerWidget {
+bool showed = false;
+class AuthWidget extends ConsumerStatefulWidget {
+  final WidgetBuilder homePageBuilder;
   AuthWidget({required this.homePageBuilder});
 
-  final WidgetBuilder homePageBuilder;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _AuthWidgetState createState() => _AuthWidgetState();
+}
+
+class _AuthWidgetState extends ConsumerState<AuthWidget> {
+  @override
+  void initState() {
+    userIdNav.addListener(() {
+      if(userIdNav.value.isNotEmpty){
+        context.pushNamed(Routes.user.nameFromPath(),params: {
+          'uid':userIdNav.value
+        });
+        userIdNav.value = '';
+      }
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
     final authStateChanges = ref.watch(authStateChangesProvider);
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return authStateChanges.when(data: (user) {
-            if (user == null) {
-              final signUpViewModel = ref.read(setupUserViewModelProvider);
-              if (!signUpViewModel.signUpInProcess) {
-                signUpViewModel.signInAnonymously();
-                /*return SignInScreen(
+          return authStateChanges.when(data: (firebaseUser) {
+            final signUpViewModel = ref.read(setupUserViewModelProvider);
+
+            if (firebaseUser != null) {
+              signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+              return widget.homePageBuilder(context);
+            }
+
+            // if (firebaseUser == null) {
+            // if (!signUpViewModel.signUpInProcess) {
+            // final token = ref.read(firebaseMessagingTokenProvider);
+            signUpViewModel.signInAnonymously();
+            /*return SignInScreen(
                   headerBuilder: (context, constraints, shrinkOffset) =>
                       SvgPicture.asset(
                     'assets/icons/appbar_icon.svg',
@@ -34,13 +58,13 @@ class AuthWidget extends ConsumerWidget {
                   showAuthActionSwitch: false,
                   actions: [
                     AuthStateChangeAction<SignedIn>(
-                      (context, userModel) {
+                      (context, user) {
                         Future.delayed(Duration.zero).then(
                           (value) {
                             ref
                                 .read(setupUserViewModelProvider)
                                 .createAuthAndStartAlgoRand(
-                                    firebaseUserId: userModel.user?.uid);
+                                    firebaseUserId: user.user?.uid);
                           },
                         );
                       },
@@ -68,17 +92,15 @@ class AuthWidget extends ConsumerWidget {
                     ),
                   ),
                 );*/
-              }
-              return WaitPage();
-            }
-
-            return homePageBuilder(context);
+            // }
+            return WaitPage();
+            // }
           }, loading: () {
             return WaitPage();
           }, error: (_, __) {
-            return const Scaffold(
+            return Scaffold(
               body: Center(
-                child: Text('error'),
+                child: Text(Keys.error.tr(context),style: Theme.of(context).textTheme.subtitle1),
               ),
             );
           });
