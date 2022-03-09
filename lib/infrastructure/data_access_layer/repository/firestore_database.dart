@@ -128,11 +128,15 @@ class FirestoreDatabase {
 
   Future<void> _updateUserHeartbeat(String uid, String field,
       {String? newStatus}) {
+        
+        log(X + '_updateUserHeartbeat uid=$uid - field=$field - newStatus=$newStatus');
+
     final data = <String, dynamic>{
       field: FieldValue.serverTimestamp(),
     };
     if (newStatus != null) data['status'] = newStatus;
 
+    log(X + '_updateUserHeartbeat setData');
     return _service
         .setData(
       path: FirestorePath.user(uid),
