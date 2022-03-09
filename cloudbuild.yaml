@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/app_cloudbuild', '.']
+images:
+- 'gcr.io/$PROJECT_ID/app_cloudbuild'
+# tags: ['cloud-builders-community']
