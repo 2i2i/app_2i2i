@@ -4,36 +4,36 @@
 
 FROM node:16
 
-RUN echo "15"
+RUN echo "16"
 
-RUN echo 1
-ADD test.bash /usr/bin
-RUN echo 2
-RUN chmod +x /usr/bin/test.bash
-RUN echo 3
-RUN /usr/bin/test.bash
-RUN echo 4
-ENTRYPOINT [ "/usr/bin/test.bash" ]
+# RUN echo 1
+# ADD test.bash /usr/bin
+# RUN echo 2
+# RUN chmod +x /usr/bin/test.bash
+# RUN echo 3
+# RUN /usr/bin/test.bash
+# RUN echo 4
+# ENTRYPOINT [ "/usr/bin/test.bash" ]
 
 # RUN echo ${FIREBASE_TOKEN}
 
-# RUN apk add --no-cache bash
+RUN apk add --no-cache bash
 
 # Install Dependencies.
-# RUN apt update -y
-# RUN apt install -y git
+RUN apt update -y
+RUN apt install -y git
 
 # Install Flutter.
-# ENV FLUTTER_ROOT="/opt/flutter"
-# RUN git clone -b 2.10.3 https://github.com/flutter/flutter "${FLUTTER_ROOT}"
-# ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
-# ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
+ENV FLUTTER_ROOT="/opt/flutter"
+RUN git clone -b 2.10.3 https://github.com/flutter/flutter "${FLUTTER_ROOT}"
+ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
+ENV ANDROID_HOME="${ANDROID_TOOLS_ROOT}"
 
 # Disable analytics and crash reporting on the builder.
-# RUN flutter config  --no-analytics
+RUN flutter config  --no-analytics
 
 # install firebase
-# RUN npm install -g firebase-tools
+RUN npm install -g firebase-tools
 
 # Install Python and Java and pre-cache emulator dependencies.
 # RUN apk add --no-cache python3 py3-pip openjdk11-jre bash && \
@@ -42,12 +42,12 @@ ENTRYPOINT [ "/usr/bin/test.bash" ]
     # rm -rf /var/cache/apk/*
 
 # copy source code to docker
-# COPY . /app
-# WORKDIR /app
+COPY . /app
+WORKDIR /app
 
-# RUN flutter build web
+RUN flutter build web
 # RUN firebase use test
-# RUN firebase deploy --only hosting
+RUN firebase deploy --project i2i-test --only hosting
 
 # RUN echo $(pwd)
 # RUN echo $(ls -al)
