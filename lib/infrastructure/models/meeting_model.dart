@@ -210,17 +210,12 @@ class Meeting extends Equatable {
     required this.coinFlowsA,
     required this.coinFlowsB,
     required this.lounge,
-    required this.isVideoMuteA,
-    required this.isVideoMuteB,
   });
 
   final String id;
 
   final bool active; // status is not END_*
   final bool settled; //
-
-  final bool isVideoMuteA;
-  final bool isVideoMuteB;
 
   final String A;
   final String B;
@@ -276,8 +271,6 @@ class Meeting extends Equatable {
 
     final String A = data['A'];
     final String B = data['B'];
-    final bool isVideoMuteA = data['isVideoMuteA'] ?? false;
-    final bool isVideoMuteB = data['isVideoMuteB'] ?? false;
     final String? addrA = data['addrA'];
     final String? addrB = data['addrB'];
 
@@ -341,9 +334,7 @@ class Meeting extends Equatable {
         room: room,
         coinFlowsA: coinFlowsA,
         coinFlowsB: coinFlowsB,
-        rule: rule,
-        isVideoMuteA: isVideoMuteA,
-        isVideoMuteB: isVideoMuteB);
+        rule: rule,);
   }
 
   // used by acceptBid, as B
@@ -385,8 +376,6 @@ class Meeting extends Equatable {
       coinFlowsA: [],
       coinFlowsB: [],
       rule: bidIn.public.rule,
-      isVideoMuteB: false,
-      isVideoMuteA: false
     );
   }
 
