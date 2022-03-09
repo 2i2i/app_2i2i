@@ -1,5 +1,5 @@
 import 'package:algorand_dart/algorand_dart.dart';
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -38,25 +38,22 @@ class AlgorandLib {
   //   AlgorandNet.betanet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   // };
   AlgorandLib() {
-    for (final net in [AlgorandNet.mainnet, AlgorandNet.testnet]) {
-      client[net] = Algorand(
-          algodClient:
-              AlgodClient(apiUrl: API_URL[net]!, apiKey: API_KEY[net]!),
-          indexerClient: IndexerClient(apiUrl: INDEXER_URL[net]!));
-    }
+    client[AppConfig().ALGORAND_NET] = Algorand(
+        algodClient: AlgodClient(apiUrl: API_URL[AppConfig().ALGORAND_NET]!, apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
 
 class AlgorandService {
   static const Map<AlgorandNet, int> SYSTEM_ID = {
-    AlgorandNet.mainnet: 67119462,
+    AlgorandNet.mainnet: 646763643,
     AlgorandNet.testnet: 67119462,
     AlgorandNet.betanet: 67119462,
   };
   static const Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
     AlgorandNet.mainnet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
+        'XRZZ43TX2DM67F7QJNV2RPYM2TYOYA52QQT3INSCEW7YGLPHAIKJPXODVY',
     AlgorandNet.testnet:
         'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
     AlgorandNet.betanet:

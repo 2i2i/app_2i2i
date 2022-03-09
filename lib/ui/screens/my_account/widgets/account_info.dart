@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/material.dart';
@@ -144,7 +145,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       ),
                       onPressed: () async {
                         CustomDialogs.loader(true, context);
-                        await widget.account.updateBalances();
+                        await widget.account.updateBalances(net: AppConfig().ALGORAND_NET);
                         if (widget.afterRefresh != null) widget.afterRefresh!();
                         CustomDialogs.loader(false, context);
                         setState(() {});

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -509,7 +510,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         active: false,
         id: now.microsecondsSinceEpoch.toString(),
         speed: speed,
-        net: AlgorandNet.testnet,
+        net: AppConfig().ALGORAND_NET,
         ts: now,
         energy: amount.num,
         rule: userB!.rule);
