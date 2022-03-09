@@ -238,7 +238,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               ),
             ),
             const SizedBox(height: 30),
-
             Text(
               Keys.bio.tr(context),
               style: Theme.of(context).textTheme.bodyText1,

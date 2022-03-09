@@ -34,6 +34,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -75,14 +76,14 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.root,
+    initialLocation: Routes.login,
     routes: [
       GoRoute(
-        name: Routes.test.nameFromPath(),
-        path: Routes.test,
+        name: Routes.login.nameFromPath(),
+        path: Routes.login,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(TestScreen()),
+          child: getView(SignInPage()),
           // child: getView(WaitPage()),
           // child: Scaffold(),
         ),
@@ -411,7 +412,7 @@ class NamedRoutes {
             return AddRatingPage(showRating: showRating);
           },
         ),
-        bottomNavigationBar: BottomNavBar(),
+        // bottomNavigationBar: BottomNavBar(),
       ),
     );
     return Consumer(
