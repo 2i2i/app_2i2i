@@ -1,11 +1,11 @@
 {
   "steps": [
    {
-      "name": "gcr.io/i2i-test/cloudbuild",
+      "name": "gcr.io/app-2i2i/cloudbuild",
       "args": [
          "deploy",
          "--project",
-         "i2i-test",
+         "app-2i2i",
          "--only",
          "hosting"
        ]

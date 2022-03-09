@@ -4,7 +4,7 @@
 
 FROM node:16
 
-RUN echo "16"
+# RUN echo "16"
 
 # RUN echo 1
 # ADD test.bash /usr/bin
@@ -42,12 +42,12 @@ RUN npm install -g firebase-tools
     # rm -rf /var/cache/apk/*
 
 # copy source code to docker
-COPY . /app
-WORKDIR /app
+# COPY . /app
+# WORKDIR /app
 
-RUN flutter build web
+# RUN flutter build web
 # RUN firebase use test
-RUN firebase deploy --project i2i-test --only hosting
+# RUN firebase deploy --project i2i-test --only hosting
 
 # RUN echo $(pwd)
 # RUN echo $(ls -al)
@@ -55,3 +55,7 @@ RUN firebase deploy --project i2i-test --only hosting
 
 # CMD ["export", "FIREBASE_TOKEN="]
 # ENTRYPOINT [ "install.sh" ]
+
+ADD firebase.bash /usr/bin
+RUN chmod +x /usr/bin/firebase.bash
+ENTRYPOINT [ "/usr/bin/firebase.bash" ]
