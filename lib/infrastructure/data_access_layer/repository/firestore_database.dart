@@ -7,10 +7,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
+import '../../models/call_status_model.dart';
 import '../../models/chat_model.dart';
-import '../../models/user_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
+import '../../models/user_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -150,6 +151,24 @@ class FirestoreDatabase {
       print(onError);
     });
   }
+
+  Future<void> updateCallStatus(String meetingId, Map<String, dynamic> data) {
+    return _service.setData(
+      path: FirestorePath.updateCallStatus(meetingId),
+      data: data,
+      merge: true,
+    ).catchError((onError) {
+      print(onError);
+    });
+  }
+
+  Stream<CallStatusModel> getCallStatus({required String meetingId}) =>
+      _service.documentStream(
+        path: FirestorePath.updateCallStatus(meetingId),
+        builder: (data, documentId) => CallStatusModel.fromJson(data!,documentId),
+      ).handleError((onError){
+        print(onError);
+      });
 
   Future meetingEndUnlockUser(
       Meeting meeting, Map<String, dynamic> data) async {

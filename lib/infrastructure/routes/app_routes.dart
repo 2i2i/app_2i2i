@@ -19,6 +19,7 @@ class Routes {
   static const userSetting = '/userSetting';
   static const recover = '/recover';
   static const createLocalAccount = '/createLocalAccount';
+  static const test = '/test';
 
   static const user = '/user/:uid';
   static const createBid = '/addBid';

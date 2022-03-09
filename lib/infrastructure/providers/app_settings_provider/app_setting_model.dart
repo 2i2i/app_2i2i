@@ -22,6 +22,31 @@ class AppSettingModel extends ChangeNotifier {
   Locale? locale;
 
   bool isAutoModeEnable = false;
+  bool isAudioEnabled = true;
+  bool isVideoEnabled = true;
+  bool swapVideo = false;
+
+  void appInit() {
+    isVideoEnabled = true;
+    isAudioEnabled = true;
+    notifyListeners();
+  }
+
+  void setAudioStatus(bool value) {
+    isAudioEnabled = value;
+    notifyListeners();
+  }
+
+  void setVideoStatus(bool value) {
+    isVideoEnabled = value;
+    notifyListeners();
+  }
+
+  void setSwapVideo(bool value) {
+    swapVideo = value;
+    notifyListeners();
+  }
+
   bool updateRequired = false;
   String version = "1";
 
