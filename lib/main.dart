@@ -100,9 +100,10 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       window.addEventListener('blur', onBlur);
     }
 
+    updateHeartbeat(Status.ONLINE);
+
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
       await ref.watch(appSettingProvider).checkIfUpdateAvailable();
