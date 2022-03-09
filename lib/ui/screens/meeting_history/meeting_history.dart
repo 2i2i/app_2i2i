@@ -33,8 +33,6 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
-    final meetingHistory = ref.read(meetingHistoryProvider(uid));
-
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -88,16 +86,12 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
               ),
             ),
             Expanded(
-              child: haveToWait(meetingHistory)
-                  ? Center(child: WaitPage(isCupertino: false))
-                  : TabBarView(
+              child: TabBarView(
                       controller: _tabController,
                       children: [
                         BidInMeetings(
-                            meetingListA: (meetingHistory?.meetingListB ?? []),
                             uid: uid),
                         BidOutMeetings(
-                            meetingListB: (meetingHistory?.meetingListA ?? []),
                             uid: uid),
                       ],
                     ),

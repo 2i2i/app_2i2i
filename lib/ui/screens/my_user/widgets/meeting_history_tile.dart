@@ -32,7 +32,7 @@ class MeetingHistoryTile extends ConsumerWidget {
     final user =
         ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
     if (haveToWait(user)) {
-      return CupertinoActivityIndicator();
+      return Container();
     }
 
     if (user?.status == Status.OFFLINE) {
