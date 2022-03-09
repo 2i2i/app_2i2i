@@ -94,21 +94,16 @@ class _MainWidgetState extends ConsumerState<MainWidget>
 
   @override
   void initState() {
-    log(X + 'initState');
     super.initState();
-    log(X + 'initState 2');
 
     if (kIsWeb) {
-      log(X + 'initState 3');
       window.addEventListener('focus', onFocus);
       window.addEventListener('blur', onBlur);
     }
 
-    log(X + 'initState 4');
-    updateHeartbeat(Status.ONLINE);
-
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
       await ref.watch(appSettingProvider).checkIfUpdateAvailable();
@@ -153,8 +148,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       //   });
       // }
       await Custom.deepLinks(context, mounted);
-
-      final userChanger = ref.watch(userChangerProvider);
     });
   }
 
@@ -167,7 +160,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   }
 
   Future<void> updateHeartbeat(Status status) async {
-    log(X + 'updateHeartbeat status=$status');
+    // log(X + 'updateHeartbeat status=$status');
     final userChanger = ref.watch(userChangerProvider);
     timer?.cancel();
 
