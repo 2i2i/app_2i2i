@@ -119,7 +119,7 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
-          'heartbeatBackground':FieldValue.serverTimestamp(),
+          'heartbeatBackground': FieldValue.serverTimestamp(),
         },
         merge: true,
       ).catchError((onError){
@@ -130,7 +130,8 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
-          'heartbeatForeground':FieldValue.serverTimestamp(),
+          'heartbeatForeground': FieldValue.serverTimestamp(),
+          'status': 'ONLINE',
         },
         merge: true,
       ).catchError((onError){
