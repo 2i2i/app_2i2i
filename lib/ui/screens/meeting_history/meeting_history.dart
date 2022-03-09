@@ -2,10 +2,8 @@ import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom.dart';
-import '../home/wait_page.dart';
 import 'widgets/bid_in_meetings.dart';
 import 'widgets/bid_out_meetings.dart';
 
