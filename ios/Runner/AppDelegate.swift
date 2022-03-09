@@ -21,7 +21,7 @@ import CallKit
                                                    binaryMessenger: controller.binaryMessenger)
         notificationChannel?.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            
+
             if(call.method == "INCOMING_CALL"){
                 let args = call.arguments as? Dictionary<String, Any>
                 self.createNotification(value: args?["name"] as! String)
@@ -56,6 +56,7 @@ import CallKit
         provider = CXProvider(configuration: config)
         provider?.setDelegate(self, queue: nil)
         let update = CXCallUpdate()
+        
         update.remoteHandle = CXHandle(type: .generic, value: value)
         update.hasVideo = true
         update.supportsGrouping = false
@@ -85,4 +86,5 @@ import CallKit
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         notificationChannel?.invokeMethod("MUTE", arguments: "CALL MUTE")
     }
+    
 }
