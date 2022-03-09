@@ -106,6 +106,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
+      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       messaging.requestPermission(

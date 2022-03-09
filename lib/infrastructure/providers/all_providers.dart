@@ -119,7 +119,8 @@ final algorandProvider = Provider((ref) {
 
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
-  return AppSettingModel(storage: storage);
+  final database = ref.watch(databaseProvider);
+  return AppSettingModel(storage: storage,firebaseDatabase: database);
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());

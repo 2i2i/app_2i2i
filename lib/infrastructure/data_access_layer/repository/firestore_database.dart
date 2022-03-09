@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -247,6 +249,16 @@ class FirestoreDatabase {
         data: user.toMap(),
         merge: true,
       );
+  
+  Future<AppVersionModel?> getAppVersion()  async {
+    DocumentSnapshot snapshot =
+    await _service.getData(path: FirestorePath.appVersion());
+    if (snapshot.data() is Map) {
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      return AppVersionModel.fromJson(data!);
+    }
+    return null;
+  }
 
   Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =

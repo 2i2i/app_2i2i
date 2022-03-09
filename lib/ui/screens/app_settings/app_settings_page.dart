@@ -5,6 +5,7 @@ import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
@@ -19,6 +20,8 @@ class AppSettingPage extends ConsumerStatefulWidget {
 class _AppSettingPageState extends ConsumerState<AppSettingPage>
     with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -251,11 +254,48 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       Icons.navigate_next,
                     ),
                   ),
+                  ListTile(
+                    onTap: () {
+                      if (appSettingModel.updateRequired) {
+                        StoreRedirect.redirect(
+                          androidAppId: "app.i2i2",
+                          iOSAppId: "app.2i2i",
+                        );
+                      }
+                    },
+                    title: Text(
+                      Keys.appVersion.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    subtitle: appSettingModel.updateRequired
+                        ? Text('Update Available',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption
+                                ?.copyWith(color: Colors.amber))
+                        : null,
+                    iconColor: Colors.amber,
+                    trailing: appSettingModel.updateRequired
+                        ? RotatedBox(
+                            quarterTurns: 1,
+                            child: Icon(
+                              Icons.arrow_circle_left_rounded,
+                            ),
+                          )
+                        : Text("${appSettingModel.version}",
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption
+                                ?.copyWith(
+                                    color: Theme.of(context).disabledColor)),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: 20),
-
+            Text('${Keys.appVersion.tr(context)}: v23',textAlign: TextAlign.center,style: Theme.of(context).textTheme.caption?.copyWith(
+                color: Theme.of(context).disabledColor
+            )),
             //lgout
             /*Text(
               'Logout',
