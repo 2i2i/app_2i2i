@@ -17,7 +17,7 @@ RUN echo "16"
 
 # RUN echo ${FIREBASE_TOKEN}
 
-RUN apk add --no-cache bash
+# RUN apk add --no-cache bash
 
 # Install Dependencies.
 RUN apt update -y
