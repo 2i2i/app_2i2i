@@ -1,11 +1,13 @@
 import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 
 class BidInTile extends StatelessWidget {
@@ -96,7 +98,7 @@ class BidInTile extends StatelessWidget {
                                 .textTheme
                                 .headline6!
                                 .copyWith(
-                                    fontWeight: FontWeight.w600, fontSize: 20),
+                                fontWeight: FontWeight.w600, fontSize: 20),
                           ),
                         ),
                         Align(
@@ -108,7 +110,7 @@ class BidInTile extends StatelessWidget {
                                 color: statusColor,
                                 borderRadius: BorderRadius.circular(20),
                                 border:
-                                    Border.all(color: Colors.white, width: 2)),
+                                Border.all(color: Colors.white, width: 2)),
                           ),
                         ),
                       ],
@@ -127,8 +129,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -137,8 +139,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.caption?.copyWith(
-                              fontWeight: FontWeight.w400,
-                            ),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ],
                   ),
@@ -151,21 +153,21 @@ class BidInTile extends StatelessWidget {
                         text: '\nμAlgo/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.color
-                                  ?.withOpacity(0.7),
-                            ),
-                      )
-                    ],
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
                           color: Theme.of(context)
                               .textTheme
                               .headline6
                               ?.color
                               ?.withOpacity(0.7),
                         ),
+                      )
+                    ],
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.color
+                          ?.withOpacity(0.7),
+                    ),
                   ),
                 ),
                 // Text(bid.speed.num.toString() + ' μAlgo/s'),
@@ -210,7 +212,7 @@ class BidInTile extends StatelessWidget {
                         children: [
                           TextSpan(
                               text:
-                                  ' ${secondsToSensibleTimePeriod(totalDuration)}',
+                              ' ${secondsToSensibleTimePeriod(totalDuration)}',
                               style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
