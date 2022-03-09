@@ -118,7 +118,8 @@ class FirestoreDatabase {
   Future<void> updateUserHeartbeatFromForeground(String uid,
           {bool setStatus = false}) =>
       setStatus
-          ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE')
+          ? _updateUserHeartbeat(uid, 'heartbeatForeground',
+              newStatus: 'ONLINE')
           : _updateUserHeartbeat(uid, 'heartbeatForeground');
   Future<void> updateUserHeartbeatFromBackground(String uid,
           {bool setStatus = false}) =>

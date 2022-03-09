@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -100,10 +101,9 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       window.addEventListener('blur', onBlur);
     }
 
-    updateHeartbeat(Status.ONLINE);
-
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
       await ref.watch(appSettingProvider).checkIfUpdateAvailable();
@@ -160,31 +160,21 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   }
 
   Future<void> updateHeartbeat(Status status) async {
+    // log(X + 'updateHeartbeat status=$status');
+    final userChanger = ref.watch(userChangerProvider);
+    timer?.cancel();
+
     if (status == Status.IDLE) {
-      timer?.cancel();
-
-      // immediate
-      final userChanger = ref.watch(userChangerProvider);
-      if (userChanger == null) return;
-      await userChanger.updateHeartbeatBackground(setStatus: true);
-
+      userChanger?.updateHeartbeatBackground(setStatus: true); // immediate
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
         final userChanger = ref.watch(userChangerProvider);
-        if (userChanger == null) return;
-        await userChanger.updateHeartbeatBackground();
+        userChanger?.updateHeartbeatBackground();
       });
-    } else {
-      timer?.cancel();
-
-      // immediate
-      final userChanger = ref.watch(userChangerProvider);
-      if (userChanger == null) return;
-      await userChanger.updateHeartbeatForeground(setStatus: true);
-
+    } else if (status == Status.ONLINE) {
+      userChanger?.updateHeartbeatForeground(setStatus: true); // immediate
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
         final userChanger = ref.watch(userChangerProvider);
-        if (userChanger == null) return;
-        await userChanger.updateHeartbeatForeground(setStatus: true);
+        userChanger?.updateHeartbeatForeground(setStatus: true);
       });
     }
   }
@@ -210,6 +200,7 @@ class _MainWidgetState extends ConsumerState<MainWidget>
         updateHeartbeat(Status.IDLE);
         break;
       default:
+        log(X + 'didChangeAppLifecycleState state=$state');
         break;
     }
   }
