@@ -1,0 +1,14 @@
+{
+  "steps": [
+   {
+      "name": "gcr.io/$PROJECT_ID/app_cloudbuild",
+      "args": [
+         "deploy",
+         "--project",
+         "$PROJECT_ID",
+         "--only",
+         "hosting"
+       ]
+  }
+  ]
+}

@@ -15,7 +15,6 @@ import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import '../../../main.dart';
-import '../../commons/custom_dialogs.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../home/wait_page.dart';
 import 'ripples_animation.dart';
@@ -41,9 +40,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      CustomDialogs.showToastMessage(context, "Ringin Screen");
-    });
     platform.setMethodCallHandler((MethodCall methodCall) async {
 
       if (ringingPageViewModel == null) {
@@ -77,7 +73,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
       final finishFuture = finish();
-      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER);
+      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
       await Future.wait([finishFuture, endMeetingFuture]);
     });
   }

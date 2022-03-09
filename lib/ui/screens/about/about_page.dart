@@ -66,8 +66,7 @@ class AboutPage extends StatelessWidget {
             '• Use any coin on the Algorand blockchain.',
           ]),
           paragraph(context, 'App', [
-            '• 2i2i is currently available as a web app (alpha version) on the Algorand testnet.',
-            '• It is not pretty, but functional.',
+            '• 2i2i is currently available as a web app (beta version) on the Algorand testnet and mainnet.',
             '• Android and iOS versions are also implemented and will be available soon.',
           ]),
           paragraph(context, 'Security', [

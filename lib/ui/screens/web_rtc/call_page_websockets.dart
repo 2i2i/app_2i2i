@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -53,19 +54,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_){
+    amA = widget.meeting.A == widget.user.id;
+    localId = amA ? widget.meeting.A : widget.meeting.B;
+    remoteId = amA ? widget.meeting.B : widget.meeting.A;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       initRenderers();
-
-      amA = widget.meeting.A == widget.user.id;
-      localId = amA ? widget.meeting.A : widget.meeting.B;
-      remoteId = amA ? widget.meeting.B : widget.meeting.A;
-
       _connect();
-
     });
-
-
-
   }
 
   initRenderers() async {
@@ -106,7 +101,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     widget.onHangPhone(remoteId, widget.meeting.id);
 
-    await platform.invokeMethod('CUT_CALL');
+    if (Platform.isIOS) {
+      await platform.invokeMethod('CUT_CALL');
+    }
   }
 
   @override
@@ -287,8 +284,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     budgetTimer = Timer(Duration(seconds: duration), () {
       // log(X + 'budgetTimer');
       progressTimer?.cancel();
-      _hangUp(MeetingStatus.END_TIMER);
-      // signaling?.hangUp(reason: MeetingStatus.END_TIMER);
+      _hangUp(MeetingStatus.END_TIMER_CALL_PAGE);
+      // signaling?.hangUp(reason: MeetingStatus.END_TIMER_CALL_PAGE);
     });
 
     progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {

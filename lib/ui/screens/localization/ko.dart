@@ -39,7 +39,7 @@ class ko {
       Keys.fav: '즐겨찾기',
       Keys.scanQr: '주사 QR',
       Keys.about: '에 대한',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: '사용 WalletConnect\n(e.g. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
@@ -116,6 +116,8 @@ class ko {
       Keys.bidIn: '입찰',
       Keys.bidOut: '대기 중',
       Keys.noBidFound: '입찰가를 찾을 수 없습니다.',
+      Keys.noMeetingsFound: '모임을 찾을 수 없습니다',
+      Keys.roomIsEmpty: '당신의 방은 비어 있습니다',
       Keys.meetingsHistory: '회의 기록',
       Keys.history: '역사',
       Keys.friendList: '친구 목록',
@@ -161,6 +163,10 @@ class ko {
       Keys.topSpeeds: '최고 속도',
       Keys.topDurations: '최고 기간',
       Keys.language: '앱 언어',
+      Keys.inviteFriend: '프로필 링크를 팔로워와 공유하여 여기에서 만나세요',
+      Keys.joinInvite: '2i2i에서 나와 함께 놀아요',
+      Keys.joinOtherRoom: '일부 사람들의 방에 참여하십시오',
+      Keys.beFirstJoin: '이 방에 가장 먼저 참여하세요',
     };
   }
 }

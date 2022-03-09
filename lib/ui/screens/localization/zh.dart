@@ -38,7 +38,7 @@ class zh {
       Keys.fav: '收藏夹',
       Keys.scanQr: '扫描 QR',
       Keys.about: '关于',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: '利用 WalletConnect\n(例如 Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: '行',
@@ -115,6 +115,8 @@ class zh {
       Keys.bidIn: '投标',
       Keys.bidOut: '等待',
       Keys.noBidFound: '未找到出价',
+      Keys.noMeetingsFound: '未找到会议',
+      Keys.roomIsEmpty: '你的房间是空的',
       Keys.meetingsHistory: '会议历史',
       Keys.history: '历史',
       Keys.friendList: '好友列表',
@@ -159,6 +161,10 @@ class zh {
       Keys.topSpeeds: '最高速度',
       Keys.topDurations: '热门持续时间',
       Keys.language: '应用语言',
+      Keys.inviteFriend: '与您的关注者分享您的个人资料链接，以便在此处与他们会面',
+      Keys.joinInvite: '在 2i2i 上和我一起出去玩',
+      Keys.joinOtherRoom: '请加入一些人的房间',
+      Keys.beFirstJoin: '成为第一个加入此房间的人',
     };
   }
 }

@@ -1,3 +1,5 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -94,7 +96,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount() async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    final account = await LocalAccount.create(
+    final LocalAccount account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);
@@ -104,8 +106,13 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    // await algorand.giftALGO(account);
-    // await account.updateBalances();
+    final HttpsCallable giftALGO =
+        FirebaseFunctions.instance.httpsCallable('giftALGO');
+    
+    if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
+      await giftALGO({'account': account.address});
+      return account.updateBalances(net: AlgorandNet.testnet);
+    }
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,

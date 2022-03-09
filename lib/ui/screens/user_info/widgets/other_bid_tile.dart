@@ -9,8 +9,13 @@ import '../../../../infrastructure/models/bid_model.dart';
 class OtherBidTile extends ConsumerWidget {
   final BidInPublic bidIn;
   final UserModel user;
+  final bool myBidOut;
 
-  const OtherBidTile({Key? key, required this.bidIn, required this.user})
+  const OtherBidTile(
+      {Key? key,
+      required this.bidIn,
+      required this.user,
+      this.myBidOut = false})
       : super(key: key);
 
   @override
@@ -19,7 +24,7 @@ class OtherBidTile extends ConsumerWidget {
         ? bidIn.rule.maxMeetingDuration
         : (bidIn.energy / bidIn.speed.num).round();
 
-    return Card(
+    Widget userItem = Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -74,6 +79,46 @@ class OtherBidTile extends ConsumerWidget {
             ),
             trailing: Icon(Icons.call_made_rounded, color: AppTheme().red),
           )),
+    );
+
+    return myBidOut ? coverWidget(userItem, context) : userItem;
+  }
+
+  Widget coverWidget(Widget child, BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 8),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          border: Border.all(color: Theme.of(context).colorScheme.secondary),
+          borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          child,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Text(
+                //   'Index No:${index + 1}',
+                //   style: Theme.of(context).textTheme.caption?.copyWith(
+                //       fontStyle: FontStyle.italic,
+                //       color: Theme.of(context).cardColor),
+                //   textAlign: TextAlign.end,
+                // ),
+                Text(
+                  'This is you',
+                  style: Theme.of(context).textTheme.caption?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: Theme.of(context).cardColor),
+                  textAlign: TextAlign.end,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

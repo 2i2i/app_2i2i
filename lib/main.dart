@@ -7,10 +7,10 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -22,9 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import "package:universal_html/html.dart" as html;
-
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
-import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
@@ -38,7 +36,7 @@ import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
-var platform = MethodChannel('app.2i2i/notification');
+final platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,11 +48,23 @@ Future<void> main() async {
 
   FirebaseNotifications();
 
-  await SentryFlutter.init((options) {
-    options.dsn =
-        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  }, appRunner: () {
-    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
+    return SentryFlutter.init((options) {
+      options.dsn =
+          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+    }, appRunner: () {
+      FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+        FlutterSecureStorage().read(key: 'language').then((local) {
+          return runApp(
+            ProviderScope(
+              child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+            ),
+          );
+        });
+      });
+    });
+  } else {
+    return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
       FlutterSecureStorage().read(key: 'language').then((local) {
         return runApp(
           ProviderScope(
@@ -63,9 +73,7 @@ Future<void> main() async {
         );
       });
     });
-  }).onError((error, stackTrace) {
-    print(error);
-  });
+  }
 }
 
 class MainWidget extends ConsumerStatefulWidget {
@@ -134,7 +142,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       }
       await Custom.deepLinks(context, mounted);
     });
-
   }
 
   Future<void> updateHeartbeat(Status status) async {
@@ -177,9 +184,6 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
-
-
-
 
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
