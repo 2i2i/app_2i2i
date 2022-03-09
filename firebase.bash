@@ -1,8 +1,5 @@
 #!/bin/bash
 
-pwd
-ls
-
 flutter build web
 
 # run the original firebase
