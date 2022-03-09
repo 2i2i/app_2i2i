@@ -165,6 +165,7 @@ class ja {
       Keys.joinInvite: '2i2iで私と一緒にたむろ',
       Keys.joinOtherRoom: '一部の人の部屋に参加してください',
       Keys.beFirstJoin: 'この部屋に最初に参加する',
+      Keys.appVersion: 'バージョン'
     };
   }
 }

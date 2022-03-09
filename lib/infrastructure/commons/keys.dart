@@ -178,6 +178,7 @@ class Keys {
   static const String joinInvite = 'joinInvite';
   static const String joinOtherRoom = 'joinOtherRoom';
   static const String beFirstJoin = 'beFirstJoin';
+  static const String appVersion = 'appVersion';
 }
 
 extension CustomTranslation on String {

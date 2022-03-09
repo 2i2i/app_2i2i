@@ -7,8 +7,9 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,8 +21,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import "package:universal_html/html.dart" as html;
-
+import 'package:universal_html/html.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -35,7 +35,7 @@ import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
-var platform = MethodChannel('app.2i2i/notification');
+final platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,11 +47,23 @@ Future<void> main() async {
 
   FirebaseNotifications();
 
-  await SentryFlutter.init((options) {
-    options.dsn =
-        'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-  }, appRunner: () {
-    FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+  if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
+    return SentryFlutter.init((options) {
+      options.dsn =
+          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+    }, appRunner: () {
+      FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+        FlutterSecureStorage().read(key: 'language').then((local) {
+          return runApp(
+            ProviderScope(
+              child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+            ),
+          );
+        });
+      });
+    });
+  } else {
+    return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
       FlutterSecureStorage().read(key: 'language').then((local) {
         return runApp(
           ProviderScope(
@@ -60,9 +72,7 @@ Future<void> main() async {
         );
       });
     });
-  }).onError((error, stackTrace) {
-    print(error);
-  });
+  }
 }
 
 class MainWidget extends ConsumerStatefulWidget {
@@ -84,11 +94,18 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   @override
   void initState() {
     super.initState();
+
+    if (kIsWeb) {
+      window.addEventListener('focus', onFocus);
+      window.addEventListener('blur', onBlur);
+    }
+
     WidgetsBinding.instance?.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
+      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       messaging.requestPermission(
@@ -115,23 +132,30 @@ class _MainWidgetState extends ConsumerState<MainWidget>
           NamedRoutes.updateAvailable = true;
         }
       });
-      if (kIsWeb) {
-        html.document.addEventListener('visibilitychange', (event) {
-          if (html.document.visibilityState != 'visible') {
-            //check after for 2 sec that is it still in background
-            Future.delayed(Duration(seconds: 2)).then((value) async {
-              if (html.document.visibilityState != 'visible') {
-                await updateHeartbeat(Status.IDLE);
-              }
-            });
-          } else {
-            updateHeartbeat(Status.ONLINE);
-          }
-        });
-      }
+      // if (kIsWeb) {
+      //   html.document.addEventListener('visibilitychange', (event) {
+      //     if (html.document.visibilityState != 'visible') {
+      //       //check after for 2 sec that is it still in background
+      //       Future.delayed(Duration(seconds: 2)).then((value) async {
+      //         if (html.document.visibilityState != 'visible') {
+      //           await updateHeartbeat(Status.IDLE);
+      //         }
+      //       });
+      //     } else {
+      //       updateHeartbeat(Status.ONLINE);
+      //     }
+      //   });
+      // }
       await Custom.deepLinks(context, mounted);
     });
+  }
 
+  void onFocus(Event e) {
+    didChangeAppLifecycleState(AppLifecycleState.resumed);
+  }
+
+  void onBlur(Event e) {
+    didChangeAppLifecycleState(AppLifecycleState.paused);
   }
 
   Future<void> updateHeartbeat(Status status) async {
@@ -139,13 +163,13 @@ class _MainWidgetState extends ConsumerState<MainWidget>
       if (timer?.isActive ?? false) timer!.cancel();
       final userChanger = ref.watch(userChangerProvider);
       if (userChanger == null) return;
-      await userChanger.updateHeartbeat(status);
+      await userChanger.updateHeartbeatBackground();
     } else {
       if (timer?.isActive ?? false) timer!.cancel();
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
         final userChanger = ref.watch(userChangerProvider);
         if (userChanger == null) return;
-        await userChanger.updateHeartbeat(status);
+        await userChanger.updateHeartbeatForeground();
       });
     }
   }
@@ -161,12 +185,16 @@ class _MainWidgetState extends ConsumerState<MainWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        await updateHeartbeat(Status.ONLINE);
+        //region foreground
+        updateHeartbeat(Status.ONLINE);
+        //endregion
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        await updateHeartbeat(Status.IDLE);
+        updateHeartbeat(Status.IDLE);
+        break;
+      default:
         break;
     }
   }

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -116,12 +118,27 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeat(String uid, String status) =>
+  Future<void> updateUserHeartbeatFromBackground(String uid) =>
       _service.setData(
         path: FirestorePath.user(uid),
-        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
+        data: {
+          'heartbeatBackground':FieldValue.serverTimestamp(),
+        },
         merge: true,
-      );
+      ).catchError((onError){
+        print('\n\n ===== Error update hr bg === \n\n');
+      });
+
+  Future<void> updateUserHeartbeatFromForeground(String uid) =>
+      _service.setData(
+        path: FirestorePath.user(uid),
+        data: {
+          'heartbeatForeground':FieldValue.serverTimestamp(),
+        },
+        merge: true,
+      ).catchError((onError){
+        print('\n\n ===== Error update hr ft === \n\n');
+      });
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service
@@ -251,6 +268,16 @@ class FirestoreDatabase {
         data: user.toMap(),
         merge: true,
       );
+  
+  Future<AppVersionModel?> getAppVersion()  async {
+    DocumentSnapshot snapshot =
+    await _service.getData(path: FirestorePath.appVersion());
+    if (snapshot.data() is Map) {
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      return AppVersionModel.fromJson(data!);
+    }
+    return null;
+  }
 
   Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =

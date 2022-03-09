@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
-
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
@@ -10,12 +10,12 @@ import 'abstract_account.dart';
 
 class LocalAccount extends AbstractAccount {
   Account? account;
-  LocalAccount._create({
-    required this.algorandLib,
-    required this.storage,
-    required accountService,
-    this.account
-  }) : super(accountService: accountService);
+  LocalAccount._create(
+      {required this.algorandLib,
+      required this.storage,
+      required accountService,
+      this.account})
+      : super(accountService: accountService);
 
   static Future<LocalAccount> create({
     required AlgorandLib algorandLib,
@@ -28,7 +28,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._createAndStoreAccount();
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
@@ -39,9 +39,9 @@ class LocalAccount extends AbstractAccount {
   }) async {
     log('LocalAccount.create');
     final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage,
+      accountService: accountService,
+      algorandLib: algorandLib,
+      storage: storage,
     );
     await account.createLocalAccountWithoutStore();
     return account;
@@ -59,7 +59,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromStorage(numAccount);
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
@@ -75,7 +75,7 @@ class LocalAccount extends AbstractAccount {
         algorandLib: algorandLib,
         storage: storage);
     await account._loadAccountFromMnemonic(mnemonic);
-    await account.updateBalances();
+    await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
@@ -127,13 +127,13 @@ class LocalAccount extends AbstractAccount {
   Future<Account> _libAccount() async {
     final privateKey = await storage.read('account_$_numAccount');
     final Uint8List seed = base64Decode(privateKey!);
-    return algorandLib.client[AlgorandNet.mainnet]!
-        .loadAccountFromSeed(seed); // mainnet as it does not matter
+    return algorandLib.client[AppConfig().ALGORAND_NET]!
+        .loadAccountFromSeed(seed);
   }
 
   Future _loadAccountFromMnemonic(List<String> mnemonic) async {
-    final account =
-        await algorandLib.client[AlgorandNet.mainnet]!.restoreAccount(mnemonic);
+    final account = await algorandLib.client[AppConfig().ALGORAND_NET]!
+        .restoreAccount(mnemonic);
     address = account.publicAddress;
     await storeAccount(account);
   }
@@ -144,25 +144,30 @@ class LocalAccount extends AbstractAccount {
     address = account.publicAddress;
   }
 
-  Future<Account> createLocalAccountWithoutStore() async{
-    final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
+  Future<Account> createLocalAccountWithoutStore() async {
+    final Account account =
+        await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
     address = account.publicAddress;
     this.account = account;
     return account;
   }
 
   Future _createAndStoreAccount() async {
-    final Account account = await algorandLib.client[AlgorandNet.mainnet]!.createAccount(); // use mainnet bc it does not matter
+    log('_createAndStoreAccount net=${AppConfig().ALGORAND_NET}');
+    final Account account =
+        await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
     address = account.publicAddress;
+    log('_createAndStoreAccount address=${address}');
     await storeAccount(account);
   }
 
   Future storeAccount(Account? account) async {
-    if(this.account is Account){
+    if (this.account is Account) {
       account ??= this.account;
     }
-    if(account is Account) {
-      final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
+    if (account is Account) {
+      final List<int> privateKeyBytes =
+          await account.keyPair.extractPrivateKeyBytes();
       final String privateKey = base64Encode(privateKeyBytes);
       // set
       _numAccount = await accountService.getNumLocalAccounts();

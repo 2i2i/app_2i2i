@@ -171,6 +171,7 @@ class en {
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Please join some people\'s rooms',
       Keys.beFirstJoin: 'Be the first to join this room',
+      Keys.appVersion: 'Version'
     };
   }
 }

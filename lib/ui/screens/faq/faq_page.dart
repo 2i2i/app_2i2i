@@ -76,9 +76,9 @@ class FAQPage extends StatelessWidget {
         description:
             "Yes, you can use any wallet that connects with WalletConnect. E.g. the official Algorand Wallet."),
     FAQData(
-        title: 'Is 2i2i only on the Algorand testnet?',
+        title: 'Is 2i2i available on Algorand testnet?',
         description:
-            "Yes, 2i2i is currently in the beta version and hence running only on the Algorand testnet."),
+            "Yes, 2i2i.app runs mainnet and test.2i2i.app on testnet"),
     FAQData(
         title: 'How does the Algorand system work?',
         description:

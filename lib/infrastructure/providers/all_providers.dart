@@ -8,7 +8,6 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -65,8 +64,7 @@ final userPageViewModelProvider =
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return UserPageViewModel(
-      functions: functions, user: user.asData!.value);
+  return UserPageViewModel(functions: functions, user: user.asData!.value);
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
@@ -128,7 +126,8 @@ final algorandProvider = Provider((ref) {
 
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
-  return AppSettingModel(storage: storage);
+  final database = ref.watch(databaseProvider);
+  return AppSettingModel(storage: storage,firebaseDatabase: database);
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
@@ -276,8 +275,8 @@ final bidInsProvider =
     return null;
   }
   final user = userAsyncValue.value!;
-  final bidInsPublicSorted = combineQueues(
-      bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
+  final bidInsPublicSorted =
+      combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
 
   // private bid ins
   final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
@@ -371,7 +370,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
 final meetingHistoryProvider =
     StateProvider.family<HistoryViewModel?, String>((ref, uid) {
-      final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
+  final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
   if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
     return null;
   final meetingHistoryBList = ref.watch(meetingHistoryB(uid));

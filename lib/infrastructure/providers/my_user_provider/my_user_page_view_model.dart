@@ -45,7 +45,7 @@ class MyUserPageViewModel {
         "title": bidIn.user?.name ?? '',
         "body": 'Incoming video call'
       };
-      await FirebaseNotifications().sendNotification(token,data,isIos);
+      // await FirebaseNotifications().sendNotification(token,data,isIos);
     }
     return true;
   }

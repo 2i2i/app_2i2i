@@ -32,11 +32,10 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat(Status status) =>
-      database.updateUserHeartbeat(uid, status.toStringEnum());
+  Future updateHeartbeatBackground() => database.updateUserHeartbeatFromBackground(uid);
+  Future updateHeartbeatForeground() => database.updateUserHeartbeatFromForeground(uid);
   Future updateSettings(UserModel user) => database.updateUser(user);
-  Future addComment(String targetUid, ChatModel chat) =>
-      database.addChat(targetUid, chat);
+  Future addComment(String targetUid, ChatModel chat) => database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
