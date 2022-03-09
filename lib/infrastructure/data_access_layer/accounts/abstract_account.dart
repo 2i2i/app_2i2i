@@ -74,10 +74,12 @@ class AccountService {
   }
 
   Future<int> getNumLocalAccounts() async {
+    log('getNumLocalAccounts');
     final numAccountsString = await storage.read('num_accounts');
+    log('getNumLocalAccounts numAccountsString=$numAccountsString');
     final numAccounts =
         numAccountsString == null ? 0 : int.parse(numAccountsString);
-    log('Number of Local Accounts ========= $numAccounts');
+    log('getNumLocalAccounts numAccounts=$numAccounts');
     return numAccounts;
   }
 
@@ -102,9 +104,12 @@ class AccountService {
   }
 
   Future<List<LocalAccount>> getAllLocalAccounts() async {
+    log('AccountService getAllLocalAccounts');
     final int numAccounts = await getNumLocalAccounts();
+    log('AccountService numAccounts=$numAccounts');
     final List<Future<LocalAccount>> futures = [];
     for (var i = 0; i < numAccounts; i++) {
+      log('AccountService i=$i');
       final accountFuture = LocalAccount.fromNumAccount(
           numAccount: i,
           algorandLib: algorandLib,
@@ -112,6 +117,7 @@ class AccountService {
           accountService: this);
       futures.add(accountFuture);
     }
+    log('AccountService done');
     return Future.wait(futures);
   }
 
@@ -119,6 +125,7 @@ class AccountService {
       WalletConnectAccount.getAllAccounts();
 
   Future<List<AbstractAccount>> getAllAccounts() async {
+    log('AccountService getAllAccounts');
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
     return [...localAccounts, ...walletConnectAccounts];
@@ -185,11 +192,10 @@ abstract class AbstractAccount {
 
   Future<void> updateBalances({required AlgorandNet net}) async {
     log('updateBalances');
-    final assetHoldings = await accountService.getAssetHoldings(
-        address: address, net: net);
+    final assetHoldings =
+        await accountService.getAssetHoldings(address: address, net: net);
     balances = assetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: net))
+        .map((assetHolding) => Balance(assetHolding: assetHolding, net: net))
         .toList();
   }
 

@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/cupertino.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
@@ -19,10 +20,15 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<void> initMethod() async {
     try {
+      log('MyAccountPageViewModel initMethod 1');
       algorandLib = await ref!.watch(algorandLibProvider);
+      log('MyAccountPageViewModel initMethod 2');
       storage = await ref!.watch(storageProvider);
+      log('MyAccountPageViewModel initMethod 3');
       accountService = await ref!.watch(accountServiceProvider);
+      log('MyAccountPageViewModel initMethod 4');
       accounts = await accountService!.getAllAccounts();
+      log('MyAccountPageViewModel initMethod 5');
       isLoading = false;
     } catch (e) {
       print(e);

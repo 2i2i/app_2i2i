@@ -344,19 +344,21 @@ class NamedRoutes {
   static Widget getView(Widget page) {
     Widget widget = AuthWidget(
       homePageBuilder: (context) => Scaffold(
-        appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? AppBar() : AppBar(
-          leading: Container(),
-          toolbarHeight: 20,
-          title: Text(AlgorandNet.testnet.name +
-              ' - v29' +
-              (updateAvailable ? ' - update: reload page' : '')),
-          titleTextStyle: Theme.of(context)
-              .textTheme
-              .bodyText2
-              ?.copyWith(color: Theme.of(context).cardColor),
-          centerTitle: true,
-          backgroundColor: Colors.green,
-        ),
+        appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
+            ? null
+            : AppBar(
+                leading: Container(),
+                toolbarHeight: 20,
+                title: Text(AlgorandNet.testnet.name +
+                    ' - v29' +
+                    (updateAvailable ? ' - update: reload page' : '')),
+                titleTextStyle: Theme.of(context)
+                    .textTheme
+                    .bodyText2
+                    ?.copyWith(color: Theme.of(context).cardColor),
+                centerTitle: true,
+                backgroundColor: Colors.green,
+              ),
         body: page,
         bottomSheet: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {

@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,7 @@ class NoBidPage extends ConsumerWidget {
     if (uid == null) return WaitPage();
 
     final domain =
-        AppConfig().ALGORAND_NET == 'mainnet' ? '2i2i.app' : 'test.2i2i.app';
+        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
     final message = 'https://$domain/user/$uid';
     return Container(
       width: double.infinity,
