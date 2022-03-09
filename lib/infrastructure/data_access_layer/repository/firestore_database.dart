@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-
 import '../../models/bid_model.dart';
 import '../../models/call_status_model.dart';
 import '../../models/chat_model.dart';
@@ -122,7 +119,7 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
-          'heartbeatBackground':FieldValue.serverTimestamp(),
+          'heartbeatBackground': FieldValue.serverTimestamp(),
         },
         merge: true,
       ).catchError((onError){
@@ -133,7 +130,8 @@ class FirestoreDatabase {
       _service.setData(
         path: FirestorePath.user(uid),
         data: {
-          'heartbeatForeground':FieldValue.serverTimestamp(),
+          'heartbeatForeground': FieldValue.serverTimestamp(),
+          'status': 'ONLINE',
         },
         merge: true,
       ).catchError((onError){

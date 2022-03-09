@@ -1,8 +1,6 @@
-import 'package:app_2i2i/infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -39,12 +37,12 @@ class MyUserPageViewModel {
     await database.acceptBid(meeting);
     if(token != null) {
 
-      Map data = {
-        'route':Routes.lock,
-        'type':'Call',
-        "title": bidIn.user?.name ?? '',
-        "body": 'Incoming video call'
-      };
+      // Map data = {
+      //   'route':Routes.lock,
+      //   'type':'Call',
+      //   "title": bidIn.user?.name ?? '',
+      //   "body": 'Incoming video call'
+      // };
       // await FirebaseNotifications().sendNotification(token,data,isIos);
     }
     return true;
