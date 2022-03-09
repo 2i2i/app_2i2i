@@ -115,28 +115,34 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromBackground(String uid) =>
-      _service.setData(
-        path: FirestorePath.user(uid),
-        data: {
-          'heartbeatBackground': FieldValue.serverTimestamp(),
-        },
-        merge: true,
-      ).catchError((onError){
-        print('\n\n ===== Error update hr bg === \n\n');
-      });
+  Future<void> updateUserHeartbeatFromForeground(String uid,
+          {bool setStatus = false}) =>
+      setStatus
+          ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE')
+          : _updateUserHeartbeat(uid, 'heartbeatForeground');
+  Future<void> updateUserHeartbeatFromBackground(String uid,
+          {bool setStatus = false}) =>
+      setStatus
+          ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE')
+          : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
-  Future<void> updateUserHeartbeatFromForeground(String uid) =>
-      _service.setData(
-        path: FirestorePath.user(uid),
-        data: {
-          'heartbeatForeground': FieldValue.serverTimestamp(),
-          'status': 'ONLINE',
-        },
-        merge: true,
-      ).catchError((onError){
-        print('\n\n ===== Error update hr ft === \n\n');
-      });
+  Future<void> _updateUserHeartbeat(String uid, String field,
+      {String? newStatus}) {
+    final data = <String, dynamic>{
+      field: FieldValue.serverTimestamp(),
+    };
+    if (newStatus != null) data['status'] = newStatus;
+
+    return _service
+        .setData(
+      path: FirestorePath.user(uid),
+      data: data,
+      merge: true,
+    )
+        .catchError((onError) {
+      log('_updateUserHeartbeat $onError');
+    });
+  }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service
@@ -151,20 +157,24 @@ class FirestoreDatabase {
   }
 
   Future<void> updateCallStatus(String meetingId, Map<String, dynamic> data) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.updateCallStatus(meetingId),
       data: data,
       merge: true,
-    ).catchError((onError) {
+    )
+        .catchError((onError) {
       print(onError);
     });
   }
 
-  Stream<CallStatusModel> getCallStatus({required String meetingId}) =>
-      _service.documentStream(
+  Stream<CallStatusModel> getCallStatus({required String meetingId}) => _service
+          .documentStream(
         path: FirestorePath.updateCallStatus(meetingId),
-        builder: (data, documentId) => CallStatusModel.fromJson(data!,documentId),
-      ).handleError((onError){
+        builder: (data, documentId) =>
+            CallStatusModel.fromJson(data!, documentId),
+      )
+          .handleError((onError) {
         print(onError);
       });
 
@@ -266,10 +276,10 @@ class FirestoreDatabase {
         data: user.toMap(),
         merge: true,
       );
-  
-  Future<AppVersionModel?> getAppVersion()  async {
+
+  Future<AppVersionModel?> getAppVersion() async {
     DocumentSnapshot snapshot =
-    await _service.getData(path: FirestorePath.appVersion());
+        await _service.getData(path: FirestorePath.appVersion());
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       return AppVersionModel.fromJson(data!);
