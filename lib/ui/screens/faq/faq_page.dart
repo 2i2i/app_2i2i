@@ -77,8 +77,7 @@ class FAQPage extends StatelessWidget {
             "Yes, you can use any wallet that connects with WalletConnect. E.g. the official Algorand Wallet."),
     FAQData(
         title: 'Is 2i2i available on Algorand testnet?',
-        description:
-            "Yes, 2i2i.app runs mainnet and test.2i2i.app on testnet"),
+        description: "Yes, 2i2i.app runs mainnet and test.2i2i.app on testnet"),
     FAQData(
         title: 'How does the Algorand system work?',
         description:
@@ -139,6 +138,9 @@ class FAQPage extends StatelessWidget {
         title: 'Is it ok to have an empty account as a Host?',
         description:
             'No. If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
+    FAQData(
+        title: 'Why is my camera not released after the meeting ends?',
+        description: 'It\'s a bug. The app is not using your camera anymore, but it still has a lock on it. We hope to fix it soon.'),
   ];
 
   @override

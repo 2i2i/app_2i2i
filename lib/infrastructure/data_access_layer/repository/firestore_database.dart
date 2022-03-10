@@ -280,7 +280,7 @@ class FirestoreDatabase {
 
   Future<AppVersionModel?> getAppVersion() async {
     DocumentSnapshot snapshot =
-        await _service.getData(path: FirestorePath.appVersion());
+        await _service.getData(path: FirestorePath.currentAppVersion());
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       return AppVersionModel.fromJson(data!);

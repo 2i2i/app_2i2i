@@ -447,7 +447,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       required RTCVideoRenderer renderer,
       bool fullView = false,
       bool mirror = false}) {
-    print("$isVideoMuted $isAudioMuted");
+    log("$isVideoMuted $isAudioMuted");
     return Stack(
       children: [
         Container(
@@ -477,7 +477,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted",
+                child: Text('',
                     style: Theme.of(context)
                         .textTheme
                         .caption
