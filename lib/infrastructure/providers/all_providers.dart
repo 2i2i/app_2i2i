@@ -19,7 +19,6 @@ import '../data_access_layer/services/logging.dart';
 import '../models/call_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
-import 'history_provider/history_view_model.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
@@ -370,19 +369,6 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meetingChanger: meetingChanger,
       userChanger: userChanger,
       meeting: meeting.asData!.value);
-});
-
-final meetingHistoryProvider =
-    StateProvider.family<HistoryViewModel?, String>((ref, uid) {
-  final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
-  if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
-    return null;
-  final meetingHistoryBList = ref.watch(meetingHistoryB(uid));
-  if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
-    return null;
-  return HistoryViewModel(
-      meetingListA: meetingHistoryAList.asData!.value,
-      meetingListB: meetingHistoryBList.asData!.value);
 });
 
 final addBidPageViewModelProvider =
