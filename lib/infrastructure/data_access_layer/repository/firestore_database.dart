@@ -262,14 +262,16 @@ class FirestoreDatabase {
     return null;
   }
 
-  Future<void> updateUser(UserModel user) => _service
-          .setData(
-        path: FirestorePath.user(user.id),
-        data: user.toMap(),
-        merge: true,
-      ).catchError((onError) {
-        print(onError);
-      });
+  Future<void> updateUser(UserModel user){
+    print(user);
+    return _service.setData(
+      path: FirestorePath.user(user.id),
+      data: user.toMap(),
+      merge: true,
+    ).catchError((onError) {
+      print(onError);
+    });
+  }
 
   Future<AppVersionModel?> getAppVersion()  async {
     DocumentSnapshot snapshot =
