@@ -36,7 +36,11 @@ class AccountService {
 
   Future<AssetHolding> getALGOBalance(
       {required String address, required AlgorandNet net}) async {
-    final balance = await algorandLib.client[net]!.getBalance(address);
+    int balance = 0;
+    try {
+      balance = await algorandLib.client[net]!.getBalance(address);
+    } catch (e) {}
+
     return AssetHolding(
         amount: balance, assetId: 0, creator: '', isFrozen: false);
   }
@@ -53,16 +57,20 @@ class AccountService {
 
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
-    final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
+    int balanceALGO = 0;
 
-    // final accountInfoFuture =
-    //     algorandLib.client[net]!.getAccountByAddress(address);
+    try {
+      final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-    // final futureResults =
-    //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
-    final futureResults = await Future.wait([balanceALGOFuture]);
+      // final accountInfoFuture =
+      //     algorandLib.client[net]!.getAccountByAddress(address);
 
-    final balanceALGO = futureResults[0];
+      // final futureResults =
+      //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
+      final futureResults = await Future.wait([balanceALGOFuture]);
+
+      balanceALGO = futureResults[0];
+    } catch (e) {}
 
     // final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
@@ -136,9 +144,16 @@ class AccountService {
       required int assetId,
       required AlgorandNet net}) async {
     if (assetId == 0) return true; // all accounts can use ALGO
-    final accountInfo =
-        await algorandLib.client[net]!.getAccountByAddress(address);
-    final assetHoldings = accountInfo.assets;
+
+    List<AssetHolding> assetHoldings = [];
+    try {
+      final accountInfo =
+          await algorandLib.client[net]!.getAccountByAddress(address);
+      assetHoldings = accountInfo.assets;
+    } catch (e) {
+      return false;
+    }
+
     return assetHoldings.map((a) => a.assetId).contains(assetId);
   }
 
@@ -146,13 +161,18 @@ class AccountService {
       {required String address,
       required int dAppId,
       required AlgorandNet net}) async {
-    final accountInfo =
-        await algorandLib.client[net]!.getAccountByAddress(address);
-    for (final ApplicationLocalState localState in accountInfo.appsLocalState) {
-      if (localState.id == dAppId) return true;
-      // TODO do we need to maybe care about 'deleted' or 'closed-out-at-round'
+    try {
+      final accountInfo =
+          await algorandLib.client[net]!.getAccountByAddress(address);
+      for (final ApplicationLocalState localState
+          in accountInfo.appsLocalState) {
+        if (localState.id == dAppId) return true;
+        // TODO do we need to maybe care about 'deleted' or 'closed-out-at-round'
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 }
 

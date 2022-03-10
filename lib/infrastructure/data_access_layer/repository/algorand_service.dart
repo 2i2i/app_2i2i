@@ -43,6 +43,8 @@ class AlgorandLib {
         indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
+
+
 }
 
 class AlgorandService {
@@ -73,9 +75,10 @@ class AlgorandService {
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
-  Future<TransactionResponse> getTransactionResponse(
-          String transactionId, AlgorandNet net) =>
-      algorandLib.client[net]!.indexer().getTransactionById(transactionId);
+  // TODO: needs a try-catch
+  // Future<TransactionResponse> getTransactionResponse(
+  //         String transactionId, AlgorandNet net) =>
+  //     algorandLib.client[net]!.indexer().getTransactionById(transactionId);
 
   // not using this method in the other methods due to naming clash
   Future<PendingTransaction> waitForConfirmation(
