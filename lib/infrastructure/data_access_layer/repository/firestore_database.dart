@@ -4,7 +4,7 @@ import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../../models/bid_model.dart';
-import '../../models/call_status_model.dart';
+import '../../models/meeting_status_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/room_model.dart';
@@ -157,10 +157,10 @@ class FirestoreDatabase {
     });
   }
 
-  Future<void> updateCallStatus(String meetingId, Map<String, dynamic> data) {
+  Future<void> updateMeetingStatus(String meetingId, Map<String, dynamic> data) {
     return _service
         .setData(
-      path: FirestorePath.updateCallStatus(meetingId),
+      path: FirestorePath.meetingStatus(meetingId),
       data: data,
       merge: true,
     )
@@ -169,11 +169,11 @@ class FirestoreDatabase {
     });
   }
 
-  Stream<CallStatusModel> getCallStatus({required String meetingId}) => _service
+  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) => _service
           .documentStream(
-        path: FirestorePath.updateCallStatus(meetingId),
+        path: FirestorePath.meetingStatus(meetingId),
         builder: (data, documentId) =>
-            CallStatusModel.fromJson(data!, documentId),
+            MeetingStatusModel.fromMap(data!, documentId),
       )
           .handleError((onError) {
         print(onError);
