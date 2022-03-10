@@ -4,7 +4,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
@@ -29,7 +28,6 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
-import 'package:app_2i2i/ui/test_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,18 +74,8 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.login,
+    initialLocation: Routes.root,
     routes: [
-      GoRoute(
-        name: Routes.login.nameFromPath(),
-        path: Routes.login,
-        pageBuilder: (context, state) => NoTransitionPage<void>(
-          key: state.pageKey,
-          child: getView(SignInPage()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
-        ),
-      ),
       GoRoute(
         name: Routes.root.nameFromPath(),
         path: Routes.root,
@@ -354,7 +342,7 @@ class NamedRoutes {
   );
 
   static Widget getView(Widget page) {
-    Widget widget = AuthWidget(
+    Widget widget = SignInPage(
       homePageBuilder: (context) => Scaffold(
         appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
             ? null
@@ -417,11 +405,8 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(
-            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb &&
-            defaultTargetPlatform != TargetPlatform.iOS &&
-            defaultTargetPlatform != TargetPlatform.android) {
+        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

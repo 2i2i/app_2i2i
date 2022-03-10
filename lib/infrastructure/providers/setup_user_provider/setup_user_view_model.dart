@@ -4,6 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
@@ -18,6 +19,7 @@ class SetupUserViewModel with ChangeNotifier {
       required this.database,
       required this.algorandLib,
       required this.accountService,
+      required this.googleSignIn,
       required this.algorand,
       required this.storage});
 
@@ -26,6 +28,7 @@ class SetupUserViewModel with ChangeNotifier {
   final SecureStorage storage;
   final AccountService accountService;
   final AlgorandLib algorandLib;
+  final GoogleSignIn googleSignIn;
   final AlgorandService algorand;
 
   bool signUpInProcess = false;
@@ -70,7 +73,46 @@ class SetupUserViewModel with ChangeNotifier {
     // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
   }
 
-  Future<String?> signInAnonymously() async {
+  Future<void> signInAnonymously() async {
+    UserCredential firebaseUser =
+        await FirebaseAuth.instance.signInAnonymously();
+    String? userId = firebaseUser.user?.uid;
+    if (userId is String) {
+      updateFirebaseMessagingToken(userId);
+      createAuthAndStartAlgoRand(firebaseUserId: userId);
+      updateDeviceInfo(userId);
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      UserCredential firebaseUser = await auth.signInWithCredential(credential);
+      String? userId = firebaseUser.user?.uid;
+      if (userId is String) {
+        updateFirebaseMessagingToken(userId);
+        createAuthAndStartAlgoRand(firebaseUserId: userId);
+        updateDeviceInfo(userId);
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      throw e;
+    }
+  }
+
+  Future<void> signOutFromGoogle() async {
+    await googleSignIn.signOut();
+    await auth.signOut();
+  }
+
+  Future<String?> signInWithTwitter() async {
     UserCredential firebaseUser =
         await FirebaseAuth.instance.signInAnonymously();
     String? userId = firebaseUser.user?.uid;

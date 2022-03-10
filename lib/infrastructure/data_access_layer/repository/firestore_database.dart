@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
@@ -263,12 +262,15 @@ class FirestoreDatabase {
     return null;
   }
 
-  Future<void> updateUser(UserModel user) => _service.setData(
+  Future<void> updateUser(UserModel user) => _service
+          .setData(
         path: FirestorePath.user(user.id),
         data: user.toMap(),
         merge: true,
-      );
-  
+      ).catchError((onError) {
+        print(onError);
+      });
+
   Future<AppVersionModel?> getAppVersion()  async {
     DocumentSnapshot snapshot =
     await _service.getData(path: FirestorePath.appVersion());
