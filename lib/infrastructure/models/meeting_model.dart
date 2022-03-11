@@ -160,14 +160,14 @@ class MeetingChanger {
     Map<String, dynamic> data = {};
     if (amA) {
       data = {
-        'isVideoMuteA': videoStatus,
+        'mutedVideoA': videoStatus,
       };
     } else {
       data = {
-        'isVideoMuteB': videoStatus,
+        'mutedVideoB': videoStatus,
       };
     }
-    return database.updateCallStatus(meetingId, data);
+    return database.updateMeetingStatus(meetingId, data);
   }
 
   Future muteAudio(String meetingId,
@@ -175,14 +175,14 @@ class MeetingChanger {
     Map<String, dynamic> data = {};
     if (amA) {
       data = {
-        'isAudioMuteA': audioStatus,
+        'mutedAudioA': audioStatus,
       };
     } else {
       data = {
-        'isAudioMuteB': audioStatus,
+        'mutedAudioB': audioStatus,
       };
     }
-    return database.updateCallStatus(meetingId, data);
+    return database.updateMeetingStatus(meetingId, data);
   }
 }
 

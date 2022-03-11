@@ -6,7 +6,7 @@ import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/infrastructure/models/call_status_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_status_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -66,7 +66,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   UserModel? localUser;
   UserModel? remoteUser;
-  CallStatusModel? callStatusModel;
+  MeetingStatusModel? callStatusModel;
 
   @override
   initState() {
@@ -88,7 +88,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     appSettingModel = ref.watch(appSettingProvider);
     final userLocal = ref.watch(userProvider(localId));
     final userRemote = ref.watch(userProvider(remoteId));
-    final callStatus = ref.watch(callStatusProvider(widget.meeting.id));
+    final callStatus = ref.watch(meetingStatusProvider(widget.meeting.id));
     if (haveToWait(userLocal) &&
             haveToWait(userRemote) &&
             haveToWait(callStatus) ||
@@ -424,15 +424,15 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     bool status = false;
     if (userId == widget.meeting.A) {
       if (forVideo ?? false) {
-        status = callStatusModel?.isMuteVideoA ?? false;
+        status = callStatusModel?.mutedVideoA ?? false;
       } else if (forAudio ?? false) {
-        status = callStatusModel?.isMuteAudioA ?? false;
+        status = callStatusModel?.mutedAudioA ?? false;
       }
     } else {
       if (forVideo ?? false) {
-        status = callStatusModel?.isMuteVideoB ?? false;
+        status = callStatusModel?.mutedVideoB ?? false;
       } else if (forAudio ?? false) {
-        status = callStatusModel?.isMuteAudioB ?? false;
+        status = callStatusModel?.mutedAudioB ?? false;
       }
     }
     return status;
