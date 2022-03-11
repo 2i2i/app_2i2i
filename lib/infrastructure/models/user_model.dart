@@ -32,8 +32,10 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat(Status status) =>
-      database.updateUserHeartbeat(uid, status.toStringEnum());
+  Future updateHeartbeatBackground({bool setStatus = false}) =>
+      database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future updateHeartbeatForeground({bool setStatus = false}) =>
+      database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
   Future updateSettings(UserModel user) => database.updateUser(user);
   Future addComment(String targetUid, ChatModel chat) =>
       database.addChat(targetUid, chat);
@@ -118,7 +120,8 @@ class UserModel extends Equatable {
     this.bio = '',
     this.rating = 1,
     this.numRatings = 0,
-    this.heartbeat,
+    this.heartbeatBackground,
+    this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
     this.loungeHistoryIndex = -1,
@@ -129,7 +132,8 @@ class UserModel extends Equatable {
   }
 
   final String id;
-  final DateTime? heartbeat;
+  final DateTime? heartbeatBackground;
+  final DateTime? heartbeatForeground;
   final Status status;
 
   final String? meeting;
@@ -194,7 +198,8 @@ class UserModel extends Equatable {
     final String bio = data['bio'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
-    final DateTime? heartbeat = data['heartbeat']?.toDate();
+    final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
+    final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule =
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
@@ -212,7 +217,8 @@ class UserModel extends Equatable {
       bio: bio,
       rating: rating,
       numRatings: numRatings,
-      heartbeat: heartbeat,
+      heartbeatBackground: heartbeatBackground,
+      heartbeatForeground: heartbeatForeground,
       rule: rule,
       loungeHistory: loungeHistory,
       loungeHistoryIndex: loungeHistoryIndex,
@@ -230,7 +236,8 @@ class UserModel extends Equatable {
       'tags': _tags,
       'rating': rating,
       'numRatings': numRatings,
-      'heartbeat': heartbeat,
+      'heartbeatBackground': heartbeatBackground,
+      'heartbeatForeground': heartbeatForeground,
       'rule': rule.toMap(),
       'loungeHistory': loungeHistory.map((e) => e.index).toList(),
       'loungeHistoryIndex': loungeHistoryIndex,
@@ -241,7 +248,7 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
   }
 
   bool isInMeeting() => meeting != null;

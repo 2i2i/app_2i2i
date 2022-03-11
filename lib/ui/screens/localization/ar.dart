@@ -166,6 +166,7 @@ class ar {
       Keys.joinInvite: 'تسكع معي على 2i2i',
       Keys.joinOtherRoom: 'يرجى الانضمام إلى بعض غرف الناس',
       Keys.beFirstJoin: 'كن أول من ينضم إلى هذه الغرفة',
+      Keys.appVersion: 'الإصدار'
     };
   }
 }

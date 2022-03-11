@@ -22,6 +22,7 @@ firebase.initializeApp({
 //   messagingSenderId: "453884442411",
 //   appId: "1:453884442411:web:dad8591e5125eb8998776e",
 // });
+
 // Necessary to receive background messages:
 const messaging = firebase.messaging();
 

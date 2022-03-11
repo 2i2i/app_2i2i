@@ -165,6 +165,7 @@ class de {
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Bitte treten Sie den Räumen einiger Leute bei',
       Keys.beFirstJoin: 'Seien Sie der Erste, der diesem Raum beitritt',
+      Keys.appVersion:'Ausführung'
     };
   }
 }

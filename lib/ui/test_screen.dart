@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'commons/custom_animated_progress_bar.dart';
+import 'commons/custom_profile_image_view.dart';
 
 class TestScreen extends StatefulWidget {
   const TestScreen({Key? key}) : super(key: key);
@@ -26,7 +26,54 @@ class _TestScreenState extends State<TestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.amber,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: ProfileWidget(
+                stringPath: "Ravi",
+                radius: kToolbarHeight * 1.15,
+                showBorder: true,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 40,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.19,
+                width: MediaQuery.of(context).size.height * 0.16,
+                color: Colors.black,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ProfileWidget(
+                      stringPath: "Ravi",
+                      radius: kToolbarHeight * 1.15,
+                      showBorder: true,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    Positioned(
+                      child: Icon(Icons.mic, size: 16, color: Colors.white),
+                      bottom: 8,
+                      left: 8,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      /*body: Center(
         child: Row(
           children: [
             Builder(
@@ -187,7 +234,7 @@ class _TestScreenState extends State<TestScreen> {
             ),
           ],
         ),
-      ),
+      ),*/
     );
   }
 }

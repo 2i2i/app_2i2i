@@ -167,6 +167,7 @@ class ko {
       Keys.joinInvite: '2i2i에서 나와 함께 놀아요',
       Keys.joinOtherRoom: '일부 사람들의 방에 참여하십시오',
       Keys.beFirstJoin: '이 방에 가장 먼저 참여하세요',
+      Keys.appVersion: '버전'
     };
   }
 }
