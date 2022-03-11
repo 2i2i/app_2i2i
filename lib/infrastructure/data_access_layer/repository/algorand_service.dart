@@ -3,6 +3,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/meeting_model.dart';
 import '../accounts/abstract_account.dart';
 import '../services/logging.dart';
@@ -51,13 +52,10 @@ class AlgorandService {
     AlgorandNet.testnet: 67119462,
     AlgorandNet.betanet: 67119462,
   };
-  static const Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet:
-        'XRZZ43TX2DM67F7QJNV2RPYM2TYOYA52QQT3INSCEW7YGLPHAIKJPXODVY',
-    AlgorandNet.testnet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
-    AlgorandNet.betanet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
+  static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
+    AlgorandNet.mainnet: dotenv.env['ALGORAND_MAINNET'].toString(),
+    AlgorandNet.testnet:dotenv.env['ALGORAND_TESTNET'].toString(),
+    AlgorandNet.betanet:dotenv.env['ALGORAND_BETANET'].toString(),
   };
   static const int MIN_TXN_FEE = 1000;
 

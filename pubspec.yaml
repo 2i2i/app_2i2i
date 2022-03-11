@@ -39,6 +39,7 @@ dependencies:
   firebase_auth: ^3.3.9
   google_sign_in: ^5.2.4
   sign_in_with_apple: ^3.3.0
+  twitter_login: ^4.0.1
   flutter_secure_storage: ^5.0.2
   cloud_firestore: ^3.1.10
   url_launcher: ^6.0.20
@@ -68,6 +69,7 @@ dependencies:
   rich_text_controller: ^1.4.0
   awesome_notifications: ^0.6.21
   permission_handler: ^9.2.0
+  flutter_dotenv: ^5.0.2
 
   #Redirect App Store for Update App
   store_redirect: ^2.0.1
@@ -90,6 +92,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/
     - assets/2x/
     - assets/3x/

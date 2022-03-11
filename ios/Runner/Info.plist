@@ -48,16 +48,20 @@
 	</array>
 
 
-	<key>CFBundleURLTypes</key>
+
+    <key>CFBundleURLTypes</key>
     <array>
-    	<dict>
-    		<key>CFBundleTypeRole</key>
-    		<string>Editor</string>
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-    			<string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
-    		</array>
-    	</dict>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string></string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
+          <string>https://i2i-test.firebaseapp.com/__/auth/handler/</string>
+        </array>
+      </dict>
     </array>
     
 	<key>CFBundleVersion</key>

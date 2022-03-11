@@ -26,6 +26,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
+    final signUpViewModel = ref.read(setupUserViewModelProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if (uid == null) return WaitPage();
     final user = ref.watch(userProvider(uid));
@@ -288,6 +289,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                                 .caption
                                 ?.copyWith(
                                     color: Theme.of(context).disabledColor)),
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      await signUpViewModel.signOutFromGoogle();
+                    },
+                    title: Text('LOGOUT',
+                        style: Theme.of(context)
+                            .textTheme
+                            .caption
+                            ?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
               ),

@@ -400,7 +400,7 @@ class NamedRoutes {
             return AddRatingPage(showRating: showRating);
           },
         ),
-        // bottomNavigationBar: BottomNavBar(),
+        bottomNavigationBar: BottomNavBar(),
       ),
     );
     return Consumer(

@@ -55,140 +55,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     });
   }
 
-  Map<Lounge, int> findImportances(double ratio, Lounge lounge) {
-    // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
-    final a = ratio - 1.0;
-    // log(X + 'findImportances: a=$a');
-
-    int small = 1;
-    double largeDouble = a * small;
-    int largeInt = largeDouble.round();
-
-    // log(X +
-    //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-    int minSmall = small;
-    int minLarge = largeInt;
-    double minError = (largeDouble - largeInt).abs();
-
-    // log(X +
-    //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
-    while (small < _importanceSliderMaxHalf * 2.0) {
-      small++;
-      largeDouble = a * small;
-      largeInt = largeDouble.round();
-      // log(X +
-      //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-      if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
-      final error = (largeDouble - largeInt).abs();
-      // log(X + 'findImportances: error=$error');
-      if (error < minError) {
-        minSmall = small;
-        minLarge = largeInt;
-        minError = error;
-        // log(X +
-        //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-      }
-    }
-    // log(X +
-    //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
-    return lounge == Lounge.chrony
-        ? {
-            Lounge.chrony: minSmall,
-            Lounge.highroller: minLarge,
-          }
-        : {
-            Lounge.chrony: minLarge,
-            Lounge.highroller: minSmall,
-          };
-  }
-
-  String importanceString() {
-    if (_importanceRatioValue == null || _importanceSliderValue == null)
-      return '';
-    final ratio = _importanceRatioValue!.round();
-    final postfix = ordinalIndicator(ratio);
-    final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
-        ? Lounge.chrony
-        : Lounge.highroller;
-    return 'every $ratio$postfix is a ${lounge.name()}';
-  }
-
-  String minSpeedString() {
-    if (speedEditController.text.isEmpty) return '';
-    final minSpeedPerSec = int.parse(speedEditController.text);
-    final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / 1000000;
-    // final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$minSpeedPerHourinALGO ALGO/hour';
-  }
-
-  void setData() {
-    final uid = ref.watch(myUIDProvider)!;
-    final userAsyncValue = ref.watch(userProvider(uid));
-    bool isLoaded = !(haveToWait(userAsyncValue));
-    if (isLoaded) {
-      UserModel user = userAsyncValue.asData!.value;
-      userNameEditController.text = user.name;
-      bioTextController.text = user.bio;
-
-      speedEditController.text = user.rule.minSpeed.toString();
-      secondEditController.text = getSec(user.rule.maxMeetingDuration);
-      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
-      hourEditController.text = getHour(user.rule.maxMeetingDuration);
-
-      imageUrl = userAsyncValue.asData!.value.name;
-
-      // importance
-      final c = user.rule.importance[Lounge.chrony]!;
-      final h = user.rule.importance[Lounge.highroller]!;
-      final N = c + h;
-      _importanceRatioValue = N / c;
-      double x = _importanceRatioValue! - 2.0;
-      if (h < c) {
-        _importanceRatioValue = N / h;
-        x = 2.0 - _importanceRatioValue!;
-      }
-      _importanceSliderValue =
-          (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) *
-              _importanceSliderMaxHalf;
-    }
-    setState(() {});
-  }
-
-  String getHour(int sec) {
-    var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    // String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    if (duration.inHours <= 0) {
-      return '';
-    }
-    return "${twoDigits(duration.inHours)}";
-  }
-
-  String getMin(int sec) {
-    var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    if (duration.inMinutes.remainder(60) <= 0) {
-      return '';
-    }
-    return twoDigitMinutes;
-  }
-
-  String getSec(int sec) {
-    var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    if (duration.inMinutes.remainder(60) <= 0) {
-      return '';
-    }
-    return twoDigitSeconds;
-  }
-
   @override
   Widget build(BuildContext context) {
     final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
@@ -429,7 +295,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               data: SliderTheme.of(context).copyWith(
                                 activeTrackColor: Theme.of(context).cardColor,
                                 inactiveTrackColor:
-                                    Theme.of(context).disabledColor,
+                                Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
                                   mainContext: context,
                                   thumbRadius: 15,
@@ -439,28 +305,28 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                      min: 0,
-                                      max: _importanceSliderMaxHalf * 2.0,
-                                      value: _importanceSliderValue!,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue =
-                                              (_importanceSliderValue! -
-                                                              _importanceSliderMaxHalf)
-                                                          .abs() *
-                                                      (_importanceSliderMaxHalf *
-                                                              2.0 -
-                                                          2.0) /
-                                                      _importanceSliderMaxHalf +
-                                                  2.0;
-                                          // log(X +
-                                          //     '_importanceSliderValue=$_importanceSliderValue');
-                                          // log(X +
-                                          //     '_importanceRatioValue=$_importanceRatioValue');
-                                        });
-                                      },
-                                    ),
+                                min: 0,
+                                max: _importanceSliderMaxHalf * 2.0,
+                                value: _importanceSliderValue!,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _importanceSliderValue = value;
+                                    _importanceRatioValue =
+                                        (_importanceSliderValue! -
+                                            _importanceSliderMaxHalf)
+                                            .abs() *
+                                            (_importanceSliderMaxHalf *
+                                                2.0 -
+                                                2.0) /
+                                            _importanceSliderMaxHalf +
+                                            2.0;
+                                    // log(X +
+                                    //     '_importanceSliderValue=$_importanceSliderValue');
+                                    // log(X +
+                                    //     '_importanceRatioValue=$_importanceRatioValue');
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -511,6 +377,142 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       body: body,
     );
   }
+
+  Map<Lounge, int> findImportances(double ratio, Lounge lounge) {
+    // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
+    final a = ratio - 1.0;
+    // log(X + 'findImportances: a=$a');
+
+    int small = 1;
+    double largeDouble = a * small;
+    int largeInt = largeDouble.round();
+
+    // log(X +
+    //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+    int minSmall = small;
+    int minLarge = largeInt;
+    double minError = (largeDouble - largeInt).abs();
+
+    // log(X +
+    //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+    while (small < _importanceSliderMaxHalf * 2.0) {
+      small++;
+      largeDouble = a * small;
+      largeInt = largeDouble.round();
+      // log(X +
+      //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+      if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
+      final error = (largeDouble - largeInt).abs();
+      // log(X + 'findImportances: error=$error');
+      if (error < minError) {
+        minSmall = small;
+        minLarge = largeInt;
+        minError = error;
+        // log(X +
+        //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+      }
+    }
+    // log(X +
+    //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+    return lounge == Lounge.chrony
+        ? {
+            Lounge.chrony: minSmall,
+            Lounge.highroller: minLarge,
+          }
+        : {
+            Lounge.chrony: minLarge,
+            Lounge.highroller: minSmall,
+          };
+  }
+
+  String importanceString() {
+    if (_importanceRatioValue == null || _importanceSliderValue == null)
+      return '';
+    final ratio = _importanceRatioValue!.round();
+    final postfix = ordinalIndicator(ratio);
+    final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
+        ? Lounge.chrony
+        : Lounge.highroller;
+    return 'every $ratio$postfix is a ${lounge.name()}';
+  }
+
+  String minSpeedString() {
+    if (speedEditController.text.isEmpty) return '';
+    final minSpeedPerSec = int.parse(speedEditController.text);
+    final minSpeedPerHour = minSpeedPerSec * 3600;
+    final minSpeedPerHourinALGO = minSpeedPerHour / 1000000;
+    // final s = microALGOToLargerUnit(minSpeedPerHour);
+    return '$minSpeedPerHourinALGO ALGO/hour';
+  }
+
+  void setData() {
+    final uid = ref.watch(myUIDProvider)!;
+    final userAsyncValue = ref.watch(userProvider(uid));
+    bool isLoaded = !(haveToWait(userAsyncValue));
+    if (isLoaded) {
+      UserModel user = userAsyncValue.asData!.value;
+      userNameEditController.text = user.name;
+      bioTextController.text = user.bio;
+
+      speedEditController.text = user.rule.minSpeed.toString();
+      secondEditController.text = getSec(user.rule.maxMeetingDuration);
+      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
+      hourEditController.text = getHour(user.rule.maxMeetingDuration);
+
+      imageUrl = userAsyncValue.asData!.value.name;
+
+      // importance
+      final c = user.rule.importance[Lounge.chrony]!;
+      final h = user.rule.importance[Lounge.highroller]!;
+      final N = c + h;
+      _importanceRatioValue = N / c;
+      double x = _importanceRatioValue! - 2.0;
+      if (h < c) {
+        _importanceRatioValue = N / h;
+        x = 2.0 - _importanceRatioValue!;
+      }
+      _importanceSliderValue =
+          (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) *
+              _importanceSliderMaxHalf;
+    }
+    setState(() {});
+  }
+
+  String getHour(int sec) {
+    var duration = Duration(seconds: sec);
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    // String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    if (duration.inHours <= 0) {
+      return '';
+    }
+    return "${twoDigits(duration.inHours)}";
+  }
+
+  String getMin(int sec) {
+    var duration = Duration(seconds: sec);
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    if (duration.inMinutes.remainder(60) <= 0) {
+      return '';
+    }
+    return twoDigitMinutes;
+  }
+
+  String getSec(int sec) {
+    var duration = Duration(seconds: sec);
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    if (duration.inMinutes.remainder(60) <= 0) {
+      return '';
+    }
+    return twoDigitSeconds;
+  }
+
+
 
   Future<void> onClickSave(
       MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {

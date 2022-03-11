@@ -102,7 +102,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                           child: ListTile(
                             onTap: () async {
-                              await signUpViewModel.signInWithGoogle();
+                              await signUpViewModel.signInWithGoogle(context);
                             },
                             dense: true,
                             leading: Image.asset('assets/google.png',
@@ -111,50 +111,43 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
-                                    ?.copyWith(fontWeight: FontWeight.w400)),
+                                    ?.copyWith(fontWeight: FontWeight.w500)),
                           ),
                         ),
                         Visibility(
                           visible: Platform.isIOS,
                           child: Card(
-                            margin: EdgeInsets.only(top: 6),
+                            margin: EdgeInsets.only(top: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
-                            color: Colors.black,
+                            color: Theme.of(context).iconTheme.color,
                             child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInWithGoogle();
+                                await signUpViewModel.signInWithApple(context);
                               },
                               dense: true,
                               leading: Image.asset('assets/apple.png',
-                                  height: 30, width: 30, color: Colors.white),
+                                  height: 30, width: 30 ,color: Theme.of(context).cardColor),
                               title: Text('Sign in with Apple',
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w400,
-                                          color: Theme.of(context).cardColor)),
+                                    color: Theme.of(context).cardColor,
+                                          fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
 
                         Card(
-                          margin: EdgeInsets.only(top: 6),
+                          margin: EdgeInsets.only(top: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
                           child: ListTile(
                             onTap: () async {
-                              final credential =
-                              await SignInWithApple.getAppleIDCredential(
-                                scopes: [
-                                  AppleIDAuthorizationScopes.email,
-                                  AppleIDAuthorizationScopes.fullName,
-                                ],
-                              );
-                              print(credential);
+                              await signUpViewModel.signInWithTwitter(context);
                             },
                               dense: true,
                               leading: Image.asset('assets/twitter.png',
@@ -164,43 +157,28 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
-                                    ?.copyWith(fontWeight: FontWeight.w400),
+                                    ?.copyWith(fontWeight: FontWeight.w500),
                               )),
                         ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                  child: Divider(), width: kToolbarHeight),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 12),
-                                child: Text('OR',
-                                    style: Theme.of(context).textTheme.caption),
-                              ),
-                              Container(
-                                  child: Divider(), width: kToolbarHeight),
-                            ],
+                        Card(
+                          margin: EdgeInsets.only(top: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: TextButton(
-                            onPressed: () async {
-                              await signUpViewModel.signInAnonymously();
-                            },
-                            child: Text('Sign in as Guest',
+                          color: Theme.of(context).colorScheme.secondary,
+                          child: ListTile(
+                              onTap: () async {
+                                await signUpViewModel.signInAnonymously();
+                              },
+                              dense: true,
+                              leading: Icon(Icons.account_circle_rounded,color: Theme.of(context).cardColor),
+                              title: Text(
+                                'Sign in Anonymously',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    )),
-                          ),
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              )),
                         ),
                         SizedBox(height: kToolbarHeight * 1.25),
                         Center(
