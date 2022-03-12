@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import '../../models/bid_model.dart';
-import '../../models/meeting_status_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_model.dart';
+import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
 import '../../models/user_model.dart';
 import '../services/logging.dart';
@@ -244,6 +246,7 @@ class FirestoreDatabase {
         },
         merge: true,
       );
+
   Future<void> removeFriend(String uid, String targetUid) => _service.setData(
         path: FirestorePath.user(uid),
         data: {
@@ -252,14 +255,20 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<UserModel> userStream({required String uid}) =>
-      _service.documentStream(
-        path: FirestorePath.user(uid),
-        builder: (data, documentId) {
-          data ??= {};
-          return UserModel.fromMap(data, documentId);
-        },
-      );
+  Stream<UserModel> userStream({required String uid}) {
+    print(uid);
+   return _service.documentStream(
+      path: FirestorePath.user(uid),
+      builder: (data, documentId) {
+        data ??= {};
+        return UserModel.fromMap(data, documentId);
+      },
+    )
+        .handleError((onError) {
+      print(uid);
+      print(onError);
+    });
+  }
 
   Future<Map?> getTokenFromId(String uid) async {
     DocumentSnapshot snapshot =
@@ -338,12 +347,16 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidInsPublic(uid),
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
           query.where('active', isEqualTo: true).orderBy('ts'),
-    );
+    )
+        .handleError((onError) {
+      print(onError);
+    });
   }
 
   Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
@@ -355,11 +368,15 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidOut>> bidOutsStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
-    );
+    )
+        .handleError((onError) {
+      print(onError);
+    });
   }
 
   Stream<BidOut> getBidOut({required String uid, required String bidId}) =>
@@ -382,12 +399,15 @@ class FirestoreDatabase {
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
-  Stream<Meeting> meetingStream({required String id}) =>
-      _service.documentStream(
-          path: FirestorePath.meeting(id),
-          builder: (data, documentId) {
-            return Meeting.fromMap(data, documentId);
-          });
+  Stream<Meeting> meetingStream({required String id}) => _service
+          .documentStream(
+              path: FirestorePath.meeting(id),
+              builder: (data, documentId) {
+                return Meeting.fromMap(data, documentId);
+              })
+          .handleError((onError) {
+        print(onError);
+      });
 
   Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(

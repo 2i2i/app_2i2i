@@ -100,9 +100,9 @@ class SetupUserViewModel with ChangeNotifier {
       UserCredential firebaseUser = await auth.signInWithCredential(credential);
       String? userId = firebaseUser.user?.uid;
       if (userId is String) {
-        updateFirebaseMessagingToken(userId);
-        createAuthAndStartAlgoRand(firebaseUserId: userId);
-        updateDeviceInfo(userId);
+        await updateFirebaseMessagingToken(userId);
+        await createAuthAndStartAlgoRand(firebaseUserId: userId);
+        await updateDeviceInfo(userId);
       }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(
@@ -121,9 +121,9 @@ class SetupUserViewModel with ChangeNotifier {
       );
       String? userId = credential.identityToken;
       if (userId is String) {
-        updateFirebaseMessagingToken(userId);
-        createAuthAndStartAlgoRand(firebaseUserId: userId);
-        updateDeviceInfo(userId);
+        await updateFirebaseMessagingToken(userId);
+        await createAuthAndStartAlgoRand(firebaseUserId: userId);
+        await updateDeviceInfo(userId);
       }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(
@@ -149,9 +149,9 @@ class SetupUserViewModel with ChangeNotifier {
           await auth.signInWithCredential(twitterAuthCredential);
       String? userId = userCredential.user?.uid;
       if (userId is String) {
-        updateFirebaseMessagingToken(userId);
-        createAuthAndStartAlgoRand(firebaseUserId: userId);
-        updateDeviceInfo(userId);
+        await updateFirebaseMessagingToken(userId);
+        await createAuthAndStartAlgoRand(firebaseUserId: userId);
+        await updateDeviceInfo(userId);
       }
     } catch (e) {
       print(e);

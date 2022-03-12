@@ -1,10 +1,10 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
@@ -115,9 +115,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                         ),
                         Visibility(
-                          visible: Platform.isIOS,
+                          visible: !kIsWeb && Platform.isIOS,
                           child: Card(
-                            margin: EdgeInsets.only(top: 10),
+                            margin: EdgeInsets.symmetric(vertical: 5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
@@ -139,29 +139,32 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                           ),
                         ),
-
-                        Card(
-                          margin: EdgeInsets.only(top: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                        Visibility(
+                          visible: !kIsWeb,
+                          child: Card(
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: ListTile(
+                                onTap: () async {
+                                  await signUpViewModel
+                                      .signInWithTwitter(context);
+                                },
+                                dense: true,
+                                leading: Image.asset('assets/twitter.png',
+                                    height: 30, width: 30),
+                                title: Text(
+                                  'Sign in with Twitter',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      ?.copyWith(fontWeight: FontWeight.w500),
+                                )),
                           ),
-                          child: ListTile(
-                            onTap: () async {
-                              await signUpViewModel.signInWithTwitter(context);
-                            },
-                              dense: true,
-                              leading: Image.asset('assets/twitter.png',
-                                  height: 30, width: 30),
-                              title: Text(
-                                'Sign in with Twitter',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .subtitle1
-                                    ?.copyWith(fontWeight: FontWeight.w500),
-                              )),
                         ),
                         Card(
-                          margin: EdgeInsets.only(top: 10),
+                          margin: EdgeInsets.symmetric(vertical: 5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
@@ -171,7 +174,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 await signUpViewModel.signInAnonymously();
                               },
                               dense: true,
-                              leading: Icon(Icons.account_circle_rounded,color: Theme.of(context).cardColor),
+                              leading: Icon(Icons.account_circle_rounded,
+                                  color: Theme.of(context).cardColor),
                               title: Text(
                                 'Sign in Anonymously',
                                 style: Theme.of(context)
