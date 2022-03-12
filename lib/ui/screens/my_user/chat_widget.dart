@@ -94,6 +94,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                               contentPadding: EdgeInsets.zero,
                               leading: ProfileWidget(
                                   stringPath: chat.writerName,
+                                  imageType: ImageType.NAME_IMAGE,
                                   radius: 44,
                                   hideShadow: true,
                                   style: Theme.of(context)
