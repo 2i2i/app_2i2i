@@ -122,6 +122,7 @@ class UserModel extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeatBackground,
+    this.imageUrl,
     this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
@@ -141,6 +142,7 @@ class UserModel extends Equatable {
   Rule rule;
 
   String name;
+  String? imageUrl;
   String bio;
   late List<String> _tags;
   void setTags() {
@@ -192,12 +194,12 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn']}');
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final Status status = (Status.values.isNotEmpty)
-        ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'])
-        : Status.OFFLINE;
+    final Status status =
+        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
+    final String imageUrl = data['imageUrl'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
@@ -207,7 +209,6 @@ class UserModel extends Equatable {
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
 
@@ -217,6 +218,7 @@ class UserModel extends Equatable {
       meeting: meeting,
       name: name,
       bio: bio,
+      imageUrl: imageUrl,
       rating: rating,
       numRatings: numRatings,
       heartbeatBackground: heartbeatBackground,
@@ -236,6 +238,7 @@ class UserModel extends Equatable {
       'bio': bio,
       'name': name,
       'tags': _tags,
+      'imageUrl': imageUrl,
       'rating': rating,
       'numRatings': numRatings,
       'heartbeatBackground': heartbeatBackground,
