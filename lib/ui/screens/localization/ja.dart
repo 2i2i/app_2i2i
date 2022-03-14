@@ -165,7 +165,17 @@ class ja {
       Keys.joinInvite: '2i2iで私と一緒にたむろ',
       Keys.joinOtherRoom: '一部の人の部屋に参加してください',
       Keys.beFirstJoin: 'この部屋に最初に参加する',
-      Keys.appVersion: 'バージョン'
+      Keys.appVersion: 'バージョン',
+      Keys.logOut: 'ログアウト',
+      Keys.connectAccount: 'アカウントを接続する',
+      Keys.updateAvailable: '利用可能なアップデート',
+      Keys.loginMsg: 'あなたがたまり場に行く場所',
+      Keys.loginMsg2: '2i2iは、ゲストとホストがビデオ通話の形で会うための安全でプライベートなスペースを提供します',
+      Keys.loginMsg3: 'ローンチ以来305回以上の会議',
+      Keys.signInWithGoogle: 'Googleでサインイン',
+      Keys.signInWithApple: 'Appleでサインイン',
+      Keys.signInWithTwitter: 'Twitterでログイン',
+      Keys.signInAnonymously: '匿名でサインイン'
     };
   }
 }

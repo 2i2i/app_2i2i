@@ -9,6 +9,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -86,7 +87,7 @@ final meetingStatusProvider =
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
-  final auth = ref.watch(firebaseAuthProvider);
+      final auth = ref.watch(firebaseAuthProvider);
   // log('setupUserViewModelProvider - auth=$auth');
   final database = ref.watch(databaseProvider);
   // log('setupUserViewModelProvider - database=$database');

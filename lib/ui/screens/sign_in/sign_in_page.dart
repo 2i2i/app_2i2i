@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
@@ -74,16 +73,16 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               ),
                               SizedBox(height: kToolbarHeight),
                               Text(
-                                'The place for you to Hangout',
+                                Keys.loginMsg.tr(context),
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
                               Text(
-                                  '2i2i provides a safe and private space for Guests and Host to meet in the form of video calls',
+                                  Keys.loginMsg2.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
-                              Text('>305 MEETINGS SINCE LAUNCH',
+                              Text(Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
@@ -107,7 +106,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             dense: true,
                             leading: Image.asset('assets/google.png',
                                 height: 25, width: 25),
-                            title: Text('Sign in with Google',
+                            title: Text(Keys.signInWithGoogle.tr(context),
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
@@ -129,7 +128,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               dense: true,
                               leading: Image.asset('assets/apple.png',
                                   height: 30, width: 30 ,color: Theme.of(context).cardColor),
-                              title: Text('Sign in with Apple',
+                              title: Text(Keys.signInWithApple.tr(context),
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
@@ -155,7 +154,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 leading: Image.asset('assets/twitter.png',
                                     height: 30, width: 30),
                                 title: Text(
-                                  'Sign in with Twitter',
+                                  Keys.signInWithTwitter.tr(context),
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
@@ -176,8 +175,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded,
                                   color: Theme.of(context).cardColor),
-                              title: Text(
-                                'Sign in Anonymously',
+                              title: Text(Keys.signInAnonymously.tr(context),
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
@@ -188,7 +186,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         Center(
                           child: RichText(
                             text: TextSpan(
-                              text: 'About ',
+                              text: Keys.about.tr(context),
                               style: Theme.of(context).textTheme.caption,
                               children: <TextSpan>[
                                 TextSpan(
