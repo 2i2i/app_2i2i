@@ -155,7 +155,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -167,7 +167,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -178,7 +178,7 @@ class FirestoreDatabase {
             MeetingStatusModel.fromMap(data!, documentId),
       )
           .handleError((onError) {
-        print(onError);
+        log(onError);
       });
 
   Future meetingEndUnlockUser(
@@ -256,7 +256,7 @@ class FirestoreDatabase {
       );
 
   Stream<UserModel> userStream({required String uid}) {
-    print(uid);
+    log(uid);
    return _service.documentStream(
       path: FirestorePath.user(uid),
       builder: (data, documentId) {
@@ -265,8 +265,8 @@ class FirestoreDatabase {
       },
     )
         .handleError((onError) {
-      print(uid);
-      print(onError);
+      log(uid);
+      log(onError);
     });
   }
 
@@ -275,7 +275,7 @@ class FirestoreDatabase {
         await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
       Map data = snapshot.data() as Map;
-      print('\n\n${data['token']}\n\n');
+      log('\n\n${data['token']}\n\n');
       return data;
     }
     return null;
@@ -355,7 +355,7 @@ class FirestoreDatabase {
           query.where('active', isEqualTo: true).orderBy('ts'),
     )
         .handleError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -375,7 +375,7 @@ class FirestoreDatabase {
       queryBuilder: (query) => query.where('active', isEqualTo: true),
     )
         .handleError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -406,7 +406,7 @@ class FirestoreDatabase {
                 return Meeting.fromMap(data, documentId);
               })
           .handleError((onError) {
-        print(onError);
+        log(onError);
       });
 
   Stream<List<TopMeeting>> topSpeedsStream() => _service
@@ -416,7 +416,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('speed.num', descending: true),
       )
           .handleError((onError) {
-        print(onError);
+        log(onError);
         return [];
       });
   Stream<List<TopMeeting>> topDurationsStream() => _service
@@ -426,7 +426,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('duration', descending: true),
       )
           .handleError((onError) {
-        print(onError);
+        log(onError);
         return [];
       });
 
@@ -455,7 +455,7 @@ class FirestoreDatabase {
       },
     )
         .handleError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 

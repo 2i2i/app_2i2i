@@ -40,24 +40,25 @@ class AlgorandLib {
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AppConfig().ALGORAND_NET]!, apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
-        indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
+        algodClient: AlgodClient(
+            apiUrl: API_URL[AppConfig().ALGORAND_NET]!,
+            apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
-
-
 }
 
 class AlgorandService {
-  static const Map<AlgorandNet, int> SYSTEM_ID = {
-    AlgorandNet.mainnet: 646763643,
-    AlgorandNet.testnet: 67119462,
-    AlgorandNet.betanet: 67119462,
+  static Map<AlgorandNet, int> SYSTEM_ID = {
+    AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
+    AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
+    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
   };
   static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet: dotenv.env['ALGORAND_MAINNET'].toString(),
-    AlgorandNet.testnet:dotenv.env['ALGORAND_TESTNET'].toString(),
-    AlgorandNet.betanet:dotenv.env['ALGORAND_BETANET'].toString(),
+    AlgorandNet.mainnet: dotenv.env['ALGORAND_NET_MAINNET']!,
+    AlgorandNet.testnet: dotenv.env['ALGORAND_NET_TESTNET']!,
+    AlgorandNet.betanet: dotenv.env['ALGORAND_NET_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 
