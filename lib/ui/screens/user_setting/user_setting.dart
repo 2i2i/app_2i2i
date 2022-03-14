@@ -326,7 +326,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               data: SliderTheme.of(context).copyWith(
                                 activeTrackColor: Theme.of(context).cardColor,
                                 inactiveTrackColor:
-                                    Theme.of(context).disabledColor,
+                                Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
                                   mainContext: context,
                                   thumbRadius: 15,
@@ -336,28 +336,28 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                      min: 0,
-                                      max: _importanceSliderMaxHalf * 2.0,
-                                      value: _importanceSliderValue!,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue =
-                                              (_importanceSliderValue! -
-                                                              _importanceSliderMaxHalf)
-                                                          .abs() *
-                                                      (_importanceSliderMaxHalf *
-                                                              2.0 -
-                                                          2.0) /
-                                                      _importanceSliderMaxHalf +
-                                                  2.0;
-                                          // log(X +
-                                          //     '_importanceSliderValue=$_importanceSliderValue');
-                                          // log(X +
-                                          //     '_importanceRatioValue=$_importanceRatioValue');
-                                        });
-                                      },
-                                    ),
+                                min: 0,
+                                max: _importanceSliderMaxHalf * 2.0,
+                                value: _importanceSliderValue!,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _importanceSliderValue = value;
+                                    _importanceRatioValue =
+                                        (_importanceSliderValue! -
+                                            _importanceSliderMaxHalf)
+                                            .abs() *
+                                            (_importanceSliderMaxHalf *
+                                                2.0 -
+                                                2.0) /
+                                            _importanceSliderMaxHalf +
+                                            2.0;
+                                    // log(X +
+                                    //     '_importanceSliderValue=$_importanceSliderValue');
+                                    // log(X +
+                                    //     '_importanceRatioValue=$_importanceRatioValue');
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),

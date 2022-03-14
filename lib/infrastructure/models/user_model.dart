@@ -1,9 +1,10 @@
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
@@ -189,7 +190,12 @@ class UserModel extends Equatable {
       throw StateError('missing data for uid: $documentId');
     }
 
-    final Status status = Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    // log('user.fromMap - data=$data');
+    // log('user.fromMap - data=${data['bidsIn']}');
+    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
+
+    final Status status =
+        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
@@ -198,8 +204,10 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule = data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final Rule rule =
+        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
+        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);

@@ -167,7 +167,17 @@ class ko {
       Keys.joinInvite: '2i2i에서 나와 함께 놀아요',
       Keys.joinOtherRoom: '일부 사람들의 방에 참여하십시오',
       Keys.beFirstJoin: '이 방에 가장 먼저 참여하세요',
-      Keys.appVersion: '버전'
+      Keys.appVersion: '버전',
+      Keys.logOut: '로그 아웃',
+      Keys.connectAccount: '계정 연결',
+      Keys.updateAvailable: '업데이트 가능',
+      Keys.loginMsg: '당신의 행아웃 장소',
+      Keys.loginMsg2: '2i2i\'는 게스트와 호스트가 영상통화 형태로 만날 수 있는 안전하고 프라이빗한 공간을 제공하며',
+      Keys.loginMsg3: '>출시 이후 305회 회의',
+      Keys.signInWithGoogle: '구글로 로그인',
+      Keys.signInWithApple: 'Apple로 로그인',
+      Keys.signInWithTwitter: '트위터로 로그인',
+      Keys.signInAnonymously: '익명 로그인',
     };
   }
 }
