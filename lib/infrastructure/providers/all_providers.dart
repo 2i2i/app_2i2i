@@ -8,6 +8,8 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -85,7 +87,7 @@ final meetingStatusProvider =
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
-  final auth = ref.watch(firebaseAuthProvider);
+      final auth = ref.watch(firebaseAuthProvider);
   // log('setupUserViewModelProvider - auth=$auth');
   final database = ref.watch(databaseProvider);
   // log('setupUserViewModelProvider - database=$database');
@@ -93,6 +95,8 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
@@ -101,6 +105,7 @@ final setupUserViewModelProvider =
       algorandLib: algorandLib,
       algorand: algorand,
       storage: storage,
+      googleSignIn: googleSignIn,
       accountService: accountService);
 });
 

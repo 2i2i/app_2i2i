@@ -1,9 +1,10 @@
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
@@ -191,8 +192,9 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn']}');
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final Status status =
-        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final Status status = (Status.values.isNotEmpty)
+        ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'])
+        : Status.OFFLINE;
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';

@@ -179,6 +179,18 @@ class Keys {
   static const String joinOtherRoom = 'joinOtherRoom';
   static const String beFirstJoin = 'beFirstJoin';
   static const String appVersion = 'appVersion';
+  static const String logOut = 'logOut';
+
+  static const String connectAccount ='connectAccount';
+  static const String updateAvailable ='updateAvailable';
+  static const String loginMsg ='loginMsg';
+  static const String loginMsg2 ='loginMsg2';
+  static const String loginMsg3 ='loginMsg3';
+  static const String signInWithGoogle ='signInWithGoogle';
+  static const String signInWithApple ='signInWithApple';
+  static const String signInWithTwitter ='signInWithTwitter';
+  static const String signInAnonymously ='signInAnonymously';
+
 }
 
 extension CustomTranslation on String {

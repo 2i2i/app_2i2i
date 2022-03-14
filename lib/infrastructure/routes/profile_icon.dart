@@ -20,7 +20,7 @@ class ProfileIcon extends StatelessWidget {
       if (userId == null) return normalReturn;
 
       final bidInList = ref.watch(bidInsPublicProvider(userId));
-      if (bidInList.value == null) return normalReturn;
+      if ((bidInList.value ?? []).isEmpty) return normalReturn;
       List<BidInPublic> bids = bidInList.asData!.value;
       if (bids.isEmpty) return normalReturn;
 
@@ -31,8 +31,7 @@ class ProfileIcon extends StatelessWidget {
             log('snapshot.data=${snapshot.data}');
             List<String> localIds = snapshot.data!.split(',').toSet().toList();
             List serverIds = bids.map((e) => e.id).toSet().toList();
-            bool anyNew =
-                serverIds.any((element) => !localIds.contains(element));
+            bool anyNew = serverIds.any((element) => !localIds.contains(element));
             if (!anyNew) return normalReturn;
 
             return SizedBox(
