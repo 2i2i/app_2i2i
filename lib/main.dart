@@ -63,7 +63,8 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn =
+      'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {
@@ -86,7 +87,7 @@ Future<void> main() async {
       });
     });
   }
-
+}
 
 class MainWidget extends ConsumerStatefulWidget {
   final String themeMode;

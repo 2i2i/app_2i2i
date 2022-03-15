@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
 
 import '../../../infrastructure/commons/keys.dart';
@@ -88,9 +90,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                       CustomAlertWidget.showBidAlert(context,
                           ImagePickOptionWidget(
                         imageCallBack: (ImageType imageType, String imagePath) {
-                          imageUrl = imagePath;
-                          this.imageType = imageType;
-                          setState(() {});
+                          if (imagePath.isNotEmpty) {
+                            imageUrl = imagePath;
+                            this.imageType = imageType;
+                            setState(() {});
+                          }
                         },
                       ));
                     },
@@ -392,7 +396,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                onClickSave(myUserPageViewModel, context);
+                onClickSave(myUserPageViewModel, context,
+                    (widget.fromBottomSheet ?? false));
               },
               child: Text(Keys.save.tr(context)),
             )
@@ -548,8 +553,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave(
-      MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
+  Future<void> onClickSave(MyUserPageViewModel? myUserPageViewModel,
+      BuildContext context, bool fromBottomSheet) async {
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
@@ -591,9 +596,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<String?> uploadImage() async {
     try {
-      Reference reference = FirebaseStorage.instance
-          .ref()
-          .child('profileImage/${imageUrl.split('/').last}');
+      var datestamp = new DateFormat("yyyyMMdd'T'HHmmss");
+      String currentDate = datestamp.format(DateTime.now());
+      Reference reference =
+          FirebaseStorage.instance.ref().child("/FCMImages/$currentDate");
       UploadTask uploadTask = reference.putFile(File(imageUrl));
       TaskSnapshot snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();

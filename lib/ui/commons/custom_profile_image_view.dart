@@ -127,6 +127,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           borderRadius: BorderRadius.circular(20),
           child: CachedNetworkImage(
             imageUrl: widget.stringPath,
+            width: widget.radius,
+            height: widget.radius,
+            fit: BoxFit.cover,
             placeholder: (context, url) => CupertinoActivityIndicator(),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
