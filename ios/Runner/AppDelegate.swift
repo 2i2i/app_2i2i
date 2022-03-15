@@ -15,7 +15,7 @@ import CallKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
+
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
                                                    binaryMessenger: controller.binaryMessenger)
