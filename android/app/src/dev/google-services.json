@@ -1,40 +1,40 @@
 {
   "project_info": {
-    "project_number": "347734179578",
-    "project_id": "app-2i2i",
-    "storage_bucket": "app-2i2i.appspot.com"
+    "project_number": "453884442411",
+    "project_id": "i2i-test",
+    "storage_bucket": "i2i-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:347734179578:android:221a08f307315a3543d343",
+        "mobilesdk_app_id": "1:453884442411:android:9a4a826f15c2bf8498776e",
         "android_client_info": {
           "package_name": "app.i2i2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
+          "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCb3Bd0me1N5-aMqoR4Y-ALbq9oA3h8p7A"
+          "current_key": "AIzaSyDyAd3hJCebhhyFhD012dI4oMIDKf4FWhg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
+              "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff.apps.googleusercontent.com",
+              "client_id": "453884442411-3t14hd6fn9bodfledaip71e439cfn351.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "app.2i2i"
+                "bundle_id": "app.i2i2.test"
               }
             }
           ]

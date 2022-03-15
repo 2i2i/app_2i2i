@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/gestures.dart';
@@ -45,6 +46,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       child: SafeArea(
         top: false,
         child: Scaffold(
+          appBar: AppBar(
+            title: Text(Firebase.app().options.projectId),
+          ),
           body: Container(
             width: double.maxFinite,
             child: LayoutBuilder(

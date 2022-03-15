@@ -88,8 +88,7 @@ class MainWidget extends ConsumerStatefulWidget {
   _MainWidgetState createState() => _MainWidgetState();
 }
 
-class _MainWidgetState extends ConsumerState<MainWidget>
-    with WidgetsBindingObserver {
+class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObserver {
   Timer? timer;
   RingingPageViewModel? ringingPageViewModel;
 
