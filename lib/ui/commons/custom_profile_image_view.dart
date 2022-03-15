@@ -1,8 +1,16 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ProfileWidget extends StatelessWidget {
+enum ImageType {
+  ASSENT_IMAGE,
+  NETWORK_IMAGE,
+  NAME_IMAGE,
+}
+
+class ProfileWidget extends StatefulWidget {
   final String stringPath;
   final double radius;
   final Color? statusColor;
@@ -11,6 +19,8 @@ class ProfileWidget extends StatelessWidget {
   final bool hideShadow;
   final bool isRating;
   final bool showBorder;
+  final bool showEdit;
+  final ImageType imageType;
 
   const ProfileWidget(
       {Key? key,
@@ -18,79 +28,55 @@ class ProfileWidget extends StatelessWidget {
       this.radius = kToolbarHeight,
       this.statusColor,
       this.onTap,
+      this.imageType = ImageType.NAME_IMAGE,
       this.style,
       this.hideShadow = false,
       this.isRating = false,
-      this.showBorder = false})
+      this.showBorder = false,
+      this.showEdit = false})
       : super(key: key);
 
   @override
+  State<ProfileWidget> createState() => _ProfileWidgetState();
+}
+
+class _ProfileWidgetState extends State<ProfileWidget> {
+  ImageType? imageType;
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.stringPath.contains('http') || widget.stringPath.contains('https')) {
+      imageType = ImageType.NETWORK_IMAGE;
+    }else{
+      imageType = widget.imageType;
+    }
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       hoverColor: Colors.transparent,
       child: Container(
-        width: radius,
-        height: radius,
-        decoration: BoxDecoration(
-          boxShadow: !hideShadow ||
-                  stringPath.contains('http') ||
-                  stringPath.contains('https')
-              ? [
-                  BoxShadow(
-                      offset: Offset(2, 4),
-                      blurRadius: 20,
-                      color: Theme.of(context).shadowColor,
-                  ),
-                ]
-              : null,
-        ),
+        width: widget.radius,
+        height: widget.radius,
         child: Stack(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: showBorder?Border.all(
-                  width: 0.3,
-                  color: Theme.of(context).disabledColor
-                ):null,
-                borderRadius: BorderRadius.circular(20)
+            Card(
+              elevation: 6,
+              //shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
               ),
-              child: Card(
-                elevation: 6,
-                shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Center(
-                  child: stringPath.contains('http') ||
-                          stringPath.contains('https')
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CachedNetworkImage(
-                            imageUrl: stringPath,
-                            placeholder: (context, url) =>
-                                CupertinoActivityIndicator(),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ),
-                        )
-                      : Text(
-                          isRating
-                              ? "${stringPath.toString().isNotEmpty ? stringPath : "0"}"
-                              : "${stringPath.toString().isNotEmpty ? stringPath : "X"}"
-                                  .substring(0, 1)
-                                  .toUpperCase(),
-                          style: style ??
-                              Theme.of(context)
-                                  .textTheme
-                                  .headline5,
-                        ),
-                ),
+              child: Center(
+                child: imageView(context),
               ),
             ),
-            if (statusColor != null)
+            if (widget.statusColor != null)
               Positioned(
                 bottom: 1,
                 right: 1,
@@ -98,10 +84,27 @@ class ProfileWidget extends StatelessWidget {
                   width: 18,
                   height: 18,
                   child: Material(
-                    color: statusColor,
+                    color: widget.statusColor,
                     shape: CircleBorder(
                         side: BorderSide(color: Colors.white, width: 3)),
                     // child: Icon(Icons.check, color: Colors.white,),
+                  ),
+                ),
+              ),
+            if (widget.showEdit)
+              Positioned(
+                bottom: 1,
+                right: 1,
+                child: Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        25.0), // half of height and width of Image
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: RotatedBox(
+                        quarterTurns: 3, child: Icon(Icons.edit, size: 14)),
                   ),
                 ),
               )
@@ -110,6 +113,36 @@ class ProfileWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget imageView(BuildContext context) {
+    switch (imageType) {
+      case ImageType.ASSENT_IMAGE:
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Image.file(File(widget.stringPath),
+              fit: BoxFit.cover, width: widget.radius, height: widget.radius),
+        );
+      case ImageType.NETWORK_IMAGE:
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: CachedNetworkImage(
+            imageUrl: widget.stringPath,
+            placeholder: (context, url) => CupertinoActivityIndicator(),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
+        );
+      case ImageType.NAME_IMAGE:
+      default:
+        return Text(
+          widget.isRating
+              ? "${widget.stringPath.toString().isNotEmpty ? widget.stringPath : "0"}"
+              : "${widget.stringPath.toString().isNotEmpty ? widget.stringPath : "X"}"
+                  .substring(0, 1)
+                  .toUpperCase(),
+          style: widget.style ?? Theme.of(context).textTheme.headline5,
+        );
+    }
+  }
 }
 
 class RectangleBox extends StatelessWidget {
@@ -117,7 +150,8 @@ class RectangleBox extends StatelessWidget {
   final double radius;
   final GestureTapCallback? onTap;
 
-  const RectangleBox({Key? key, required this.icon,required this.radius, this.onTap})
+  const RectangleBox(
+      {Key? key, required this.icon, required this.radius, this.onTap})
       : super(key: key);
 
   @override

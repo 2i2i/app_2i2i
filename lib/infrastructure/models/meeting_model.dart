@@ -19,18 +19,19 @@ enum MeetingStatus {
   RECEIVED_REMOTE_A, // A received remote stream of B
   RECEIVED_REMOTE_B, // B received remote stream of A
   CALL_STARTED, // REMOTE_A_RECEIVED && REMOTE_B_RECEIVED
-  END_TIMER,
+  END_TIMER_RINGING_PAGE,
+  END_TIMER_CALL_PAGE,
   END_A, // A hangs up
   END_B, // B hangs up
   END_DISCONNECT, // disconnected
 }
 
-// ACCEPTED_B -> END_TIMER
+// ACCEPTED_B -> END_TIMER_RINGING_PAGE
 // ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> END_A/B
 // ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> END_A/B
 // ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> END_A/B
 // ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_A/B
-// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_TIMER
+// ACCEPTED_B -> ACCEPTED_A -> ROOM_CREATED -> RECEIVED_REMOTE_A/B -> RECEIVED_REMOTE_B/A -> CALL_STARTED -> END_TIMER_CALL_PAGE
 // always possible to get END_DISCONNECT
 extension ParseToString on MeetingStatus {
   String toStringEnum() {
@@ -150,8 +151,39 @@ class MeetingChanger {
 
   Future remoteReceivedByAMeeting(String meetingId) =>
       normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
+
   Future remoteReceivedByBMeeting(String meetingId) =>
       normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
+
+  Future muteVideo(String meetingId,
+      {required bool amA, required bool videoStatus}) async {
+    Map<String, dynamic> data = {};
+    if (amA) {
+      data = {
+        'mutedVideoA': videoStatus,
+      };
+    } else {
+      data = {
+        'mutedVideoB': videoStatus,
+      };
+    }
+    return database.updateMeetingStatus(meetingId, data);
+  }
+
+  Future muteAudio(String meetingId,
+      {required bool amA, required bool audioStatus}) async {
+    Map<String, dynamic> data = {};
+    if (amA) {
+      data = {
+        'mutedAudioA': audioStatus,
+      };
+    } else {
+      data = {
+        'mutedAudioB': audioStatus,
+      };
+    }
+    return database.updateMeetingStatus(meetingId, data);
+  }
 }
 
 @immutable
@@ -183,7 +215,7 @@ class Meeting extends Equatable {
   final String id;
 
   final bool active; // status is not END_*
-  final bool settled; // after END
+  final bool settled; //
 
   final String A;
   final String B;
@@ -283,27 +315,26 @@ class Meeting extends Equatable {
 
     return Meeting(
       id: documentId,
-      lounge: lounge,
-      active: active,
-      settled: settled,
-      A: A,
-      B: B,
-      addrA: addrA,
-      addrB: addrB,
-      energy: energy,
-      start: start,
-      end: end,
-      duration: duration,
-      txns: txns,
-      status: status,
-      statusHistory: statusHistory,
-      net: net,
-      speed: speed,
-      room: room,
-      coinFlowsA: coinFlowsA,
-      coinFlowsB: coinFlowsB,
-      rule: rule,
-    );
+        lounge: lounge,
+        active: active,
+        settled: settled,
+        A: A,
+        B: B,
+        addrA: addrA,
+        addrB: addrB,
+        energy: energy,
+        start: start,
+        end: end,
+        duration: duration,
+        txns: txns,
+        status: status,
+        statusHistory: statusHistory,
+        net: net,
+        speed: speed,
+        room: room,
+        coinFlowsA: coinFlowsA,
+        coinFlowsB: coinFlowsB,
+        rule: rule,);
   }
 
   // used by acceptBid, as B

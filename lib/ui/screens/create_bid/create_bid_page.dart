@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -509,7 +510,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         active: false,
         id: now.microsecondsSinceEpoch.toString(),
         speed: speed,
-        net: AlgorandNet.testnet,
+        net: AppConfig().ALGORAND_NET,
         ts: now,
         energy: amount.num,
         rule: userB!.rule);
@@ -554,7 +555,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / 1000000).toDecimalAsFixed(3)} A';
+    var amountStr = '${(amount.num / 1000000).toString()} A';
     if (isInsufficient()) {
       var val = int.tryParse(speedController.text)??0;
       bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);

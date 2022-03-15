@@ -29,19 +29,25 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
     final currentUserId = ref.watch(myUIDProvider)!;
     final currentUserAsyncValue = ref.watch(userProvider(currentUserId));
     final currentUser = currentUserAsyncValue.value!;
-    if (MediaQuery.of(context).size.width > 600) {
-      isLargeScreen = true;
-    } else {
-      isLargeScreen = false;
-    }
+    isLargeScreen = (MediaQuery.of(context).size.width > 600);
+
     return Padding(
       padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      EdgeInsets.only(bottom: MediaQuery
+          .of(context)
+          .viewInsets
+          .bottom),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Container(
-          height: isLargeScreen?844:MediaQuery.of(context).size.width,
-          width: isLargeScreen?500:MediaQuery.of(context).size.width,
+          height: isLargeScreen ? 844 : MediaQuery
+              .of(context)
+              .size
+              .width,
+          width: isLargeScreen ? 500 : MediaQuery
+              .of(context)
+              .size
+              .width,
           margin: EdgeInsets.only(
               top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
           padding: EdgeInsets.all(12),
@@ -88,6 +94,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                               contentPadding: EdgeInsets.zero,
                               leading: ProfileWidget(
                                   stringPath: chat.writerName,
+                                  imageType: ImageType.NAME_IMAGE,
                                   radius: 44,
                                   hideShadow: true,
                                   style: Theme.of(context)

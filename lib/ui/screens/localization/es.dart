@@ -38,7 +38,7 @@ class es {
       Keys.fav: 'Favoritos',
       Keys.scanQr: 'Escanear QR',
       Keys.about: 'Sobre',
-      Keys.aboutPageUrl: 'https://shorturl.at/hilqL',
+      Keys.aboutPageUrl: 'https://about.2i2i.app',
       Keys.scanInWalletConnect: 'Usar WalletConnect\n(e.g. Algorand Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
@@ -115,6 +115,8 @@ class es {
       Keys.bidIn: 'Pujar en',
       Keys.bidOut: 'Esperando',
       Keys.noBidFound: 'No se encontraron ofertas',
+      Keys.noMeetingsFound: 'No se encontraron reuniones',
+      Keys.roomIsEmpty: 'Tu habitación está vacía',
       Keys.meetingsHistory: 'Historial de reuniones',
       Keys.history: 'Historia',
       Keys.friendList: 'Lista de amigos',
@@ -159,6 +161,23 @@ class es {
       Keys.topSpeeds: 'Velocidades máximas',
       Keys.topDurations: 'Duraciones principales',
       Keys.language: 'Idioma de la aplicación',
+      Keys.inviteFriend:
+          'Comparte el enlace de tu perfil con tus seguidores para conocerlos aquí',
+      Keys.joinInvite: 'Tu amigo e invita a unirte a 2i2i',
+      Keys.joinOtherRoom: 'Únase a las salas de algunas personas',
+      Keys.beFirstJoin: 'Sé el primero en unirse a esta habitación.',
+      Keys.appVersion: 'Versión',
+      Keys.logOut: 'CERRAR SESIÓN',
+      Keys.connectAccount: 'Conectar cuenta con',
+      Keys.updateAvailable: 'Actualización disponible',
+      Keys.loginMsg: 'El lugar para pasar el rato',
+      Keys.loginMsg2:
+          '2i2i proporciona un espacio seguro y privado para que los Huéspedes y el Anfitrión se reúnan en forma de videollamadas',
+      Keys.loginMsg3: '>305 REUNIONES DESDE EL LANZAMIENTO',
+      Keys.signInWithGoogle: 'Inicia sesión con Google',
+      Keys.signInWithApple: 'Iniciar sesión con Apple',
+      Keys.signInWithTwitter: 'Registrate con Twitter',
+      Keys.signInAnonymously: 'Iniciar sesión en forma anónima',
     };
   }
 }

@@ -1,11 +1,9 @@
-import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
-
+import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import '../../../main.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -16,16 +14,17 @@ class FirebaseNotifications {
   }
 
   void firebaseCloudMessagingListeners() {
-    FirebaseMessaging.instance.requestPermission(sound: true, badge: true, alert: true);
+    FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("Handling a onMessage message: ${message.messageId}");
-
     });
   }
 
   Future<void> awesomeNotificationSetup() async {
-    FirebaseMessaging.instance.getToken().then((value) => print(value));
+    FirebaseMessaging.instance
+        .getToken()
+        .then((value) => print("\n\nMobile Token ======= $value \n\n"));
     await Firebase.initializeApp();
     await AwesomeNotifications().initialize(
       null,
@@ -38,7 +37,7 @@ class FirebaseNotifications {
           defaultColor: Color(0xFF9D50DD),
           importance: NotificationImportance.Max,
           ledColor: Colors.white,
-          channelShowBadge: true,
+          channelShowBadge: false,
           locked: true,
           playSound: true,
           soundSource: 'resource://raw/video_call',
@@ -74,7 +73,7 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token,Map data,bool isIos) async {
+  /*Future sendNotification(String token,Map data,bool isIos) async {
     var notification = {};
     if(isIos){
       notification['title'] = data['title'];
@@ -85,6 +84,7 @@ class FirebaseNotifications {
       "notification": notification,
       "mutable_content": true,
       "content_available": true,
+      "content-available": true,
       "priority": "high",
       "data": data,
     };
@@ -106,7 +106,7 @@ class FirebaseNotifications {
     } catch (e) {
       print(e);
     }
-  }
+  }*/
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -121,7 +121,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     imageUrl = data['imageUrl'];
   }
   if (type == 'Call') {
-    AwesomeNotifications().createNotification(
+    if (Platform.isIOS) {
+      await platform.invokeMethod('INCOMING_CALL', {'name': data['title']});
+    } else {
+      AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 10,
           channelKey: 'call_channel',
@@ -138,12 +141,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         ),
         actionButtons: [
           NotificationActionButton(
-              key: 'view',
-              label: 'View',
-              color: Colors.green,
-              autoDismissible: true,
+            key: 'view',
+            label: 'View',
+            color: Colors.green,
+            autoDismissible: true,
           ),
         ],
-    );
+      );
+    }
   }
 }

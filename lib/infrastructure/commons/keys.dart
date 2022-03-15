@@ -16,6 +16,8 @@ class Keys {
   static const String asGuest = 'As Guest';
   static const String asHost = 'As Host';
   static const String noBidFound = 'noBidFound';
+  static const String noMeetingsFound = 'noMeetingsFound';
+  static const String roomIsEmpty = 'roomIsEmpty';
   static const String aboutYou = 'aboutYou';
   static const String aboutYouDesc = 'aboutYouDesc';
   static const String faq = 'faq';
@@ -172,6 +174,23 @@ class Keys {
   static const String topSpeeds = 'Top Speeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
+  static const String inviteFriend = 'inviteFriend';
+  static const String joinInvite = 'joinInvite';
+  static const String joinOtherRoom = 'joinOtherRoom';
+  static const String beFirstJoin = 'beFirstJoin';
+  static const String appVersion = 'appVersion';
+  static const String logOut = 'logOut';
+
+  static const String connectAccount ='connectAccount';
+  static const String updateAvailable ='updateAvailable';
+  static const String loginMsg ='loginMsg';
+  static const String loginMsg2 ='loginMsg2';
+  static const String loginMsg3 ='loginMsg3';
+  static const String signInWithGoogle ='signInWithGoogle';
+  static const String signInWithApple ='signInWithApple';
+  static const String signInWithTwitter ='signInWithTwitter';
+  static const String signInAnonymously ='signInAnonymously';
+
 }
 
 extension CustomTranslation on String {

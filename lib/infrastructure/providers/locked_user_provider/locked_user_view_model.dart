@@ -1,11 +1,13 @@
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/foundation.dart';
-
 import '../../data_access_layer/services/logging.dart';
 
 class LockedUserViewModel with ChangeNotifier {
-  LockedUserViewModel({required this.user, required this.meeting});
+  LockedUserViewModel(
+      {required this.user,
+      required this.meeting});
+
   final UserModel user;
   final Meeting meeting;
 

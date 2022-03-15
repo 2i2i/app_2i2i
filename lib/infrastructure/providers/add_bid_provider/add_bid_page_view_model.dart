@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
@@ -59,7 +60,7 @@ class AddBidPageViewModel {
 
     if (B.blocked.contains(A)) return;
 
-    final net = AlgorandNet.testnet;
+    final net = AppConfig().ALGORAND_NET;
     final String? addrA = speed.num == 0 ? null : account!.address;
     final bidId = database.newDocId(
         path: FirestorePath

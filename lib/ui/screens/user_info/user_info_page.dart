@@ -1,9 +1,13 @@
+import 'dart:io';
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,8 +41,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     }
 
     final A = ref.watch(myUIDProvider);
-    bool amBlocked =
-        A == null || userPageBViewModel.user.blocked.contains(A);
+    bool amBlocked = A == null || userPageBViewModel.user.blocked.contains(A);
 
     UserModel? userA;
     if (A is String) {
@@ -47,8 +50,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     }
     final userModelChanger = ref.watch(userChangerProvider);
     bool isFriend = false;
-    if (userA is UserModel && userA.friends.contains(widget.B))
-      isFriend = true;
+    if (userA is UserModel && userA.friends.contains(widget.B)) isFriend = true;
 
     final UserModel userB = userPageBViewModel.user;
 
@@ -56,8 +58,8 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
-    final bidInsSorted = combineQueues(
-        bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
+    final bidInsSorted =
+        combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
 
     // show est. wait time?
     int? estWaitTime;
@@ -82,8 +84,22 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       }
     }
 
+    final domain =
+        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            context.go(Routes.root);
+          },
+          icon: Icon(
+              (kIsWeb || Platform.isIOS)
+                  ? Icons.navigate_before
+                  : Icons.arrow_back_ios,
+              size: 30),
+        ),
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
       ),
@@ -158,10 +174,10 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       child: Container(
                         height: 400,
                         width: 350,
-                        decoration: Custom.getBoxDecoration(context,color: Colors.white),
+                        decoration: Custom.getBoxDecoration(context,
+                            color: Colors.white),
                         child: QrCodeWidget(
-                            message:
-                                'https://test.2i2i.app/user/${userB.id}'),
+                            message: 'https://$domain/user/${userB.id}'),
                       ),
                     ),
                   );

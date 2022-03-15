@@ -1,9 +1,10 @@
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
@@ -32,8 +33,10 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeat(Status status) =>
-      database.updateUserHeartbeat(uid, status.toStringEnum());
+  Future updateHeartbeatBackground({bool setStatus = false}) =>
+      database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future updateHeartbeatForeground({bool setStatus = false}) =>
+      database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
   Future updateSettings(UserModel user) => database.updateUser(user);
   Future addComment(String targetUid, ChatModel chat) =>
       database.addChat(targetUid, chat);
@@ -118,7 +121,9 @@ class UserModel extends Equatable {
     this.bio = '',
     this.rating = 1,
     this.numRatings = 0,
-    this.heartbeat,
+    this.heartbeatBackground,
+    this.imageUrl,
+    this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
     this.loungeHistoryIndex = -1,
@@ -129,13 +134,15 @@ class UserModel extends Equatable {
   }
 
   final String id;
-  final DateTime? heartbeat;
+  final DateTime? heartbeatBackground;
+  final DateTime? heartbeatForeground;
   final Status status;
 
   final String? meeting;
   Rule rule;
 
   String name;
+  String? imageUrl;
   String bio;
   late List<String> _tags;
   void setTags() {
@@ -192,15 +199,16 @@ class UserModel extends Equatable {
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
+    final String imageUrl = data['imageUrl'] ?? '';
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
-    final DateTime? heartbeat = data['heartbeat']?.toDate();
+    final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
+    final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule =
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
 
@@ -210,9 +218,11 @@ class UserModel extends Equatable {
       meeting: meeting,
       name: name,
       bio: bio,
+      imageUrl: imageUrl,
       rating: rating,
       numRatings: numRatings,
-      heartbeat: heartbeat,
+      heartbeatBackground: heartbeatBackground,
+      heartbeatForeground: heartbeatForeground,
       rule: rule,
       loungeHistory: loungeHistory,
       loungeHistoryIndex: loungeHistoryIndex,
@@ -228,9 +238,11 @@ class UserModel extends Equatable {
       'bio': bio,
       'name': name,
       'tags': _tags,
+      'imageUrl': imageUrl,
       'rating': rating,
       'numRatings': numRatings,
-      'heartbeat': heartbeat,
+      'heartbeatBackground': heartbeatBackground,
+      'heartbeatForeground': heartbeatForeground,
       'rule': rule.toMap(),
       'loungeHistory': loungeHistory.map((e) => e.index).toList(),
       'loungeHistoryIndex': loungeHistoryIndex,
@@ -241,7 +253,7 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeat: $heartbeat}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
   }
 
   bool isInMeeting() => meeting != null;

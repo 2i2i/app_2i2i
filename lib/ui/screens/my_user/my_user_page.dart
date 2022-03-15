@@ -1,4 +1,6 @@
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -47,6 +49,9 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     }
 
     UserModel user = myHangoutPageViewModel!.user;
+    final domain =
+        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+        
     return Scaffold(
       body: Column(
         children: [
@@ -79,7 +84,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                             width: 350,
                             child: QrCodeWidget(
                                 message:
-                                    'https://test.2i2i.app/user/${user.id}'),
+                                    'https://$domain/user/${user.id}'),
                           ),
                         ),
                       );
@@ -105,7 +110,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   Keys.bidsIn.tr(context),
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                noBidsText: Keys.noBidFound.tr(context),
                 onTap: (x) => {}, //myUserPageViewModel.acceptBid,
               ),
             ),

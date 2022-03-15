@@ -36,7 +36,11 @@ class AccountService {
 
   Future<AssetHolding> getALGOBalance(
       {required String address, required AlgorandNet net}) async {
-    final balance = await algorandLib.client[net]!.getBalance(address);
+    int balance = 0;
+    try {
+      balance = await algorandLib.client[net]!.getBalance(address);
+    } catch (e) {}
+
     return AssetHolding(
         amount: balance, assetId: 0, creator: '', isFrozen: false);
   }
@@ -53,16 +57,20 @@ class AccountService {
 
   Future<List<AssetHolding>> getAssetHoldings(
       {required String address, required AlgorandNet net}) async {
-    final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
+    int balanceALGO = 0;
 
-    // final accountInfoFuture =
-    //     algorandLib.client[net]!.getAccountByAddress(address);
+    try {
+      final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-    // final futureResults =
-    //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
-    final futureResults = await Future.wait([balanceALGOFuture]);
+      // final accountInfoFuture =
+      //     algorandLib.client[net]!.getAccountByAddress(address);
 
-    final balanceALGO = futureResults[0];
+      // final futureResults =
+      //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
+      final futureResults = await Future.wait([balanceALGOFuture]);
+
+      balanceALGO = futureResults[0];
+    } catch (e) {}
 
     // final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
@@ -74,10 +82,12 @@ class AccountService {
   }
 
   Future<int> getNumLocalAccounts() async {
+    log('getNumLocalAccounts');
     final numAccountsString = await storage.read('num_accounts');
+    log('getNumLocalAccounts numAccountsString=$numAccountsString');
     final numAccounts =
         numAccountsString == null ? 0 : int.parse(numAccountsString);
-    log('Number of Local Accounts ========= $numAccounts');
+    log('getNumLocalAccounts numAccounts=$numAccounts');
     return numAccounts;
   }
 
@@ -102,9 +112,12 @@ class AccountService {
   }
 
   Future<List<LocalAccount>> getAllLocalAccounts() async {
+    log('AccountService getAllLocalAccounts');
     final int numAccounts = await getNumLocalAccounts();
+    log('AccountService numAccounts=$numAccounts');
     final List<Future<LocalAccount>> futures = [];
     for (var i = 0; i < numAccounts; i++) {
+      log('AccountService i=$i');
       final accountFuture = LocalAccount.fromNumAccount(
           numAccount: i,
           algorandLib: algorandLib,
@@ -112,6 +125,7 @@ class AccountService {
           accountService: this);
       futures.add(accountFuture);
     }
+    log('AccountService done');
     return Future.wait(futures);
   }
 
@@ -119,6 +133,7 @@ class AccountService {
       WalletConnectAccount.getAllAccounts();
 
   Future<List<AbstractAccount>> getAllAccounts() async {
+    log('AccountService getAllAccounts');
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
     return [...localAccounts, ...walletConnectAccounts];
@@ -129,9 +144,16 @@ class AccountService {
       required int assetId,
       required AlgorandNet net}) async {
     if (assetId == 0) return true; // all accounts can use ALGO
-    final accountInfo =
-        await algorandLib.client[net]!.getAccountByAddress(address);
-    final assetHoldings = accountInfo.assets;
+
+    List<AssetHolding> assetHoldings = [];
+    try {
+      final accountInfo =
+          await algorandLib.client[net]!.getAccountByAddress(address);
+      assetHoldings = accountInfo.assets;
+    } catch (e) {
+      return false;
+    }
+
     return assetHoldings.map((a) => a.assetId).contains(assetId);
   }
 
@@ -139,13 +161,18 @@ class AccountService {
       {required String address,
       required int dAppId,
       required AlgorandNet net}) async {
-    final accountInfo =
-        await algorandLib.client[net]!.getAccountByAddress(address);
-    for (final ApplicationLocalState localState in accountInfo.appsLocalState) {
-      if (localState.id == dAppId) return true;
-      // TODO do we need to maybe care about 'deleted' or 'closed-out-at-round'
+    try {
+      final accountInfo =
+          await algorandLib.client[net]!.getAccountByAddress(address);
+      for (final ApplicationLocalState localState
+          in accountInfo.appsLocalState) {
+        if (localState.id == dAppId) return true;
+        // TODO do we need to maybe care about 'deleted' or 'closed-out-at-round'
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 }
 
@@ -183,21 +210,13 @@ abstract class AbstractAccount {
     return 100000 * (1 + asaCount);
   }
 
-  Future<void> updateBalances() async {
+  Future<void> updateBalances({required AlgorandNet net}) async {
     log('updateBalances');
-    // final mainnetAssetHoldings = await accountService.getAssetHoldings(
-    //     address: address, net: AlgorandNet.mainnet);
-    // final mainnetBalances = mainnetAssetHoldings
-    //     .map((assetHolding) =>
-    //         Balance(assetHolding: assetHolding, net: AlgorandNet.mainnet))
-    //     .toList();
-    final testnetAssetHoldings = await accountService.getAssetHoldings(
-        address: address, net: AlgorandNet.testnet);
-    final testnetBalances = testnetAssetHoldings
-        .map((assetHolding) =>
-            Balance(assetHolding: assetHolding, net: AlgorandNet.testnet))
+    final assetHoldings =
+        await accountService.getAssetHoldings(address: address, net: net);
+    balances = assetHoldings
+        .map((assetHolding) => Balance(assetHolding: assetHolding, net: net))
         .toList();
-    balances = testnetBalances;
   }
 
   Future<bool> isOptedInToASA(

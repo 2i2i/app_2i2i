@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../repository/algorand_service.dart';
@@ -47,7 +48,7 @@ class WalletConnectAccount extends AbstractAccount {
     // );
 
     address = connector.session.accounts[0];
-    await updateBalances();
+    await updateBalances(net: AppConfig().ALGORAND_NET);
     // futures.add(updateBalances());
 
     int alreadyExistIndex =

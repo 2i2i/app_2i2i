@@ -2,12 +2,13 @@
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
@@ -16,15 +17,15 @@ import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
+import '../models/meeting_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
-import 'user_bid_provider/user_page_view_model.dart';
-import 'history_provider/history_view_model.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
 import 'ringing_provider/ringing_page_view_model.dart';
 import 'setup_user_provider/setup_user_view_model.dart';
+import 'user_bid_provider/user_page_view_model.dart';
 
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -64,8 +65,7 @@ final userPageViewModelProvider =
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return UserPageViewModel(
-      functions: functions, user: user.asData!.value);
+  return UserPageViewModel(functions: functions, user: user.asData!.value);
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
@@ -78,10 +78,16 @@ final searchUsersStreamProvider =
   return database.usersStream(tags: filter);
 });
 
+final meetingStatusProvider =
+    StreamProvider.family<MeetingStatusModel?, String>((ref, meetingId) {
+  final database = ref.watch(databaseProvider);
+  return database.getMeetingStatus(meetingId: meetingId);
+});
+
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
-  final auth = ref.watch(firebaseAuthProvider);
+      final auth = ref.watch(firebaseAuthProvider);
   // log('setupUserViewModelProvider - auth=$auth');
   final database = ref.watch(databaseProvider);
   // log('setupUserViewModelProvider - database=$database');
@@ -89,6 +95,8 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
@@ -97,6 +105,7 @@ final setupUserViewModelProvider =
       algorandLib: algorandLib,
       algorand: algorand,
       storage: storage,
+      googleSignIn: googleSignIn,
       accountService: accountService);
 });
 
@@ -121,7 +130,8 @@ final algorandProvider = Provider((ref) {
 
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
-  return AppSettingModel(storage: storage);
+  final database = ref.watch(databaseProvider);
+  return AppSettingModel(storage: storage,firebaseDatabase: database);
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
@@ -269,8 +279,8 @@ final bidInsProvider =
     return null;
   }
   final user = userAsyncValue.value!;
-  final bidInsPublicSorted = combineQueues(
-      bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
+  final bidInsPublicSorted =
+      combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
 
   // private bid ins
   final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
@@ -300,21 +310,20 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
       return null;
     }
     final String userMeeting = user.asData!.value.meeting!;
-    log('lockedUserViewModelProvider - userMeeting=$userMeeting');
     final meeting = ref.watch(meetingProvider(userMeeting));
-
-    log('lockedUserViewModelProvider - meeting=$meeting');
     if (meeting is AsyncLoading || meeting is AsyncError) {
       isUserLocked.value = false;
       return null;
     }
+
     if (meeting.value?.active ?? false) {
       isUserLocked.value = true;
     } else {
       isUserLocked.value = false;
     }
     return LockedUserViewModel(
-        user: user.asData!.value, meeting: meeting.asData!.value);
+        user: user.asData!.value,
+        meeting: meeting.asData!.value);
   },
 );
 
@@ -361,19 +370,6 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meetingChanger: meetingChanger,
       userChanger: userChanger,
       meeting: meeting.asData!.value);
-});
-
-final meetingHistoryProvider =
-    StateProvider.family<HistoryViewModel?, String>((ref, uid) {
-      final meetingHistoryAList = ref.watch(meetingHistoryA(uid));
-  if (meetingHistoryAList is AsyncLoading || meetingHistoryAList is AsyncError)
-    return null;
-  final meetingHistoryBList = ref.watch(meetingHistoryB(uid));
-  if (meetingHistoryBList is AsyncLoading || meetingHistoryBList is AsyncError)
-    return null;
-  return HistoryViewModel(
-      meetingListA: meetingHistoryAList.asData!.value,
-      meetingListB: meetingHistoryBList.asData!.value);
 });
 
 final addBidPageViewModelProvider =
