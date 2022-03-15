@@ -396,8 +396,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                onClickSave(myUserPageViewModel, context,
-                    (widget.fromBottomSheet ?? false));
+                onClickSave(myUserPageViewModel, context);
               },
               child: Text(Keys.save.tr(context)),
             )
@@ -553,9 +552,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave(MyUserPageViewModel? myUserPageViewModel,
-      BuildContext context, bool fromBottomSheet) async {
-    bool validate = formKey.currentState?.validate() ?? false;
+  Future<void> onClickSave(
+      MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
+    if (!(widget.fromBottomSheet ?? false)){
+      CustomDialogs.loader(true, context);
+    }
+      bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (user is UserModel && !(widget.fromBottomSheet ?? false)) {
@@ -590,6 +592,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         }
       }
       await myUserPageViewModel?.updateHangout(user);
+      if (!(widget.fromBottomSheet ?? false)){
+        CustomDialogs.loader(false, context);
+      }
       Navigator.of(context).maybePop();
     }
   }
