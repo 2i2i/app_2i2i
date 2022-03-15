@@ -16,7 +16,7 @@ import Firebase
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        FirebaseApp.configure()
+FirebaseApp.configure()
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
                                                    binaryMessenger: controller.binaryMessenger)

@@ -12,6 +12,7 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -28,12 +29,6 @@ import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
-// DEBUG
-// import 'package:cloud_functions/cloud_functions.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG3
-
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
@@ -44,7 +39,23 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
     await Firebase.initializeApp();
+    await FirebaseAppCheck.instance.activate(
+        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
+
+    String? token = await FirebaseAppCheck.instance.getToken(true);
+    print(token);
+  } else {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
+            authDomain: "i2i-test.firebaseapp.com",
+            projectId: "i2i-test",
+            storageBucket: "i2i-test.appspot.com",
+            messagingSenderId: "453884442411",
+            appId: "1:453884442411:web:dad8591e5125eb8998776e"));
   }
+
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -52,7 +63,8 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn =
+      'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {
@@ -146,7 +158,10 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //       updateHeartbeat(Status.ONLINE);
       //     }
       //   });
-      // }
+      //}
+
+
+
       await Custom.deepLinks(context, mounted);
     });
   }
