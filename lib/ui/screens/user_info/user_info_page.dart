@@ -1,6 +1,7 @@
 import 'dart:io';
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -83,6 +83,9 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         }
       }
     }
+
+    final domain =
+        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       appBar: AppBar(
@@ -174,7 +177,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                         decoration: Custom.getBoxDecoration(context,
                             color: Colors.white),
                         child: QrCodeWidget(
-                            message: 'https://test.2i2i.app/user/${userB.id}'),
+                            message: 'https://$domain/user/${userB.id}'),
                       ),
                     ),
                   );

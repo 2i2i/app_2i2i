@@ -1,4 +1,5 @@
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import '../../commons/custom.dart';
 import '../../commons/qr_image.dart';
 import '../home/wait_page.dart';
 import 'package:flutter/services.dart';
+
 class NoBidPage extends ConsumerWidget {
   final String noBidsText;
 
@@ -20,19 +22,23 @@ class NoBidPage extends ConsumerWidget {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
 
-    final message = 'https://test.2i2i.app/user/$uid';
+    final domain =
+        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+    final message = 'https://$domain/user/$uid';
     return Container(
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(noBidsText, style: Theme.of(context).textTheme.subtitle2?.copyWith(
-              color: Theme.of(context).disabledColor
-          )),
+          Text(noBidsText,
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle2
+                  ?.copyWith(color: Theme.of(context).disabledColor)),
           SizedBox(height: kTextTabBarHeight),
           Container(
-            decoration:
-            Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
+            decoration: Custom.getBoxDecoration(context,
+                color: Colors.white, radius: 10),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: QrWidget(
@@ -43,14 +49,12 @@ class NoBidPage extends ConsumerWidget {
             ),
           ),
           SizedBox(height: 10),
-          Text(
-              Keys.inviteFriend.tr(context),
+          Text(Keys.inviteFriend.tr(context),
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
-                  .subtitle2?.copyWith(
-                  color: Theme.of(context).disabledColor
-              )),
+                  .subtitle2
+                  ?.copyWith(color: Theme.of(context).disabledColor)),
           SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,25 +65,23 @@ class NoBidPage extends ConsumerWidget {
                 child: Text(message,
                     textAlign: TextAlign.center,
                     maxLines: 3,
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      decoration: TextDecoration.underline
-                    )),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(decoration: TextDecoration.underline)),
               ),
               IconButton(
                   onPressed: () async {
                     await Clipboard.setData(new ClipboardData(text: message));
-                    CustomDialogs.showToastMessage(context, Keys.copyMessage.tr(context));
+                    CustomDialogs.showToastMessage(
+                        context, Keys.copyMessage.tr(context));
                   },
-                  icon: Icon(
-                    Icons.copy
-                  )),
+                  icon: Icon(Icons.copy)),
               IconButton(
                   onPressed: () {
                     Share.share('${Keys.joinInvite.tr(context)}\n$message');
                   },
-                  icon: Icon(
-                    Icons.share
-                  )),
+                  icon: Icon(Icons.share)),
             ],
           ),
         ],

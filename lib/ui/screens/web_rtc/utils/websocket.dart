@@ -1,7 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:convert';
-import 'dart:async';
 
 class SimpleWebSocket {
   String _url;
@@ -9,6 +9,7 @@ class SimpleWebSocket {
   Function()? onOpen;
   Function(dynamic msg)? onMessage;
   Function(int code, String reaso)? onClose;
+
   SimpleWebSocket(this._url);
 
   connect() async {
@@ -19,7 +20,7 @@ class SimpleWebSocket {
       _socket.listen((data) {
         onMessage?.call(data);
       }, onDone: () {
-        onClose?.call(_socket.closeCode, _socket.closeReason);
+        onClose?.call(_socket?.closeCode ?? 0, _socket?.closeReason ?? "");
       });
     } catch (e) {
       onClose?.call(500, e.toString());
@@ -50,7 +51,7 @@ class SimpleWebSocket {
       };
 
       HttpClientRequest request =
-          await client.getUrl(Uri.parse(url)); // form the correct url here
+      await client.getUrl(Uri.parse(url)); // form the correct url here
       request.headers.add('Connection', 'Upgrade');
       request.headers.add('Upgrade', 'websocket');
       request.headers.add(

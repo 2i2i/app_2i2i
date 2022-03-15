@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
-import '../../models/user_model.dart';
 import '../../models/meeting_model.dart';
+import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
+import '../../models/user_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
@@ -115,12 +117,35 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeat(String uid, String status) =>
-      _service.setData(
-        path: FirestorePath.user(uid),
-        data: {'heartbeat': FieldValue.serverTimestamp(), 'status': status},
-        merge: true,
-      );
+  Future<void> updateUserHeartbeatFromForeground(String uid,
+          {bool setStatus = false}) =>
+      setStatus
+          ? _updateUserHeartbeat(uid, 'heartbeatForeground',
+              newStatus: 'ONLINE')
+          : _updateUserHeartbeat(uid, 'heartbeatForeground');
+  Future<void> updateUserHeartbeatFromBackground(String uid,
+          {bool setStatus = false}) =>
+      setStatus
+          ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE')
+          : _updateUserHeartbeat(uid, 'heartbeatBackground');
+
+  Future<void> _updateUserHeartbeat(String uid, String field,
+      {String? newStatus}) {
+    final data = <String, dynamic>{
+      field: FieldValue.serverTimestamp(),
+    };
+    if (newStatus != null) data['status'] = newStatus;
+
+    return _service
+        .setData(
+      path: FirestorePath.user(uid),
+      data: data,
+      merge: true,
+    )
+        .catchError((onError) {
+      log('_updateUserHeartbeat $onError');
+    });
+  }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service
@@ -130,9 +155,31 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      print(onError);
+      log(onError);
     });
   }
+
+  Future<void> updateMeetingStatus(String meetingId, Map<String, dynamic> data) {
+    return _service
+        .setData(
+      path: FirestorePath.meetingStatus(meetingId),
+      data: data,
+      merge: true,
+    )
+        .catchError((onError) {
+      log(onError);
+    });
+  }
+
+  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) => _service
+          .documentStream(
+        path: FirestorePath.meetingStatus(meetingId),
+        builder: (data, documentId) =>
+            MeetingStatusModel.fromMap(data!, documentId),
+      )
+          .handleError((onError) {
+        log(onError);
+      });
 
   Future meetingEndUnlockUser(
       Meeting meeting, Map<String, dynamic> data) async {
@@ -199,6 +246,7 @@ class FirestoreDatabase {
         },
         merge: true,
       );
+
   Future<void> removeFriend(String uid, String targetUid) => _service.setData(
         path: FirestorePath.user(uid),
         data: {
@@ -207,31 +255,49 @@ class FirestoreDatabase {
         merge: true,
       );
 
-  Stream<UserModel> userStream({required String uid}) =>
-      _service.documentStream(
-        path: FirestorePath.user(uid),
-        builder: (data, documentId) {
-          data ??= {};
-          return UserModel.fromMap(data, documentId);
-        },
-      );
+  Stream<UserModel> userStream({required String uid}) {
+    log(uid);
+   return _service.documentStream(
+      path: FirestorePath.user(uid),
+      builder: (data, documentId) {
+        data ??= {};
+        return UserModel.fromMap(data, documentId);
+      },
+    )
+        .handleError((onError) {
+      log(uid);
+      log(onError);
+    });
+  }
 
   Future<Map?> getTokenFromId(String uid) async {
     DocumentSnapshot snapshot =
         await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
       Map data = snapshot.data() as Map;
-      print('\n\n${data['token']}\n\n');
+      log('\n\n${data['token']}\n\n');
       return data;
     }
     return null;
   }
 
-  Future<void> updateUser(UserModel user) => _service.setData(
-        path: FirestorePath.user(user.id),
-        data: user.toMap(),
-        merge: true,
-      );
+  Future<void> updateUser(UserModel user){
+    return _service.setData(
+      path: FirestorePath.user(user.id),
+      data: user.toMap(),
+      merge: true,
+    );
+  }
+
+  Future<AppVersionModel?> getAppVersion() async {
+    DocumentSnapshot snapshot =
+        await _service.getData(path: FirestorePath.appVersion());
+    if (snapshot.data() is Map) {
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      return AppVersionModel.fromJson(data!);
+    }
+    return null;
+  }
 
   Future<UserModel?> getUser(String uid) async {
     DocumentSnapshot documentSnapshot =
@@ -281,12 +347,16 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidInsPublic(uid),
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
           query.where('active', isEqualTo: true).orderBy('ts'),
-    );
+    )
+        .handleError((onError) {
+      log(onError);
+    });
   }
 
   Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
@@ -298,11 +368,15 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidOut>> bidOutsStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidOuts(uid),
       builder: (data, documentId) => BidOut.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
-    );
+    )
+        .handleError((onError) {
+      log(onError);
+    });
   }
 
   Stream<BidOut> getBidOut({required String uid, required String bidId}) =>
@@ -325,12 +399,15 @@ class FirestoreDatabase {
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
-  Stream<Meeting> meetingStream({required String id}) =>
-      _service.documentStream(
-          path: FirestorePath.meeting(id),
-          builder: (data, documentId) {
-            return Meeting.fromMap(data, documentId);
-          });
+  Stream<Meeting> meetingStream({required String id}) => _service
+          .documentStream(
+              path: FirestorePath.meeting(id),
+              builder: (data, documentId) {
+                return Meeting.fromMap(data, documentId);
+              })
+          .handleError((onError) {
+        log(onError);
+      });
 
   Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(
@@ -339,7 +416,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('speed.num', descending: true),
       )
           .handleError((onError) {
-        print(onError);
+        log(onError);
         return [];
       });
   Stream<List<TopMeeting>> topDurationsStream() => _service
@@ -349,7 +426,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('duration', descending: true),
       )
           .handleError((onError) {
-        print(onError);
+        log(onError);
         return [];
       });
 
@@ -378,7 +455,7 @@ class FirestoreDatabase {
       },
     )
         .handleError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 

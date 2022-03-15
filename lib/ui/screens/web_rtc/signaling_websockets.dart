@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 // import 'utils/random_string.dart';
@@ -124,18 +125,22 @@ class SignalingWebSockets {
     }
   }
 
-  void muteAudio() {
+  bool muteAudio() {
     if (_localStream != null) {
       bool enabled = _localStream!.getAudioTracks()[0].enabled;
       _localStream!.getAudioTracks()[0].enabled = !enabled;
+      return !enabled;
     }
+    return false;
   }
 
-  void muteVideo() {
+  bool muteVideo() {
     if (_localStream != null) {
       bool enabled = _localStream!.getVideoTracks()[0].enabled;
       _localStream!.getVideoTracks()[0].enabled = !enabled;
+      return !enabled;
     }
+    return false;
   }
 
   void invite(String peerId, String media, bool useScreen) async {

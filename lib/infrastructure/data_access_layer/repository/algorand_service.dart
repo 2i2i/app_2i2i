@@ -1,8 +1,9 @@
 import 'package:algorand_dart/algorand_dart.dart';
-
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/meeting_model.dart';
 import '../accounts/abstract_account.dart';
 import '../services/logging.dart';
@@ -38,29 +39,26 @@ class AlgorandLib {
   //   AlgorandNet.betanet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   // };
   AlgorandLib() {
-    for (final net in [AlgorandNet.mainnet, AlgorandNet.testnet]) {
-      client[net] = Algorand(
-          algodClient:
-              AlgodClient(apiUrl: API_URL[net]!, apiKey: API_KEY[net]!),
-          indexerClient: IndexerClient(apiUrl: INDEXER_URL[net]!));
-    }
+    client[AppConfig().ALGORAND_NET] = Algorand(
+        algodClient: AlgodClient(
+            apiUrl: API_URL[AppConfig().ALGORAND_NET]!,
+            apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
 
 class AlgorandService {
-  static const Map<AlgorandNet, int> SYSTEM_ID = {
-    AlgorandNet.mainnet: 67119462,
-    AlgorandNet.testnet: 67119462,
-    AlgorandNet.betanet: 67119462,
+  static Map<AlgorandNet, int> SYSTEM_ID = {
+    AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
+    AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
+    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
   };
-  static const Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
-    AlgorandNet.testnet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
-    AlgorandNet.betanet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
+  static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
+    AlgorandNet.mainnet: dotenv.env['ALGORAND_NET_MAINNET']!,
+    AlgorandNet.testnet: dotenv.env['ALGORAND_NET_TESTNET']!,
+    AlgorandNet.betanet: dotenv.env['ALGORAND_NET_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 
@@ -76,9 +74,10 @@ class AlgorandService {
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
-  Future<TransactionResponse> getTransactionResponse(
-          String transactionId, AlgorandNet net) =>
-      algorandLib.client[net]!.indexer().getTransactionById(transactionId);
+  // TODO: needs a try-catch
+  // Future<TransactionResponse> getTransactionResponse(
+  //         String transactionId, AlgorandNet net) =>
+  //     algorandLib.client[net]!.indexer().getTransactionById(transactionId);
 
   // not using this method in the other methods due to naming clash
   Future<PendingTransaction> waitForConfirmation(

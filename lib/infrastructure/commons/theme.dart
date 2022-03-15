@@ -340,7 +340,6 @@ class AppTheme{
     elevation: 0,
     backgroundColor: !dark ? primaryColor : null,
     iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
-
     titleTextStyle: TextStyle(
       fontStyle: FontStyle.normal,
       fontWeight: FontWeight.w800,

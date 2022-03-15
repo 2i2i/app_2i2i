@@ -165,6 +165,17 @@ class zh {
       Keys.joinInvite: '在 2i2i 上和我一起出去玩',
       Keys.joinOtherRoom: '请加入一些人的房间',
       Keys.beFirstJoin: '成为第一个加入此房间的人',
+      Keys.appVersion: '版本',
+      Keys.logOut: '登出',
+      Keys.connectAccount: '連接帳戶',
+      Keys.updateAvailable: '更新可用',
+      Keys.loginMsg: '適合你環聊的地方',
+      Keys.loginMsg2: '2i2i 以視頻通話的形式為客人和主人提供安全私密的會面空間',
+      Keys.loginMsg3: '>自啟動以來的 305 次會議',
+      Keys.signInWithGoogle: '用谷歌登錄',
+      Keys.signInWithApple: '使用 Apple 登錄”',
+      Keys.signInWithTwitter: '用 Twitter 登錄',
+      Keys.signInAnonymously: '匿名登錄',
     };
   }
 }

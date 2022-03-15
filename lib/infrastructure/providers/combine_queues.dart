@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
@@ -161,7 +162,7 @@ BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) =>
           'highroller': importHighroller,
         },
       }).toMap(),
-      'net': AlgorandNet.testnet.toStringEnum(),
+      'net': AppConfig().ALGORAND_NET.toStringEnum(),
       'active': true,
       'ts': Timestamp.fromMicrosecondsSinceEpoch(ts),
       'budget': 50,

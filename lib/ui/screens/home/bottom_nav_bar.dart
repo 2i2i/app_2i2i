@@ -3,25 +3,33 @@ import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/infrastructure/routes/profile_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 ValueNotifier<int> currentIndex = ValueNotifier(0);
 String previousRoute = '';
 
-class BottomNavBar extends StatefulWidget {
+class BottomNavBar extends ConsumerStatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _BottomNavBarState extends ConsumerState<BottomNavBar> {
 
-
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var appSettingModel = ref.watch(appSettingProvider);
     return ValueListenableBuilder(
       valueListenable: isUserLocked,
       builder: (BuildContext context, value, Widget? child) {
@@ -101,12 +109,28 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       label: Keys.settings.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: SvgPicture.asset('assets/icons/setting.svg',
+                        child: appSettingModel.updateRequired
+                            ? RotatedBox(
+                          quarterTurns: 1,
+                          child: Icon(
+                            Icons.arrow_circle_left_rounded,
+                            color: Colors.amber,
+                          ),
+                        )
+                            : SvgPicture.asset('assets/icons/setting.svg',
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: SvgPicture.asset('assets/icons/setting.svg'),
+                        child: appSettingModel.updateRequired
+                            ? RotatedBox(
+                                quarterTurns: 1,
+                                child: Icon(
+                                  Icons.arrow_circle_left_rounded,
+                                  color: Colors.amber,
+                                ),
+                              )
+                            : SvgPicture.asset('assets/icons/setting.svg'),
                       ),
                     ),
                   ],

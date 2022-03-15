@@ -156,16 +156,27 @@ class ar {
       Keys.Note: 'ملحوظة',
       Keys.Start: 'يبدأ',
       Keys.connectingHost: "نقوم بتوصيل المضيف ....",
-      Keys.connectingGuest: "نحن نربط الضيف ....." ,
+      Keys.connectingGuest: "نحن نربط الضيف .....",
       Keys.whoTop: "من هو الأفضل؟",
       Keys.topSpeeds: "أعلى السرعات",
       Keys.topDurations: "المدد الأعلى",
       Keys.language: "لغة التطبيق",
-    Keys.inviteFriend:
-          'شارك رابط ملفك الشخصي مع متابعيك لمقابلتهم هنا',
+      Keys.inviteFriend: 'شارك رابط ملفك الشخصي مع متابعيك لمقابلتهم هنا',
       Keys.joinInvite: 'تسكع معي على 2i2i',
       Keys.joinOtherRoom: 'يرجى الانضمام إلى بعض غرف الناس',
       Keys.beFirstJoin: 'كن أول من ينضم إلى هذه الغرفة',
+      Keys.appVersion: 'الإصدار',
+      Keys.logOut: 'تسجيل خروج',
+      Keys.connectAccount: "ربط الحساب بـ",
+      Keys.updateAvailable: 'التحديث متاح',
+      Keys.loginMsg: "المكان المناسب لك لإجراء Hangout",
+      Keys.loginMsg2:
+          "يوفر 2i2i مساحة آمنة وخاصة للضيوف والمضيفين للالتقاء في شكل مكالمات فيديو",
+      Keys.loginMsg3: "> 305 اجتماعات منذ الإطلاق",
+      Keys.signInWithGoogle: 'الدخول مع جوجل',
+      Keys.signInWithApple: "تسجيل الدخول باستخدام Apple",
+      Keys.signInWithTwitter: "تسجيل الدخول باستخدام Twitter",
+      Keys.signInAnonymously: 'الدخول بتخفي',
     };
   }
 }
