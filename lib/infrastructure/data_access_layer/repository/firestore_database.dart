@@ -263,11 +263,7 @@ class FirestoreDatabase {
         data ??= {};
         return UserModel.fromMap(data, documentId);
       },
-    )
-        .handleError((onError) {
-      log(uid);
-      log(onError);
-    });
+    );
   }
 
   Future<Map?> getTokenFromId(String uid) async {
@@ -286,7 +282,9 @@ class FirestoreDatabase {
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    );
+    ).catchError((error){
+      print(error);
+    });
   }
 
   Future<AppVersionModel?> getAppVersion() async {

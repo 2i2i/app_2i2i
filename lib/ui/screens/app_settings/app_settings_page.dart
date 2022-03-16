@@ -307,7 +307,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       currentIndex.value = 0;
                       context.go(Routes.root);
                     },
-                    title: Text(Keys.appVersion.tr(context),
+                    title: Text(Keys.logOut.tr(context),
                         style: Theme.of(context)
                             .textTheme
                             .caption
