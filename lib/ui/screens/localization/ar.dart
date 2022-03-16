@@ -177,6 +177,7 @@ class ar {
       Keys.signInWithApple: "تسجيل الدخول باستخدام Apple",
       Keys.signInWithTwitter: "تسجيل الدخول باستخدام Twitter",
       Keys.signInAnonymously: 'الدخول بتخفي',
+      Keys.searchFaq: 'كلمات البحث',
     };
   }
 }
