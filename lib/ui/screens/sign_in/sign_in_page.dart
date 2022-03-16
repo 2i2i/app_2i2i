@@ -46,9 +46,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       child: SafeArea(
         top: false,
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(Firebase.app().options.projectId),
-          ),
           body: Container(
             width: double.maxFinite,
             child: LayoutBuilder(
