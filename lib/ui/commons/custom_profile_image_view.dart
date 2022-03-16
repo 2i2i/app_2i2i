@@ -151,10 +151,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 class RectangleBox extends StatelessWidget {
   final Widget icon;
   final double radius;
+  final double curveRadius;
   final GestureTapCallback? onTap;
 
   const RectangleBox(
-      {Key? key, required this.icon, required this.radius, this.onTap})
+      {Key? key, required this.icon, required this.radius, this.onTap, this.curveRadius = 18})
       : super(key: key);
 
   @override
@@ -168,7 +169,7 @@ class RectangleBox extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.rectangle,
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(curveRadius),
           boxShadow: [
             BoxShadow(
                 offset: Offset(2, 4),

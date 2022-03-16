@@ -1,13 +1,17 @@
+import 'package:app_2i2i/infrastructure/models/faq_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
-import 'faq.dart';
-import 'keywords_list.dart';
+import '../../../infrastructure/providers/all_providers.dart';
+import '../faq/faq.dart';
+import '../faq/keywords_list.dart';
 
-class FAQPageBase extends StatefulWidget {
-  FAQPageBase({
+class CVScreen extends ConsumerStatefulWidget {
+  CVScreen({
     Key? key,
     required this.title,
     required this.faqs,
@@ -16,37 +20,21 @@ class FAQPageBase extends StatefulWidget {
     this.disclaimer = '',
   }) : super(key: key);
   final String title;
-  final List<FAQData> faqs;
+  final List<FAQDataModel> faqs;
   final String contactText;
   final String contactUrl;
   final String disclaimer;
+
   @override
-  _FAQPageBaseState createState() => _FAQPageBaseState();
+  _CVScreenState createState() => _CVScreenState();
 }
 
-class _FAQPageBaseState extends State<FAQPageBase> {
-
+class _CVScreenState extends ConsumerState<CVScreen> {
   TextEditingController _searchController = TextEditingController();
-
-  List<FAQ> createFAQWidgets(List<FAQData> faqDataList) {
-    List<FAQ> faqList = [];
-    for (int i = 0; i < faqDataList.length; i++) {
-      Color backgroundColor = i % 2 == 0
-          ? Color.fromRGBO(223, 239, 223, 1)
-          : Color.fromRGBO(197, 234, 197, 1);
-      // Color backgroundColor = i % 2 == 0 ? Theme.of(context).colorScheme.secondary : Color.fromRGBO(197, 234, 197, 1);
-      FAQ faq = FAQ(
-        data: faqDataList[i],
-        backgroundColor: backgroundColor,
-        index: i,
-      );
-      faqList.add(faq);
-    }
-    return faqList;
-  }
 
   @override
   Widget build(BuildContext context) {
+    var fagProviderModel = ref.watch(faqProvider);
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -77,23 +65,28 @@ class _FAQPageBaseState extends State<FAQPageBase> {
                   style: TextStyle(color: AppTheme().cardDarkColor),
                   autofocus: false,
                   controller: _searchController,
+                  onSubmitted: (value) {
+                    fagProviderModel.addInKeywordList(value);
+                    _searchController.text = '';
+                    _searchController.clear();
+                  },
                   decoration: InputDecoration(
                     hintText: Keys.searchFaq.tr(context),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                      onPressed: () {
-                        _searchController.text = '';
-                        _searchController.clear();
-                      },
-                      iconSize: 20,
-                      icon: Icon(
-                        Icons.close,
-                      ),
-                    )
+                            onPressed: () {
+                              _searchController.text = '';
+                              _searchController.clear();
+                            },
+                            iconSize: 20,
+                            icon: Icon(
+                              Icons.close,
+                            ),
+                          )
                         : IconButton(icon: Container(), onPressed: null),
                     filled: true,
                     contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                        EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                     prefixIcon: Icon(Icons.search_rounded),
                     // suffixIcon: Icon(Icons.mic),
                   ),
@@ -101,8 +94,21 @@ class _FAQPageBaseState extends State<FAQPageBase> {
               ),
               SizedBox(height: 8),
               KeywordsList(),
-              SizedBox(height: 8),
-              ...createFAQWidgets(widget.faqs),
+              ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: widget.faqs.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Color backgroundColor = index % 2 == 0
+                      ? Color.fromRGBO(223, 239, 223, 1)
+                      : Color.fromRGBO(197, 234, 197, 1);
+                  return FAQWidget(
+                    data: widget.faqs[index],
+                    backgroundColor: backgroundColor,
+                    index: index,
+                  );
+                },
+              ),
               SizedBox(height: 20),
               Text(widget.disclaimer),
             ],

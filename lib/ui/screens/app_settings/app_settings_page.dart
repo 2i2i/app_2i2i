@@ -47,6 +47,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
 
     return Scaffold(
       appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           Keys.settings.tr(context),
           style: Theme.of(context).textTheme.headline5,

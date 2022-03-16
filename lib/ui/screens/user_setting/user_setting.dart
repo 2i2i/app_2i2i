@@ -408,7 +408,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(elevation: 0),
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: body,
     );
   }

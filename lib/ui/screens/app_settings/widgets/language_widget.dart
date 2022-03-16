@@ -30,9 +30,7 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
         (element) => Locale(element['languageCode']) == appSettingModel.locale);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: ListView(

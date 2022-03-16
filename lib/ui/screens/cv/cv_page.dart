@@ -1,11 +1,13 @@
+import 'package:app_2i2i/infrastructure/models/faq_model.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
 import 'package:app_2i2i/ui/screens/cv/success.dart';
-import 'package:app_2i2i/ui/screens/faq/faq_page_base.dart';
+import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:intl/intl.dart';
 import '../faq/faq.dart';
+import 'cv_page_base.dart';
 
 class CVPage extends StatelessWidget {
   CVPage({Key? key, required this.person}) : super(key: key) {
@@ -22,7 +24,7 @@ class CVPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final faqs = successes
-        .map((e) => FAQData(
+        .map((e) => FAQDataModel(
             title: e.title,
             descriptionTextSpan: TextSpan(
               children: [
@@ -54,7 +56,7 @@ class CVPage extends StatelessWidget {
             )))
         .toList();
 
-    return FAQPageBase(
+    return CVScreen(
       title: person.toStringEnum(),
       faqs: faqs,
       contactText: 'twitter',

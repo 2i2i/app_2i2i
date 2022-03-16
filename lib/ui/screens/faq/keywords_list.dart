@@ -1,26 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'widgets/chip_tile.dart';
+import '../../../infrastructure/providers/all_providers.dart';
 
-class KeywordsList extends StatefulWidget {
+class KeywordsList extends ConsumerWidget {
   const KeywordsList({Key? key}) : super(key: key);
 
   @override
-  State<KeywordsList> createState() => _KeywordsListState();
-}
-
-class _KeywordsListState extends State<KeywordsList> {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(10, (index) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: ChipTile(),
-        )),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    var fagProviderModel = ref.watch(faqProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: List.generate(
+                fagProviderModel.keywordList.length,
+                (index) => InkResponse(
+                      onTap: () => fagProviderModel.removeInKeywordList(
+                          fagProviderModel.keywordList[index]),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).iconTheme.color?.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(30)),
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        child: Row(
+                          children: [
+                            Text(
+                              "${fagProviderModel.keywordList[index]}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  ?.copyWith(
+                                      color: Theme.of(context).cardColor),
+                            ),
+                            SizedBox(width: 6),
+                            Icon(
+                              Icons.close,
+                              color: Theme.of(context).cardColor,
+                              size: 16,
+                            )
+                          ],
+                        ),
+                        // backgroundColor: Theme.of(context).iconTheme.color,
+                      ),
+                    )),
+          ),
+        ),
+        if (fagProviderModel.keywordList.isNotEmpty) Divider()
+      ],
     );
   }
 }

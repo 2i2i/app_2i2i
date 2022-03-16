@@ -1,31 +1,18 @@
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 
-// TODO the following is not good code - actually descriptionTextSpan xor description need to be non null
-class FAQData {
-  const FAQData({
-    Key? key,
-    required this.title,
-    this.description,
-    this.descriptionTextSpan,
-  });
-  final String title;
-  final TextSpan? descriptionTextSpan;
-  final String? description;
-}
+import '../../../infrastructure/models/faq_model.dart';
 
-class FAQ extends StatelessWidget {
-  const FAQ({
-    Key? key,
+class FAQWidget extends StatelessWidget {
+  const FAQWidget({
     required this.data,
     required this.backgroundColor,
     required this.index,
-  }) : super(key: key);
-  final FAQData data;
+  });
+  final FAQDataModel data;
   final Color backgroundColor;
   final int index;
 
-  // final GlobalKey<ExpansionTileCardState> key = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +49,30 @@ class FAQ extends StatelessWidget {
                     textAlign: TextAlign.left,
                   ),
           ),
+          Divider(),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+            child: Row(
+              children: List.generate(data.tags?.length ?? 0, (index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(30)
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                  child: Text(
+                    "#${data.tags![index]}",
+                    style: Theme.of(context).textTheme.overline?.copyWith(
+                        color: Theme.of(context).cardColor
+                    ),
+                  ),
+                  // backgroundColor: Theme.of(context).iconTheme.color,
+                ),
+              )),
+            ),
+          )
         ],
       ),
     );
