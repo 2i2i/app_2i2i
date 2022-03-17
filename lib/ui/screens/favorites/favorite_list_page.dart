@@ -29,6 +29,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
 
     return Scaffold(
       appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           Keys.fav.tr(context),
           style: Theme.of(context).textTheme.headline5,

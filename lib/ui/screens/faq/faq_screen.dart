@@ -41,127 +41,83 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
         appBar: AppBar(backgroundColor: Colors.transparent),
         body: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: ListView(
+          child: Column(
             children: [
-              Container(
-                // color: Colors.amber,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      Keys.faq.tr(context),
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                    Spacer(),
-                    contact(),
-                  ],
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    Keys.faq.tr(context),
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  Spacer(),
+                  contact(),
+                ],
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        style: TextStyle(color: AppTheme().cardDarkColor),
-                        autofocus: false,
-                        controller: _searchController,
-                        onSubmitted: (value) {
-                          if (value.isNotEmpty) {
-                            fagProviderModel.addInKeywordList(value);
-                            _searchController.text = '';
-                            _searchController.clear();
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: Keys.searchFaq.tr(context),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  onPressed: () {
-                                    _searchController.text = '';
-                                    _searchController.clear();
-                                  },
-                                  iconSize: 20,
-                                  icon: Icon(
-                                    Icons.close,
-                                  ),
-                                )
-                              : IconButton(icon: Container(), onPressed: null),
-                          filled: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                          prefixIcon: Icon(Icons.search_rounded),
-                          // suffixIcon: Icon(Icons.mic),
-                        ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      style: TextStyle(color: AppTheme().cardDarkColor),
+                      autofocus: false,
+                      controller: _searchController,
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          fagProviderModel.addInKeywordList(value);
+                          _searchController.text = '';
+                          _searchController.clear();
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: Keys.searchFaq.tr(context),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                onPressed: () {
+                                  _searchController.text = '';
+                                  _searchController.clear();
+                                },
+                                iconSize: 20,
+                                icon: Icon(
+                                  Icons.close,
+                                ),
+                              )
+                            : IconButton(icon: Container(), onPressed: null),
+                        filled: true,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                        prefixIcon: Icon(Icons.search_rounded),
+                        // suffixIcon: Icon(Icons.mic),
                       ),
                     ),
-                    SizedBox(width: 6),
-                    RectangleBox(
-                      radius: 42,
-                      icon: Icon(Icons.settings, size: 20),
-                      curveRadius: 10,
-                      onTap: () => fagProviderModel.openCloseSuggestionView(),
-                    )
+                  ),
+                  SizedBox(width: 6),
+                  RectangleBox(
+                    radius: 42,
+                    icon: Icon(fagProviderModel.isOpenSuggestionView?
+                    Icons.keyboard_arrow_up_rounded:Icons.keyboard_arrow_down_rounded, size: 20),
+                    curveRadius: 10,
+                    onTap: () => fagProviderModel.openCloseSuggestionView(),
+                  )
+                ],
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    SizedBox(height: 8),
+                    KeywordsList(),
+                    FaqListWidget(),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
-              SizedBox(height: 8),
-              KeywordsList(),
-              SuggestionList(fagProviderModel),
-              FaqListWidget(),
-              SizedBox(height: 20),
             ],
           ),
         ));
   }
 
-  Widget SuggestionList(FAQProviderModel fagProviderModel) {
-    return AnimatedContainer(
-      color: Colors.transparent,
-      duration: Duration(milliseconds: 500),
-      height: fagProviderModel.isOpenSuggestionView
-          ? MediaQuery.of(context).size.width*0.45
-          : 0,
 
-      child: Card(
-        elevation: fagProviderModel.isOpenSuggestionView
-            ? 2
-            : 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6.0),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(6),
-          child: Wrap(
-            children: List.generate(
-                fagProviderModel.keywords.length,
-                (index) => InkResponse(
-                      onTap: () => fagProviderModel
-                          .addInKeywordList(fagProviderModel.keywords[index]),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color:
-                                Colors.grey[200],
-                            borderRadius: BorderRadius.circular(30)),
-                        margin: EdgeInsets.all(4),
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        child: Text(
-                          "${fagProviderModel.keywords[index]}",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText2
-                              ?.copyWith(color: Colors.black),
-                        ),
-                        // backgroundColor: Theme.of(context).iconTheme.color,
-                      ),
-                    )),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget FaqListWidget() {
     if (mainList.isNotEmpty) {

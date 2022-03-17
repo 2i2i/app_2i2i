@@ -20,7 +20,7 @@ class FAQWidget extends StatelessWidget {
         ? Theme.of(context).colorScheme.secondary.withOpacity(0.5)
         : Theme.of(context).colorScheme.secondary.withOpacity(0.2);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 5),
       child: ExpansionTileCard(
         elevation: 4,
         key: key,
