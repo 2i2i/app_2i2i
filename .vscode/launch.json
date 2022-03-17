@@ -13,23 +13,23 @@
       "flutterMode": "profile"
     },
     {
-      "name": "app_2i2i Development",
+      "name": "test",
       "request": "launch",
       "type": "dart",
       "args": [
         "--flavor dev",
         "-t",
-        "lib/main_dev.dart"
+        "lib/main_test.dart"
       ]
     },
     {
-      "name": "app_2i2i Production",
+      "name": "main",
       "request": "launch",
       "type": "dart",
       "args": [
-        "--flavor dev",
+        "--flavor prod",
         "-t",
-        "lib/main_prod.dart"
+        "lib/main.dart"
       ]
     }
   ]

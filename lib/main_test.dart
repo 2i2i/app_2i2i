@@ -34,7 +34,7 @@ import 'infrastructure/routes/named_routes.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG3
 
-import 'main.dart';
+import 'common_main.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/localization/app_localization.dart';
 
