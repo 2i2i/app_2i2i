@@ -185,6 +185,7 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
+    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
@@ -199,7 +200,8 @@ class UserModel extends Equatable {
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
-    final String imageUrl = data['imageUrl'] ?? '';
+    final String? imageUrl = data['imageUrl'];
+    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
@@ -208,6 +210,7 @@ class UserModel extends Equatable {
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    // log('UserModel.fromMap - loungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
