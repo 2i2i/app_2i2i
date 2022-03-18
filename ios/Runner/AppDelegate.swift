@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import CallKit
+import Firebase
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, CXProviderDelegate  {
@@ -15,7 +16,7 @@ import CallKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-
+FirebaseApp.configure()
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
                                                    binaryMessenger: controller.binaryMessenger)
