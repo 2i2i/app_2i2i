@@ -10,7 +10,7 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/commons/keys.dart';

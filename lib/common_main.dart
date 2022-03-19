@@ -7,11 +7,13 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -25,6 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
+
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -103,10 +106,14 @@ class MainWidget extends ConsumerStatefulWidget {
 class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObserver {
   Timer? timer;
   RingingPageViewModel? ringingPageViewModel;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
+
+    _connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
       window.addEventListener('focus', onFocus);
@@ -159,11 +166,12 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //     }
       //   });
       //}
-
-
-
       await Custom.deepLinks(context, mounted);
     });
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    ref.read(appSettingProvider).setInternetStatus(result != ConnectivityResult.none);
   }
 
   void onFocus(Event e) {
@@ -197,6 +205,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   @override
   void dispose() {
     // html.document.removeEventListener('visibilitychange', (event) => null);
+    _connectivitySubscription.cancel();
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }

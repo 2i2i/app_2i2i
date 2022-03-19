@@ -14,7 +14,7 @@ import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
-import 'package:app_2i2i/ui/screens/home/error_page.dart';
+import 'package:app_2i2i/ui/screens/app/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';

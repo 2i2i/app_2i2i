@@ -12,7 +12,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/twitter_login.dart';
 
-import '../../../ui/screens/home/bottom_nav_bar.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';

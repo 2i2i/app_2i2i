@@ -6,7 +6,7 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import 'widgets/rating_tile.dart';
 
 class RatingPage extends ConsumerStatefulWidget {

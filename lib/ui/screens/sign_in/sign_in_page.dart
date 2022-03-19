@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/gestures.dart';
@@ -11,7 +10,8 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
-import '../home/wait_page.dart';
+import '../app/no_internet_screen.dart';
+import '../app/wait_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -41,6 +41,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   Widget build(BuildContext context) {
     final signUpViewModel = ref.read(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
+    if(!appSettingModel.isInternetAvailable){
+      return NoInternetScreen();
+    }
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
