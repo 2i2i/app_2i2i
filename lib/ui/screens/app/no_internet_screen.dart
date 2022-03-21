@@ -21,6 +21,7 @@ class _NoInternetScreenState extends ConsumerState<NoInternetScreen> {
             Image.asset('assets/no_internet.png',
                 height: kToolbarHeight,
                 width: kToolbarHeight * 2,
+                color: Theme.of(context).textTheme.headline5!.color,
                 fit: BoxFit.contain),
             SizedBox(height: kRadialReactionRadius),
             Text('No Internet Connection',

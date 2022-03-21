@@ -143,29 +143,26 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                           ),
                         ),
-                        Visibility(
-                          visible: !kIsWeb,
-                          child: Card(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            child: ListTile(
-                                onTap: () async {
-                                  await signUpViewModel
-                                      .signInWithTwitter(context);
-                                },
-                                dense: true,
-                                leading: Image.asset('assets/twitter.png',
-                                    height: 30, width: 30),
-                                title: Text(
-                                  Keys.signInWithTwitter.tr(context),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      ?.copyWith(fontWeight: FontWeight.w500),
-                                )),
+                        Card(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
+                          child: ListTile(
+                              onTap: () async {
+                                await signUpViewModel
+                                    .signInWithTwitter(context);
+                              },
+                              dense: true,
+                              leading: Image.asset('assets/twitter.png',
+                                  height: 30, width: 30),
+                              title: Text(
+                                Keys.signInWithTwitter.tr(context),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              )),
                         ),
                         Card(
                           margin: EdgeInsets.symmetric(vertical: 5),

@@ -107,13 +107,13 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   Timer? timer;
   RingingPageViewModel? ringingPageViewModel;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-
+  final Connectivity _connectivity = Connectivity();
   @override
   void initState() {
     super.initState();
-
+    initConnectivity();
     _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
       window.addEventListener('focus', onFocus);
@@ -168,6 +168,20 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //}
       await Custom.deepLinks(context, mounted);
     });
+  }
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
