@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-import '../../../main.dart';
+import '../../../common_main.dart';
 import '../../commons/custom_profile_image_view.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
