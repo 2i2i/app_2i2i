@@ -335,8 +335,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                   mainContext: context,
                                   thumbRadius: 15,
                                   showValue: true,
-                                    valueMain:_importanceRatioValue!.round().toString()
-                                ),
+                                    valueMain:
+                                        (_importanceRatioValue?.round() ?? 0)
+                                            .toString()),
                               ),
                               child: _importanceSliderValue == null
                                   ? Container()
@@ -547,6 +548,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<void> onClickSave(
       MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
+    FocusScope.of(context).requestFocus(FocusNode());
     if (!(widget.fromBottomSheet ?? false)){
       CustomDialogs.loader(true, context);
     }

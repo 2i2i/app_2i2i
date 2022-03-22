@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/faq_provider/faq_provider.dart';
+import '../../../infrastructure/providers/faq_cv_provider/faq_provider.dart';
 
-class KeywordsList extends ConsumerWidget {
-  const KeywordsList({Key? key}) : super(key: key);
+class FAQKeywordsList extends ConsumerWidget {
+  const FAQKeywordsList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

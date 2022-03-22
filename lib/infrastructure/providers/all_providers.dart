@@ -20,7 +20,8 @@ import '../data_access_layer/services/logging.dart';
 import '../models/meeting_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
-import 'faq_provider/faq_provider.dart';
+import 'faq_cv_provider/cv_provider.dart';
+import 'faq_cv_provider/faq_provider.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
@@ -137,6 +138,10 @@ final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
 
 final faqProvider = ChangeNotifierProvider<FAQProviderModel>((ref) {
   return FAQProviderModel();
+});
+
+final cvProvider = ChangeNotifierProvider<CVProviderModel>((ref) {
+  return CVProviderModel();
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());

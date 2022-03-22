@@ -410,7 +410,7 @@ class FAQProviderModel extends ChangeNotifier {
             'No. If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
   ];
 
-  List<FAQDataModel> searchList = [];
+  List<FAQDataModel> searchFAQList = [];
 
   initKeywordList() {
     faqsList.forEach((element) {
@@ -441,10 +441,9 @@ class FAQProviderModel extends ChangeNotifier {
   }
 
   refreshList() {
-    searchList = faqsList
+    searchFAQList = faqsList
         .where((element) => element.tags!
             .any((searchKeyword) => keywordList.contains(searchKeyword.toLowerCase())))
         .toList();
-    print(searchList);
   }
 }

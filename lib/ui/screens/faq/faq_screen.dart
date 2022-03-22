@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/providers/faq_provider/faq_provider.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/models/faq_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'faq.dart';
-import 'keywords_list.dart';
+import 'faq_keywords_list.dart';
 
 class FAQScreen extends ConsumerStatefulWidget {
   @override
@@ -31,9 +30,9 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
   @override
   Widget build(BuildContext context) {
     var fagProviderModel = ref.watch(faqProvider);
-    if (fagProviderModel.searchList.isNotEmpty ||
+    if (fagProviderModel.searchFAQList.isNotEmpty ||
         fagProviderModel.keywordList.isNotEmpty) {
-      mainList = fagProviderModel.searchList;
+      mainList = fagProviderModel.searchFAQList;
     } else {
       mainList = fagProviderModel.faqsList;
     }
@@ -106,7 +105,7 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
                 child: ListView(
                   children: [
                     SizedBox(height: 8),
-                    KeywordsList(),
+                    FAQKeywordsList(),
                     FaqListWidget(),
                     SizedBox(height: 20),
                   ],
