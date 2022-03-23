@@ -76,6 +76,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
 
   store_redirect: ^2.0.1
+  showcaseview: ^1.1.5
 
 
 dev_dependencies:

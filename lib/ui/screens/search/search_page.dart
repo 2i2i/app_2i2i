@@ -5,9 +5,12 @@ import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'widgtes/user_info_tile.dart';
@@ -19,11 +22,14 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
+  final GlobalKey userTile = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    // initMethod();
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) => ShowCaseWidget.of(context)!.startShowCase([userTile]),
+    );
   }
 
   void initMethod() {
@@ -59,47 +65,66 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppbar(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              style: TextStyle(color: AppTheme().cardDarkColor),
-              autofocus: false,
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: Keys.searchUserHint.tr(context),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        onPressed: () {
-                          _searchController.text = '';
-                          _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state =
-                              <String>[];
-                        },
-                        iconSize: 20,
-                        icon: Icon(
-                          Icons.close,
-                        ),
-                      )
-                    : IconButton(icon: Container(), onPressed: null),
-                filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                prefixIcon: Icon(Icons.search_rounded),
-                // suffixIcon: Icon(Icons.mic),
+      body: ShowCaseWidget(
+        onStart: (index, key) {
+          log('onStart: $index, $key');
+        },
+        onComplete: (index, key) {
+          log('onComplete: $index, $key');
+          if (index == 4) {
+            SystemChrome.setSystemUIOverlayStyle(
+              SystemUiOverlayStyle.light.copyWith(
+                statusBarIconBrightness: Brightness.dark,
+                statusBarColor: Colors.white,
               ),
-              onChanged: (value) {
-                value = value.trim().toLowerCase();
-                ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
-              },
+            );
+          }
+        },
+        blurValue: 1,
+        builder: Builder(builder: (context) =>   Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                style: TextStyle(color: AppTheme().cardDarkColor),
+                autofocus: false,
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: Keys.searchUserHint.tr(context),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                    onPressed: () {
+                      _searchController.text = '';
+                      _searchController.clear();
+                      ref.watch(searchFilterProvider.state).state =
+                      <String>[];
+                    },
+                    iconSize: 20,
+                    icon: Icon(
+                      Icons.close,
+                    ),
+                  )
+                      : IconButton(icon: Container(), onPressed: null),
+                  filled: true,
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  prefixIcon: Icon(Icons.search_rounded),
+                  // suffixIcon: Icon(Icons.mic),
+                ),
+                onChanged: (value) {
+                  value = value.trim().toLowerCase();
+                  ref.watch(searchFilterProvider.state).state =
+                  value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                },
+              ),
             ),
-          ),
-          SizedBox(height: 20),
-          Expanded(child: _buildContents(context, ref)),
-        ],
+            SizedBox(height: 20),
+            Expanded(child: _buildContents(context, ref)),
+          ],
+        ),),
+        autoPlayDelay: const Duration(seconds: 3),
       ),
+
     );
   }
 
@@ -148,12 +173,25 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       itemCount: userList.length,
-      itemBuilder: (_, index) => UserInfoTile(
-        user: userList[index]!,
-        myUid: mainUserID,
-        isForBlockedUser: false,
-        marginBottom: 10,
-      ),
+      itemBuilder: (_, index) {
+        Widget userTileWidget = UserInfoTile(
+          user: userList[index]!,
+          myUid: mainUserID,
+          isForBlockedUser: false,
+          marginBottom: 10,
+        );
+
+        if (index == 1) {
+          Showcase(
+            key: userTile,
+            title: 'Compose Mail',
+            description: 'Click here to compose mail',
+            shapeBorder: const CircleBorder(),
+            child: userTileWidget,
+          );
+        }
+        return userTileWidget;
+      },
     );
   }
 }
