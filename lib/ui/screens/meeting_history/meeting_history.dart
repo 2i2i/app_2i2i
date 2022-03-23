@@ -32,7 +32,7 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 30),
         child: Column(
