@@ -174,6 +174,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     late ConnectivityResult result;
     try {
       result = await _connectivity.checkConnectivity();
+      print(result);
     } on PlatformException catch (e) {
       return;
     }
