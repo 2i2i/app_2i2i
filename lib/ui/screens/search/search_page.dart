@@ -23,7 +23,6 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
-  final GlobalKey userTile = GlobalKey();
 
   void initMethod() {
     Future.delayed(Duration(seconds: 3)).then((value) {
@@ -62,7 +61,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         children: [
           RaisedButton(
               onPressed: () {
-                ShowCaseWidget.of(context)!.startShowCase([userTile]);
+                // Future.delayed(Duration(milliseconds: 300)).then((value) => ShowCaseWidget.of(context)!.startShowCase([userList.first!.userTile]));
+                // ShowCaseWidget.of(context)!.startShowCase([userTile]);
               },
               child: Text('Play')),
           Padding(
@@ -161,22 +161,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           marginBottom: 10,
         );
 
-        if (0 == index) {
+        if (-1 == index) {
           print("here your list index $index and name ${userList[index]!.name}\n");
           return Container(
             margin: EdgeInsets.only(bottom: 10),
             child: Showcase(
-              key: userTile,
+              // key: userTile,
+              key: GlobalKey(),
+              description: 'Tap to check mail',
               title: '2i2i User',
-              description:
-                  'On tap to user info and bid to this user for hangout',
+
               shapeBorder: const CircleBorder(),
               radius: BorderRadius.circular(10),
               child: Container(
                 decoration: Custom.getBoxDecoration(context, radius: 12),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
                   child: Row(
                     children: [
                       ProfileWidget(
@@ -278,7 +278,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         }
 
         print("here your list index $index and name ${userList[index]!.name}\n");
-        return userTileWidget;
+        return GestureDetector(
+          onLongPress: (){
+            ShowCaseWidget.of(context)!.startShowCase([userList[index]!.userTile]);
+          },
+          child: Showcase(
+              description: 'Tap to check mail',
+              key: userList[index]!.userTile,
+              child: userTileWidget,
+          ),
+        );
       },
     );
   }
