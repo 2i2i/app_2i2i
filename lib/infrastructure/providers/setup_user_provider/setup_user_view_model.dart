@@ -6,6 +6,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -235,6 +236,9 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future updateDeviceInfo(String uid) async {
+    if(!kIsWeb){
+      return;
+    }
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
     final Map<String, String?> data = {

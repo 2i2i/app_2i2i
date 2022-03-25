@@ -319,9 +319,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             ),
             SizedBox(height: 20),
             //connect social
-            Text(
-              'Connect account with',
-              style: Theme.of(context).textTheme.subtitle1,
+            Visibility(
+              visible:  !signUpViewModel.authList.contains('google.com') &&  !signUpViewModel.authList.contains('apple.com'),
+              child: Text(
+                'Connect account with',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
             ),
             SizedBox(height: 12),
             Container(
@@ -356,7 +359,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       child: Image.asset('assets/twitter.png',
                           height: 25, width: 25),
                     ),
-                    visible: !kIsWeb && !signUpViewModel.authList.contains('twitter.com'),
+                    visible: /*!kIsWeb && !signUpViewModel.authList.contains('twitter.com')*/false,
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
