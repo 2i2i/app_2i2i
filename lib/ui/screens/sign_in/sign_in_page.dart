@@ -140,7 +140,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                         ),
                         Visibility(
-                          visible: !kIsWeb,
+                          visible: /*!kIsWeb*/false,
                           child: Card(
                             margin: EdgeInsets.symmetric(vertical: 5),
                             shape: RoundedRectangleBorder(

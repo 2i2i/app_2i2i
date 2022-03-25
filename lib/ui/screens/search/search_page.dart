@@ -61,12 +61,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       ),
       body: Column(
         children: [
-          RaisedButton(
-              onPressed: () {
-                // Future.delayed(Duration(milliseconds: 300)).then((value) => ShowCaseWidget.of(context)!.startShowCase([userList.first!.userTile]));
-                // ShowCaseWidget.of(context)!.startShowCase([userTile]);
-              },
-              child: Text('Play')),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
@@ -166,7 +160,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         );
 
         if (-1 == index) {
-          print("here your list index $index and name ${userList[index]!.name}\n");
           return Container(
             margin: EdgeInsets.only(bottom: 10),
             child: Showcase(
@@ -280,8 +273,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
           );
         }
-
-        print("here your list index $index and name ${userList[index]!.name}\n");
         return GestureDetector(
           onLongPress: (){
             ShowCaseWidget.of(context)!.startShowCase([userList[index]!.userTile]);

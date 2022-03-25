@@ -203,7 +203,7 @@ class SetupUserViewModel with ChangeNotifier {
       final twitterLogin = TwitterLogin(
         apiKey: dotenv.env['TWITTER_API_key'].toString(),
         apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
-        redirectURI: "test://test.2i2i.app",
+        redirectURI: "https://app-2i2i.firebaseapp.com/__/auth/handler",
       );
       final authResult = await twitterLogin.login();
       final AuthCredential twitterAuthCredential =
