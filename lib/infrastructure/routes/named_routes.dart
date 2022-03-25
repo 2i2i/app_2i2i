@@ -30,9 +30,13 @@ import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
+import '../../ui/test_screen.dart';
+import '../data_access_layer/services/logging.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -82,7 +86,7 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(WaitPage()),
+          // child: getView(TestScreen()),
           // child: Scaffold(),
         ),
       ),
@@ -359,7 +363,25 @@ class NamedRoutes {
                 centerTitle: true,
                 backgroundColor: Colors.green,
               ),
-        body: page,
+        body: ShowCaseWidget(
+          onStart: (index, key) {
+            log('onStart: $index, $key');
+          },
+          onComplete: (index, key) {
+            log('onComplete: $index, $key');
+            if (index == 4) {
+              SystemChrome.setSystemUIOverlayStyle(
+                SystemUiOverlayStyle.light.copyWith(
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarColor: Colors.white,
+                ),
+              );
+            }
+          },
+          blurValue: 1,
+          builder: Builder(builder: (context) => page,),
+          autoPlayDelay: const Duration(seconds: 3),
+        ),
         bottomSheet: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);

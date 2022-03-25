@@ -75,7 +75,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <data android:scheme="twitter-firebase-auth"/>
                 <data android:scheme="https"
                     android:host="test.2i2i.app" />
             </intent-filter>
