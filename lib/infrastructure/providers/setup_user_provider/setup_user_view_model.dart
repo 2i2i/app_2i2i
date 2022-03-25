@@ -13,7 +13,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/twitter_login.dart';
 
-import '../../../ui/screens/home/bottom_nav_bar.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -197,25 +196,38 @@ class SetupUserViewModel with ChangeNotifier {
     try {
       User? existingUser;
       UserCredential? firebaseUser;
+      AuthCredential? twitterAuthCredential;
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
 
-      final twitterLogin = TwitterLogin(
-        apiKey: dotenv.env['TWITTER_API_key'].toString(),
-        apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
-        redirectURI: "https://i2i-test.firebaseapp.com/__/auth/handler",
-      );
-      final authResult = await twitterLogin.login();
-      final AuthCredential twitterAuthCredential =
-          TwitterAuthProvider.credential(
-              accessToken: authResult.authToken!,
-              secret: authResult.authTokenSecret!);
-
+      if (!kIsWeb) {
+        final twitterLogin = TwitterLogin(
+          apiKey: dotenv.env['TWITTER_API_key'].toString(),
+          apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
+          redirectURI: "test://test.2i2i.app",
+        );
+        final authResult = await twitterLogin.login();
+        twitterAuthCredential = TwitterAuthProvider.credential(
+            accessToken: authResult.authToken!,
+            secret: authResult.authTokenSecret!);
+      }
       if (linkWithCredential && existingUser != null) {
-        firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
-      }else{
-        firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
+        if (kIsWeb) {
+          firebaseUser =
+              await existingUser.linkWithPopup(TwitterAuthProvider());
+        } else {
+          firebaseUser =
+              await existingUser.linkWithCredential(twitterAuthCredential!);
+        }
+      } else {
+        if (kIsWeb) {
+          firebaseUser = await FirebaseAuth.instance
+              .signInWithPopup(TwitterAuthProvider());
+        } else {
+          firebaseUser =
+              await auth.signInWithCredential(twitterAuthCredential!);
+        }
       }
 
       String? userId = firebaseUser.user?.uid;
