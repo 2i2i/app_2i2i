@@ -359,9 +359,8 @@ class FirestoreDatabase {
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
           query.where('active', isEqualTo: true).orderBy('ts'),
-    )
-        .handleError((onError) {
-      log(onError);
+    ).handleError((onError) {
+      log('\n\n\n\n ---=== ${onError} \n\n\n');
     });
   }
 
