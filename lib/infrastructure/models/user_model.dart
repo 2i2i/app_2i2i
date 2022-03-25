@@ -137,6 +137,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
+  final GlobalKey userTile = GlobalKey();
 
   final String? meeting;
   Rule rule;
@@ -145,6 +146,7 @@ class UserModel extends Equatable {
   String? imageUrl;
   String bio;
   late List<String> _tags;
+
   void setTags() {
     _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }

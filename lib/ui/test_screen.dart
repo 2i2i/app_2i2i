@@ -60,13 +60,7 @@ class _MailPageState extends State<MailPage> {
           .startShowCase([_one, _two, _three, _four, _five]),
     );
     mails = [
-      Mail(
-        sender: 'Medium',
-        sub: 'Showcase View',
-        msg: 'Check new showcase View',
-        date: '25 May',
-        isUnread: false,
-      ),
+
       Mail(
         sender: 'Quora',
         sub: 'New Question for you',
@@ -237,11 +231,12 @@ class _MailPageState extends State<MailPage> {
             Expanded(
               child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
+                itemCount: mails.length,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return showcaseMailTile(context);
                   }
-                  return MailTile(mails[index % mails.length]);
+                  return MailTile(mails[index]);
                 },
               ),
             )
