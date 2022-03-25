@@ -24,6 +24,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
+import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -41,17 +42,27 @@ import 'ui/screens/localization/app_localization.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  // await Firebase.initializeApp(
+  //     options: kIsWeb
+  //         ? FirebaseOptions(
+  //             apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+  //             authDomain: "app-2i2i.firebaseapp.com",
+  //             projectId: "app-2i2i",
+  //             storageBucket: "app-2i2i.appspot.com",
+  //             messagingSenderId: "347734179578",
+  //             appId: "1:347734179578:web:f9c11616c64e12c643d343",
+  //             measurementId: "G-BXKG3DRTJ4")
+  //         : null);
   await Firebase.initializeApp(
-      options: kIsWeb?FirebaseOptions(
-          apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
-          authDomain: "app-2i2i.firebaseapp.com",
-          projectId: "app-2i2i",
-          storageBucket: "app-2i2i.appspot.com",
-          messagingSenderId: "347734179578",
-          appId: "1:347734179578:web:f9c11616c64e12c643d343",
-          measurementId: "G-BXKG3DRTJ4"
-      ):null
-  );
+      options: kIsWeb
+          ? FirebaseOptions(
+              apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
+              authDomain: "i2i-test.firebaseapp.com",
+              projectId: "i2i-test",
+              storageBucket: "i2i-test.appspot.com",
+              messagingSenderId: "453884442411",
+              appId: "1:453884442411:web:dad8591e5125eb8998776e")
+          : null);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -59,7 +70,8 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn =
+          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {

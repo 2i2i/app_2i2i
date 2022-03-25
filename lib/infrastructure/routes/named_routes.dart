@@ -10,7 +10,7 @@ import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
-import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
+import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
@@ -113,7 +113,7 @@ class NamedRoutes {
         path: Routes.faq,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(FAQPage()),
+          child: getView(FAQScreen()),
           // child: Scaffold(),
         ),
       ),

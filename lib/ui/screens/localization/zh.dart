@@ -176,6 +176,7 @@ class zh {
       Keys.signInWithApple: '使用 Apple 登錄”',
       Keys.signInWithTwitter: '用 Twitter 登錄',
       Keys.signInAnonymously: '匿名登錄',
+      Keys.searchFaq: '搜索关键字',
     };
   }
 }

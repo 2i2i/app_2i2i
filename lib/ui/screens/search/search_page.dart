@@ -56,7 +56,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: CustomAppbar(),
+      appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Column(
         children: [
           RaisedButton(
@@ -100,7 +102,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(child: _buildContents(context, ref)),
         ],
       ),
@@ -149,11 +151,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     userList.removeWhere((element) => element == null);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      itemCount: userList.length,
-      itemBuilder: (context, index) {
+    return ScrollConfiguration(
+      behavior: MyBehavior(),
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),// physics: ClampingScrollPhysics(),
+        itemCount: userList.length,
+        itemBuilder: (context, index) {
         Widget userTileWidget = UserInfoTile(
           user: userList[index]!,
           myUid: mainUserID,
@@ -289,6 +293,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           ),
         );
       },
+      ),
     );
   }
 }

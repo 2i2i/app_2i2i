@@ -12,10 +12,10 @@ import '../screens/search/widgtes/star_widget.dart';
 
 class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
-  final Color? backgroundColor;
+  final Color backgroundColor;
   final Widget? title;
 
-  const CustomAppbar({this.title,this.actions, this.backgroundColor});
+  const CustomAppbar({this.title,this.actions, this.backgroundColor = Colors.transparent});
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);

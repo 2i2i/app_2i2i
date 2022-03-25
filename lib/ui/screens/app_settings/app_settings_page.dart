@@ -47,6 +47,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
 
     return Scaffold(
       appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           Keys.settings.tr(context),
           style: Theme.of(context).textTheme.headline5,
@@ -237,7 +238,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                             .toUpperCase()),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.imi.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
