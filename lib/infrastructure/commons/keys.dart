@@ -191,6 +191,8 @@ class Keys {
   static const String signInWithTwitter ='signInWithTwitter';
   static const String signInAnonymously ='signInAnonymously';
 
+  static const String searchFaq ='searchFaq';
+
 }
 
 extension CustomTranslation on String {

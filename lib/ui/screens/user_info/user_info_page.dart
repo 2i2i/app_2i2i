@@ -89,17 +89,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          padding: EdgeInsets.zero,
-          onPressed: () {
-            context.go(Routes.root);
-          },
-          icon: Icon(
-              (kIsWeb || Platform.isIOS)
-                  ? Icons.navigate_before
-                  : Icons.arrow_back_ios,
-              size: 30),
-        ),
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
       ),

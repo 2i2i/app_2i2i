@@ -36,10 +36,13 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
         if (value == false) {
           return Container(
             padding: const EdgeInsets.all(4.0),
+            color: Colors.transparent,
             child: ValueListenableBuilder(
               valueListenable: currentIndex,
               builder: (BuildContext context, int value, Widget? child) {
                 return BottomNavigationBar(
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
                   type: BottomNavigationBarType.fixed,
                   currentIndex: value,
                   onTap: (i) {

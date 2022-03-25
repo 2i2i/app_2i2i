@@ -5,11 +5,13 @@ class SuccessData {
   const SuccessData(
       {Key? key,
       required this.title,
+      this.tags,
       required this.description,
       required this.timestamp});
   final String title;
   final String description;
   final int timestamp;
+  final List<String>? tags;
 }
 
 class Success extends StatelessWidget {

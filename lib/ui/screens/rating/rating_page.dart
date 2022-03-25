@@ -42,7 +42,10 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     final totalRating = (user!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         width: double.infinity,

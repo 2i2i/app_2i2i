@@ -176,6 +176,7 @@ class de {
       Keys.signInWithApple: 'Mit Apple anmelden',
       Keys.signInWithTwitter:   'Mit Twitter anmelden',
       Keys.signInAnonymously: 'Anonym anmelden',
+      Keys.searchFaq: 'Suche Schlüsselwörter',
     };
   }
 }

@@ -183,6 +183,7 @@ class en {
       Keys.signInWithApple: 'Sign in with Apple',
       Keys.signInWithTwitter:  'Sign in with Twitter',
       Keys.signInAnonymously: 'Sign in Anonymously',
+      Keys.searchFaq: 'Search keywords',
 
 
     };

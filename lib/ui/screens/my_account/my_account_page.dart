@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/providers/all_providers.dart';
 import '../app/wait_page.dart';
 import 'widgets/account_info.dart';
@@ -94,20 +95,25 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             builder: (BuildContext context, bool value, Widget? child) {
               return Visibility(
                 visible: value,
-                child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
+                child: Container(
+                    child:
+                        AddAccountOptionsWidgets(showBottom: showBottomSheet),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    )),
               );
             },
           );
         },
-        elevation: 12,
+        elevation: 0,
         enableDrag: true,
-        backgroundColor: Theme.of(context).cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
-        ),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
+            : Theme.of(context).scaffoldBackgroundColor,
       ),
     );
   }
