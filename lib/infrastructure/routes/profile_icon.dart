@@ -2,14 +2,11 @@
 
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../commons/utils.dart';
 
 class ProfileIcon extends ConsumerWidget {
   @override
@@ -21,7 +18,6 @@ class ProfileIcon extends ConsumerWidget {
     }
 
     final bidInList = ref.watch(bidInsPublicProvider(userId));
-    // if (haveToWait(bidInList)) return normalReturn;
     if ((bidInList.value ?? []).isEmpty) {
       return normalReturn;
     }
@@ -36,7 +32,6 @@ class ProfileIcon extends ConsumerWidget {
           if (snapshot.data == null) {
             return normalReturn;
           }
-          log('snapshot.data=${snapshot.data}');
           List<String> localIds = snapshot.data!.split(',').toSet().toList();
           List serverIds = bids.map((e) => e.id).toSet().toList();
           bool anyNew = serverIds.any((element) => !localIds.contains(element));
@@ -70,7 +65,6 @@ class ProfileIcon extends ConsumerWidget {
 
   Widget selectedIcon(String iconPath, BuildContext context,
       {bool isSelected = false}) {
-    print("iconPath ========> $iconPath");
     return Padding(
       padding: const EdgeInsets.all(6),
       child: SvgPicture.asset(iconPath,
