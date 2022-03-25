@@ -12,6 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/twitter_login.dart';
 
+import '../../../ui/screens/home/bottom_nav_bar.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -202,7 +203,7 @@ class SetupUserViewModel with ChangeNotifier {
       final twitterLogin = TwitterLogin(
         apiKey: dotenv.env['TWITTER_API_key'].toString(),
         apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
-        redirectURI: "https://test.2i2i.app/",
+        redirectURI: "https://i2i-test.firebaseapp.com/__/auth/handler",
       );
       final authResult = await twitterLogin.login();
       final AuthCredential twitterAuthCredential =

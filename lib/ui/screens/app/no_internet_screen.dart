@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/commons/keys.dart';
+
 class NoInternetScreen extends ConsumerStatefulWidget {
   const NoInternetScreen({Key? key}) : super(key: key);
 
@@ -24,11 +26,11 @@ class _NoInternetScreenState extends ConsumerState<NoInternetScreen> {
                 color: Theme.of(context).textTheme.headline5!.color,
                 fit: BoxFit.contain),
             SizedBox(height: kRadialReactionRadius),
-            Text('No Internet Connection',
+            Text(Keys.noInternetTitle.tr(context),
                 style: Theme.of(context).textTheme.headline6),
             SizedBox(height: 12),
             Text(
-                'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
+                Keys.noInternetMessage.tr(context),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText2),
           ],

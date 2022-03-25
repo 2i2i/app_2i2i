@@ -59,7 +59,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
-          <string>https://test.2i2i.app/</string>
+          <string>https://i2i-test.firebaseapp.com/__/auth/handler/</string>
         </array>
       </dict>
     </array>

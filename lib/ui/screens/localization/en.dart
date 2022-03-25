@@ -184,6 +184,8 @@ class en {
       Keys.signInWithTwitter:  'Sign in with Twitter',
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.searchFaq: 'Search keywords',
+      Keys.noInternetTitle: 'No Internet Connection',
+      Keys.noInternetMessage: 'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
 
 
     };

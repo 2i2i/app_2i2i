@@ -41,8 +41,8 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
               valueListenable: currentIndex,
               builder: (BuildContext context, int value, Widget? child) {
                 return BottomNavigationBar(
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
+                  // showSelectedLabels: false,
+                  // showUnselectedLabels: false,
                   type: BottomNavigationBarType.fixed,
                   currentIndex: value,
                   onTap: (i) {
