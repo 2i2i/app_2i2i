@@ -42,7 +42,7 @@
 			<string>test.2i2i.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>https</string>
+				<string>test</string>
 			</array>
 		</dict>
 	</array>

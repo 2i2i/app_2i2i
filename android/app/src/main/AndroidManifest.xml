@@ -75,7 +75,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <data android:scheme="https"
+                <data android:scheme="test"
                     android:host="test.2i2i.app" />
             </intent-filter>
 
