@@ -175,7 +175,8 @@ class ja {
       Keys.signInWithGoogle: 'Googleでサインイン',
       Keys.signInWithApple: 'Appleでサインイン',
       Keys.signInWithTwitter: 'Twitterでログイン',
-      Keys.signInAnonymously: '匿名でサインイン'
+      Keys.signInAnonymously: '匿名でサインイン',
+      Keys.searchFaq: 'キーワードを検索',
     };
   }
 }

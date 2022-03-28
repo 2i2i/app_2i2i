@@ -257,13 +257,17 @@ class FirestoreDatabase {
 
   Stream<UserModel> userStream({required String uid}) {
     log(uid);
-   return _service.documentStream(
+   return _service
+        .documentStream(
       path: FirestorePath.user(uid),
       builder: (data, documentId) {
         data ??= {};
         return UserModel.fromMap(data, documentId);
       },
-    );
+    )
+        .handleError((error) {
+      print(error);
+    });
   }
 
   Future<Map?> getTokenFromId(String uid) async {
@@ -316,13 +320,17 @@ class FirestoreDatabase {
 
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) => UserModel.fromMap(data, documentId),
       queryBuilder: tags.isEmpty
           ? null
           : (query) => query.where('tags', arrayContainsAny: tags),
-    );
+    )
+        .handleError((error) {
+      print(error);
+    });
   }
 
   Stream<Room> roomStream({required String meetingId}) =>
@@ -351,9 +359,8 @@ class FirestoreDatabase {
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
           query.where('active', isEqualTo: true).orderBy('ts'),
-    )
-        .handleError((onError) {
-      log(onError);
+    ).handleError((onError) {
+      log('\n\n\n\n ---=== ${onError} \n\n\n');
     });
   }
 

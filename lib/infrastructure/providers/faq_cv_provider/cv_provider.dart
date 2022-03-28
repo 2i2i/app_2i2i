@@ -1,25 +1,32 @@
-import 'package:app_2i2i/ui/screens/cv/success.dart';
 import 'package:flutter/material.dart';
 
-enum CVPerson { imi, solli }
+import '../../../ui/screens/cv/cv_page_data.dart';
+import '../../../ui/screens/cv/success.dart';
 
-extension ParseToString on CVPerson {
-  String toStringEnum() {
-    return this.toString().split('.').last;
-  }
-}
+class CVProviderModel extends ChangeNotifier {
+  List<String> keywordList = [];
+  List<String> keywords = [];
 
-class CVPageData extends StatefulWidget {
-  CVPageData({Key? key, required this.person}) : super(key: key);
+  bool isOpenSuggestionView = false;
 
-  final CVPerson person;
+  List<SuccessData> mainCvList = [];
 
   // IMI
   static List<SuccessData> imiSuccesses = [
     const SuccessData(
         title: 'Accepted into the Encode Algorand Accelerator',
         timestamp: 1636934400,
-        tags: ['Algorand', 'Accelerator', '2i2i', 'version', 'system', 'mainnet', 'governance','on-ramp','developed'],
+        tags: [
+          'Algorand',
+          'Accelerator',
+          '2i2i',
+          'version',
+          'system',
+          'mainnet',
+          'governance',
+          'on-ramp',
+          'developed'
+        ],
         description: '''
 Using the accelerator, we matured the concept of 2i2i and released the test version on the Algorand testnet (test.2i2i.app).
 We believe that we have developed an efficient market system to allow everyone in the world to realise their true value.
@@ -28,17 +35,32 @@ We are working on the patent and on bringing the app to mainnet and to release a
     const SuccessData(
         title: 'Encode Algorand Hackathon 3rd prize',
         timestamp: 1633500600,
-        tags: ['Encode','blockchains','hackathons','courses','2i2i','Algorand','finale','delivered'],
+        tags: [
+          'Encode',
+          'blockchains',
+          'hackathons',
+          'courses',
+          '2i2i',
+          'Algorand',
+          'finale',
+          'delivered'
+        ],
         description: '''
 Encode is an organisation that helps with the adoption of blockchains by running courses and hackathons.
 It felt like the ideal framework to try to implement a project that I wanted to pursue: 2i2i, the place to hang out based on Algorand.
 After intense weeks of hard work, we delivered the project very last minute and succeeded in making it into the finale.
 '''),
-    const SuccessData(
-        title: '2i2i.app',
-        timestamp: 1632614400,
-        tags: ['Algorand','blockchain','energy','information','Energy','coins','meetings','video','market'],
-        description: '''
+    const SuccessData(title: '2i2i.app', timestamp: 1632614400, tags: [
+      'Algorand',
+      'blockchain',
+      'energy',
+      'information',
+      'Energy',
+      'coins',
+      'meetings',
+      'video',
+      'market'
+    ], description: '''
 The place to hangout based on Algorand.
 A blockchain (Algorand) based exchange between energy and information.
 Energy in the form of coins and information in the form of live video meetings.
@@ -359,7 +381,8 @@ Passed the exam.
         description: '''
 To get a better standing in the financial community, I applied, studied for and passed the FRM exam at GARP.
             '''),
-    const SuccessData(title: 'Trading system awards', timestamp: 1585699200, description: '''
+    const SuccessData(
+        title: 'Trading system awards', timestamp: 1585699200, description: '''
 The trading system that I created has won several awards over the years, including:
 • Barclay Managed Funds Report #6 Past Five Years category for 2020-Q4
 • BarclayHedge #3 for Diversified Traders Managing More Than 10MM for 2020.
@@ -476,55 +499,46 @@ Led the customs clearance without a hitch by translating the proper etiquette fo
 Contributes to the smooth supply of products by playing an efficient bridge role between manufacturers and forwarders buyers.'''),
   ];
 
-  @override
-  State<CVPageData> createState() => _CVPageDataState();
-}
+  List<SuccessData> searchCVList = [];
 
-class _CVPageDataState extends State<CVPageData> {
-
-  List<SuccessData> successDataList = [];
-
-  List<SuccessData> sortedSuccessList(List<SuccessData> successList) {
-    List<SuccessData> sortedList = new List<SuccessData>.from(successList);
-    sortedList.sort((s1, s2) => s1.timestamp < s2.timestamp ? 1 : -1);
-    return sortedList;
+  initList(CVPerson cvPerson) {
+    mainCvList = cvPerson == CVPerson.imi ? imiSuccesses : solliSuccesses;
+    mainCvList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
-  @override
-  void initState() {
-    successDataList = sortedSuccessList(widget.person == CVPerson.solli ? CVPageData.solliSuccesses : CVPageData.imiSuccesses);
-    super.initState();
+  initKeywordList() {
+    mainCvList.forEach((element) {
+      element.tags?.forEach((tagElement) {
+        if (!keywordList.contains(tagElement.toLowerCase())) {
+          keywords.add(tagElement.toLowerCase());
+        }
+      });
+    });
+    keywords.toSet().toList();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.person.toString()),
-      ),
-      body: ListView(
-        shrinkWrap: true,
-        primary: false,
-        children: [
-          ListView.builder(
-            shrinkWrap: true,
-            primary: false,
-            itemCount: successDataList.length,
-            itemBuilder: (BuildContext context, int index) {
-              Color backgroundColor = index % 2 == 0
-                  ? Color.fromRGBO(223, 239, 223, 1)
-                  : Color.fromRGBO(197, 234, 197, 1);
-              return Success(
-                  data: successDataList[index],
-                  backgroundColor: backgroundColor);
-            },
-          ),
-          ListTile(
-            title: Text(
-                'All times above are (very) approximate. The facts above are the persons successes, without humility :). Weaknesses/"failures" are not mentioned.'),
-          )
-        ],
-      ),
-    );
+  addInKeywordList(value) {
+    keywordList.add(value.toString().toLowerCase());
+    refreshList();
+    notifyListeners();
+  }
+
+  openCloseSuggestionView() {
+    isOpenSuggestionView = !isOpenSuggestionView;
+    notifyListeners();
+  }
+
+  removeInKeywordList(value) {
+    keywordList.removeWhere((element) => element == value);
+    refreshList();
+    notifyListeners();
+  }
+
+  refreshList() {
+    searchCVList = mainCvList
+        .where((element) => (element.tags ?? []).any((searchKeyword) =>
+            keywordList.contains(searchKeyword.toLowerCase())))
+        .toList();
+    print(searchCVList);
   }
 }

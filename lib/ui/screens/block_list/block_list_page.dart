@@ -19,7 +19,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: Padding(
         padding: EdgeInsets.only(
             right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),

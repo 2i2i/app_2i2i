@@ -47,6 +47,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
 
     return Scaffold(
       appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           Keys.settings.tr(context),
           style: Theme.of(context).textTheme.headline5,
@@ -237,7 +238,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                             .toUpperCase()),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.imi.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -318,9 +319,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             ),
             SizedBox(height: 20),
             //connect social
-            Text(
-              'Connect account with',
-              style: Theme.of(context).textTheme.subtitle1,
+            Visibility(
+              visible:  !signUpViewModel.authList.contains('google.com') &&  !signUpViewModel.authList.contains('apple.com'),
+              child: Text(
+                'Connect account with',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
             ),
             SizedBox(height: 12),
             Container(

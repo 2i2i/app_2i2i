@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 String shortString(String string, {int maxLength = 10}) {
@@ -176,4 +177,8 @@ bool haveToWait(var provider) {
     log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;
+}
+class MyBehavior extends ScrollBehavior {
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) => ClampingScrollPhysics();
 }

@@ -60,6 +60,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
   final BuildContext mainContext;
   int? min;
   int? max;
+  String? valueMain;
   final bool showValue;
 
   CustomSliderThumbRect({
@@ -67,6 +68,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
     this.thumbRadius,
     this.min,
     this.max,
+    this.valueMain,
     this.showValue = true,
   });
 
@@ -94,7 +96,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
 
     final rRect = RRect.fromRectAndRadius(
       Rect.fromCenter(
-          center: center, width: kToolbarHeight, height: kToolbarHeight * 0.6),
+          center: center, width: 40, height: kToolbarHeight * 0.5),
       Radius.circular(thumbRadius!),
     );
 
@@ -103,16 +105,22 @@ class CustomSliderThumbRect extends SliderComponentShape {
       ..style = PaintingStyle.fill;
 
     TextSpan span = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1,
-        text: showValue ? '${getValue(value!)}s' : '');
+        style: Theme.of(mainContext).textTheme.subtitle1?.copyWith(
+          color: Colors.green
+        ),
+        text: showValue ? '$valueMain' : '');
 
     TextPainter tp = new TextPainter(
         text: span,
-        textAlign: TextAlign.left,
+        textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     tp.layout();
-    Offset textCenter =
-        Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+    // Offset textCenter =
+    //     Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+    Offset textCenter = Offset(
+      center.dx - (tp.width / 2),
+      center.dy - (tp.height / 2),
+    );
     canvas.drawRRect(rRect, paint);
     tp.paint(canvas, textCenter);
   }
