@@ -101,7 +101,7 @@ class ko {
       Keys.swipeAndChangeAccount: '스와이프하여 계정 변경',
       Keys.insufficientBalance: '잔액 불충분',
       Keys.addBid: '가입하다',
-      Keys.copyAndNext: '복사 및 다음',
+      Keys.next: '다음',
       Keys.report: '보고서',
       Keys.block: '블록',
       Keys.unBlock: '차단 해제',

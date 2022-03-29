@@ -100,7 +100,7 @@ class es {
       Keys.swipeAndChangeAccount: 'Desliza para cambiar de cuenta',
       Keys.insufficientBalance: 'Saldo insuficiente',
       Keys.addBid: 'Entrar',
-      Keys.copyAndNext: 'Copiar y Siguiente',
+      Keys.next: 'Siguiente',
       Keys.report: 'Reporte',
       Keys.block: 'Bloquear',
       Keys.unBlock: 'Desbloquear',
