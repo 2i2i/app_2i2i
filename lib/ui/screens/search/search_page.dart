@@ -5,15 +5,14 @@ import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../commons/custom.dart';
-import '../../commons/custom_profile_image_view.dart';
+import '../../../infrastructure/routes/app_routes.dart';
 import 'widgtes/user_info_tile.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -23,6 +22,15 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
+  bool isAlreadyShowed = false;
+
+  final GlobalObjectKey mainKey = GlobalObjectKey('mainKey');
+
+  @override
+  void initState() {
+    CustomAlertWidget.showHintWidget(context, ref, [mainKey]);
+    super.initState();
+  }
 
   void initMethod() {
     Future.delayed(Duration(seconds: 3)).then((value) {
@@ -143,147 +151,47 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     List<UserModel?> userList = userListProvider.value!;
     userList.removeWhere((element) => element == null);
+    userList.removeWhere((element) => element?.name.isEmpty ?? false);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
     return ScrollConfiguration(
       behavior: MyBehavior(),
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),// physics: ClampingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        // physics: ClampingScrollPhysics(),
         itemCount: userList.length,
         itemBuilder: (context, index) {
-        Widget userTileWidget = UserInfoTile(
-          user: userList[index]!,
-          myUid: mainUserID,
-          isForBlockedUser: false,
-          marginBottom: 10,
-        );
-
-        if (-1 == index) {
-          return Container(
-            margin: EdgeInsets.only(bottom: 10),
-            child: Showcase(
-              // key: userTile,
-              key: GlobalKey(),
-              description: 'Tap to check mail',
-              title: '2i2i User',
-
-              shapeBorder: const CircleBorder(),
-              radius: BorderRadius.circular(10),
-              child: Container(
-                decoration: Custom.getBoxDecoration(context, radius: 12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8),
-                  child: Row(
-                    children: [
-                      ProfileWidget(
-                        stringPath: (userList[index]!.imageUrl ?? "").isEmpty
-                            ? userList[index]!.name
-                            : userList[index]!.imageUrl!,
-                        imageType: (userList[index]!.imageUrl ?? "").isEmpty
-                            ? ImageType.NAME_IMAGE
-                            : ImageType.NETWORK_IMAGE,
-                        radius: 62,
-                        hideShadow: true,
-                        showBorder: false,
-                        statusColor: Colors.red,
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: 6),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    userList[index]!.name,
-                                    style:
-                                        Theme.of(context).textTheme.subtitle1,
-                                    maxLines: 2,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IgnorePointer(
-                                      ignoring: true,
-                                      child: RatingBar.builder(
-                                        initialRating:
-                                            userList[index]!.rating * 5,
-                                        minRating: 1,
-                                        direction: Axis.horizontal,
-                                        tapOnlyMode: true,
-                                        updateOnDrag: false,
-                                        itemCount: 5,
-                                        itemSize: 16,
-                                        allowHalfRating: true,
-                                        glowColor: Colors.white,
-                                        ignoreGestures: false,
-                                        unratedColor: Colors.grey.shade300,
-                                        itemBuilder: (context, _) => Icon(
-                                          Icons.star_rounded,
-                                          color: Colors.grey,
-                                        ),
-                                        onRatingUpdate: (double value) {},
-                                      ),
-                                    ),
-                                    SizedBox(width: 6),
-                                    Text(
-                                        '${(userList[index]!.rating * 5).toStringAsFixed(1)}',
-                                        style:
-                                            Theme.of(context).textTheme.caption)
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 2),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    userList[index]!.bio,
-                                    maxLines: 2,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1,
-                                  ),
-                                ),
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: () => null,
-                                  icon: Icon(Icons.favorite_border_rounded),
-                                  color: Colors.grey,
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          Widget userTileWidget = UserInfoTile(
+            user: userList[index]!,
+            myUid: mainUserID,
+            isForBlockedUser: false,
+            marginBottom: 0,
           );
-        }
-        return GestureDetector(
-          onLongPress: (){
-            ShowCaseWidget.of(context)!.startShowCase([userList[index]!.userTile]);
-          },
-          child: Showcase(
-              description: 'Tap to check mail',
-              key: userList[index]!.userTile,
-              child: userTileWidget,
-          ),
-        );
-      },
+
+          if (index == 0)
+            return Container(
+              margin: EdgeInsets.only(bottom: 10),
+              child: Showcase(
+                title: '2i2i User',
+                description: 'Tap info user and bid to hangout',
+                key: mainKey,
+                disposeOnTap: true,
+                onTargetClick: () {
+                  ref.read(appSettingProvider).checkIfHintShowed('mainKey');
+                  context.pushNamed(Routes.user.nameFromPath(), params: {
+                    'uid': userList[index]!.id,
+                  });
+                },
+                radius: BorderRadius.circular(10),
+                child: userTileWidget,
+              ),
+            );
+          return Container(
+            child: userTileWidget,
+            margin: EdgeInsets.only(bottom: 10),
+          );
+        },
       ),
     );
   }

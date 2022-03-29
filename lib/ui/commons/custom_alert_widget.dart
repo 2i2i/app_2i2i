@@ -1,8 +1,11 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../infrastructure/commons/keys.dart';
+import '../../infrastructure/providers/all_providers.dart';
 
 class CustomAlertWidget {
   static showBidAlert(BuildContext context, Widget child,
@@ -51,8 +54,7 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(
-              primary: Theme.of(context).colorScheme.secondary
-          ),
+              primary: Theme.of(context).colorScheme.secondary),
           onPressed: () {
             Navigator.of(context).maybePop();
           },
@@ -60,6 +62,25 @@ class CustomAlertWidget {
         ),
       ],
     );
-    return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context)=>dialog));
+    return Future.delayed(Duration.zero).then((value) =>
+        showCupertinoDialog(context: context, builder: (context) => dialog));
+  }
+
+  static void showHintWidget(
+      BuildContext context, WidgetRef ref, List<GlobalObjectKey> keys) {
+    Future.delayed(Duration(milliseconds: 500)).then((value) async {
+      List<GlobalObjectKey> stringKey = [];
+      for (var element in keys) {
+        String id = element.value as String;
+        bool showOnKey =
+            await ref.read(appSettingProvider).checkIfHintShowed(id);
+        if (showOnKey) {
+          stringKey.add(element);
+        }
+      }
+      if (stringKey.isNotEmpty) {
+        ShowCaseWidget.of(context)!.startShowCase(stringKey);
+      }
+    });
   }
 }

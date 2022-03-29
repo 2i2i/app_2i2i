@@ -3,6 +3,7 @@ import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -19,6 +20,8 @@ class UserInfoWidget extends StatefulWidget {
   final GestureTapCallback? onTapRules;
   final GestureTapCallback? onTapQr;
   final GestureTapCallback? onTapChat;
+  final GlobalObjectKey? userCronyInfo;
+  final GlobalObjectKey? showOnQr;
 
   const UserInfoWidget({
     Key? key,
@@ -30,6 +33,8 @@ class UserInfoWidget extends StatefulWidget {
     this.onTapWallet,
     this.estWaitTime,
     this.onTapChat,
+    this.userCronyInfo,
+    this.showOnQr,
   }) : super(key: key);
 
   @override
@@ -53,6 +58,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
     final totalRating = removeDecimalZeroFormat(widget.user.rating * 5);
 
+    Widget userRulesWidget = UserRulesWidget(
+      user: widget.user,
+      onTapRules: widget.onTapRules,
+    );
     return Column(
       children: [
         Row(
@@ -83,18 +92,28 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     Visibility(
                       visible: widget.onTapWallet != null,
                       child: InkResponse(
-                        onTap: widget.onTapWallet,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
-                          child: Icon(Icons.attach_money, size: 25),
-                        ),
-                      ),
+                              onTap: widget.onTapWallet,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 4),
+                                child: Icon(Icons.attach_money, size: 25),
+                              ),
+                            ),
                     ),
-                    InkResponse(
-                      onTap: widget.onTapQr,
-                      child: Icon(Icons.qr_code, size: 25),
-                    ),
+                    widget.showOnQr != null
+                        ? Showcase(
+                            key: widget.showOnQr!,
+                            title: 'Share',
+                            description:
+                                'Tap to share your profile to social media',
+                            onTargetClick: widget.onTapQr,
+                            disposeOnTap: true,
+                            child: Icon(Icons.qr_code, size: 25),
+                          )
+                        : InkResponse(
+                            onTap: widget.onTapQr,
+                            child: Icon(Icons.qr_code, size: 25),
+                          ),
                     if (widget.onTapFav != null)
                       InkResponse(
                         onTap: widget.onTapFav,
@@ -208,10 +227,17 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
               )
             : Container(),
         SizedBox(height: 20),
-        UserRulesWidget(
-          user: widget.user,
-          onTapRules: widget.onTapRules,
-        ),
+        if (widget.userCronyInfo != null)
+          Showcase(
+            description: 'This is user crony information',
+            key: widget.userCronyInfo!,
+            child: UserRulesWidget(
+              user: widget.user,
+              onTapRules: widget.onTapRules,
+            ),
+          )
+        else
+          userRulesWidget,
         SizedBox(height: 10),
       ],
     );

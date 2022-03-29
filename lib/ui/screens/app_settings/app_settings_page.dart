@@ -268,6 +268,20 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
+                    onTap: () async {
+                      await appSettingModel.exploreApp();
+                      currentIndex.value = 0;
+                      context.go(Routes.root);
+                    },
+                    title: Text(
+                      "Explore app",
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
                     onTap: () {
                       if (appSettingModel.updateRequired) {
                         StoreRedirect.redirect(

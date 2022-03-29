@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -15,8 +16,10 @@ import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
+  final GlobalObjectKey? showOnAccount;
+
   AccountInfo(this.shrinkwrap,
-      {Key? key, required this.account, this.afterRefresh})
+      {Key? key, required this.account, this.showOnAccount, this.afterRefresh})
       : super(key: key);
 
   final AbstractAccount account;
@@ -39,16 +42,17 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount / 1000000;
-    String assetName =
-        assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
+    String assetName = assetId == 0
+        ? '${Keys.ALGO.tr(context)}'
+        : balanceModel.assetHolding.assetId.toString();
 
-    return Container(
+    Widget accountTile = Container(
       constraints: widget.shrinkwrap == true
           ? null
           : BoxConstraints(
               minHeight: 200,
             ),
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: widget.showOnAccount != null?0:10),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -61,152 +65,162 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    SizedBox(width: 10),
+                    Image.asset(
+                      'assets/algo_logo.png',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.fill,
+                    ),
+                    SizedBox(width: 16),
+                    Flexible(
+                      child: Text(
+                        assetName,
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                            color: AppTheme().lightSecondaryTextColor),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                "$amount",
+                style: Theme.of(context).textTheme.headline4,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: EdgeInsets.only(left: 15),
+            child: Row(
               children: [
                 Expanded(
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 10),
-                      Image.asset(
-                        'assets/algo_logo.png',
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.fill,
-                      ),
-                      SizedBox(width: 16),
-                      Flexible(
-                        child: Text(
-                          assetName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              ?.copyWith(
-                                  color: AppTheme().lightSecondaryTextColor),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      widget.account is WalletConnectAccount
+                          ? Image.asset(
+                              'assets/wc_logo.png',
+                              height: 20,
+                              fit: BoxFit.fill,
+                            )
+                          : Container(),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.account.address,
+                        maxLines: 4,
+                        style: Theme.of(context).textTheme.caption,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                Text(
-                  "$amount",
-                  style: Theme.of(context).textTheme.headline4,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                )
+                Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 6),
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/refresh.svg',
+                      width: 20,
+                      height: 20,
+                      color: iconColor(context),
+                    ),
+                    onPressed: () async {
+                      CustomDialogs.loader(true, context);
+                      await widget.account
+                          .updateBalances(net: AppConfig().ALGORAND_NET);
+                      if (widget.afterRefresh != null) widget.afterRefresh!();
+                      CustomDialogs.loader(false, context);
+                      setState(() {});
+                    },
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/copy.svg',
+                      width: 20,
+                      height: 20,
+                      color: iconColor(context),
+                    ),
+                    onPressed: () {
+                      Clipboard.setData(
+                          ClipboardData(text: widget.account.address));
+                      showToast(Keys.copyMessage.tr(context),
+                          context: context,
+                          animation: StyledToastAnimation.slideFromTop,
+                          reverseAnimation: StyledToastAnimation.slideToTop,
+                          position: StyledToastPosition.top,
+                          startOffset: Offset(0.0, -3.0),
+                          reverseEndOffset: Offset(0.0, -3.0),
+                          duration: Duration(seconds: 4),
+                          animDuration: Duration(seconds: 1),
+                          curve: Curves.elasticOut,
+                          reverseCurve: Curves.fastOutSlowIn);
+                    },
+                  ),
+                ),
+                Visibility(
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      child: IconButton(
+                          icon: SvgPicture.asset(
+                            'assets/icons/key.svg',
+                            width: 20,
+                            height: 20,
+                            color: iconColor(context),
+                          ),
+                          onPressed: () => CustomDialogs.infoDialog(
+                                context: context,
+                                child: KeysWidget(
+                                    account: widget.account as LocalAccount),
+                              )
+                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                          ),
+                    ),
+                    visible: widget.account is LocalAccount),
               ],
             ),
-            SizedBox(height: 8),
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        widget.account is WalletConnectAccount
-                            ? Image.asset(
-                                'assets/wc_logo.png',
-                                height: 20,
-                                fit: BoxFit.fill,
-                              )
-                            : Container(),
-                        SizedBox(height: 8),
-                        Text(
-                          widget.account.address,
-                          maxLines: 4,
-                          style: Theme.of(context).textTheme.caption,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 40,
-                    width: 40,
-                    margin: EdgeInsets.symmetric(horizontal: 6),
-                    child: IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/refresh.svg',
-                        width: 20,
-                        height: 20,
-                        color: iconColor(context),
-                      ),
-                      onPressed: () async {
-                        CustomDialogs.loader(true, context);
-                        await widget.account.updateBalances(net: AppConfig().ALGORAND_NET);
-                        if (widget.afterRefresh != null) widget.afterRefresh!();
-                        CustomDialogs.loader(false, context);
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                  Container(
-                    height: 40,
-                    width: 40,
-                    margin: EdgeInsets.symmetric(horizontal: 8),
-                    child: IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/copy.svg',
-                        width: 20,
-                        height: 20,
-                        color: iconColor(context),
-                      ),
-                      onPressed: () {
-                        Clipboard.setData(
-                            ClipboardData(text: widget.account.address));
-                        showToast(Keys.copyMessage.tr(context),
-                            context: context,
-                            animation: StyledToastAnimation.slideFromTop,
-                            reverseAnimation: StyledToastAnimation.slideToTop,
-                            position: StyledToastPosition.top,
-                            startOffset: Offset(0.0, -3.0),
-                            reverseEndOffset: Offset(0.0, -3.0),
-                            duration: Duration(seconds: 4),
-                            animDuration: Duration(seconds: 1),
-                            curve: Curves.elasticOut,
-                            reverseCurve: Curves.fastOutSlowIn);
-                      },
-                    ),
-                  ),
-                  Visibility(
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        child: IconButton(
-                            icon: SvgPicture.asset(
-                              'assets/icons/key.svg',
-                              width: 20,
-                              height: 20,
-                              color: iconColor(context),
-                            ),
-                            onPressed: () => CustomDialogs.infoDialog(
-                                  context: context,
-                                  child: KeysWidget(
-                                      account: widget.account as LocalAccount),
-                                )
-                            // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
-                            ),
-                      ),
-                      visible: widget.account is LocalAccount),
-                ],
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
+
+    return widget.showOnAccount != null
+        ? Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0)
+      ),
+        margin: EdgeInsets.symmetric(vertical: 10),
+          child: Showcase(
+              key: widget.showOnAccount!,
+              title: 'Account',
+              description:
+                  'Here you can bid to user check Amount, Account Address, Recover Private key',
+              child: accountTile),
+        )
+        : accountTile;
   }
 
   Color? iconColor(BuildContext context) =>
