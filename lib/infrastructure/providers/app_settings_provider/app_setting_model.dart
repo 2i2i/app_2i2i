@@ -76,6 +76,7 @@ class AppSettingModel extends ChangeNotifier {
       await storage.write('appHint', listValue.join(','));
       return true;
     }
+
     return false;
   }
 
