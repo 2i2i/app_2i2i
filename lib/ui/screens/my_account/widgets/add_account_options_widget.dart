@@ -1,10 +1,12 @@
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -44,7 +46,7 @@ class _AddAccountOptionsWidgetsState
           ListTile(
             onTap: () async {
               final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-              _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+              await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
               widget.showBottom?.value = false;
             },
             leading: Container(
@@ -155,13 +157,15 @@ class _AddAccountOptionsWidgetsState
     );
     // Create a new session
     if (!account.connector.connected) {
-      await account.connector.createSession(
+      CustomDialogs.loader(true, context);
+      SessionStatus sessionStatus = await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
       await account.save();
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
+      CustomDialogs.loader(false, context);
       _displayUri = '';
       isDialogOpen.value = false;
     } else {
@@ -174,7 +178,8 @@ class _AddAccountOptionsWidgetsState
     if (mounted) {
       setState(() {});
     }
-    if (isMobile) {
+    bool isAvailable = await canLaunch('algorand://');
+    if (isMobile && isAvailable) {
       await launch(uri);
     } else {
       isDialogOpen.value = true;

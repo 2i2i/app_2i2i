@@ -10,17 +10,21 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/create_bid/widgets/account_tile.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
-import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 import 'top_card_widget.dart';
+
+ValueNotifier<bool> accountBottomSheet = ValueNotifier(false);
 
 class CreateBidPageRouterObject {
   CreateBidPageRouterObject(
@@ -83,16 +87,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
   PageController controller = PageController(initialPage: 0);
-
+  int _index = 0;
   UserModel? userB;
   FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
     focusNode.addListener(() {
-      if(!focusNode.hasFocus){
-        var val = int.tryParse(speedController.text)??0;
-        if(val < speed.num) {
+      if (!focusNode.hasFocus) {
+        var val = int.tryParse(speedController.text) ?? 0;
+        if (val < speed.num) {
           speedController.text = speed.num.toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
@@ -179,6 +183,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     thumbShape: CustomSliderThumbRect(
                                       mainContext: context,
                                       thumbRadius: 15,
+                                      valueMain: "${maxDuration.toString()}s",
                                       min: minMaxDuration,
                                       max: maxMaxDuration,
                                     ),
@@ -212,7 +217,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     child: CustomTextField(
                       title: Keys.note.tr(context),
                       hintText: Keys.bidNote.tr(context),
@@ -221,88 +226,74 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       },
                     ),
                   ),
-                  Container(
-                    constraints:
-                        (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                            ? BoxConstraints(
-                                minHeight: 150,
-                                maxHeight: 200,
-                              )
-                            : null,
-                    child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                        ? PageView.builder(
-                            controller: controller,
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                myAccountPageViewModel.accounts?.length ?? 0,
-                            itemBuilder: (_, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: AccountInfo(
-                                  false,
-                                  key: ObjectKey(myAccountPageViewModel
-                                      .accounts![index].address),
-                                  account:
-                                      myAccountPageViewModel.accounts![index],
-                                  afterRefresh: () => updateAccountBalance(
-                                      myAccountPageViewModel),
-                                ),
-                              );
-                            },
-                            onPageChanged: (int val) {
-                              final newAccount = myAccountPageViewModel.accounts
-                                  ?.elementAt(val);
-                              if (account == newAccount) return;
-                              account = newAccount;
-                              if (mounted) {
-                                updateAccountBalance(myAccountPageViewModel);
-                              }
-                            },
-                          )
-                        : Container(
-                            padding: EdgeInsets.all(12),
-                            margin: EdgeInsets.only(top: 12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .shadowColor
-                                  .withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 12),
-                                Text(
-                                  Keys.noAccountAdded.tr(context),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                                SizedBox(height: 8),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 10),
-                                  child: IconButton(
-                                    onPressed: () =>
-                                        CustomAlertWidget.showBidAlert(context,
-                                            AddAccountOptionsWidgets()),
-                                    iconSize: 30,
-                                    icon: Icon(
-                                      Icons.add_circle_rounded,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                  ) /*ElevatedButton(
-                                      child: Text(Strings().addAccount),
-                                    )*/
-                                  ,
-                                )
-                              ],
-                            ),
-                          ),
+                  SizedBox(height: 15),
+                  Text(
+                    'Account',
+                    style: Theme.of(context).textTheme.caption,
                   ),
-                  Visibility(
+                  SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                            ((myAccountPageViewModel.accounts?.length ?? 0) +
+                                1), (index) {
+                          if (index ==
+                              ((myAccountPageViewModel.accounts?.length ??
+                                  0))) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 8),
+                                margin: EdgeInsets.symmetric(vertical: 10,horizontal: 4),
+                                width:
+                                    MediaQuery.of(context).size.height * 0.175,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.145,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        offset: Offset(2, 4),
+                                        blurRadius: 8,
+                                        color: Color.fromRGBO(0, 0, 0,
+                                            0.12) // changes position of shadow
+                                        ),
+                                  ],
+                                ),
+                            child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                        child: Center(
+                                            child: Icon(
+                                      Icons.add,
+                                      size: 25,
+                                    ))),
+                                    Text(
+                                      Keys.addAccount.tr(context),
+                                      style: Theme.of(context).textTheme.button,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                            child: AccountTile(
+                              false,
+                              key: ObjectKey(myAccountPageViewModel
+                                  .accounts![index].address),
+                              account: myAccountPageViewModel.accounts![index],
+                              afterRefresh: () =>
+                                  updateAccountBalance(myAccountPageViewModel),
+                            ),
+                          );
+                        }),
+                      )),
+                  /*Visibility(
                     visible:
                         (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
                     child: Row(
@@ -330,7 +321,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         )
                       ],
                     ),
-                  ),
+                  ),*/
                   ValueListenableBuilder(
                     valueListenable: isAddSupportVisible,
                     builder: (BuildContext context, bool value, Widget? child) {

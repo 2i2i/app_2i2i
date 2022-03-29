@@ -20,11 +20,11 @@ class TopCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          /*Text(
             Keys.createABid.tr(context),
             style: Theme.of(context).textTheme.headline5,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 8),*/
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
