@@ -16,7 +16,7 @@ import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
-  const AddAccountOptionsWidgets({Key? key,this.showBottom}) : super(key: key);
+  const AddAccountOptionsWidgets({Key? key, this.showBottom}) : super(key: key);
 
   @override
   _AddAccountOptionsWidgetsState createState() =>
@@ -43,8 +43,10 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-              _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel =
+                  ref.read(myAccountPageViewModelProvider);
+              _createSession(myAccountPageViewModel,
+                  myAccountPageViewModel.accountService!);
               widget.showBottom?.value = false;
             },
             leading: Container(
@@ -160,6 +162,8 @@ class _AddAccountOptionsWidgetsState
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
       await account.save();
+      await myAccountPageViewModel.updateDBWithNewAccount(
+          account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       _displayUri = '';
@@ -181,14 +185,13 @@ class _AddAccountOptionsWidgetsState
       await showDialog(
         context: context,
         builder: (context) => ValueListenableBuilder(
-            valueListenable: isDialogOpen,
-            builder: (BuildContext context, bool value, Widget? child) {
-              if(!value){
-                Navigator.of(context).pop();
-              }
-              return QrImagePage(imageUrl: _displayUri);
-            },
-
+          valueListenable: isDialogOpen,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (!value) {
+              Navigator.of(context).pop();
+            }
+            return QrImagePage(imageUrl: _displayUri);
+          },
         ),
         barrierDismissible: true,
       );

@@ -1,5 +1,7 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +23,10 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final uid = ref.watch(myUIDProvider);
+    if (uid == null) return WaitPage();
+    final database = ref.watch(databaseProvider);
+
     if (currentIndex >= listOfString.length) {
       currentIndex = listOfString.length - 1;
     }
@@ -102,9 +108,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                         radius: 10,
                         child: Text(
                           '${index + 1}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption,
+                          style: Theme.of(context).textTheme.caption,
                         ),
                       ),
                       title: Text(
@@ -190,7 +194,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                     onPressed: isInValid()
                         ? null
                         : () {
-                            onClickRecover();
+                            onClickRecover(uid, database);
                           },
                     child: Text(Keys.recover.tr(context)),
                   ),
@@ -223,7 +227,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
     }
   }
 
-  Future<void> onClickRecover() async {
+  Future<void> onClickRecover(String uid, FirestoreDatabase database) async {
     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
     List<String> keys = listOfString.map((e) => e.text).toList();
     CustomDialogs.loader(true, context);

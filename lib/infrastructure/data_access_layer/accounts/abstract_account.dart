@@ -136,6 +136,9 @@ class AccountService {
     log('AccountService getAllAccounts');
     final localAccounts = await getAllLocalAccounts();
     final walletConnectAccounts = getAllWalletConnectAccounts();
+
+  
+
     return [...localAccounts, ...walletConnectAccounts];
   }
 
