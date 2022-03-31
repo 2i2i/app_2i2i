@@ -21,13 +21,14 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 
 class SetupUserViewModel with ChangeNotifier {
-  SetupUserViewModel({required this.auth,
-    required this.database,
-    required this.algorandLib,
-    required this.accountService,
-    required this.googleSignIn,
-    required this.algorand,
-    required this.storage});
+  SetupUserViewModel(
+      {required this.auth,
+      required this.database,
+      required this.algorandLib,
+      required this.accountService,
+      required this.googleSignIn,
+      required this.algorand,
+      required this.storage});
 
   final FirebaseAuth auth;
   final FirestoreDatabase database;
@@ -42,7 +43,7 @@ class SetupUserViewModel with ChangeNotifier {
   List<String> authList = [];
 
   ////////
-  Future createAuthAndStartAlgoRand({String? firebaseUserId}) async {
+  Future createAuthAndStartAlgoRand({required String firebaseUserId}) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
     notifyListeners();
@@ -50,7 +51,7 @@ class SetupUserViewModel with ChangeNotifier {
     // if (firebaseUserId == null) {
     //   await auth.signInAnonymously();
     // }
-    await setupAlgorandAccount();
+    await setupAlgorandAccount(firebaseUserId);
     signUpInProcess = false;
 
     notifyListeners();
@@ -111,9 +112,11 @@ class SetupUserViewModel with ChangeNotifier {
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
@@ -184,7 +187,6 @@ class SetupUserViewModel with ChangeNotifier {
         await createAuthAndStartAlgoRand(firebaseUserId: userId);
         await updateDeviceInfo(userId);
       }
-
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
@@ -236,7 +238,7 @@ class SetupUserViewModel with ChangeNotifier {
         await createAuthAndStartAlgoRand(firebaseUserId: userId);
         await updateDeviceInfo(userId);
       }
-    }  on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
     }
@@ -248,7 +250,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future updateDeviceInfo(String uid) async {
-    if(!kIsWeb){
+    if (!kIsWeb) {
       return;
     }
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -261,13 +263,14 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   // KEEP my_account_provider in local scope
-  Future setupAlgorandAccount() async {
+  Future setupAlgorandAccount(String uid) async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
     final LocalAccount account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);
+    await database.addAlgorandAccount(uid, account.address, 'LOCAL');
     await accountService.setMainAcccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
 
@@ -275,7 +278,7 @@ class SetupUserViewModel with ChangeNotifier {
     // DEBUG - off for faster debugging
     notifyListeners();
     final HttpsCallable giftALGO =
-    FirebaseFunctions.instance.httpsCallable('giftALGO');
+        FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
       await giftALGO({'account': account.address});

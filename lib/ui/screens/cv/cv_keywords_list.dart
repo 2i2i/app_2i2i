@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/faq_cv_provider/cv_provider.dart';
-import '../../../infrastructure/providers/faq_cv_provider/faq_provider.dart';
 
 class CvKeywordsList extends ConsumerWidget {
   const CvKeywordsList({Key? key}) : super(key: key);

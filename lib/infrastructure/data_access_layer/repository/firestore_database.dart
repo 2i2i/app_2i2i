@@ -28,6 +28,16 @@ class FirestoreDatabase {
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
+  Future addAlgorandAccount(String uid, String algorandAccount, String type) =>
+      _service.setData(
+        path: FirestorePath.algorandAccount(uid, algorandAccount),
+        data: {
+          'type': type,
+          'ts': FieldValue.serverTimestamp(),
+        },
+        merge: false,
+      );
+
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
       // create meeting
@@ -159,7 +169,8 @@ class FirestoreDatabase {
     });
   }
 
-  Future<void> updateMeetingStatus(String meetingId, Map<String, dynamic> data) {
+  Future<void> updateMeetingStatus(
+      String meetingId, Map<String, dynamic> data) {
     return _service
         .setData(
       path: FirestorePath.meetingStatus(meetingId),
@@ -171,7 +182,8 @@ class FirestoreDatabase {
     });
   }
 
-  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) => _service
+  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) =>
+      _service
           .documentStream(
         path: FirestorePath.meetingStatus(meetingId),
         builder: (data, documentId) =>
@@ -257,7 +269,7 @@ class FirestoreDatabase {
 
   Stream<UserModel> userStream({required String uid}) {
     log(uid);
-   return _service
+    return _service
         .documentStream(
       path: FirestorePath.user(uid),
       builder: (data, documentId) {
@@ -281,12 +293,14 @@ class FirestoreDatabase {
     return null;
   }
 
-  Future<void> updateUser(UserModel user){
-    return _service.setData(
+  Future<void> updateUser(UserModel user) {
+    return _service
+        .setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    ).catchError((error){
+    )
+        .catchError((error) {
       print(error);
     });
   }
@@ -359,7 +373,8 @@ class FirestoreDatabase {
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) =>
           query.where('active', isEqualTo: true).orderBy('ts'),
-    ).handleError((onError) {
+    )
+        .handleError((onError) {
       log('\n\n\n\n ---=== ${onError} \n\n\n');
     });
   }

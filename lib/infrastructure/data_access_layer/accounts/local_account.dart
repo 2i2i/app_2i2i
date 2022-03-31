@@ -10,6 +10,7 @@ import 'abstract_account.dart';
 
 class LocalAccount extends AbstractAccount {
   Account? account;
+
   LocalAccount._create(
       {required this.algorandLib,
       required this.storage,
