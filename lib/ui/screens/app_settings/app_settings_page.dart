@@ -238,7 +238,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                             .toUpperCase()),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.imi.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
