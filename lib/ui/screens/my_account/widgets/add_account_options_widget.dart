@@ -1,10 +1,12 @@
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -16,7 +18,11 @@ import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
-  const AddAccountOptionsWidgets({Key? key,this.showBottom}) : super(key: key);
+  final ValueChanged<bool>? accountAddListener;
+
+  const AddAccountOptionsWidgets(
+      {Key? key, this.showBottom, this.accountAddListener})
+      : super(key: key);
 
   @override
   _AddAccountOptionsWidgetsState createState() =>
@@ -43,9 +49,15 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-              _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel =
+                  ref.read(myAccountPageViewModelProvider);
+              bool isAdded = await _createSession(myAccountPageViewModel,
+                  myAccountPageViewModel.accountService!);
+              if (widget.accountAddListener != null) {
+                widget.accountAddListener!.call(isAdded);
+              }
               widget.showBottom?.value = false;
+              Navigator.of(context, rootNavigator: true).pop();
             },
             leading: Container(
               height: 50,
@@ -148,24 +160,30 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future _createSession(MyAccountPageViewModel myAccountPageViewModel,
+  Future<bool> _createSession(MyAccountPageViewModel myAccountPageViewModel,
       AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
     // Create a new session
     if (!account.connector.connected) {
-      await account.connector.createSession(
+      SessionStatus sessionStatus = await account.connector.createSession(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
+
+      isDialogOpen.value = false;
+      CustomDialogs.loader(true, context, rootNavigator: true);
+      print(sessionStatus);
       await account.save();
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
+      CustomDialogs.loader(false, context, rootNavigator: true);
       _displayUri = '';
-      isDialogOpen.value = false;
+      return sessionStatus.accounts.length > 0;
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
+      return false;
     }
   }
 
@@ -174,21 +192,21 @@ class _AddAccountOptionsWidgetsState
     if (mounted) {
       setState(() {});
     }
-    if (isMobile) {
+    bool isAvailable = await canLaunch('algorand://');
+    if (isMobile && isAvailable) {
       await launch(uri);
     } else {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
         builder: (context) => ValueListenableBuilder(
-            valueListenable: isDialogOpen,
-            builder: (BuildContext context, bool value, Widget? child) {
-              if(!value){
-                Navigator.of(context).pop();
-              }
-              return QrImagePage(imageUrl: _displayUri);
-            },
-
+          valueListenable: isDialogOpen,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (!value) {
+              Navigator.of(context).pop();
+            }
+            return QrImagePage(imageUrl: _displayUri);
+          },
         ),
         barrierDismissible: true,
       );

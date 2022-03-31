@@ -13,6 +13,7 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
@@ -229,78 +230,80 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                 maxHeight: 200,
                               )
                             : null,
-                    child: (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                        ? PageView.builder(
+                    child: Builder(
+                      builder: (BuildContext context) {
+                        if ((myAccountPageViewModel.accounts?.length ?? 0) >
+                            0) {
+                          List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
+                          return PageView.builder(
                             controller: controller,
                             scrollDirection: Axis.horizontal,
-                            itemCount:
-                                myAccountPageViewModel.accounts?.length ?? 0,
+                            reverse: true,
+                            itemCount: accountsList.length,
                             itemBuilder: (_, index) {
+                              AbstractAccount? abstractAccount = accountsList[index];
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: AccountInfo(
                                   false,
-                                  key: ObjectKey(myAccountPageViewModel
-                                      .accounts![index].address),
-                                  account:
-                                      myAccountPageViewModel.accounts![index],
-                                  afterRefresh: () => updateAccountBalance(
-                                      myAccountPageViewModel),
+                                  key: ObjectKey(abstractAccount.address),
+                                  account: abstractAccount,
+                                  afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                 ),
                               );
                             },
                             onPageChanged: (int val) {
-                              final newAccount = myAccountPageViewModel.accounts
-                                  ?.elementAt(val);
+                              final newAccount = accountsList.elementAt(val);
                               if (account == newAccount) return;
                               account = newAccount;
                               if (mounted) {
-                                updateAccountBalance(myAccountPageViewModel);
+                                updateAccountBalance(myAccountPageViewModel,
+                                    accountIndex: val);
                               }
                             },
-                          )
-                        : Container(
-                            padding: EdgeInsets.all(12),
-                            margin: EdgeInsets.only(top: 12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .shadowColor
-                                  .withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 12),
-                                Text(
-                                  Keys.noAccountAdded.tr(context),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                                SizedBox(height: 8),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 10),
-                                  child: IconButton(
-                                    onPressed: () =>
-                                        CustomAlertWidget.showBidAlert(context,
-                                            AddAccountOptionsWidgets()),
-                                    iconSize: 30,
-                                    icon: Icon(
-                                      Icons.add_circle_rounded,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                  ) /*ElevatedButton(
+                          );
+                        }
+                        return Container(
+                          padding: EdgeInsets.all(12),
+                          margin: EdgeInsets.only(top: 12),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).shadowColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SizedBox(height: 12),
+                              Text(
+                                Keys.noAccountAdded.tr(context),
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 10),
+                                child: IconButton(
+                                  onPressed: () =>
+                                      showBidAlert(myAccountPageViewModel),
+                                  iconSize: 30,
+                                  icon: Icon(
+                                    Icons.add_circle_rounded,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ) /*ElevatedButton(
                                       child: Text(Strings().addAccount),
                                     )*/
-                                  ,
-                                )
-                              ],
-                            ),
+                                ,
+                              )
+                            ],
                           ),
+                        );
+                      },
+                    ),
                   ),
                   Visibility(
                     visible:
@@ -320,10 +323,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         TextButton(
                           style: TextButton.styleFrom(
                               primary: Theme.of(context).colorScheme.secondary),
-                          onPressed: () => CustomAlertWidget.showBidAlert(
-                            context,
-                            AddAccountOptionsWidgets(),
-                          ),
+                          onPressed: () => showBidAlert(myAccountPageViewModel),
                           child: Text(
                             Keys.addAccount.tr(context),
                           ),
@@ -467,19 +467,43 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
-    var val = int.tryParse(speedController.text)??0;
-    bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
-    if(isLessVal){
+  void showBidAlert(MyAccountPageViewModel myAccountPageViewModel) {
+    CustomAlertWidget.showBidAlert(
+      context,
+      AddAccountOptionsWidgets(
+        accountAddListener: (bool value) {
+          if (value) {
+            int index = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
+            controller.jumpToPage(index > 0 ? index : 0);
+            controller.animateToPage(index,
+                curve: Curves.decelerate,
+                duration: Duration(milliseconds: 300));
+          }
+        },
+      ),
+    );
+  }
+
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel,
+      {int? accountIndex}) {
+    var val = int.tryParse(speedController.text) ?? 0;
+    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) ||
+        val < (userB?.rule.minSpeed ?? 0);
+    if (isLessVal) {
       speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
-    }else{
+    } else {
       speed = Quantity(num: val, assetId: 0);
     }
-    if(!focusNode.hasFocus) {
+    if (!focusNode.hasFocus) {
       speedController.text = speed.num.toString();
     }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
-      account = myAccountPageViewModel.accounts!.first;
+      if (accountIndex != null) {
+        account = myAccountPageViewModel.accounts![accountIndex];
+      } else {
+        account = myAccountPageViewModel.accounts!.last;
+      }
+      print(account);
     }
 
     if (account != null) {
