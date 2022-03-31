@@ -15,17 +15,21 @@ class TopCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: Custom.getBoxDecoration(context),
+      // decoration: Custom.getBoxDecoration(context),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          /*Text(
+          Text(
             Keys.createABid.tr(context),
             style: Theme.of(context).textTheme.headline5,
           ),
-          SizedBox(height: 8),*/
-          Row(
+          SizedBox(height: 8),
+          Text(
+            'For Video call with host',
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+          /* Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
@@ -48,7 +52,7 @@ class TopCard extends StatelessWidget {
             user: B,
             onTapRules: null,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 10),*/
         ],
       ),
     );

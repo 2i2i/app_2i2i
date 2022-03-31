@@ -6,6 +6,40 @@ import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
+import '../../home/wait_page.dart';
+
+class SelectAccount extends ConsumerStatefulWidget {
+  @override
+  _SelectAccountState createState() => _SelectAccountState();
+}
+
+class _SelectAccountState extends ConsumerState<SelectAccount> {
+  @override
+  Widget build(BuildContext context) {
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    return Builder(builder: (context) {
+      if (myAccountPageViewModel.isLoading) {
+        return WaitPage(
+          isCupertino: true,
+        );
+      }
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: 6,
+        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        itemBuilder: (BuildContext context, int index) {
+          index = 0;
+          return AccountTile(
+            true,
+            key: ObjectKey(myAccountPageViewModel.accounts![index].address),
+            account: myAccountPageViewModel.accounts![index],
+          );
+        },
+      );
+    });
+  }
+}
 
 class AccountTile extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
@@ -38,81 +72,76 @@ class _AccountTileState extends ConsumerState<AccountTile> {
         ? '${Keys.ALGO.tr(context)}'
         : balanceModel.assetHolding.assetId.toString();
 
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        margin: EdgeInsets.symmetric(vertical: 10),
-        width: MediaQuery.of(context).size.height * 0.175,
-        height: MediaQuery.of(context).size.height * 0.145,
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(10.0),
-          boxShadow: [
-            BoxShadow(
-                offset: Offset(2, 4),
-                blurRadius: 8,
-                color:
-                    Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
-                ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+              offset: Offset(2, 4),
+              blurRadius: 8,
+              color: Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
+              ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RadioListTile(
+            dense: true,
+            // contentPadding: EdgeInsets.all(4),
+            secondary:  Text(
+              "$amount",
+              style: Theme.of(context).textTheme.headline5,
+              softWrap: false,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+            ),
+            title: Text(
+              assetName,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppTheme().lightSecondaryTextColor),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text( widget.account is WalletConnectAccount?'WalletConnect':'Local Account',
+                style: Theme.of(context)
+                    .textTheme
+                    .button
+                    ?.copyWith(color: Colors.blue)),
+            groupValue: 1,
+            value: 1,
+            onChanged: (int? value) {},
+          ),
+          Divider(
+            height: 1,
+            thickness: 1,
+          ),
+          ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.fromLTRB(10,4,4,4),
+            title: Row(
               children: [
-                Image.asset(
-                  'assets/algo_logo.png',
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.fill,
-                ),
-                Flexible(
+                Expanded(
                   child: Text(
-                    assetName,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption
-                        ?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                    widget.account.address,
+                    maxLines: 4,
+                    style: Theme.of(context).textTheme.caption,
                     softWrap: false,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Icon(
-                  Icons.more_vert,
-                  size: 15,
-                )
+                Container(child: Icon(Icons.more_vert,size: 20,),padding: EdgeInsets.all(4))
               ],
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 8),
-              child: widget.account is WalletConnectAccount
-                  ? Image.asset(
-                      'assets/wc_logo.png',
-                      height: 16,
-                      fit: BoxFit.contain,
-                    )
-                  : Text('LOCAL', style: Theme.of(context).textTheme.overline),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  "$amount",
-                  style: Theme.of(context).textTheme.headline6,
-                  softWrap: false,
-                  textAlign: TextAlign.end,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )
-          ],
-        ),
+          ),
+          SizedBox(height: 6)
+        ],
       ),
     );
   }

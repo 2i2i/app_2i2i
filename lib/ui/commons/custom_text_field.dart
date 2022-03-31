@@ -32,7 +32,7 @@ class CustomTextField extends StatelessWidget {
           title,
           style: Theme.of(context).textTheme.caption,
         ),
-        SizedBox(height: 4),
+        SizedBox(height: title.isEmpty?0:4),
         TextFormField(
           focusNode: focusNode,
           controller: controller,

@@ -10,7 +10,6 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/screens/create_bid/widgets/account_tile.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +17,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import '../../commons/custom_alert_widget.dart';
-import '../../commons/custom_text_field.dart';
-import '../my_account/widgets/add_account_options_widget.dart';
 import 'top_card_widget.dart';
+import 'widgets/account_tile.dart';
+import 'widgets/detail_widget.dart';
 
 ValueNotifier<bool> accountBottomSheet = ValueNotifier(false);
 
@@ -72,14 +69,11 @@ class CreateBidPage extends ConsumerStatefulWidget {
 }
 
 class _CreateBidPageState extends ConsumerState<CreateBidPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   AbstractAccount? account;
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? comment;
-  int maxDuration = 300;
-  int maxMaxDuration = 300;
-  int minMaxDuration = 10;
 
   int _minAccountBalance = 0;
   int _accountBalance = 0;
@@ -91,15 +85,24 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   UserModel? userB;
   FocusNode focusNode = FocusNode();
 
+  TabController? _tabController;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController?.dispose();
+  }
+
   @override
   void initState() {
+    _tabController = TabController(length: 3, vsync: this);
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         var val = int.tryParse(speedController.text) ?? 0;
         if (val < speed.num) {
           speedController.text = speed.num.toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-          updateAccountBalance(myAccountPageViewModel);
+          // updateAccountBalance(myAccountPageViewModel);
         }
       }
     });
@@ -130,283 +133,242 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     if (addBidPageViewModel == null || (addBidPageViewModel.submitting))
       return WaitPage(isCupertino: true);
 
-    updateAccountBalance(myAccountPageViewModel);
+    // updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).cardColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TopCard(minWait: calcWaitTime(), B: userB!),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      Text(
-                        Keys.estMaxDuration.tr(context),
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                      SizedBox(height: 4),
-                      Container(
-                        decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.20),
-                            borderRadius: BorderRadius.circular(10)),
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 6),
-                            Text(
-                              '$minMaxDuration ${Keys.secs.tr(context)}',
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    activeTrackColor:
-                                        Theme.of(context).cardColor,
-                                    inactiveTrackColor:
-                                        Theme.of(context).disabledColor,
-                                    thumbShape: CustomSliderThumbRect(
-                                      mainContext: context,
-                                      thumbRadius: 15,
-                                      valueMain: "${maxDuration.toString()}s",
-                                      min: minMaxDuration,
-                                      max: maxMaxDuration,
-                                    ),
-                                  ),
-                                  child: Slider(
-                                    min: minMaxDuration.toDouble(),
-                                    max: maxMaxDuration.toDouble(),
-                                    divisions: maxMaxDuration == minMaxDuration
-                                        ? null
-                                        : min(100,
-                                            maxMaxDuration - minMaxDuration),
-                                    value: maxDuration.toDouble(),
-                                    onChanged: (value) {
-                                      maxDuration = value.round();
-                                      updateAccountBalance(
-                                          myAccountPageViewModel);
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Text('$maxMaxDuration ${Keys.secs.tr(context)}',
-                                style: Theme.of(context).textTheme.subtitle1),
-                            SizedBox(width: 6),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: CustomTextField(
-                      title: Keys.note.tr(context),
-                      hintText: Keys.bidNote.tr(context),
-                      onChanged: (String value) {
-                        comment = value;
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    'Account',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(
-                            ((myAccountPageViewModel.accounts?.length ?? 0) +
-                                1), (index) {
-                          if (index ==
-                              ((myAccountPageViewModel.accounts?.length ??
-                                  0))) {
-                            return FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 8),
-                                margin: EdgeInsets.symmetric(vertical: 10,horizontal: 4),
-                                width:
-                                    MediaQuery.of(context).size.height * 0.175,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.145,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        offset: Offset(2, 4),
-                                        blurRadius: 8,
-                                        color: Color.fromRGBO(0, 0, 0,
-                                            0.12) // changes position of shadow
-                                        ),
-                                  ],
-                                ),
-                            child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                        child: Center(
-                                            child: Icon(
-                                      Icons.add,
-                                      size: 25,
-                                    ))),
-                                    Text(
-                                      Keys.addAccount.tr(context),
-                                      style: Theme.of(context).textTheme.button,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                            child: AccountTile(
-                              false,
-                              key: ObjectKey(myAccountPageViewModel
-                                  .accounts![index].address),
-                              account: myAccountPageViewModel.accounts![index],
-                              afterRefresh: () =>
-                                  updateAccountBalance(myAccountPageViewModel),
-                            ),
-                          );
-                        }),
-                      )),
-                  /*Visibility(
-                    visible:
-                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TopCard(minWait: calcWaitTime(), B: userB!),
+            SizedBox(
+              height: 10,
+            ),
+            Visibility(
+              visible: true,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
                       children: [
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            Keys.swipeAndChangeAccount.tr(context),
-                            maxLines: 2,
-                            textAlign: TextAlign.start,
-                            style: Theme.of(context).textTheme.caption,
+                        Container(
+                          height: 30,
+                          width: 30,
+                          margin: EdgeInsets.only(bottom: 6),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            shape: BoxShape.circle,
                           ),
+                          child: Center(
+                              child: Text('1',
+                                  style: Theme.of(context).textTheme.labelSmall)),
                         ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                              primary: Theme.of(context).colorScheme.secondary),
-                          onPressed: () => CustomAlertWidget.showBidAlert(
-                            context,
-                            AddAccountOptionsWidgets(),
-                          ),
-                          child: Text(
-                            Keys.addAccount.tr(context),
-                          ),
-                        )
+                        Text('Details')
                       ],
                     ),
-                  ),*/
-                  ValueListenableBuilder(
-                    valueListenable: isAddSupportVisible,
-                    builder: (BuildContext context, bool value, Widget? child) {
-                      if (value) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, left: 10, right: 10),
-                          child: CustomTextField(
-                            focusNode:focusNode,
-                            autovalidateMode: AutovalidateMode.always,
-                            controller: speedController,
-                            title: Keys.speed.tr(context),
-                            hintText: "0",
-                            suffixIcon: GestureDetector(
-                              onTap: () {
-                                isAddSupportVisible.value = false;
-                                updateAccountBalance(myAccountPageViewModel);
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Center(
-                                    child: Text(
-                                      '${Keys.algoSec.tr(context)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2
-                                          ?.copyWith(
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  ValueListenableBuilder(
-                                    valueListenable: isAddSupportVisible,
-                                    builder: (BuildContext context, bool value,
-                                        Widget? child) {
-                                      if (value) {
-                                        return child!;
-                                      }
-                                      return Container();
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: Icon(Icons.remove_circle,
-                                          color: Theme.of(context)
-                                              .iconTheme
-                                              .color),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            onChanged: (String value) {
-                              final num = int.tryParse(value) ?? 0;
-                              print('num $num = ${(num >= (userB?.rule.minSpeed ?? 0))}');
-                              if (num >= (userB?.rule.minSpeed ?? 0)) {
-                                speed = Quantity(num: num, assetId: speed.assetId);
-                              }
-                              updateAccountBalance(myAccountPageViewModel);
-                            },
-                            validator: (value) {
-                              int num = int.tryParse(value ?? '') ?? 0;
-                              if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed}';
-                              }
-                              return null;
-                            },
+                    Expanded(
+                        child: Container(
+                      height: 1,
+                      margin: EdgeInsets.only(top: 14),
+                      color: Theme.of(context).dividerColor,
+                    )),
+                    Column(
+                      children: [
+                        Container(
+                          height: 30,
+                          width: 30,
+                          margin: EdgeInsets.only(bottom: 5),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            shape: BoxShape.circle,
                           ),
-                        );
-                      }
-                      return Container();
-                    },
-                  ),
-                ],
+                          child: Center(
+                              child: Text('2',
+                                  style: Theme.of(context).textTheme.labelSmall)),
+                        ),
+                        Text('Account')
+                      ],
+                    ),
+                    Expanded(
+                        child: Container(
+                      height: 1,
+                      margin: EdgeInsets.only(top: 14),
+                      color: Theme.of(context).dividerColor,
+                    )),
+                    Column(
+                      children: [
+                        Container(
+                          height: 30,
+                          width: 30,
+                          margin: EdgeInsets.only(bottom: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(child: Text('1')),
+                        ),
+                        Text('Success')
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                // color: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    SelectAccount(),
+                    DetailWidget(
+                      userB: userB!,
+                    ),
+                    Icon(Icons.directions_car, size: 350),
+                  ],
+                ),
+              ),
+            ),
+            /*Visibility(
+                      visible:
+                          (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              Keys.swipeAndChangeAccount.tr(context),
+                              maxLines: 2,
+                              textAlign: TextAlign.start,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Theme.of(context).colorScheme.secondary),
+                            onPressed: () => CustomAlertWidget.showBidAlert(
+                              context,
+                              AddAccountOptionsWidgets(),
+                            ),
+                            child: Text(
+                              Keys.addAccount.tr(context),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),*/ /*
+                    ValueListenableBuilder(
+                      valueListenable: isAddSupportVisible,
+                      builder: (BuildContext context, bool value, Widget? child) {
+                        if (value) {
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                top: 8, left: 10, right: 10),
+                            child: CustomTextField(
+                              focusNode:focusNode,
+                              autovalidateMode: AutovalidateMode.always,
+                              controller: speedController,
+                              title: Keys.speed.tr(context),
+                              hintText: "0",
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  isAddSupportVisible.value = false;
+                                  updateAccountBalance(myAccountPageViewModel);
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        '${Keys.algoSec.tr(context)}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2
+                                            ?.copyWith(
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    ValueListenableBuilder(
+                                      valueListenable: isAddSupportVisible,
+                                      builder: (BuildContext context, bool value,
+                                          Widget? child) {
+                                        if (value) {
+                                          return child!;
+                                        }
+                                        return Container();
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: Icon(Icons.remove_circle,
+                                            color: Theme.of(context)
+                                                .iconTheme
+                                                .color),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onChanged: (String value) {
+                                final num = int.tryParse(value) ?? 0;
+                                print('num $num = ${(num >= (userB?.rule.minSpeed ?? 0))}');
+                                if (num >= (userB?.rule.minSpeed ?? 0)) {
+                                  speed = Quantity(num: num, assetId: speed.assetId);
+                                }
+                                updateAccountBalance(myAccountPageViewModel);
+                              },
+                              validator: (value) {
+                                int num = int.tryParse(value ?? '') ?? 0;
+                                if (num < userB!.rule.minSpeed) {
+                                  return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed}';
+                                }
+                                return null;
+                              },
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),*/
+          ],
+        ),
       ),
       bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+        child: ElevatedButton(
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: Text('Join')),
+              Icon(Icons.arrow_forward_ios_rounded,size: 15,)
+
+            ],
+          ),
+        ),
+      ),
+      /*bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: Row(
           children: [
@@ -454,11 +416,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             ),
           ],
         ),
-      ),
+      ),*/
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
+  /*void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel) {
     var val = int.tryParse(speedController.text)??0;
     bool isLessVal = speed.num < (userB?.rule.minSpeed??0) || val < (userB?.rule.minSpeed??0);
     if(isLessVal){
@@ -490,7 +452,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     var amountStr = '${(amount.num / 1000000).toString()} A';
     print('ammount $amountStr');
     setState(() {});
-  }
+  }*/
 
   String calcWaitTime() {
     if (amount.assetId != speed.assetId)
