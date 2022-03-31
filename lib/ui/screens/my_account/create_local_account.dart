@@ -91,8 +91,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   child: ElevatedButton.icon(
                                     onPressed: () {
                                       if (perhaps.isNotEmpty) {
-                                        List<String> copyList = perhaps.map((e) => "${(perhaps.indexOf(e) + 1)} - $e").toList();
-                                        Clipboard.setData(ClipboardData(text: copyList.join(', ')));
+                                        Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
                                         CustomDialogs.showToastMessage(context,
                                             Keys.copyMessage.tr(context));
                                       }
