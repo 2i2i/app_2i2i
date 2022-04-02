@@ -75,7 +75,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
 
   store_redirect: ^2.0.1
-  #share_plus: ^4.0.3
+  share_plus: ^4.0.3
 
 
 dev_dependencies:

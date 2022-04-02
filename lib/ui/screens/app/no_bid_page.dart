@@ -3,7 +3,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_se
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -79,7 +79,7 @@ class NoBidPage extends ConsumerWidget {
                   icon: Icon(Icons.copy)),
               IconButton(
                   onPressed: () {
-                    //Share.share('${Keys.joinInvite.tr(context)}\n$message');
+                    Share.share('${Keys.joinInvite.tr(context)}\n$message');
                   },
                   icon: Icon(Icons.share)),
             ],

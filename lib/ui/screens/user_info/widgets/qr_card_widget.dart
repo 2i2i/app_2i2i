@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/ui/commons/qr_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 //import 'package:share_plus/share_plus.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -82,7 +83,7 @@ class QrCodeWidget extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      //Share.share('${Keys.comeAndHangOut.tr(context)}:\n$message');
+                      Share.share('${Keys.comeAndHangOut.tr(context)}:\n$message');
                       Navigator.of(context).maybePop();
                     },
                     child: Text(Keys.share.tr(context)),
