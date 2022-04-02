@@ -18,7 +18,7 @@ import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
-  final ValueChanged<bool>? accountAddListener;
+  final ValueChanged<String?>? accountAddListener;
 
   const AddAccountOptionsWidgets(
       {Key? key, this.showBottom, this.accountAddListener})
@@ -51,10 +51,10 @@ class _AddAccountOptionsWidgetsState
             onTap: () async {
               final myAccountPageViewModel =
                   ref.read(myAccountPageViewModelProvider);
-              bool isAdded = await _createSession(myAccountPageViewModel,
+              final address = await _createSession(myAccountPageViewModel,
                   myAccountPageViewModel.accountService!);
               if (widget.accountAddListener != null) {
-                widget.accountAddListener!.call(isAdded);
+                widget.accountAddListener!.call(address);
               }
               widget.showBottom?.value = false;
               Navigator.of(context, rootNavigator: true).pop();
@@ -160,7 +160,7 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future<bool> _createSession(MyAccountPageViewModel myAccountPageViewModel,
+  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel,
       AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
@@ -182,10 +182,10 @@ class _AddAccountOptionsWidgetsState
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
       _displayUri = '';
-      return sessionStatus.accounts.length > 0;
+      return account.address;
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
-      return false;
+      return null;
     }
   }
 

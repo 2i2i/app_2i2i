@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
@@ -92,9 +93,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   @override
   void initState() {
     focusNode.addListener(() {
-      if(!focusNode.hasFocus){
-        var val = int.tryParse(speedController.text)??0;
-        if(val < speed.num) {
+      if (!focusNode.hasFocus) {
+        var val = int.tryParse(speedController.text) ?? 0;
+        if (val < speed.num) {
           speedController.text = speed.num.toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
@@ -233,8 +234,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             : null,
                     child: Builder(
                       builder: (BuildContext context) {
-                        if ((myAccountPageViewModel.accounts?.length ?? 0) >
-                            0) {
+                        if (myAccountPageViewModel.accounts?.isNotEmpty ??
+                            false) {
                           List<AbstractAccount> accountsList =
                               myAccountPageViewModel.accounts ?? [];
                           return PageView.builder(
@@ -478,9 +479,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     CustomAlertWidget.showBidAlert(
       context,
       AddAccountOptionsWidgets(
-        accountAddListener: (bool value) {
-          if (value) {
-            int index = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
+        accountAddListener: (String? address) {
+          if (address is String) {
+            final x =
+                myAccountPageViewModel.accounts?.map((a) => a.address).toList();
+            log(X + 'showBidAlert + address=$address x=$x');
+            int lastIndex = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
+            int index = x?.indexOf(address) ?? lastIndex;
+            log(X + 'showBidAlert + lastIndex=$lastIndex index=$index');
             controller.jumpToPage(index > 0 ? index : 0);
             controller.animateToPage(index,
                 curve: Curves.decelerate,
