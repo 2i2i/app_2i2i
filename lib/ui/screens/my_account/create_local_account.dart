@@ -40,8 +40,8 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
             SizedBox(height: 6),
             Expanded(
               child: Builder(builder: (context) {
-                if (myAccountPageViewModel.asData?.value is LocalAccount) {
-                  LocalAccount account = myAccountPageViewModel.asData!.value;
+                if (myAccountPageViewModel.value is LocalAccount) {
+                  LocalAccount account = myAccountPageViewModel.value!;
                   return FutureBuilder(
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
