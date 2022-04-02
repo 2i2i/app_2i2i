@@ -74,7 +74,7 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.root,
+    initialLocation: Routes.myUser,
     routes: [
       GoRoute(
         name: Routes.root.nameFromPath(),
@@ -82,8 +82,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
         ),
       ),
       GoRoute(
