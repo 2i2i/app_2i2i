@@ -176,6 +176,8 @@ class _AddAccountOptionsWidgetsState
       CustomDialogs.loader(true, context, rootNavigator: true);
       print(sessionStatus);
       await account.save();
+      await myAccountPageViewModel.updateDBWithNewAccount(
+          account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);

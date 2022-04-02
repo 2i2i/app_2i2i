@@ -101,7 +101,7 @@ class en {
       Keys.swipeAndChangeAccount: 'Swipe to change account',
       Keys.insufficientBalance: 'Insufficient balance',
       Keys.addBid: 'Join',
-      Keys.copyAndNext: 'Copy and Next',
+      Keys.next: 'Next',
       Keys.report: 'Report',
       Keys.block: 'Block',
       Keys.unBlock: 'Unblock',
