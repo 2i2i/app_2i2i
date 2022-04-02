@@ -1,3 +1,4 @@
+
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,8 @@ class QrImagePage extends StatelessWidget {
         width: MediaQuery.of(context).size.height * 0.4,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 10),
             Text(
