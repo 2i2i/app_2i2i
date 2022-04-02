@@ -18,9 +18,16 @@ class CreateLocalAccount extends ConsumerStatefulWidget {
 
 class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
   @override
-  Widget build(BuildContext context) {
-    final myAccountPageViewModel = ref.watch(createLocalAccountProvider);
+  void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      ref.watch(myAccountPageViewModelProvider).addLocalAccount();
+    });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -40,8 +47,9 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
             SizedBox(height: 6),
             Expanded(
               child: Builder(builder: (context) {
-                if (myAccountPageViewModel.asData?.value is LocalAccount) {
-                  LocalAccount account = myAccountPageViewModel.asData!.value;
+                if (!myAccountPageViewModel.isLoading) {
+                  LocalAccount? localAccount =
+                      myAccountPageViewModel.localAccount;
                   return FutureBuilder(
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
@@ -91,12 +99,15 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   child: ElevatedButton.icon(
                                     onPressed: () {
                                       if (perhaps.isNotEmpty) {
-                                        Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
+                                        Clipboard.setData(ClipboardData(
+                                            text: perhaps.join(' ')));
                                         CustomDialogs.showToastMessage(context,
                                             Keys.copyMessage.tr(context));
                                       }
                                     },
-                                    label: Text(Keys.copy.tr(context)), icon: Icon(Icons.copy_all_rounded,size: 16),
+                                    label: Text(Keys.copy.tr(context)),
+                                    icon:
+                                        Icon(Icons.copy_all_rounded, size: 16),
                                   ),
                                 ),
                                 SizedBox(width: 8),
@@ -109,7 +120,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                           Routes.verifyPerhaps,
                                           extra: {
                                             'perhaps': perhaps,
-                                            'account': account,
+                                            'account': localAccount,
                                           },
                                         );
                                       }
@@ -126,7 +137,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                         height: MediaQuery.of(context).size.height / 2,
                       );
                     },
-                    future: account.account?.seedPhrase ?? Future.value([]),
+                    future: Future.delayed(Duration(seconds: 1), () => localAccount?.account?.seedPhrase ?? [""]),
                   );
                 }
                 return WaitPage(

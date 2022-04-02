@@ -421,13 +421,13 @@ final myAccountPageViewModelProvider =
   return MyAccountPageViewModel(ref: ref, uid: uid, database: database);
 });
 
-final createLocalAccountProvider = FutureProvider(
-  (ref) async {
-    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-    LocalAccount account = await myAccountPageViewModel.addLocalAccount();
-    return account;
-  },
-);
+// final createLocalAccountProvider = FutureProvider(
+//   (ref) async {
+//     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+//     LocalAccount account = await myAccountPageViewModel.addLocalAccount();
+//     return account;
+//   },
+// );
 
 final userChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);
