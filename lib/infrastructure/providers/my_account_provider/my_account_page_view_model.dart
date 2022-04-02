@@ -23,6 +23,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
   String? uid;
   FirestoreDatabase database;
 
+  LocalAccount? localAccount;
+
   Future<void> initMethod() async {
     try {
       log('MyAccountPageViewModel initMethod 1');
@@ -41,13 +43,15 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<LocalAccount> addLocalAccount() async {
-    LocalAccount localAccount = await LocalAccount.createWithoutStore(
+  Future<void> addLocalAccount() async {
+    localAccount = await LocalAccount.createWithoutStore(
       accountService: accountService!,
       algorandLib: algorandLib!,
       storage: storage!,
     );
-    return localAccount;
+    isLoading = false;
+    notifyListeners();
+    // return localAccount;
   }
 
   Future updateDBWithNewAccount(String address, {String type = 'LOCAL'}) =>

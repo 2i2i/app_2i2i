@@ -167,8 +167,7 @@ class LocalAccount extends AbstractAccount {
       account ??= this.account;
     }
     if (account is Account) {
-      final List<int> privateKeyBytes =
-          await account.keyPair.extractPrivateKeyBytes();
+      final List<int> privateKeyBytes = await account.keyPair.extractPrivateKeyBytes();
       final String privateKey = base64Encode(privateKeyBytes);
       // set
       _numAccount = await accountService.getNumLocalAccounts();
