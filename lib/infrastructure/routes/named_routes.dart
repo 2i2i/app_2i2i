@@ -4,14 +4,13 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:app_2i2i/ui/screens/app/auth_widget.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
-import 'package:app_2i2i/ui/screens/faq/faq_page.dart';
+import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
@@ -29,11 +28,11 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
-import 'package:app_2i2i/ui/test_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -75,26 +74,14 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.root,
+    initialLocation: Routes.myUser,
     routes: [
-      GoRoute(
-        name: Routes.test.nameFromPath(),
-        path: Routes.test,
-        pageBuilder: (context, state) => NoTransitionPage<void>(
-          key: state.pageKey,
-          child: getView(TestScreen()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
-        ),
-      ),
       GoRoute(
         name: Routes.root.nameFromPath(),
         path: Routes.root,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
         ),
       ),
       GoRoute(
@@ -120,7 +107,7 @@ class NamedRoutes {
         path: Routes.faq,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(FAQPage()),
+          child: getView(FAQScreen()),
           // child: Scaffold(),
         ),
       ),
@@ -353,7 +340,7 @@ class NamedRoutes {
   );
 
   static Widget getView(Widget page) {
-    Widget widget = AuthWidget(
+    Widget widget = SignInPage(
       homePageBuilder: (context) => Scaffold(
         appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
             ? null
@@ -361,7 +348,7 @@ class NamedRoutes {
                 leading: Container(),
                 toolbarHeight: 20,
                 title: Text(AlgorandNet.testnet.name +
-                    ' - v39' +
+                    ' - v40' +
                     (updateAvailable ? ' - update: reload page' : '')),
                 titleTextStyle: Theme.of(context)
                     .textTheme
@@ -375,10 +362,10 @@ class NamedRoutes {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);
             if (uid != null) {
-              final userProviderVal = ref.watch(userProvider(uid));
-              bool isLoaded = !(haveToWait(userProviderVal));
-              if (isLoaded && userProviderVal.asData?.value is UserModel) {
-                final UserModel user = userProviderVal.asData!.value;
+              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
+              userInfoViewModel.getUserInfoModel(uid);
+              if (userInfoViewModel.userInfoModel is UserModel) {
+                final UserModel user = userInfoViewModel.userInfoModel!;
                 if (user.name.trim().isEmpty) {
                   return BottomSheet(
                     enableDrag: true,
@@ -416,11 +403,8 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(
-            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb &&
-            defaultTargetPlatform != TargetPlatform.iOS &&
-            defaultTargetPlatform != TargetPlatform.android) {
+        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

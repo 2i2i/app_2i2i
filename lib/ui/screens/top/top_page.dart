@@ -26,7 +26,10 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(

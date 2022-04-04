@@ -169,11 +169,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
   }
 
   bool isValid() {
-    return !(data
-        .map((e) => e.validData == e.selected)
-        .toSet()
-        .toList()
-        .contains(false));
+    return !(data.map((e) => e.validData == e.selected).toSet().toList().contains(false));
   }
 }
 

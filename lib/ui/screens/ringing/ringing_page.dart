@@ -14,7 +14,7 @@ import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
-import '../../../main.dart';
+import '../../../common_main.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../home/wait_page.dart';
 import 'ripples_animation.dart';

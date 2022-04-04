@@ -3,6 +3,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/meeting_model.dart';
 import '../accounts/abstract_account.dart';
 import '../services/logging.dart';
@@ -39,27 +40,25 @@ class AlgorandLib {
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
-        algodClient: AlgodClient(apiUrl: API_URL[AppConfig().ALGORAND_NET]!, apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
-        indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
+        algodClient: AlgodClient(
+            apiUrl: API_URL[AppConfig().ALGORAND_NET]!,
+            apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient:
+            IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
-
-
 }
 
 class AlgorandService {
-  static const Map<AlgorandNet, int> SYSTEM_ID = {
-    AlgorandNet.mainnet: 646763643,
-    AlgorandNet.testnet: 67119462,
-    AlgorandNet.betanet: 67119462,
+  static Map<AlgorandNet, int> SYSTEM_ID = {
+    AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
+    AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
+    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
   };
-  static const Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet:
-        'XRZZ43TX2DM67F7QJNV2RPYM2TYOYA52QQT3INSCEW7YGLPHAIKJPXODVY',
-    AlgorandNet.testnet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
-    AlgorandNet.betanet:
-        'PANC6WKDNNLXXKVXWPGUVCTYBPVNL66YCIRJELL2CQP4GKKCEIWQHJZCWU',
+  static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
+    AlgorandNet.mainnet: dotenv.env['ALGORAND_NET_MAINNET']!,
+    AlgorandNet.testnet: dotenv.env['ALGORAND_NET_TESTNET']!,
+    AlgorandNet.betanet: dotenv.env['ALGORAND_NET_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 

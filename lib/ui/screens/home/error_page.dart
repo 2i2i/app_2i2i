@@ -14,7 +14,7 @@ class ErrorPage extends StatelessWidget {
             height: 200,
           ),
           Image.asset(
-            'assets/logo_sad.png',
+            'assets/logo.png',
             scale: 2,
           ),
           SizedBox(

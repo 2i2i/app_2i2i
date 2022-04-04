@@ -8,31 +8,31 @@
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-    
+
 	<key>CFBundleDisplayName</key>
 	<string>2i2i</string>
-    
+
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-    
+
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    
+
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-    
+
 	<key>CFBundleName</key>
-	<string>app_2i2i</string>
-    
+	<string>app.2i2i</string>
+
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-    
+
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-    
+
 	<key>CFBundleSignature</key>
 	<string>????</string>
-    
+
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -42,46 +42,69 @@
 			<string>test.2i2i.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>https</string>
+				<string>test</string>
 			</array>
 		</dict>
 	</array>
-    
+
+
+
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string></string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
+          <string>https://i2i-test.firebaseapp.com/__/auth/handler/</string>
+        </array>
+      </dict>
+    </array>
+
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-    
+
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>
-    
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-    
+
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) Camera Usage!</string>
-    
+
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) Microphone Usage!</string>
-    
+
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>
-    
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-    
+
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-    
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    
+
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>https</string>
+      <string>http</string>
+    </array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -89,7 +112,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    
+
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

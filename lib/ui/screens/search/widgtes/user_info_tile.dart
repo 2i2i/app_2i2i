@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -56,10 +57,13 @@ class UserInfoTile extends ConsumerWidget {
           child: Row(
             children: [
               ProfileWidget(
-                stringPath: user.name,
+                stringPath: (user.imageUrl ?? "").isEmpty ? user.name: user.imageUrl!,
+                imageType: (user.imageUrl ?? "").isEmpty
+                    ? ImageType.NAME_IMAGE
+                    : ImageType.NETWORK_IMAGE,
                 radius: 62,
                 hideShadow: true,
-                showBorder: true,
+                showBorder: false,
                 statusColor: statusColor,
                 style: Theme.of(context).textTheme.headline5,
               ),

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-ValueNotifier<int> currentIndex = ValueNotifier(0);
+ValueNotifier<int> currentIndex = ValueNotifier(1);
 String previousRoute = '';
 
 class BottomNavBar extends ConsumerStatefulWidget {
@@ -36,10 +36,13 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
         if (value == false) {
           return Container(
             padding: const EdgeInsets.all(4.0),
+            color: Colors.transparent,
             child: ValueListenableBuilder(
               valueListenable: currentIndex,
               builder: (BuildContext context, int value, Widget? child) {
                 return BottomNavigationBar(
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
                   type: BottomNavigationBarType.fixed,
                   currentIndex: value,
                   onTap: (i) {

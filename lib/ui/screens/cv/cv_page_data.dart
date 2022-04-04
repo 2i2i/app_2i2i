@@ -2,13 +2,14 @@ import 'package:app_2i2i/ui/screens/cv/success.dart';
 import 'package:flutter/material.dart';
 
 enum CVPerson { imi, solli }
+
 extension ParseToString on CVPerson {
   String toStringEnum() {
     return this.toString().split('.').last;
   }
 }
 
-class CVPageData extends StatelessWidget {
+class CVPageData extends StatefulWidget {
   CVPageData({Key? key, required this.person}) : super(key: key);
 
   final CVPerson person;
@@ -18,6 +19,7 @@ class CVPageData extends StatelessWidget {
     const SuccessData(
         title: 'Accepted into the Encode Algorand Accelerator',
         timestamp: 1636934400,
+        tags: ['Algorand', 'Accelerator', '2i2i', 'version', 'system', 'mainnet', 'governance','on-ramp','developed'],
         description: '''
 Using the accelerator, we matured the concept of 2i2i and released the test version on the Algorand testnet (test.2i2i.app).
 We believe that we have developed an efficient market system to allow everyone in the world to realise their true value.
@@ -26,12 +28,17 @@ We are working on the patent and on bringing the app to mainnet and to release a
     const SuccessData(
         title: 'Encode Algorand Hackathon 3rd prize',
         timestamp: 1633500600,
+        tags: ['Encode','blockchains','hackathons','courses','2i2i','Algorand','finale','delivered'],
         description: '''
 Encode is an organisation that helps with the adoption of blockchains by running courses and hackathons.
 It felt like the ideal framework to try to implement a project that I wanted to pursue: 2i2i, the place to hang out based on Algorand.
 After intense weeks of hard work, we delivered the project very last minute and succeeded in making it into the finale.
 '''),
-    const SuccessData(title: '2i2i.app', timestamp: 1632614400, description: '''
+    const SuccessData(
+        title: '2i2i.app',
+        timestamp: 1632614400,
+        tags: ['Algorand','blockchain','energy','information','Energy','coins','meetings','video','market'],
+        description: '''
 The place to hangout based on Algorand.
 A blockchain (Algorand) based exchange between energy and information.
 Energy in the form of coins and information in the form of live video meetings.
@@ -47,7 +54,7 @@ Users can opt-in the system into any Algorand coin, without incurring losses to 
 • A Google Cloud based backend. Serverless, highly scalable, secure.
 • A flutter based frontend, available as a WebApp, Android, iOS and DesktopApp.
 '''),
-    SuccessData(
+    const SuccessData(
         title:
             'Machine Learning based system to calculate microfinancing credit risk',
         timestamp: 1575158400,
@@ -62,7 +69,7 @@ The in-sample and out-sample (live data) result were quite precise.
 Evaluating statistics after changing parameters of the model showed results strongly inline with predicted results.
 Even though each individual is unique, the portfolio credit risk can be modeled powerfully using Machine Learning.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Automated online lending system',
         timestamp: 1569888000,
         description: '''
@@ -74,7 +81,7 @@ Implemented a high performance GCP based infrastructure to run a fully automated
 
 The system itself was shutdown due to lack of funding even though the tech worked well.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Quasi Monte Carlo with PCA implementation',
         timestamp: 1433116800,
         description: '''
@@ -84,7 +91,7 @@ Implemented a highly performant quasi monte carlo algorithm with PCA.
 • C level speed.
 • In partnership with Axpo AG, Switzerland.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Web app using .NET', timestamp: 1451606400, description: '''
 Together with another software engineer, we implemented a front end client-facing web app for Axpo AG, Switzerland.
 This was a replacement for an existing app, which Axpo had asked me to improve. The original version had cost hundreds of thousands of Swiss Franks and several years to create.
@@ -92,7 +99,7 @@ The original app was extremely buggy, e.g. it needed a daily server restart.
 Instead of improving the existing app, I insisted and remade everything from scrath in 2 weeks. The new version was stable and much faster than the original.
 We received bonus rewards from Axpo beyond the agreed renumeration for this extra ordinary effort.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Prophet: A system to run server models in various languages',
         timestamp: 1420070400,
         description: '''
@@ -102,7 +109,7 @@ No matter the language chosen, the users could run the models in the Excel front
 • RabbitMQ for messaging.
 • Google protobuf for encoding.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Fully automated financial trades execution system',
         timestamp: 1420070400,
         description: '''
@@ -112,7 +119,7 @@ An API to execute trades with brokers. Highly performant due to the technologies
 • Communication with ZeroMQ.
             '''),
 // Each of which is based on economic and financial maths theory. All strategies are out-of-sample tested over decades of data.
-    SuccessData(
+    const SuccessData(
         title: 'Fully automated trading system',
         timestamp: 1420070400,
         description: '''
@@ -128,7 +135,7 @@ Includes:
 Result: The system has been running successfully since 2011. It has achieved good results for its clients and has won several awards.
 It still runs fully automated, without intervention or change.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Private video chat web app using WebSockets',
         timestamp: 1435708800,
         description: '''
@@ -137,7 +144,7 @@ It still runs fully automated, without intervention or change.
 
 Result: It worked and was used by family members only. Never marketed.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'GPU computing implementations',
         timestamp: 1370044800,
         description: '''
@@ -145,14 +152,14 @@ Result: It worked and was used by family members only. Never marketed.
 • Formulation of existing models in linear algebraic terms.
 • Achieved the expected, super fast speeds.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Implementation of a quantitative trading system',
         timestamp: 1333238400,
         description: '''
 • Implemenation of several trading models in Matlab.
 • A portfolio and trades management system in Matlab.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Fully automated financial trades execution system',
         timestamp: 1330560000,
         description: '''
@@ -160,7 +167,7 @@ Result: It worked and was used by family members only. Never marketed.
 • A C# GUI to admin the system.
 • Connected to CQG and IB.
             '''),
-    SuccessData(
+    const SuccessData(
         title:
             'Novel model for portfolio optimization with significant performance improvement',
         timestamp: 1338508800,
@@ -171,7 +178,7 @@ I then formulated a novel model for portfolio optimisation. This model was simpl
 This model has been the basis of multiple successful trading strategies since.
 This model is not published, though I would like to publish it. Not sure about legality, as I formulated this whilst working for a Swiss hedge fund.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Heston stochastic vol model implemetation',
         timestamp: 1293840000,
         description: '''
@@ -179,7 +186,7 @@ This model is not published, though I would like to publish it. Not sure about l
 • Implementated in C++.
 • Work done for UBS.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Centralised Smart contracts',
         timestamp: 1275350400,
         description: '''
@@ -191,7 +198,7 @@ Insisting on my idea, I implemented this solution in less than 3 days.
 For this valuable contribution, I received monetary renumeration. However, I actually rather wanted renumeration in time.
 Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn kids. UBS' refusal led me to accerate my independence from employers.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Flights meta search', timestamp: 1243836600, description: '''
 • Implemented a flexible flights search.
 • Users needed to choose 4 parameters: earliest departure, latest return, shortest and longest duration.
@@ -200,7 +207,7 @@ Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn ki
 • I used this tool personally for years to find cheap flights for my family.
 • The app was never commersialised based on a flawed understanding of e-business: I thought ebookers (or any other site), does not actually like my traffic and could ban me any second.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'System to beat a Casino',
         timestamp: 1159660800,
         description: '''
@@ -215,7 +222,7 @@ Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn ki
 • Unfortunatle, the casino had realised their mistake during this year and amended a rule which rendered my system useless. The change was that betting was to be done before turning the wheels (no "rien ne va plus").
 • All of this was legal, but obviously the casino would not like it.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Achieved 1.0 in Math Vordiplom',
         timestamp: 1054425600,
         description: '''
@@ -223,7 +230,7 @@ Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn ki
 • At the Humboldt University of Berlin, in pure Math.
 • I quit university for personal reasons after this.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Won a pattern recognition competition run by Prof. Ziegler',
         timestamp: 986083200,
         description: '''
@@ -234,14 +241,14 @@ Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn ki
 • My algorithm ended up winning and beating Prof. Zieglers' algorithm. My result was ca. 82% accuracy.
 • Received a signed book by Prof. Ziegler which I soon lent to a friend --- friend, where are you nowadays? The book was a collection of the most beautiful Math proofs, written by Prof. Zieglier.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Coded system to archive incoming fax as digital documents',
         timestamp: 988675200,
         description: '''
 • On arriving fax, the system saved and archived the document digitally.
 • Written for Carano Software, Berlin.
             '''),
-    SuccessData(
+    const SuccessData(
         title:
             'Coded neural network for audio vowel classification incl. GUI for admin',
         timestamp: 993945600,
@@ -254,14 +261,14 @@ Since I had saved UBS 6 months, I wanted 1 month off to spend with my newborn ki
 • GUI in tcl/tk.
 • Result: I worked on this project alone, whereas others worked in teams. It was an intensive summer, of coding day and night, practically living at the university. At the end, after nearly losing my mind, the system worked! It was one of the most amazing things I had seen: A machine had learned to recognise human vowels from audio. That was the beginning of my love for Machine Learning.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Attended and passed Analysis at uni during high school',
         timestamp: 904608000,
         description: '''
 Started attending university Math lectures at the age of 16, two years before graduating high school. It was where I belonged, on the green campus of the Free University of Berln.
 I did the homework, passed the courses and received the credit which I could have used later.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Ski teacher certification',
         timestamp: 838857600,
         description: '''
@@ -269,7 +276,7 @@ At the age of 14, I entered a ski teacher certification program (run by the Wien
 This made me a qualified ski teacher. Interestingly, I had just started skiing 2 years earlier. Everyone else attending the program had been skiing since their childhood. It would have even seemed that skiing was not 'for me', as I did not enjoy the cold, was scared of heights and fast speeds, was thin and weak and not well balanced.
 Yet, I did enjoy it and skiied so much in the two years before these exams, that I made it. Barely, but I made it.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'German U18 water polo champion',
         timestamp: 928195200,
         description: '''
@@ -277,7 +284,7 @@ Yet, I did enjoy it and skiied so much in the two years before these exams, that
 • 4 times German Vice Champion of U16 and U18.
 • Selected for the German national team, but refused to join as I did not want to attend the military service, which was a connected necessity.
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Coded graphical labyrinth game',
         timestamp: 825638400,
         description: '''
@@ -285,7 +292,7 @@ Since ca. 8 years old, I had been coding a lot. Most of them I cannot remember.
 The one game I do remember was a graphical labyrinth game which only showed the immediate surroundings of the user.
 I even remember coding and formatting my computer without a screen, which my mother took away, thinking that was the computer. That is how intimate I was with my computer. I knew what it was doing based on my commands and the sounds it would make.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Jumped from German D4 to D1 within 2 years',
         timestamp: 841536000,
         description: '''
@@ -295,7 +302,7 @@ I went from D4 to D2 within one year. After that success, I made it my goal to m
 Though I was very proud of the achievement, it turned to be a mistake. I did not enjoy the class and should have just chilled in D2. Eventually, I asked to be moved back to D2.
 Nonetheless, I count it as a sucesss.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Self derived formula to calculate curve length',
         timestamp: 786240000,
         description: '''
@@ -306,13 +313,13 @@ Soon I asked another teacher what else one could calculate in Calculus. He menti
 It took me weeks of thinking and finally I woke up one morning with the answer: Sum infinate infinitisimal triangle hypothenuses using pythagoras.
 After deriving and applying the formula, I tested the result vs an applied maths app. The result matched and this achievement became my proudest.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Skipped grades 3 and 4', timestamp: 683683200, description: '''
 Unfortunatle, due to personal reasons, I never enjoyed school. When changing to a 'better' school, my father suggested I take the exam for the next level up.
 I did and passed, after which my father suggested that I should take another exam for another level higher. I did and passed again, resulting in me skipping grades 3 and 4.
 I always count it as a success, just because I did not like school. Though now, I am not sure whether it was a good idea and am not sure whether to advise the same for others in a similar situation.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Won neighbourhood chess championship',
         timestamp: 688953600,
         description: '''
@@ -321,7 +328,7 @@ I always considered this a reflection on the quality of the other chess players,
 My chess 'career' consisted of playing slightly seriously as a tennager, achieving an ELO of ca. 1900 and stopping after realising the need to study openings.
 I did earn pocket money over many years to come.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Raised 8MM CHF for ecamos',
         timestamp: 1370044800,
         description: '''
@@ -329,7 +336,7 @@ ecamos is a hedge fund in Switzerland. After joining them as a partner, my role 
 I did however end up giving most presentations and raised 8MM CHF, which was the highest ticket at that moment.
 Since I geniunely dislike 'selling' anything, this was an achievement outside my comfort zone, begotten via a year long correspondence with the client.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Worked at UBS QRC', timestamp: 1249084800, description: '''
 I had the amazing pleasure of working at the QRC Team at UBS, in Zurich, Switzerland.
 The QRC (Quantitative Risk Control) team consisted of the most talented indivuals that I had ever seen.
@@ -340,20 +347,19 @@ Conducting the first interviews on the phone, I had to solve Math problems in my
 Afterwards, I spent an entire day being asked though Math questions by around 10 people. At the end, HR again rejected me, but the team wanted me.
 Against all odds, I got the job. I would go on to get a 'record time' promotion, aparently 'unheard of', after less than 6 months at UBS, during the height of the 2009 financial crisis.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'EUREX Exchange Trader Examination',
         timestamp: 1267401600,
         description: '''
 Passed the exam.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Financial Risk Management Certification (GARP)',
         timestamp: 1262649600,
         description: '''
 To get a better standing in the financial community, I applied, studied for and passed the FRM exam at GARP.
             '''),
-    SuccessData(
-        title: 'Trading system awards', timestamp: 1585699200, description: '''
+    const SuccessData(title: 'Trading system awards', timestamp: 1585699200, description: '''
 The trading system that I created has won several awards over the years, including:
 • Barclay Managed Funds Report #6 Past Five Years category for 2020-Q4
 • BarclayHedge #3 for Diversified Traders Managing More Than 10MM for 2020.
@@ -369,14 +375,14 @@ The trading system that I created has won several awards over the years, includi
 • HFM European Performance Awards 2017: Best Newcomer.
 • Best CTA Multi Strategy Fund Manager - Europe - alternativeinvestmentawards
 '''),
-    SuccessData(
+    const SuccessData(
         title: 'Winner of Swiss ‘Quiz on Korea 2013’',
         timestamp: 1370044800,
         description: '''
 I joined a competition called 'Quiz on Korea'. I managed to (barely) win the Swiss national competition.
 This made me the Swiss representative at the international 'Quiz on Korea' world championships in Seoul. I did not do well at the finals, but still consider it a success to have made it that far.
             '''),
-    SuccessData(
+    const SuccessData(
         title: 'Intercontinental move to Canada',
         timestamp: 1627862400,
         description: '''
@@ -384,7 +390,7 @@ Moving to North America is always a challenge. For our kids education, we decide
 We arrived in Canada on the same day that our encode competition started. It was quite tough managing the competition whilst settling into a completely new place.
 After getting the visa, arriving, getting a car, a house, I consider this a success.
             '''),
-    SuccessData(title: 'Born', timestamp: 373723200, description: '''
+    const SuccessData(title: 'Born', timestamp: 373723200, description: '''
 Can being born count as an success or achievement? Considering that birth is a difficult and dangerous process, yes, it can.\n
 Many people celebrate birth anniversaries, so even pride in being born is considered normal.\n
 Relevantly, this entry provides an anchor in time to contextualize the other successes.
@@ -393,7 +399,7 @@ Relevantly, this entry provides an anchor in time to contextualize the other suc
 
   // SOLLI
   static List<SuccessData> solliSuccesses = [
-    SuccessData(title: 'Born', timestamp: 293544000, description: '''
+    const SuccessData(title: 'Born', timestamp: 293544000, description: '''
 Can being born count as an success or achievement? Considering that birth is a difficult and dangerous process, yes, it can.\n
 Many people celebrate birth anniversaries, so even pride in being born is considered normal.\n
 Relevantly, this entry provides an anchor in time to contextualize the other successes.
@@ -470,43 +476,53 @@ Led the customs clearance without a hitch by translating the proper etiquette fo
 Contributes to the smooth supply of products by playing an efficient bridge role between manufacturers and forwarders buyers.'''),
   ];
 
+  @override
+  State<CVPageData> createState() => _CVPageDataState();
+}
+
+class _CVPageDataState extends State<CVPageData> {
+
+  List<SuccessData> successDataList = [];
+
   List<SuccessData> sortedSuccessList(List<SuccessData> successList) {
     List<SuccessData> sortedList = new List<SuccessData>.from(successList);
     sortedList.sort((s1, s2) => s1.timestamp < s2.timestamp ? 1 : -1);
     return sortedList;
   }
 
-  List<Success> createSuccessWidgets(List<SuccessData> successDataList) {
-    List<Success> successList = [];
-    for (int i = 0; i < successDataList.length; i++) {
-      Color backgroundColor = i % 2 == 0
-          ? Color.fromRGBO(223, 239, 223, 1)
-          : Color.fromRGBO(197, 234, 197, 1);
-      Success success =
-          Success(data: successDataList[i], backgroundColor: backgroundColor);
-      successList.add(success);
-    }
-    return successList;
-  }
-
-  Widget disclaimer() {
-    return ListTile(
-      title: Text(
-          'All times above are (very) approximate. The facts above are the persons successes, without humility :). Weaknesses/"failures" are not mentioned.'),
-    );
+  @override
+  void initState() {
+    successDataList = sortedSuccessList(widget.person == CVPerson.solli ? CVPageData.solliSuccesses : CVPageData.imiSuccesses);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(person.toString()),
+        title: Text(widget.person.toString()),
       ),
       body: ListView(
+        shrinkWrap: true,
+        primary: false,
         children: [
-          ...createSuccessWidgets(sortedSuccessList(
-              person == CVPerson.solli ? solliSuccesses : imiSuccesses)),
-          disclaimer()
+          ListView.builder(
+            shrinkWrap: true,
+            primary: false,
+            itemCount: successDataList.length,
+            itemBuilder: (BuildContext context, int index) {
+              Color backgroundColor = index % 2 == 0
+                  ? Color.fromRGBO(223, 239, 223, 1)
+                  : Color.fromRGBO(197, 234, 197, 1);
+              return Success(
+                  data: successDataList[index],
+                  backgroundColor: backgroundColor);
+            },
+          ),
+          ListTile(
+            title: Text(
+                'All times above are (very) approximate. The facts above are the persons successes, without humility :). Weaknesses/"failures" are not mentioned.'),
+          )
         ],
       ),
     );

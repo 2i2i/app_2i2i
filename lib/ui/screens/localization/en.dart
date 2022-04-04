@@ -101,7 +101,7 @@ class en {
       Keys.swipeAndChangeAccount: 'Swipe to change account',
       Keys.insufficientBalance: 'Insufficient balance',
       Keys.addBid: 'Join',
-      Keys.copyAndNext: 'Copy and Next',
+      Keys.next: 'Next',
       Keys.report: 'Report',
       Keys.block: 'Block',
       Keys.unBlock: 'Unblock',
@@ -171,7 +171,21 @@ class en {
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Please join some people\'s rooms',
       Keys.beFirstJoin: 'Be the first to join this room',
-      Keys.appVersion: 'Version'
+      Keys.appVersion: 'Version',
+
+      Keys.logOut: 'LOGOUT',
+      Keys.connectAccount: 'Connect account with',
+      Keys.updateAvailable: 'Update Available',
+      Keys.loginMsg: 'The place for you to Hangout',
+      Keys.loginMsg2: '2i2i provides a safe and private space for Guests and Host to meet in the form of video calls',
+      Keys.loginMsg3: '>305 MEETINGS SINCE LAUNCH',
+      Keys.signInWithGoogle: 'Sign in with Google',
+      Keys.signInWithApple: 'Sign in with Apple',
+      Keys.signInWithTwitter:  'Sign in with Twitter',
+      Keys.signInAnonymously: 'Sign in Anonymously',
+      Keys.searchFaq: 'Search keywords',
+
+
     };
   }
 }
