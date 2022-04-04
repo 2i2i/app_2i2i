@@ -19,12 +19,12 @@ class MeetingStatusModel {
 
   factory MeetingStatusModel.fromMap(
       Map<String, dynamic> data, String documentId) {
-    final A = data['A'];
-    final B = data['B'];
-    final mutedVideoA = data['mutedVideoA'];
-    final mutedVideoB = data['mutedVideoB'];
-    final mutedAudioA = data['mutedAudioA'];
-    final mutedAudioB = data['mutedAudioB'];
+    final A = data['A'] ?? "";
+    final B = data['B'] ?? "";
+    final mutedVideoA = data['mutedVideoA'] ?? false;
+    final mutedVideoB = data['mutedVideoB'] ?? false;
+    final mutedAudioA = data['mutedAudioA'] ?? false;
+    final mutedAudioB = data['mutedAudioB'] ?? false;
 
     return MeetingStatusModel(
       id: documentId,
