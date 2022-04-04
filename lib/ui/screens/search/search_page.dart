@@ -21,40 +21,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // initMethod();
-  }
-
-  void initMethod() {
-    Future.delayed(Duration(seconds: 3)).then((value) {
-      final uid = ref.watch(myUIDProvider)!;
-      final userProviderVal = ref.watch(userProvider(uid));
-      bool isLoaded = !(haveToWait(userProviderVal));
-      if (isLoaded && userProviderVal.asData?.value is UserModel) {
-        final UserModel user = userProviderVal.asData!.value;
-        if (user.name.isEmpty) {
-          CustomAlertWidget.showBidAlert(
-            context,
-            WillPopScope(
-              onWillPop: () {
-                return Future.value(true);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-            ),
-            isDismissible: false,
-          );
-        }
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

@@ -19,6 +19,7 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
+import '../../models/user_model.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -40,18 +41,21 @@ class SetupUserViewModel with ChangeNotifier {
 
   bool signUpInProcess = false;
 
+  UserModel? userInfoModel;
+
   List<String> authList = [];
 
-  ////////
-  Future createAuthAndStartAlgoRand({required String firebaseUserId}) async {
+  Future<void> getUserInfoModel(String uid) async {
+    userInfoModel = await database.getUser(uid);
+    notifyListeners();
+  }
+
+  Future startAlgoRand(String uid) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
     notifyListeners();
 
-    // if (firebaseUserId == null) {
-    //   await auth.signInAnonymously();
-    // }
-    await setupAlgorandAccount(firebaseUserId);
+    await setupAlgorandAccount(uid);
     signUpInProcess = false;
 
     notifyListeners();
@@ -81,15 +85,19 @@ class SetupUserViewModel with ChangeNotifier {
     // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
   }
 
+  Future signInProcess(String uid) {
+    final f1 = getUserInfoModel(uid);
+    final f2 = updateFirebaseMessagingToken(uid);
+    final f3 = startAlgoRand(uid);
+    final f4 = updateDeviceInfo(uid);
+    return Future.wait([f1, f2, f3, f4]);
+  }
+
   Future<void> signInAnonymously() async {
     UserCredential firebaseUser =
         await FirebaseAuth.instance.signInAnonymously();
-    String? userId = firebaseUser.user?.uid;
-    if (userId is String) {
-      updateFirebaseMessagingToken(userId);
-      createAuthAndStartAlgoRand(firebaseUserId: userId);
-      updateDeviceInfo(userId);
-    }
+    String? uid = firebaseUser.user?.uid;
+    if (uid is String) await signInProcess(uid);
   }
 
   Future<void> getAuthList() async {
@@ -129,12 +137,8 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(credential);
       }
 
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, '${e.message}');
       throw e;
@@ -181,12 +185,8 @@ class SetupUserViewModel with ChangeNotifier {
       } else {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
@@ -232,12 +232,8 @@ class SetupUserViewModel with ChangeNotifier {
         }
       }
 
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
@@ -251,6 +247,7 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future updateDeviceInfo(String uid) async {
     if (!kIsWeb) {
+      // TODO no device info for web?
       return;
     }
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();

@@ -362,10 +362,10 @@ class NamedRoutes {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);
             if (uid != null) {
-              final userProviderVal = ref.watch(userProvider(uid));
-              bool isLoaded = !(haveToWait(userProviderVal));
-              if (isLoaded && userProviderVal.asData?.value is UserModel) {
-                final UserModel user = userProviderVal.asData!.value;
+              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
+              userInfoViewModel.getUserInfoModel(uid);
+              if (userInfoViewModel.userInfoModel is UserModel) {
+                final UserModel user = userInfoViewModel.userInfoModel!;
                 if (user.name.trim().isEmpty) {
                   return BottomSheet(
                     enableDrag: true,

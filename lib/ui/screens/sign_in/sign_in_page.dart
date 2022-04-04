@@ -50,7 +50,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
-                  if (firebaseUser != null) {
+                  if (firebaseUser != null){
                     signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
