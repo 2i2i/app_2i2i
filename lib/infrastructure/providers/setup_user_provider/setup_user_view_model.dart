@@ -19,6 +19,7 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
+import '../../models/user_model.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -40,9 +41,15 @@ class SetupUserViewModel with ChangeNotifier {
 
   bool signUpInProcess = false;
 
+  UserModel? userInfoModel;
+
   List<String> authList = [];
 
-  ////////
+  Future<void> getUserInfoModel(String uid) async {
+    userInfoModel = await database.getUser(uid);
+    notifyListeners();
+  }
+
   Future createAuthAndStartAlgoRand({required String firebaseUserId}) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
@@ -86,9 +93,10 @@ class SetupUserViewModel with ChangeNotifier {
         await FirebaseAuth.instance.signInAnonymously();
     String? userId = firebaseUser.user?.uid;
     if (userId is String) {
-      updateFirebaseMessagingToken(userId);
-      createAuthAndStartAlgoRand(firebaseUserId: userId);
-      updateDeviceInfo(userId);
+      await getUserInfoModel(userId);
+      await updateFirebaseMessagingToken(userId);
+      await createAuthAndStartAlgoRand(firebaseUserId: userId);
+      await updateDeviceInfo(userId);
     }
   }
 
@@ -131,6 +139,7 @@ class SetupUserViewModel with ChangeNotifier {
 
       String? userId = firebaseUser.user?.uid;
       if (userId is String) {
+        await getUserInfoModel(userId);
         await updateFirebaseMessagingToken(userId);
         await createAuthAndStartAlgoRand(firebaseUserId: userId);
         await updateDeviceInfo(userId);
@@ -183,6 +192,7 @@ class SetupUserViewModel with ChangeNotifier {
       }
       String? userId = firebaseUser.user?.uid;
       if (userId is String) {
+        await getUserInfoModel(userId);
         await updateFirebaseMessagingToken(userId);
         await createAuthAndStartAlgoRand(firebaseUserId: userId);
         await updateDeviceInfo(userId);
@@ -234,6 +244,7 @@ class SetupUserViewModel with ChangeNotifier {
 
       String? userId = firebaseUser.user?.uid;
       if (userId is String) {
+        await getUserInfoModel(userId);
         await updateFirebaseMessagingToken(userId);
         await createAuthAndStartAlgoRand(firebaseUserId: userId);
         await updateDeviceInfo(userId);

@@ -305,8 +305,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       await signUpViewModel.signOutFromAuth();
-                      currentIndex.value = 0;
-                      context.go(Routes.root);
+                      currentIndex.value = 1;
+                      context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context),
                         style: Theme.of(context)

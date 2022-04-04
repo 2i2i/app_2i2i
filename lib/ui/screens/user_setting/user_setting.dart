@@ -330,11 +330,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               data: SliderTheme.of(context).copyWith(
                                 activeTrackColor: Theme.of(context).cardColor,
                                 inactiveTrackColor:
-                                Theme.of(context).disabledColor,
+                                    Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
-                                  mainContext: context,
-                                  thumbRadius: 15,
-                                  showValue: true,
+                                    mainContext: context,
+                                    thumbRadius: 15,
+                                    showValue: true,
                                     valueMain:
                                         (_importanceRatioValue?.round() ?? 0)
                                             .toString()),
@@ -342,20 +342,28 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                min: 0,
-                                max: (_importanceSliderMaxHalf * 2.0),
-                                value: _importanceSliderValue!,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _importanceSliderValue = value;
-                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() * (_importanceSliderMaxHalf * 2.0 - 2.0) / _importanceSliderMaxHalf + 2.0;
-                                    // log(X +
-                                    //     '_importanceSliderValue=$_importanceSliderValue');
-                                    // log(X +
-                                    //     '_importanceRatioValue=$_importanceRatioValue');
-                                  });
-                                },
-                              ),
+                                      min: 0,
+                                      max: (_importanceSliderMaxHalf * 2.0),
+                                      value: _importanceSliderValue!,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _importanceSliderValue = value;
+                                          _importanceRatioValue =
+                                              (_importanceSliderValue! -
+                                                              _importanceSliderMaxHalf)
+                                                          .abs() *
+                                                      (_importanceSliderMaxHalf *
+                                                              2.0 -
+                                                          2.0) /
+                                                      _importanceSliderMaxHalf +
+                                                  2.0;
+                                          // log(X +
+                                          //     '_importanceSliderValue=$_importanceSliderValue');
+                                          // log(X +
+                                          //     '_importanceRatioValue=$_importanceRatioValue');
+                                        });
+                                      },
+                                    ),
                             ),
                           ),
                         ),
@@ -389,9 +397,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             // const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                onClickSave(myUserPageViewModel, context);
-              },
+              onPressed: () => onClickSave(myUserPageViewModel, context),
               child: Text(Keys.save.tr(context)),
             )
           ],
@@ -412,7 +418,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final userAsyncValue = ref.watch(userProvider(uid));
     bool isLoaded = !(haveToWait(userAsyncValue));
     if (isLoaded) {
-      UserModel user = userAsyncValue.asData!.value;
+      UserModel user = userAsyncValue.value!;
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
@@ -549,10 +555,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    if (!(widget.fromBottomSheet ?? false)){
+    if (!(widget.fromBottomSheet ?? false)) {
       CustomDialogs.loader(true, context);
     }
-      bool validate = formKey.currentState?.validate() ?? false;
+    bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (user is UserModel && !(widget.fromBottomSheet ?? false)) {
@@ -587,10 +593,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         }
       }
       await myUserPageViewModel?.updateHangout(user);
-      if (!(widget.fromBottomSheet ?? false)){
+      if (!(widget.fromBottomSheet ?? false)) {
         CustomDialogs.loader(false, context);
       }
-      Navigator.of(context).maybePop();
+      Navigator.of(context).pop();
     }
   }
 
