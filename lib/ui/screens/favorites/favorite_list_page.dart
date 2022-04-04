@@ -2,7 +2,6 @@ import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,8 +10,6 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../search/widgtes/user_info_tile.dart';
 
 class FavoriteListPage extends ConsumerStatefulWidget {
-
-
   const FavoriteListPage({Key? key}) : super(key: key);
 
   @override
@@ -32,6 +29,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
 
     return Scaffold(
       appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           Keys.fav.tr(context),
           style: Theme.of(context).textTheme.headline5,
@@ -46,7 +44,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
           itemBuilder: (_, index) {
             final user = ref.watch(userProvider(favList[index]));
             if (haveToWait(user)) {
-              return CupertinoActivityIndicator();
+              return Container();
             }
             return UserInfoTile(
               user: user.value!,
@@ -65,49 +63,6 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
           },
         ),
       ),
-    );
-  }
-
-  Widget buildListView() {
-    List<String> favList = [];
-    final myUid = ref.read(myUIDProvider)!;
-    final myUserAsyncValue = ref.watch(userProvider(myUid));
-    if (haveToWait(myUserAsyncValue)) {
-      return WaitPage();
-    }
-    favList = myUserAsyncValue.value!.friends;
-
-    if (favList.isEmpty) {
-      return Center(
-          child: Text(
-            Keys.noHostsFound.tr(context),
-        style: Theme.of(context).textTheme.subtitle2,
-      ));
-    }
-    return ListView.separated(
-      itemCount: favList.length,
-      shrinkWrap: true,
-      primary: false,
-      itemBuilder: (_, index) {
-        final user = ref.watch(userProvider(favList[index]));
-        if (haveToWait(user)) {
-          return CupertinoActivityIndicator();
-        }
-        return UserInfoTile(
-          user: user.value!,
-          myUid: myUid,
-          isForBlockedUser: false,
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        /*final user = users[index];
-        if (user.id == mainUserID) {
-          return Container();
-        }*/
-        return Divider(
-          color: Colors.transparent,
-        );
-      },
     );
   }
 }

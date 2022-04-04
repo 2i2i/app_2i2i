@@ -1,9 +1,10 @@
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
@@ -121,6 +122,7 @@ class UserModel extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeatBackground,
+    this.imageUrl,
     this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
@@ -140,6 +142,7 @@ class UserModel extends Equatable {
   Rule rule;
 
   String name;
+  String? imageUrl;
   String bio;
   late List<String> _tags;
   void setTags() {
@@ -182,6 +185,7 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
+    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
@@ -196,6 +200,8 @@ class UserModel extends Equatable {
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
+    final String? imageUrl = data['imageUrl'];
+    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
@@ -204,8 +210,8 @@ class UserModel extends Equatable {
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    // log('UserModel.fromMap - loungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
 
@@ -215,6 +221,7 @@ class UserModel extends Equatable {
       meeting: meeting,
       name: name,
       bio: bio,
+      imageUrl: imageUrl,
       rating: rating,
       numRatings: numRatings,
       heartbeatBackground: heartbeatBackground,
@@ -234,6 +241,7 @@ class UserModel extends Equatable {
       'bio': bio,
       'name': name,
       'tags': _tags,
+      'imageUrl': imageUrl,
       'rating': rating,
       'numRatings': numRatings,
       'heartbeatBackground': heartbeatBackground,

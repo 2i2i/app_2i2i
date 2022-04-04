@@ -29,7 +29,6 @@ class Custom {
           _initialUriIsHandled = true;
           print("load");
           Uri? uri = await getInitialUri();
-          print("load ==== ===== ===== \n ${uri.toString()} \n");
           if(uri?.pathSegments.contains('user')??false) {
             print( "user");
             String userId = '';

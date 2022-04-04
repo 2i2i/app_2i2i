@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "453884442411",
+    "project_id": "i2i-test",
+    "storage_bucket": "i2i-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453884442411:android:9a4a826f15c2bf8498776e",
+        "android_client_info": {
+          "package_name": "app.i2i2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyAd3hJCebhhyFhD012dI4oMIDKf4FWhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "453884442411-3t14hd6fn9bodfledaip71e439cfn351.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.i2i2.test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

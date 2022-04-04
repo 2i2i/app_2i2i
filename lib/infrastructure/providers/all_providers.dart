@@ -8,6 +8,8 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/accounts/local_account.dart';
@@ -18,6 +20,8 @@ import '../data_access_layer/services/logging.dart';
 import '../models/meeting_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
+import 'faq_cv_provider/cv_provider.dart';
+import 'faq_cv_provider/faq_provider.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
 import 'my_user_provider/my_user_page_view_model.dart';
@@ -93,6 +97,8 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
@@ -101,6 +107,7 @@ final setupUserViewModelProvider =
       algorandLib: algorandLib,
       algorand: algorand,
       storage: storage,
+      googleSignIn: googleSignIn,
       accountService: accountService);
 });
 
@@ -126,7 +133,15 @@ final algorandProvider = Provider((ref) {
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
   final storage = ref.watch(storageProvider);
   final database = ref.watch(databaseProvider);
-  return AppSettingModel(storage: storage,firebaseDatabase: database);
+  return AppSettingModel(storage: storage, firebaseDatabase: database);
+});
+
+final faqProvider = ChangeNotifierProvider<FAQProviderModel>((ref) {
+  return FAQProviderModel();
+});
+
+final cvProvider = ChangeNotifierProvider<CVProviderModel>((ref) {
+  return CVProviderModel();
 });
 
 final algorandLibProvider = Provider((ref) => AlgorandLib());
@@ -317,8 +332,7 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
       isUserLocked.value = false;
     }
     return LockedUserViewModel(
-        user: user.asData!.value,
-        meeting: meeting.asData!.value);
+        user: user.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -401,16 +415,19 @@ final accountsProvider = FutureProvider((ref) {
 });
 
 final myAccountPageViewModelProvider =
-    ChangeNotifierProvider<MyAccountPageViewModel>(
-        (ref) => MyAccountPageViewModel(ref));
+    ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
+  final database = ref.watch(databaseProvider);
+  final uid = ref.watch(myUIDProvider);
+  return MyAccountPageViewModel(ref: ref, uid: uid, database: database);
+});
 
-final createLocalAccountProvider = FutureProvider(
-  (ref) async {
-    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-    LocalAccount account = await myAccountPageViewModel.addLocalAccount();
-    return account;
-  },
-);
+// final createLocalAccountProvider = FutureProvider(
+//   (ref) async {
+//     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+//     LocalAccount account = await myAccountPageViewModel.addLocalAccount();
+//     return account;
+//   },
+// );
 
 final userChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);

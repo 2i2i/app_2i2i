@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -193,8 +194,9 @@ class AppTheme{
       iconTheme: IconThemeData(color: primaryColor),
       cardColor: cardDarkColor,
       shadowColor: fillColor,
-
-
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         elevation: 0,
         selectedItemColor: secondaryDarkColor,
@@ -339,8 +341,7 @@ class AppTheme{
   AppBarTheme appBarTheme(bool dark,BuildContext context,{Color? textColor}) => AppBarTheme(
     elevation: 0,
     backgroundColor: !dark ? primaryColor : null,
-    iconTheme: IconThemeData(color: dark ? white : cardDarkColor),
-
+    iconTheme: CupertinoIconThemeData(color: dark ? white : cardDarkColor),
     titleTextStyle: TextStyle(
       fontStyle: FontStyle.normal,
       fontWeight: FontWeight.w800,

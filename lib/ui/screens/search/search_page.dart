@@ -21,44 +21,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // initMethod();
-  }
-
-  void initMethod() {
-    Future.delayed(Duration(seconds: 3)).then((value) {
-      final uid = ref.watch(myUIDProvider)!;
-      final userProviderVal = ref.watch(userProvider(uid));
-      bool isLoaded = !(haveToWait(userProviderVal));
-      if (isLoaded && userProviderVal.asData?.value is UserModel) {
-        final UserModel user = userProviderVal.asData!.value;
-        if (user.name.isEmpty) {
-          CustomAlertWidget.showBidAlert(
-            context,
-            WillPopScope(
-              onWillPop: () {
-                return Future.value(true);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-            ),
-            isDismissible: false,
-          );
-        }
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: CustomAppbar(),
+      appBar: CustomAppbar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Column(
         children: [
           Padding(
@@ -96,7 +64,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(child: _buildContents(context, ref)),
         ],
       ),
@@ -145,14 +113,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     userList.removeWhere((element) => element == null);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      itemCount: userList.length,
-      itemBuilder: (_, index) => UserInfoTile(
-        user: userList[index]!,
-        myUid: mainUserID,
-        isForBlockedUser: false,
-        marginBottom: 10,
+    return ScrollConfiguration(
+      behavior: MyBehavior(),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          // physics: ClampingScrollPhysics(),
+        itemCount: userList.length,
+        itemBuilder: (_, index) => UserInfoTile(
+          user: userList[index]!,
+          myUid: mainUserID,
+          isForBlockedUser: false,
+          marginBottom: 10,
+        ),
       ),
     );
   }

@@ -115,7 +115,7 @@ class Keys {
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
   static const String addBid = 'addBid';
-  static const String copyAndNext = 'copyAndNext';
+  static const String next = 'copyAndNext';
   static const String report = 'report';
   static const String block = 'block';
   static const String unBlock = 'unBlock';
@@ -179,6 +179,20 @@ class Keys {
   static const String joinOtherRoom = 'joinOtherRoom';
   static const String beFirstJoin = 'beFirstJoin';
   static const String appVersion = 'appVersion';
+  static const String logOut = 'logOut';
+
+  static const String connectAccount ='connectAccount';
+  static const String updateAvailable ='updateAvailable';
+  static const String loginMsg ='loginMsg';
+  static const String loginMsg2 ='loginMsg2';
+  static const String loginMsg3 ='loginMsg3';
+  static const String signInWithGoogle ='signInWithGoogle';
+  static const String signInWithApple ='signInWithApple';
+  static const String signInWithTwitter ='signInWithTwitter';
+  static const String signInAnonymously ='signInAnonymously';
+
+  static const String searchFaq ='searchFaq';
+
 }
 
 extension CustomTranslation on String {
