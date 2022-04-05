@@ -54,13 +54,13 @@ dependencies:
   intl: ^0.17.0
   cached_network_image: ^3.2.0
 
-  firebase_messaging: ^11.2.10
-  cloud_firestore: ^3.1.10
-  firebase_app_check: ^0.0.6+7
-  firebase_core: ^1.13.1
-  cloud_functions: ^3.2.10
-  firebase_storage: ^10.2.9
-  firebase_auth: ^3.3.10
+  firebase_messaging: ^11.2.12
+  cloud_firestore: ^3.1.11
+  firebase_app_check: ^0.0.6+8
+  firebase_core: ^1.14.0
+  cloud_functions: ^3.2.11
+  firebase_storage: ^10.2.10
+  firebase_auth: ^3.3.12
 
   google_sign_in: ^5.2.4
   sign_in_with_apple: ^3.3.0
