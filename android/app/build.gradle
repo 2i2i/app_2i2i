@@ -54,11 +54,11 @@ android {
     flavorDimensions "app"
 
     productFlavors {
-        test {
+        dev {
             dimension "app"
-            versionNameSuffix "-test"
+            versionNameSuffix "-dev"
             copy {
-                from 'src/test/'
+                from 'src/dev/'
                 include '*.json'
                 into '.'
             }
