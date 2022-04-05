@@ -17,7 +17,7 @@
       "request": "launch",
       "type": "dart",
       "args": [
-        "--flavor test",
+        "--flavor dev",
         "-t",
         "lib/main_test.dart"
       ]
