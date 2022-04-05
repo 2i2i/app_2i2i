@@ -509,25 +509,27 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   Future<void> outInit({MeetingStatus? endReason}) async {
-    if (_localRenderer.srcObject != null) {
-      _localRenderer.srcObject!
-          .getTracks()
-          .forEach((element) async => await element.stop());
-      _localRenderer.srcObject!.dispose();
-      _localRenderer.srcObject = null;
-    }
-    _localRenderer.dispose();
+    // if (_localRenderer.srcObject != null) {
+    //   _localRenderer.srcObject!
+    //       .getTracks()
+    //       .forEach((element) async => await element.stop());
+    //   _localRenderer.srcObject!.dispose();
+    //   _localRenderer.srcObject = null;
+    // }
+    // print("\n\n outInit Local Dispose \n\n");
+    // _localRenderer.dispose();
 
-    if (_remoteRenderer.srcObject != null) {
+    /*if (_remoteRenderer.srcObject != null) {
       _remoteRenderer.srcObject!
           .getTracks()
           .forEach((element) async => await element.stop());
       _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
-    _remoteRenderer.dispose();
+    print("\n\n outInit Remote Dispose \n\n");
+    _remoteRenderer.dispose();*/
 
-    if (mounted) setState(() {});
+    // if (mounted) setState(() {});
 
     _signaling?.close();
     budgetTimer?.cancel();

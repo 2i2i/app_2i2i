@@ -157,7 +157,8 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage(
-            onHangPhone: (uid, meetingId) {
+            onHangPhone: (uid, meetingId) async {
+              await Future.delayed(Duration(milliseconds: 500));
               showRating.value = {
                 'show': true,
                 'otherUid': uid,

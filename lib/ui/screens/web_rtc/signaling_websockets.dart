@@ -357,7 +357,6 @@ class SignalingWebSockets {
     var newSession = session ?? Session(sid: sessionId, pid: peerId);
     if (media != 'data')
       _localStream = await createStream(media, screenSharing);
-    print(_iceServers);
     RTCPeerConnection pc = await createPeerConnection({
       ..._iceServers,
       ...{'sdpSemantics': sdpSemantics}
