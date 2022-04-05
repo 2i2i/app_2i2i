@@ -65,6 +65,21 @@ class FirestoreDatabase {
       transaction.update(bidInPublicRef, bidObj);
       transaction.update(bidInPrivateRef, bidObj);
 
+      //update meeting status
+      final meetingStatusRef = _service.firestore
+          .collection(FirestorePath.meetingStatus(meeting.id))
+          .doc();
+      transaction.set(
+          meetingStatusRef,
+          MeetingStatusModel(
+              id: meetingStatusRef.id,
+              A: meeting.A,
+              B: meeting.B,
+              mutedAudioA: false,
+              mutedAudioB: false,
+              mutedVideoA: false,
+              mutedVideoB: false).toMap());
+
       return Future.value();
     });
   }
