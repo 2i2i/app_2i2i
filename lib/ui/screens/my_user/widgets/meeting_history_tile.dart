@@ -124,8 +124,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                     ),
                     SizedBox(height: 6),
                     Text(
-                      DateFormat('yyyy-mm-dd')
-                          .format(meetingModel.end ?? DateTime.now()),
+                      getTime(),
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
@@ -172,5 +171,19 @@ class MeetingHistoryTile extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String getTime() {
+    DateTime meetingTime = (meetingModel.end ?? DateTime.now()).toLocalDateTime();
+    DateFormat formatDate = new DateFormat("yyyy-MM-dd\nhh:mm:a");
+    String time = formatDate.format(meetingTime.toLocal());
+    return time;
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime toLocalDateTime({String format = "yyyy-MM-dd HH:mm:ss"}) {
+    var dateTime = DateFormat(format).parse(this.toString(), true);
+    return dateTime.toLocal();
   }
 }

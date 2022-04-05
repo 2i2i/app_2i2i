@@ -21,7 +21,7 @@ class BidInMeetings extends ConsumerWidget {
     if (haveToWait(meetingList)) {
       return Center(child: WaitPage());
     }
-    List<Meeting?> meetingListA = meetingList.asData?.value ?? [];
+    List<Meeting?> meetingListA = meetingList.value ?? [];
 
     if (meetingListA.isEmpty) {
       return Center(
@@ -39,11 +39,12 @@ class BidInMeetings extends ConsumerWidget {
         if (meetingModel == null) {
           return Container();
         }
+        bool amA = meetingModel.A == uid;
         return MeetingHistoryTile(
           currentUid: uid,
           meetingModel: meetingModel,
           onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-            'uid': meetingModel.A,
+            'uid': amA ? meetingModel.B : meetingModel.A,
           }),
         );
       },

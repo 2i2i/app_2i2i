@@ -12,28 +12,30 @@ import '../../my_user/widgets/meeting_history_tile.dart';
 class BidOutMeetings extends ConsumerWidget {
   final String uid;
 
-  const BidOutMeetings({required this.uid, Key? key})
-      : super(key: key);
+  const BidOutMeetings({required this.uid, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     var meetingList = ref.watch(meetingHistoryB(uid));
     if (haveToWait(meetingList)) {
       return Center(child: WaitPage());
     }
-    List<Meeting?> meetingListB = meetingList.asData?.value ?? [];
+    List<Meeting?> meetingListB = meetingList.value ?? [];
 
     if (meetingListB.isEmpty) {
       return Center(
           child: Text(
-            Keys.noMeetingsFound.tr(context),
-            style: Theme.of(context).textTheme.subtitle1,
-          ));
+        Keys.noMeetingsFound.tr(context),
+        style: Theme.of(context).textTheme.subtitle1,
+      ));
     }
 
-    if(meetingListB.isEmpty){
-      return Center(child: Text(Keys.noMeetingsFound.tr(context),style: Theme.of(context).textTheme.subtitle1,));
+    if (meetingListB.isEmpty) {
+      return Center(
+          child: Text(
+        Keys.noMeetingsFound.tr(context),
+        style: Theme.of(context).textTheme.subtitle1,
+      ));
     }
     return ListView.builder(
       itemCount: meetingListB.length,
@@ -43,11 +45,13 @@ class BidOutMeetings extends ConsumerWidget {
         if (meetingModel == null) {
           return Container();
         }
+        bool amA = meetingModel.A == uid;
+
         return MeetingHistoryTile(
           currentUid: uid,
           meetingModel: meetingModel,
           onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-            'uid': meetingModel.B,
+            'uid': amA ? meetingModel.B : meetingModel.A,
           }),
         );
       },
