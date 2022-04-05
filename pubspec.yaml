@@ -32,7 +32,7 @@ dependencies:
   walletconnect_dart: ^0.0.8
   algorand_dart: ^1.0.2
 
-  flutter_webrtc: ^0.8.3
+  flutter_webrtc: ^0.8.5
   just_audio: ^0.9.20
   flutter_riverpod: ^1.0.3
 

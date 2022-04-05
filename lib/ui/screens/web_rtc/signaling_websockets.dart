@@ -114,7 +114,7 @@ class SignalingWebSockets {
     'optional': [],
   };
 
-  close() async {
+  Future close() async {
     await _cleanSessions();
     _socket?.close();
   }

@@ -447,7 +447,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       required RTCVideoRenderer renderer,
       bool fullView = false,
       bool mirror = false}) {
-    print("$isVideoMuted $isAudioMuted");
     return Stack(
       children: [
         Container(
@@ -556,7 +555,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _signaling?.bye(_session!.sid);
     }
 
-    return outInit(endReason: reason);
+    await outInit(endReason: reason);
   }
 
   void _connect() {
