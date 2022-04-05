@@ -89,7 +89,7 @@ final meetingStatusProvider =
 final setupUserViewModelProvider =
     ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
-      final auth = ref.watch(firebaseAuthProvider);
+  final auth = ref.watch(firebaseAuthProvider);
   // log('setupUserViewModelProvider - auth=$auth');
   final database = ref.watch(databaseProvider);
   // log('setupUserViewModelProvider - database=$database');
@@ -332,8 +332,7 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
       isUserLocked.value = false;
     }
     return LockedUserViewModel(
-        user: user.asData!.value,
-        meeting: meeting.asData!.value);
+        user: user.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -416,16 +415,19 @@ final accountsProvider = FutureProvider((ref) {
 });
 
 final myAccountPageViewModelProvider =
-    ChangeNotifierProvider<MyAccountPageViewModel>(
-        (ref) => MyAccountPageViewModel(ref));
+    ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
+  final database = ref.watch(databaseProvider);
+  final uid = ref.watch(myUIDProvider);
+  return MyAccountPageViewModel(ref: ref, uid: uid, database: database);
+});
 
-final createLocalAccountProvider = FutureProvider(
-  (ref) async {
-    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-    LocalAccount account = await myAccountPageViewModel.addLocalAccount();
-    return account;
-  },
-);
+// final createLocalAccountProvider = FutureProvider(
+//   (ref) async {
+//     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+//     LocalAccount account = await myAccountPageViewModel.addLocalAccount();
+//     return account;
+//   },
+// );
 
 final userChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);

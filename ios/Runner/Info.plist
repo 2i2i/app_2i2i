@@ -39,10 +39,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>test.2i2i.app</string>
+			<string>2i2i.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>test</string>
+				<string>main</string>
 			</array>
 		</dict>
 	</array>
@@ -59,7 +59,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
-          <string>https://i2i-test.firebaseapp.com/__/auth/handler/</string>
+          <string>https://app-2i2i.firebaseapp.com/__/auth/handler/</string>
         </array>
       </dict>
     </array>

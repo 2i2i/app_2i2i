@@ -238,7 +238,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                             .toUpperCase()),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.imi.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -305,8 +305,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       await signUpViewModel.signOutFromAuth();
-                      currentIndex.value = 0;
-                      context.go(Routes.root);
+                      currentIndex.value = 1;
+                      context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context),
                         style: Theme.of(context)

@@ -74,7 +74,7 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.root,
+    initialLocation: Routes.myUser,
     routes: [
       GoRoute(
         name: Routes.root.nameFromPath(),
@@ -82,8 +82,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
         ),
       ),
       GoRoute(
@@ -350,7 +348,7 @@ class NamedRoutes {
                 leading: Container(),
                 toolbarHeight: 20,
                 title: Text(AlgorandNet.testnet.name +
-                    ' - v40' +
+                    ' - v41' +
                     (updateAvailable ? ' - update: reload page' : '')),
                 titleTextStyle: Theme.of(context)
                     .textTheme
@@ -364,10 +362,10 @@ class NamedRoutes {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);
             if (uid != null) {
-              final userProviderVal = ref.watch(userProvider(uid));
-              bool isLoaded = !(haveToWait(userProviderVal));
-              if (isLoaded && userProviderVal.asData?.value is UserModel) {
-                final UserModel user = userProviderVal.asData!.value;
+              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
+              userInfoViewModel.getUserInfoModel(uid);
+              if (userInfoViewModel.userInfoModel is UserModel) {
+                final UserModel user = userInfoViewModel.userInfoModel!;
                 if (user.name.trim().isEmpty) {
                   return BottomSheet(
                     enableDrag: true,

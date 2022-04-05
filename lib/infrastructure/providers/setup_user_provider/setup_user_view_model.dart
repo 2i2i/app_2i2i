@@ -19,15 +19,17 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
+import '../../models/user_model.dart';
 
 class SetupUserViewModel with ChangeNotifier {
-  SetupUserViewModel({required this.auth,
-    required this.database,
-    required this.algorandLib,
-    required this.accountService,
-    required this.googleSignIn,
-    required this.algorand,
-    required this.storage});
+  SetupUserViewModel(
+      {required this.auth,
+      required this.database,
+      required this.algorandLib,
+      required this.accountService,
+      required this.googleSignIn,
+      required this.algorand,
+      required this.storage});
 
   final FirebaseAuth auth;
   final FirestoreDatabase database;
@@ -39,18 +41,21 @@ class SetupUserViewModel with ChangeNotifier {
 
   bool signUpInProcess = false;
 
+  UserModel? userInfoModel;
+
   List<String> authList = [];
 
-  ////////
-  Future createAuthAndStartAlgoRand({String? firebaseUserId}) async {
+  Future<void> getUserInfoModel(String uid) async {
+    userInfoModel = await database.getUser(uid);
+    notifyListeners();
+  }
+
+  Future startAlgoRand(String uid) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
     notifyListeners();
 
-    // if (firebaseUserId == null) {
-    //   await auth.signInAnonymously();
-    // }
-    await setupAlgorandAccount();
+    await setupAlgorandAccount(uid);
     signUpInProcess = false;
 
     notifyListeners();
@@ -80,15 +85,19 @@ class SetupUserViewModel with ChangeNotifier {
     // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
   }
 
+  Future signInProcess(String uid) {
+    final f1 = getUserInfoModel(uid);
+    final f2 = updateFirebaseMessagingToken(uid);
+    final f3 = startAlgoRand(uid);
+    final f4 = updateDeviceInfo(uid);
+    return Future.wait([f1, f2, f3, f4]);
+  }
+
   Future<void> signInAnonymously() async {
     UserCredential firebaseUser =
         await FirebaseAuth.instance.signInAnonymously();
-    String? userId = firebaseUser.user?.uid;
-    if (userId is String) {
-      updateFirebaseMessagingToken(userId);
-      createAuthAndStartAlgoRand(firebaseUserId: userId);
-      updateDeviceInfo(userId);
-    }
+    String? uid = firebaseUser.user?.uid;
+    if (uid is String) await signInProcess(uid);
   }
 
   Future<void> getAuthList() async {
@@ -111,9 +120,11 @@ class SetupUserViewModel with ChangeNotifier {
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
@@ -126,12 +137,8 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(credential);
       }
 
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, '${e.message}');
       throw e;
@@ -178,13 +185,8 @@ class SetupUserViewModel with ChangeNotifier {
       } else {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
-
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
@@ -230,13 +232,9 @@ class SetupUserViewModel with ChangeNotifier {
         }
       }
 
-      String? userId = firebaseUser.user?.uid;
-      if (userId is String) {
-        await updateFirebaseMessagingToken(userId);
-        await createAuthAndStartAlgoRand(firebaseUserId: userId);
-        await updateDeviceInfo(userId);
-      }
-    }  on FirebaseAuthException catch (e) {
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid);
+    } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
     }
@@ -248,7 +246,8 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future updateDeviceInfo(String uid) async {
-    if(!kIsWeb){
+    if (!kIsWeb) {
+      // TODO no device info for web?
       return;
     }
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -261,13 +260,14 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   // KEEP my_account_provider in local scope
-  Future setupAlgorandAccount() async {
+  Future setupAlgorandAccount(String uid) async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
     final LocalAccount account = await LocalAccount.create(
         algorandLib: algorandLib,
         storage: storage,
         accountService: accountService);
+    await database.addAlgorandAccount(uid, account.address, 'LOCAL');
     await accountService.setMainAcccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
 
@@ -275,7 +275,7 @@ class SetupUserViewModel with ChangeNotifier {
     // DEBUG - off for faster debugging
     notifyListeners();
     final HttpsCallable giftALGO =
-    FirebaseFunctions.instance.httpsCallable('giftALGO');
+        FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
       await giftALGO({'account': account.address});

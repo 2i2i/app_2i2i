@@ -115,7 +115,7 @@ class Keys {
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
   static const String addBid = 'addBid';
-  static const String copyAndNext = 'copyAndNext';
+  static const String next = 'copyAndNext';
   static const String report = 'report';
   static const String block = 'block';
   static const String unBlock = 'unBlock';
