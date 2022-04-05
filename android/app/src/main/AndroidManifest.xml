@@ -75,8 +75,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <data android:scheme="main"
-                    android:host="2i2i.app" />
+                <data android:scheme="test" android:host="2i2i.app" />
             </intent-filter>
 
 
