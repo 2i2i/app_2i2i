@@ -447,7 +447,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       required RTCVideoRenderer renderer,
       bool fullView = false,
       bool mirror = false}) {
-    print("$isVideoMuted $isAudioMuted");
     return Stack(
       children: [
         Container(
@@ -510,25 +509,27 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   Future<void> outInit({MeetingStatus? endReason}) async {
-    if (_localRenderer.srcObject != null) {
-      _localRenderer.srcObject!
-          .getTracks()
-          .forEach((element) async => await element.stop());
-      _localRenderer.srcObject!.dispose();
-      _localRenderer.srcObject = null;
-    }
-    _localRenderer.dispose();
+    // if (_localRenderer.srcObject != null) {
+    //   _localRenderer.srcObject!
+    //       .getTracks()
+    //       .forEach((element) async => await element.stop());
+    //   _localRenderer.srcObject!.dispose();
+    //   _localRenderer.srcObject = null;
+    // }
+    // print("\n\n outInit Local Dispose \n\n");
+    // _localRenderer.dispose();
 
-    if (_remoteRenderer.srcObject != null) {
+    /*if (_remoteRenderer.srcObject != null) {
       _remoteRenderer.srcObject!
           .getTracks()
           .forEach((element) async => await element.stop());
       _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
-    _remoteRenderer.dispose();
+    print("\n\n outInit Remote Dispose \n\n");
+    _remoteRenderer.dispose();*/
 
-    if (mounted) setState(() {});
+    // if (mounted) setState(() {});
 
     _signaling?.close();
     budgetTimer?.cancel();
@@ -556,7 +557,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _signaling?.bye(_session!.sid);
     }
 
-    return outInit(endReason: reason);
+    await outInit(endReason: reason);
   }
 
   void _connect() {
