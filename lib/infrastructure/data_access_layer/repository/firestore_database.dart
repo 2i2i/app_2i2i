@@ -65,6 +65,21 @@ class FirestoreDatabase {
       transaction.update(bidInPublicRef, bidObj);
       transaction.update(bidInPrivateRef, bidObj);
 
+      //update meeting status
+      final meetingStatusRef = _service.firestore
+          .collection(FirestorePath.meetingStatus(meeting.id))
+          .doc();
+      transaction.set(
+          meetingStatusRef,
+          MeetingStatusModel(
+              id: meetingStatusRef.id,
+              A: meeting.A,
+              B: meeting.B,
+              mutedAudioA: false,
+              mutedAudioB: false,
+              mutedVideoA: false,
+              mutedVideoB: false).toMap());
+
       return Future.value();
     });
   }
@@ -133,6 +148,7 @@ class FirestoreDatabase {
           ? _updateUserHeartbeat(uid, 'heartbeatForeground',
               newStatus: 'ONLINE')
           : _updateUserHeartbeat(uid, 'heartbeatForeground');
+
   Future<void> updateUserHeartbeatFromBackground(String uid,
           {bool setStatus = false}) =>
       setStatus
@@ -182,13 +198,14 @@ class FirestoreDatabase {
     });
   }
 
-  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) =>
+  Stream<MeetingStatusModel?> getMeetingStatus({required String meetingId}) =>
       _service
           .documentStream(
-        path: FirestorePath.meetingStatus(meetingId),
-        builder: (data, documentId) =>
-            MeetingStatusModel.fromMap(data!, documentId),
-      )
+              path: FirestorePath.meetingStatus(meetingId),
+              builder: (data, documentId) {
+                if (data != null)
+                  return MeetingStatusModel.fromMap(data, documentId);
+              })
           .handleError((onError) {
         log(onError);
       });
@@ -439,6 +456,7 @@ class FirestoreDatabase {
         log(onError);
         return [];
       });
+
   Stream<List<TopMeeting>> topDurationsStream() => _service
           .collectionStream(
         path: FirestorePath.topDurations(),
