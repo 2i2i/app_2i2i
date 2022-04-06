@@ -183,6 +183,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                       mainContext: context,
                                       thumbRadius: 15,
                                       min: minMaxDuration,
+                                      showValue: true,
+                                      valueMain: '$maxDuration',
                                       max: maxMaxDuration,
                                     ),
                                   ),
