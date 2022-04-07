@@ -29,12 +29,17 @@ class MeetingHistoryModel extends ChangeNotifier {
       }
       if (meetingDataModel.lastDocument != null) {
         if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null)
+            modelData['meetingList'] != null &&
+            modelData['meetingList'].isNotEmpty)
           meetingHistoryList.addAll(modelData['meetingList']);
       } else {
         if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null)
+            modelData['meetingList'] != null &&
+            modelData['meetingList'].isNotEmpty) {
+          meetingHistoryList.clear();
+          meetingDataModel.lastDocument = null;
           meetingHistoryList = modelData['meetingList'];
+        }
       }
       await Future.delayed(Duration(seconds: 1));
     }

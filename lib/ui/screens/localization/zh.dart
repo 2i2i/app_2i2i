@@ -177,6 +177,7 @@ class zh {
       Keys.signInWithTwitter: '用 Twitter 登錄',
       Keys.signInAnonymously: '匿名登錄',
       Keys.searchFaq: '搜索关键字',
+      Keys.loading:'正在加载...'
     };
   }
 }

@@ -43,7 +43,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     }
     List<Meeting> meetingListA = meetingHistoryModel?.meetingHistoryList ?? [];
 
-    if (meetingListA.isEmpty) {
+    if (meetingListA.isEmpty && !(meetingHistoryModel?.isRequesting ?? false)) {
       return Center(
           child: Text(
         Keys.noMeetingsFound.tr(context),
@@ -64,23 +64,13 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
           itemBuilder: (BuildContext context, int index) {
             Meeting? meetingModel = meetingListA[index];
             bool amA = meetingModel.A == widget.uid;
-            return Row(
-              children: [
-                Text('$index'),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: MeetingHistoryTile(
-                    currentUid: widget.uid,
-                    meetingModel: meetingModel,
-                    onTap: () =>
-                        context.pushNamed(Routes.user.nameFromPath(), params: {
-                      'uid': amA ? meetingModel.B : meetingModel.A,
-                    }),
-                  ),
-                ),
-              ],
+            return MeetingHistoryTile(
+              currentUid: widget.uid,
+              meetingModel: meetingModel,
+              onTap: () =>
+                  context.pushNamed(Routes.user.nameFromPath(), params: {
+                    'uid': amA ? meetingModel.B : meetingModel.A,
+                  }),
             );
           },
         ),
@@ -92,7 +82,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
                 color: Colors.transparent,
                 alignment: Alignment.center,
                 child: Text(
-                  'Loading...',
+                  Keys.loading.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -108,7 +98,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     double maxScroll = controller.position.maxScrollExtent;
     double currentScroll = controller.position.pixels;
     double delta = MediaQuery.of(context).size.height * 0.20;
-    if (maxScroll - currentScroll <= delta) {
+    if (maxScroll - currentScroll <= delta && !(meetingHistoryModel?.isRequesting ?? false)) {
       ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(
           uId: widget.uid,
           page: 10,

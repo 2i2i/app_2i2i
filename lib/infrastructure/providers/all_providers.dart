@@ -197,7 +197,7 @@ final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   return database.topDurationsStream();
 });
 
-final meetingHistory = ChangeNotifierProvider<MeetingHistoryModel>((ref) {
+final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
   final database = ref.watch(databaseProvider);
   return MeetingHistoryModel(database: database);
 });
