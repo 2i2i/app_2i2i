@@ -157,7 +157,8 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage(
-            onHangPhone: (uid, meetingId) {
+            onHangPhone: (uid, meetingId) async {
+              await Future.delayed(Duration(milliseconds: 500));
               showRating.value = {
                 'show': true,
                 'otherUid': uid,
@@ -348,7 +349,7 @@ class NamedRoutes {
                 leading: Container(),
                 toolbarHeight: 20,
                 title: Text(AlgorandNet.testnet.name +
-                    ' - v40' +
+                    ' - v41' +
                     (updateAvailable ? ' - update: reload page' : '')),
                 titleTextStyle: Theme.of(context)
                     .textTheme
