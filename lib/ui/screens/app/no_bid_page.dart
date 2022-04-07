@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
@@ -27,64 +28,73 @@ class NoBidPage extends ConsumerWidget {
     final message = 'https://$domain/user/$uid';
     return Container(
       width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(noBidsText,
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle2
-                  ?.copyWith(color: Theme.of(context).disabledColor)),
-          SizedBox(height: kTextTabBarHeight),
-          Container(
-            decoration: Custom.getBoxDecoration(context,
-                color: Colors.white, radius: 10),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: QrWidget(
-                imageSize: 120,
-                logoSize: 40,
-                message: message,
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Text(Keys.inviteFriend.tr(context),
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle2
-                  ?.copyWith(color: Theme.of(context).disabledColor)),
-          SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+      height: MediaQuery.of(context).size.height/1.3,
+      alignment: Alignment.center,
+      child: ScrollConfiguration(
+        behavior: MyBehavior(),
+        child: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flexible(
-                flex: 2,
-                child: Text(message,
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(decoration: TextDecoration.underline)),
+              SizedBox(height: kTextTabBarHeight),
+              Text(noBidsText,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle2
+                      ?.copyWith(color: Theme.of(context).disabledColor)),
+              SizedBox(height: kTextTabBarHeight),
+              Container(
+                decoration: Custom.getBoxDecoration(context,
+                    color: Colors.white, radius: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: QrWidget(
+                    imageSize: MediaQuery.of(context).size.height*0.15,
+                    logoSize: MediaQuery.of(context).size.height*0.05,
+                    message: message,
+                  ),
+                ),
               ),
-              IconButton(
-                  onPressed: () async {
-                    await Clipboard.setData(new ClipboardData(text: message));
-                    CustomDialogs.showToastMessage(
-                        context, Keys.copyMessage.tr(context));
-                  },
-                  icon: Icon(Icons.copy)),
-              IconButton(
-                  onPressed: () {
-                    Share.share('${Keys.joinInvite.tr(context)}\n$message');
-                  },
-                  icon: Icon(Icons.share)),
+              SizedBox(height: 10),
+              Text(Keys.inviteFriend.tr(context),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle2
+                      ?.copyWith(color: Theme.of(context).disabledColor)),
+              SizedBox(height: 4),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: Text(message,
+                        textAlign: TextAlign.center,
+                        maxLines: 3,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(decoration: TextDecoration.underline)),
+                  ),
+                  /*IconButton(
+                      onPressed: () async {
+                        await Clipboard.setData(new ClipboardData(text: message));
+                        CustomDialogs.showToastMessage(
+                            context, Keys.copyMessage.tr(context));
+                      },
+                      icon: Icon(Icons.copy)),*/
+                  IconButton(
+                      onPressed: () {
+                        Share.share('${Keys.joinInvite.tr(context)}\n$message');
+                      },
+                      icon: Icon(Icons.share,size: 20,)),
+                ],
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
