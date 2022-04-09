@@ -73,12 +73,6 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 
-	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) Camera Usage!</string>
-
-	<key>NSMicrophoneUsageDescription</key>
-	<string>$(PRODUCT_NAME) Microphone Usage!</string>
-
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -115,5 +109,14 @@
 
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This app requires access to the photo library.</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) Microphone Usage!</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>This app requires access to the camera.</string>
 </dict>
 </plist>

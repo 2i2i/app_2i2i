@@ -9,6 +9,7 @@
 import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +30,7 @@ import 'common_main.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
   await Firebase.initializeApp(
       options: kIsWeb?FirebaseOptions(
           apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
@@ -39,6 +41,9 @@ Future<void> main() async {
           appId: "1:453884442411:web:dad8591e5125eb8998776e"
       ):null
   );
+
+  await FirebaseAppCheck.instance.activate(
+      webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
