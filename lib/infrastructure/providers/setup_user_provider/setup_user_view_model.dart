@@ -140,6 +140,9 @@ class SetupUserViewModel with ChangeNotifier {
       String? uid = firebaseUser.user?.uid;
       if (uid is String) await signInProcess(uid);
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'credential-already-in-use') {
+        await googleSignIn.signOut();
+      }
       CustomDialogs.showToastMessage(context, '${e.message}');
       throw e;
     }
