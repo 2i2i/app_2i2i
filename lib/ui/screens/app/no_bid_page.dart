@@ -51,7 +51,7 @@ class NoBidPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   child: QrWidget(
                     imageSize: MediaQuery.of(context).size.height*0.15,
-                    logoSize: MediaQuery.of(context).size.height*0.05,
+                    logoSize: MediaQuery.of(context).size.height*0.04,
                     message: message,
                   ),
                 ),

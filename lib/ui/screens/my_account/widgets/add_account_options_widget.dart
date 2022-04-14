@@ -57,7 +57,6 @@ class _AddAccountOptionsWidgetsState
                 widget.accountAddListener!.call(address);
               }
               widget.showBottom?.value = false;
-              Navigator.of(context, rootNavigator: true).pop();
             },
             leading: Container(
               height: 50,

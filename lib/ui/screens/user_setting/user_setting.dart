@@ -91,6 +91,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           ImagePickOptionWidget(
                         imageCallBack: (ImageType imageType, String imagePath) {
                           if (imagePath.isNotEmpty) {
+                            Navigator.of(context).pop();
                             imageUrl = imagePath;
                             this.imageType = imageType;
                             setState(() {});
