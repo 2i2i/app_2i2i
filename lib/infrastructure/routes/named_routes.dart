@@ -1,5 +1,4 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -28,11 +27,11 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/screens/web_view_screen/web_view_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../test_screeen.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
@@ -90,8 +89,8 @@ class NamedRoutes {
         path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(TestScreen1()),
-          // child: getView(MyUserPage()),
+          // child: getView(TestScreen1()),
+          child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
       ),
@@ -224,6 +223,23 @@ class NamedRoutes {
         },
       ),
       GoRoute(
+        name: Routes.webView.nameFromPath(),
+        path: Routes.webView,
+        pageBuilder: (context, state) {
+          if (state.params['walletAddress'] is String) {
+            return NoTransitionPage<void>(
+              key: state.pageKey,
+              child: getView(
+                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+            );
+          }
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(NotFound()),
+          );
+        },
+      ),
+      GoRoute(
         name: Routes.ratings.nameFromPath(),
         path: Routes.ratings,
         pageBuilder: (context, state) {
@@ -293,7 +309,6 @@ class NamedRoutes {
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
-          print('state ${state.extra}');
           if (state.extra is Map) {
             Map map = state.extra as Map;
             List<String> perhaps = map['perhaps'];
@@ -406,8 +421,11 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+        ref.watch(
+            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        if (kIsWeb &&
+            defaultTargetPlatform != TargetPlatform.iOS &&
+            defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

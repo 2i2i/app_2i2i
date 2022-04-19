@@ -12,7 +12,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
-import '../data_access_layer/accounts/local_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
