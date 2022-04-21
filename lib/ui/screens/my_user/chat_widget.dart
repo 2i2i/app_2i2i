@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../infrastructure/commons/theme.dart';
-import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../commons/custom_profile_image_view.dart';
+import 'widgets/chat_tile.dart';
 
 class ChatWidget extends ConsumerStatefulWidget {
   final UserModel user;
@@ -27,27 +27,19 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
   Widget build(BuildContext context) {
     final userModelChanger = ref.watch(userChangerProvider)!;
     final currentUserId = ref.watch(myUIDProvider)!;
+    final database = ref.watch(databaseProvider);
     final currentUserAsyncValue = ref.watch(userProvider(currentUserId));
     final currentUser = currentUserAsyncValue.value!;
     isLargeScreen = (MediaQuery.of(context).size.width > 600);
 
     return Padding(
       padding:
-      EdgeInsets.only(bottom: MediaQuery
-          .of(context)
-          .viewInsets
-          .bottom),
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Container(
-          height: isLargeScreen ? 844 : MediaQuery
-              .of(context)
-              .size
-              .width,
-          width: isLargeScreen ? 500 : MediaQuery
-              .of(context)
-              .size
-              .width,
+          height: isLargeScreen ? 844 : MediaQuery.of(context).size.width,
+          width: isLargeScreen ? 500 : MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(
               top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
           padding: EdgeInsets.all(12),
@@ -66,9 +58,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                     radius: 15,
                     child: IconButton(
                       iconSize: 15,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(Icons.close, color: Colors.black),
                     ),
                   ),
@@ -76,53 +66,35 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               ),
               Expanded(
                 child: StreamBuilder(
-                  stream: FirestoreDatabase().getChat(widget.user.id),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  stream: database.getChat(widget.user.id),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<ChatMessageModel?>> snapshot) {
                     if (snapshot.hasData) {
-                      List<ChatModel> chatList = snapshot.data;
+                      List<ChatMessageModel?> chatMessageList = snapshot.data!;
+                      if (chatMessageList.isEmpty) {
+                        return Container();
+                      }
                       return ListView.builder(
                         itemBuilder: (BuildContext context, int index) {
-                          ChatModel chat = chatList[index];
+                          ChatMessageModel chatMessageModel =
+                              chatMessageList[index]!;
+                          if (chatMessageModel.chatMessageSeenBy!.isNotEmpty && !chatMessageModel.chatMessageSeenBy!.contains(currentUserId)) {
+                            var seenFunction = database.seenChatMessages(
+                                chatMessageModel: chatMessageModel,
+                                uid: widget.user.id,
+                                seenBy: currentUserId);
+                            if (haveToWait(seenFunction)) {
+                              return Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: LinearProgressIndicator());
+                            }
+                          }
 
-                          return Container(
-                            margin: EdgeInsets.symmetric(vertical: 4),
-                            // padding: EdgeInsets.all(8),
-                            // color: Colors.amber,
-                            child: ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              leading: ProfileWidget(
-                                  stringPath: chat.writerName,
-                                  imageType: ImageType.NAME_IMAGE,
-                                  radius: 44,
-                                  hideShadow: true,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.copyWith(fontWeight: FontWeight.w800)),
-                              title: Text(chat.writerName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .caption
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .primaryColorLight)),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(chat.message,
-                                    textAlign: TextAlign.start,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.copyWith(
-                                            color: Theme.of(context)
-                                                .primaryColorLight)),
-                              ),
-                            ),
+                          return ChatTile(
+                            chatMessageModel: chatMessageModel,
                           );
                         },
-                        itemCount: chatList.length,
+                        itemCount: chatMessageList.length,
                         reverse: true,
                       );
                     }
@@ -159,11 +131,14 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                       if (commentController.text.isNotEmpty) {
                         await userModelChanger.addComment(
                             widget.user.id,
-                            ChatModel(
-                                message: commentController.text,
-                                ts: DateTime.now().toUtc(),
-                                writerName: currentUser.name,
-                                writerUid: currentUserId));
+                            ChatMessageModel(
+                                chatMessage: commentController.text,
+                                timeStamp: DateTime.now()
+                                    .toUtc()
+                                    .millisecondsSinceEpoch,
+                                chatMessageUserName: currentUser.name,
+                                chatMessageSeenBy: [currentUserId],
+                                chatMessageUserId: currentUserId));
                         commentController.clear();
                       }
                     },

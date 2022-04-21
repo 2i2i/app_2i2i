@@ -17,7 +17,7 @@ class _TestScreen1State extends State<TestScreen1> {
       body: Center(
         child: FloatingActionButton(
           onPressed: () async {
-            final result = await platform.invokeMethod('code');
+            await platform.invokeMethod('code');
           },
         ),
       ),

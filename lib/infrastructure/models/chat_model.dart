@@ -1,35 +1,36 @@
-import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+class ChatMessageModel {
+  String? chatMessage;
+  String? chatMessageId;
+  List<String>? chatMessageSeenBy;
+  String? chatMessageUserId;
+  String? chatMessageUserName;
+  int? timeStamp;
 
-@immutable
-class ChatModel {
-  final DateTime ts;
-  final String message;
-  final String writerUid;
-  final String writerName;
+  ChatMessageModel(
+      {this.chatMessage,
+      this.chatMessageId,
+      this.chatMessageSeenBy,
+      this.chatMessageUserId,
+      this.chatMessageUserName,
+      this.timeStamp});
 
-  const ChatModel(
-      {required this.ts,
-      required this.message,
-      required this.writerUid,
-      required this.writerName});
-
-  factory ChatModel.fromMap(Map<String, dynamic> json) {
-    final ts = json['ts'].toDate();
-    final message = json['message'];
-    final writerUid = json['writerUid'];
-    final writerName = json['writerName'];
-
-    return ChatModel(
-        ts: ts, message: message, writerUid: writerUid, writerName: writerName);
+  ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    chatMessage = json['chatMessage'];
+    chatMessageId = json['chatMessageId'];
+    chatMessageSeenBy = json['chatMessageSeenBy'].cast<String>();
+    chatMessageUserId = json['chatMessageUserId'];
+    chatMessageUserName = json['chatMessageUserName'];
+    timeStamp = json['timeStamp'];
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'message': message,
-      'ts': FieldValue.serverTimestamp(),
-      'writerUid': writerUid,
-      'writerName': writerName,
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['chatMessage'] = this.chatMessage;
+    data['chatMessageId'] = this.chatMessageId;
+    data['chatMessageSeenBy'] = this.chatMessageSeenBy;
+    data['chatMessageUserId'] = this.chatMessageUserId;
+    data['chatMessageUserName'] = this.chatMessageUserName;
+    data['timeStamp'] = this.timeStamp;
+    return data;
   }
 }

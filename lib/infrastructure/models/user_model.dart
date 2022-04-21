@@ -35,20 +35,26 @@ class UserModelChanger {
 
   Future updateHeartbeatBackground({bool setStatus = false}) =>
       database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+
   Future updateHeartbeatForeground({bool setStatus = false}) =>
       database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+
   Future updateSettings(UserModel user) => database.updateUser(user);
-  Future addComment(String targetUid, ChatModel chat) =>
-      database.addChat(targetUid, chat);
+
+  Future addComment(String targetUid, ChatMessageModel chatMessageModel) =>
+      database.addChat(targetUid, chatMessageModel);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
   // blocked users: we cannot see their bids for us
   // friend users: we see their bids on top
   Future addBlocked(String targetUid) => database.addBlocked(uid, targetUid);
+
   Future addFriend(String targetUid) => database.addFriend(uid, targetUid);
+
   Future removeBlocked(String targetUid) =>
       database.removeBlocked(uid, targetUid);
+
   Future removeFriend(String targetUid) =>
       database.removeFriend(uid, targetUid);
 }
@@ -116,6 +122,7 @@ class UserModel extends Equatable {
     // set also in cloud function userCreated
     required this.id,
     this.status = Status.ONLINE,
+    this.lastChatMessage,
     this.meeting,
     this.name = '',
     this.bio = '',
@@ -137,6 +144,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
+  final ChatMessageModel? lastChatMessage;
 
   final String? meeting;
   Rule rule;
@@ -145,6 +153,7 @@ class UserModel extends Equatable {
   String? imageUrl;
   String bio;
   late List<String> _tags;
+
   void setTags() {
     _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
@@ -185,23 +194,21 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
-    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('user.fromMap - data=$data');
-    // log('user.fromMap - data=${data['bidsIn']}');
-    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
-
     final Status status =
         Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final String? meeting = data['meeting'];
+    final ChatMessageModel? lastChatMessage =
+        data.containsKey('lastChatMessage') && data['lastChatMessage'] != null
+            ? ChatMessageModel.fromJson(data['lastChatMessage'])
+            : null;
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final String? imageUrl = data['imageUrl'];
-    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
@@ -210,7 +217,6 @@ class UserModel extends Equatable {
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
-    // log('UserModel.fromMap - loungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
@@ -228,6 +234,7 @@ class UserModel extends Equatable {
       heartbeatForeground: heartbeatForeground,
       rule: rule,
       loungeHistory: loungeHistory,
+      lastChatMessage: lastChatMessage,
       loungeHistoryIndex: loungeHistoryIndex,
       blocked: blocked,
       friends: friends,

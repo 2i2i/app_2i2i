@@ -2,14 +2,16 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/user_model.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
-class UserInfoWidget extends StatefulWidget {
+class UserInfoWidget extends ConsumerStatefulWidget {
   final UserModel user;
   final bool isFav;
   final int? estWaitTime;
@@ -36,11 +38,12 @@ class UserInfoWidget extends StatefulWidget {
   _UserInfoWidgetState createState() => _UserInfoWidgetState();
 }
 
-class _UserInfoWidgetState extends State<UserInfoWidget> {
+class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
   ValueNotifier<bool> seeMore = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
+    final uid = ref.watch(myUIDProvider)!;
     final shortBio = widget.user.bio;
     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
@@ -74,10 +77,30 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     ),
                     InkResponse(
                       onTap: widget.onTapChat,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 4),
-                        child: Icon(Icons.chat_outlined, size: 25),
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
+                            child: Icon(Icons.chat_outlined, size: 25),
+                          ),
+                          Visibility(
+                            visible: showBadge(uid),
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                height: 15,
+                                width: 15,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Visibility(
@@ -220,12 +243,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   String removeDecimalZeroFormat(double n) {
     return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 2);
   }
+
+  bool showBadge(String uid) {
+    return ((widget.user.lastChatMessage?.chatMessageSeenBy?.length ?? 0) >
+            0) &&
+        !(widget.user.lastChatMessage?.chatMessageSeenBy?.contains(uid) ??
+            false);
+  }
 }
 
 class UserRulesWidget extends StatelessWidget {
   final UserModel user;
 
   final GestureTapCallback? onTapRules;
+
   const UserRulesWidget({Key? key, required this.user, this.onTapRules})
       : super(key: key);
 

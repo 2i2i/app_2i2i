@@ -44,14 +44,26 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
   @override
   Widget build(BuildContext context) {
     final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
+    final database = ref.watch(databaseProvider);
     if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.user == null) {
       return WaitPage();
     }
 
     UserModel user = myHangoutPageViewModel!.user;
-    final domain =
-        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
-        
+    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet
+        ? '2i2i.app'
+        : 'test.2i2i.app';
+
+    if (user.lastChatMessage?.chatMessageId?.isNotEmpty ?? false) {
+      var checkIsSeenMessage = database.getSeenChatMessagesList(
+          uid: user.id,
+          chatMessageId: user.lastChatMessage?.chatMessageId ?? '');
+
+      if (haveToWait(checkIsSeenMessage)) {
+        return WaitPage();
+      }
+    }
+
     return Scaffold(
       body: Column(
         children: [
