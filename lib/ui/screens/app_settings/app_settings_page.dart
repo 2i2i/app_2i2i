@@ -130,15 +130,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
               decoration: Custom.getBoxDecoration(context),
               child: Column(
                 children: [
-                  ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.blocks.nameFromPath()),
-                    title: Text(
-                      Keys.blockList.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
+                  Visibility(
+                    visible: false,
+                    child: ListTile(
+                      onTap: () =>
+                          context.pushNamed(Routes.blocks.nameFromPath()),
+                      title: Text(
+                        Keys.blockList.tr(context),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      trailing: Icon(
+                        Icons.navigate_next,
+                      ),
                     ),
                   ),
                   ListTile(
