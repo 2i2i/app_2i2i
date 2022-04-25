@@ -4,6 +4,8 @@ import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
+import '../../data_access_layer/services/firebase_notifications.dart';
+import '../../routes/app_routes.dart';
 
 class MyUserPageViewModel {
   MyUserPageViewModel({
@@ -13,16 +15,18 @@ class MyUserPageViewModel {
     required this.accountService,
     required this.userChanger,
   });
+
   final UserModel user;
   final FirestoreDatabase database;
   final FirebaseFunctions functions;
   final UserModelChanger userChanger;
   final AccountService accountService;
 
-  Future<bool> acceptBid(BidIn bidIn, {String? token, bool isIos = false}) async {
+  Future<bool> acceptBid(BidIn bidIn,
+      {String? token, bool isIos = false}) async {
     if (!bidIn.public.active) return false;
 
-    if (/*bidIn.user!.status == Status.OFFLINE ||*/bidIn.user!.isInMeeting()) {
+    if (/*bidIn.user!.status == Status.OFFLINE ||*/ bidIn.user!.isInMeeting()) {
       await cancelNoShow(bidIn: bidIn);
       return false;
     }
@@ -35,15 +39,14 @@ class MyUserPageViewModel {
     final meeting = Meeting.newMeeting(
         id: bidIn.public.id, B: user.id, addrB: addrB, bidIn: bidIn);
     await database.acceptBid(meeting);
-    if(token != null) {
-
-      // Map data = {
-      //   'route':Routes.lock,
-      //   'type':'Call',
-      //   "title": bidIn.user?.name ?? '',
-      //   "body": 'Incoming video call'
-      // };
-      // await FirebaseNotifications().sendNotification(token,data,isIos);
+    if (token != null) {
+      Map data = {
+        'route': Routes.lock,
+        'type': 'Call',
+        "title": bidIn.user?.name ?? '',
+        "body": 'Incoming video call'
+      };
+      await FirebaseNotifications().sendNotification(token, data, isIos);
     }
     return true;
   }
@@ -64,6 +67,5 @@ class MyUserPageViewModel {
     await cancelBid({'bidId': bidOut.id});
   }
 
-  Future updateHangout(UserModel user) =>
-      userChanger.updateSettings(user);
+  Future updateHangout(UserModel user) => userChanger.updateSettings(user);
 }

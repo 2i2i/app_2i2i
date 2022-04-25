@@ -37,14 +37,12 @@ class ImagePickOptionWidget extends StatelessWidget {
   void _openGallery(BuildContext context) async {
     XFile? pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-    Navigator.pop(context);
     imageCallBack.call(ImageType.ASSENT_IMAGE, (pickedFile?.path ?? ""));
   }
 
   void _openCamera(BuildContext context) async {
     XFile? pickedFile =
         await ImagePicker().pickImage(source: ImageSource.camera);
-    Navigator.pop(context);
     imageCallBack.call(ImageType.ASSENT_IMAGE, (pickedFile?.path ?? ""));
   }
 }

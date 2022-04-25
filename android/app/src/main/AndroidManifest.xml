@@ -34,17 +34,7 @@
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="true" />
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="2i2i.app"
-                    android:pathPrefix="/"
-                    android:scheme="https" />
-            </intent-filter>
-            <!-- Specifies an Android theme to apply to this Activity as soon as
+                      <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
@@ -73,9 +63,22 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <data android:scheme="test" android:host="2i2i.app" />
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <!-- Registered Callback URLs in TwitterApp -->
+                <data android:scheme="test"
+                    android:host="test.2i2i.app" /> <!-- host is option -->
+            </intent-filter>
+
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with https://YOUR_HOST -->
+                <data
+                    android:host="test.2i2i.app"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
             </intent-filter>
 
 
