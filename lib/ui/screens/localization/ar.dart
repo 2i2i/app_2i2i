@@ -100,7 +100,7 @@ class ar {
       Keys.swipeAndChangeAccount: "مرر لتغيير الحساب" ,
       Keys.insufficientBalance: "رصيد غير كاف" ,
       Keys.addBid: 'انضم',
-      Keys.copyAndNext: "نسخ والتالي",
+      Keys.next: "نسخ",
       Keys.report: 'نقل',
       Keys.block: 'منع',
       Keys.unBlock: 'رفع الحظر',

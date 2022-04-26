@@ -100,7 +100,7 @@ class de {
       Keys.swipeAndChangeAccount: 'Zum Kontowechsel wischen',
       Keys.insufficientBalance: 'Mangelhaftes Gleichgewicht',
       Keys.addBid: 'Beitreten',
-      Keys.copyAndNext: 'Kopieren und weiter',
+      Keys.next: 'weiter',
       Keys.report: 'Prüfbericht',
       Keys.block: 'Block',
       Keys.unBlock: 'Entsperren',

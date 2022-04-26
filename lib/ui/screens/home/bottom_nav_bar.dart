@@ -11,7 +11,7 @@ import 'package:showcaseview/showcaseview.dart';
 import '../../../common_main.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 
-ValueNotifier<int> currentIndex = ValueNotifier(0);
+ValueNotifier<int> currentIndex = ValueNotifier(1);
 String previousRoute = '';
 
 class BottomNavBar extends ConsumerStatefulWidget {

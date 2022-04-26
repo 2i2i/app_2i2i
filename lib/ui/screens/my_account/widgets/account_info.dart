@@ -7,16 +7,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
+import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final GlobalObjectKey? showOnAccount;
+
 
   AccountInfo(this.shrinkwrap,
       {Key? key, required this.account, this.showOnAccount, this.afterRefresh})
@@ -53,16 +56,16 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               minHeight: 200,
             ),
       margin: EdgeInsets.symmetric(vertical: widget.showOnAccount != null?0:10),
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 7),
+      padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
-              offset: Offset(2, 4),
-              blurRadius: 8,
-              color: Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
-              ),
+            offset: Offset(2, 4),
+            blurRadius: 8,
+            color: Color.fromRGBO(0, 0, 0, 0.12),
+          ),
         ],
       ),
       child: Column(
@@ -104,12 +107,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             ],
           ),
           SizedBox(height: 8),
-          Padding(
-            padding: EdgeInsets.only(left: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
+           Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -128,18 +126,34 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ],),
+          Divider(),
+          Container(
+            // color: Colors.amber,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 6),
+                  child: IconButton(
+                    icon: Icon(Icons.credit_card_rounded,
+                        color: iconColor(context)),
+                    onPressed: () => context.pushNamed(
+                        Routes.webView.nameFromPath(),
+                        params: {'walletAddress': widget.account.address}),
                   ),
                 ),
                 Container(
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
+                  child: IconButton(iconSize: 18,
                     icon: SvgPicture.asset(
                       'assets/icons/refresh.svg',
-                      width: 20,
-                      height: 20,
+
                       color: iconColor(context),
                     ),
                     onPressed: () async {
@@ -156,11 +170,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(
+                  child: IconButton(iconSize: 18,
                     icon: SvgPicture.asset(
                       'assets/icons/copy.svg',
-                      width: 20,
-                      height: 20,
+
                       color: iconColor(context),
                     ),
                     onPressed: () {
@@ -184,11 +197,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     child: Container(
                       height: 40,
                       width: 40,
-                      child: IconButton(
+                      child: IconButton(iconSize: 18,
                           icon: SvgPicture.asset(
                             'assets/icons/key.svg',
-                            width: 20,
-                            height: 20,
+
                             color: iconColor(context),
                           ),
                           onPressed: () => CustomDialogs.infoDialog(
@@ -226,7 +238,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   Color? iconColor(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
           ? Theme.of(context).colorScheme.secondary
-          : null;
+          : Color(0XFF2D4E6C);
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
@@ -251,42 +263,42 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 
-  // Future<int?> _optInToASA(BuildContext context) async {
-  //   final TextEditingController asaId = TextEditingController(text: '');
-  //   return showDialog<int>(
-  //       context: context,
-  //       builder: (BuildContext context) => SimpleDialog(
-  //             title: const Text('Enter ASA ID'),
-  //             children: <Widget>[
-  //               Container(
-  //                   padding: const EdgeInsets.only(
-  //                       top: 5, left: 20, right: 20, bottom: 10),
-  //                   child: TextField(
-  //                     decoration: InputDecoration(
-  //                       hintText: 'ASA ID',
-  //                       border: OutlineInputBorder(),
-  //                       label: Text('ASA ID'),
-  //                     ),
-  //                     minLines: 1,
-  //                     maxLines: 1,
-  //                     controller: asaId,
-  //                     keyboardType: TextInputType.number,
-  //                     inputFormatters: <TextInputFormatter>[
-  //                       FilteringTextInputFormatter.digitsOnly
-  //                     ], // Only numbers can be entered
-  //                   )),
-  //               Container(
-  //                   padding: const EdgeInsets.only(
-  //                       top: 10, left: 50, right: 50, bottom: 10),
-  //                   child: ElevatedButton(
-  //                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-  //                       child: Text('Opt In'),
-  //                       onPressed: () => Navigator.pop(
-  //                           context,
-  //                           asaId.text.isEmpty
-  //                               ? null
-  //                               : int.parse(asaId.text)))),
-  //             ],
-  //           ));
-  // }
+// Future<int?> _optInToASA(BuildContext context) async {
+//   final TextEditingController asaId = TextEditingController(text: '');
+//   return showDialog<int>(
+//       context: context,
+//       builder: (BuildContext context) => SimpleDialog(
+//             title: const Text('Enter ASA ID'),
+//             children: <Widget>[
+//               Container(
+//                   padding: const EdgeInsets.only(
+//                       top: 5, left: 20, right: 20, bottom: 10),
+//                   child: TextField(
+//                     decoration: InputDecoration(
+//                       hintText: 'ASA ID',
+//                       border: OutlineInputBorder(),
+//                       label: Text('ASA ID'),
+//                     ),
+//                     minLines: 1,
+//                     maxLines: 1,
+//                     controller: asaId,
+//                     keyboardType: TextInputType.number,
+//                     inputFormatters: <TextInputFormatter>[
+//                       FilteringTextInputFormatter.digitsOnly
+//                     ], // Only numbers can be entered
+//                   )),
+//               Container(
+//                   padding: const EdgeInsets.only(
+//                       top: 10, left: 50, right: 50, bottom: 10),
+//                   child: ElevatedButton(
+//                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
+//                       child: Text('Opt In'),
+//                       onPressed: () => Navigator.pop(
+//                           context,
+//                           asaId.text.isEmpty
+//                               ? null
+//                               : int.parse(asaId.text)))),
+//             ],
+//           ));
+// }
 }

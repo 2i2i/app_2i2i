@@ -100,7 +100,7 @@ class ja {
       Keys.swipeAndChangeAccount: 'スワイプしてアカウントを変更します',
       Keys.insufficientBalance: '残高不足です',
       Keys.addBid: '加入',
-      Keys.copyAndNext: 'コピーして次へ',
+      Keys.next: '次',
       Keys.report: '報告',
       Keys.block: 'ブロック',
       Keys.unBlock: 'ブロックを解除する',
