@@ -17,6 +17,7 @@ class Routes {
   static const blocks = '/blocks';
   static const favorites = '/favorites';
   static const userSetting = '/userSetting';
+  static const webView = '/webView/:walletAddress';
   static const recover = '/recover';
   static const createLocalAccount = '/createLocalAccount';
   static const test = '/test';
@@ -77,6 +78,8 @@ extension name on String {
         return 'language';
       case Routes.meetingHistory:
         return 'meetingHistory';
+      case Routes.webView:
+        return 'webView';
       default:
         return this;
     }

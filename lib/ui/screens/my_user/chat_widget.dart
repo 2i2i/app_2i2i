@@ -33,21 +33,12 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
 
     return Padding(
       padding:
-      EdgeInsets.only(bottom: MediaQuery
-          .of(context)
-          .viewInsets
-          .bottom),
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Container(
-          height: isLargeScreen ? 844 : MediaQuery
-              .of(context)
-              .size
-              .width,
-          width: isLargeScreen ? 500 : MediaQuery
-              .of(context)
-              .size
-              .width,
+          height: isLargeScreen ? 844 : MediaQuery.of(context).size.width,
+          width: isLargeScreen ? 500 : MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(
               top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
           padding: EdgeInsets.all(12),
@@ -101,21 +92,45 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                       .textTheme
                                       .bodyText2
                                       ?.copyWith(fontWeight: FontWeight.w800)),
-                              title: Text(chat.writerName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .caption
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .primaryColorLight)),
+                              title: Row(
+                                children: [
+                                  Text(chat.writerName,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .caption
+                                          ?.copyWith(
+                                              color: Theme.of(context)
+                                                  .primaryColorLight)),
+                                  Visibility(
+                                    visible: chat.writerUid == widget.user.id,
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2, horizontal: 4),
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius:
+                                              BorderRadius.circular(6)),
+                                      child: Text('Host',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption),
+                                    ),
+                                  )
+                                ],
+                              ),
                               subtitle: Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(chat.message,
                                     textAlign: TextAlign.start,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyText2
+                                        .bodyText1
                                         ?.copyWith(
+                                            fontWeight:
+                                                chat.writerUid == widget.user.id
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
                                             color: Theme.of(context)
                                                 .primaryColorLight)),
                               ),

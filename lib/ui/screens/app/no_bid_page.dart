@@ -1,7 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,7 +10,6 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom.dart';
 import '../../commons/qr_image.dart';
 import '../home/wait_page.dart';
-import 'package:flutter/services.dart';
 
 class NoBidPage extends ConsumerWidget {
   final String noBidsText;
@@ -51,7 +49,7 @@ class NoBidPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   child: QrWidget(
                     imageSize: MediaQuery.of(context).size.height*0.15,
-                    logoSize: MediaQuery.of(context).size.height*0.05,
+                    logoSize: MediaQuery.of(context).size.height*0.04,
                     message: message,
                   ),
                 ),

@@ -482,9 +482,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       context,
       AddAccountOptionsWidgets(
         accountAddListener: (String? address) {
+          Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x =
-                myAccountPageViewModel.accounts?.map((a) => a.address).toList();
+            final x = myAccountPageViewModel.accounts?.map((a) => a.address).toList();
             log(X + 'showBidAlert + address=$address x=$x');
             int lastIndex = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
             int index = x?.indexOf(address) ?? lastIndex;
