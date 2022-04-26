@@ -100,7 +100,7 @@ class zh {
       Keys.swipeAndChangeAccount: '滑动以更改帐户',
       Keys.insufficientBalance: '余额不足',
       Keys.addBid: '加入',
-      Keys.copyAndNext: '复制和下一步',
+      Keys.next: '下一个',
       Keys.report: '报告',
       Keys.block: '堵塞',
       Keys.unBlock: '解除封锁',

@@ -24,8 +24,8 @@ class KeysWidget extends StatelessWidget {
       insetPadding: EdgeInsets.zero,
       actionsPadding: EdgeInsets.zero,
       content: Container(
-        width: MediaQuery.of(context).size.height * 0.40,
-        height: MediaQuery.of(context).size.width * 1.0,
+        width: MediaQuery.of(context).size.height * 0.35,
+        height: MediaQuery.of(context).size.width * 1.25,
         margin: EdgeInsets.all(22),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -37,30 +37,26 @@ class KeysWidget extends StatelessWidget {
       ),
     );
   }
-  Widget titleMessage(BuildContext context){
+
+  Widget titleMessage(BuildContext context) {
     return Column(
       children: [
         SizedBox(height: 4),
         Text(
           Keys.pleaseReadCarefully.tr(context),
-          style: Theme.of(context)
-              .textTheme
-              .headline6,
+          style: Theme.of(context).textTheme.headline6,
         ),
         SizedBox(height: 8),
         RichText(
           text: TextSpan(
-              text:
-              Keys.writeDownRecovery.tr(context),
+              text: Keys.writeDownRecovery.tr(context),
               style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                  color: AppTheme().lightSecondaryTextColor,
+                    color: AppTheme().lightSecondaryTextColor,
                   ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: ' ${Keys.recoverAccount.tr(context)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText2,
+              children: <TextSpan>[
+                TextSpan(
+                  text: ' ${Keys.recoverAccount.tr(context)}',
+                  style: Theme.of(context).textTheme.bodyText2,
                 )
               ]),
         ),
@@ -70,34 +66,33 @@ class KeysWidget extends StatelessWidget {
               color: AppTheme().warningColor,
               borderRadius: BorderRadius.circular(8)),
           padding: EdgeInsets.all(12),
-              child: Column(
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/warning_red.svg',
-                        color: AppTheme().redColor,
-                        height: 18,
-                        width: 18,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        Keys.warning.tr(context),
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            color: AppTheme().redColor,
-                        ),
-                      )
-                    ],
-              ),
-                  SizedBox(height: 8),
-                  Text(
-                    Keys.doNotShare.tr(context),
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                        color: AppTheme().redColor,
-                    ),
+                  SvgPicture.asset(
+                    'assets/icons/warning_red.svg',
+                    color: AppTheme().redColor,
+                    height: 18,
+                    width: 18,
                   ),
-
+                  SizedBox(width: 4),
+                  Text(
+                    Keys.warning.tr(context),
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          color: AppTheme().redColor,
+                        ),
+                  )
+                ],
+              ),
+              SizedBox(height: 8),
+              Text(
+                Keys.doNotShare.tr(context),
+                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                      color: AppTheme().redColor,
+                    ),
+              ),
             ],
           ),
         ),
@@ -108,8 +103,7 @@ class KeysWidget extends StatelessWidget {
   Widget keyListWidget(BuildContext context) {
     return Expanded(
       child: FutureBuilder(
-        builder:
-            (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             List perhaps = snapshot.data;
             return Column(
@@ -122,30 +116,32 @@ class KeysWidget extends StatelessWidget {
                     shrinkWrap: true,
                     primary: false,
                     crossAxisCount: 2,
-                    childAspectRatio: 5,
+                    childAspectRatio: 4,
                     padding: EdgeInsets.all(8),
-                    children:
-                    List.generate(perhaps.length, (index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                          Theme.of(context).primaryColor,
-                          radius: 10,
-                          child: Text(
-                            '${index + 1}',
-                            style: Theme.of(context).textTheme.caption,
+                    children: List.generate(perhaps.length, (index) {
+                      return Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            radius: 10,
+                            child: Text(
+                              '${index + 1}',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           ),
-                        ),
-                        minLeadingWidth: 10,
-                        title: Text(
-                          '${perhaps[index]}',
-                          style: Theme.of(context).textTheme.bodyText2,
-                        ),
+                          Expanded(
+                            child: Text(
+                              '${perhaps[index]}',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyText2,
+                            ),
+                          )
+                        ],
                       );
                     }),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(

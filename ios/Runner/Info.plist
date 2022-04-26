@@ -39,10 +39,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>test.2i2i.app</string>
+			<string>2i2i.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>https</string>
+				<string>test</string>
 			</array>
 		</dict>
 	</array>
@@ -59,7 +59,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo</string>
-          <string>https://i2i-test.firebaseapp.com/__/auth/handler/</string>
+          <string>https://app-2i2i.firebaseapp.com/__/auth/handler/</string>
         </array>
       </dict>
     </array>
@@ -72,12 +72,6 @@
 
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-
-	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) Camera Usage!</string>
-
-	<key>NSMicrophoneUsageDescription</key>
-	<string>$(PRODUCT_NAME) Microphone Usage!</string>
 
 	<key>UIBackgroundModes</key>
 	<array>
@@ -115,5 +109,14 @@
 
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This app requires access to the photo library.</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) Microphone Usage!</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>This app requires access to the camera.</string>
 </dict>
 </plist>

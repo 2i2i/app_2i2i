@@ -1,5 +1,4 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -28,6 +27,7 @@ import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/screens/web_view_screen/web_view_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,7 +74,7 @@ class NamedRoutes {
       }
       return null;
     },
-    initialLocation: Routes.root,
+    initialLocation: Routes.myUser,
     routes: [
       GoRoute(
         name: Routes.root.nameFromPath(),
@@ -82,8 +82,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(WaitPage()),
-          // child: Scaffold(),
         ),
       ),
       GoRoute(
@@ -91,6 +89,7 @@ class NamedRoutes {
         path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
+          // child: getView(TestScreen1()),
           child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
@@ -159,7 +158,8 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage(
-            onHangPhone: (uid, meetingId) {
+            onHangPhone: (uid, meetingId) async {
+              await Future.delayed(Duration(milliseconds: 500));
               showRating.value = {
                 'show': true,
                 'otherUid': uid,
@@ -219,6 +219,23 @@ class NamedRoutes {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(RecoverAccountPage()),
+          );
+        },
+      ),
+      GoRoute(
+        name: Routes.webView.nameFromPath(),
+        path: Routes.webView,
+        pageBuilder: (context, state) {
+          if (state.params['walletAddress'] is String) {
+            return NoTransitionPage<void>(
+              key: state.pageKey,
+              child: getView(
+                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+            );
+          }
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(NotFound()),
           );
         },
       ),
@@ -292,7 +309,6 @@ class NamedRoutes {
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
-          print('state ${state.extra}');
           if (state.extra is Map) {
             Map map = state.extra as Map;
             List<String> perhaps = map['perhaps'];
@@ -350,7 +366,7 @@ class NamedRoutes {
                 leading: Container(),
                 toolbarHeight: 20,
                 title: Text(AlgorandNet.testnet.name +
-                    ' - v40' +
+                    ' - v41' +
                     (updateAvailable ? ' - update: reload page' : '')),
                 titleTextStyle: Theme.of(context)
                     .textTheme
@@ -364,10 +380,10 @@ class NamedRoutes {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);
             if (uid != null) {
-              final userProviderVal = ref.watch(userProvider(uid));
-              bool isLoaded = !(haveToWait(userProviderVal));
-              if (isLoaded && userProviderVal.asData?.value is UserModel) {
-                final UserModel user = userProviderVal.asData!.value;
+              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
+              userInfoViewModel.getUserInfoModel(uid);
+              if (userInfoViewModel.userInfoModel is UserModel) {
+                final UserModel user = userInfoViewModel.userInfoModel!;
                 if (user.name.trim().isEmpty) {
                   return BottomSheet(
                     enableDrag: true,
@@ -405,8 +421,11 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+        ref.watch(
+            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        if (kIsWeb &&
+            defaultTargetPlatform != TargetPlatform.iOS &&
+            defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(

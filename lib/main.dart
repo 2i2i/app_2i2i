@@ -17,9 +17,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:universal_html/html.dart';
-import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
+
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -45,17 +44,23 @@ Future<void> main() async {
   await Firebase.initializeApp(
       options: kIsWeb
           ? FirebaseOptions(
-              apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
-              authDomain: "i2i-test.firebaseapp.com",
-              projectId: "i2i-test",
-              storageBucket: "i2i-test.appspot.com",
-              messagingSenderId: "453884442411",
-              appId: "1:453884442411:web:dad8591e5125eb8998776e")
+              apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+              authDomain: "app-2i2i.firebaseapp.com",
+              projectId: "app-2i2i",
+              storageBucket: "app-2i2i.appspot.com",
+              messagingSenderId: "347734179578",
+              appId: "1:347734179578:web:f9c11616c64e12c643d343")
           : null);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   FirebaseNotifications();
+
+  //region DEBUG
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //endregion DEBUG
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {

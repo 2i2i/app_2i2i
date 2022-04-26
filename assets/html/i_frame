@@ -1,0 +1,5 @@
+<iframe id='iframe-widget'
+        src='https://changenow.io/embeds/exchange-widget/v2/widget.html?FAQ=true&amount=100&backgroundColor=FFFFFF&darkMode=false&from=usd&horizontal=false&lang=en-US&link_id=5cc8755972e91a&locales=true&logo=true&primaryColor=00C26F&to=algo&toTheMoon=true&topUpMode=true&topUpAddress=2XGXY737W47TDME2TUYBOTSY6FWOEWMW6FY6ASYPARY2CENQHNTTASRKOM&topUpCurrency=algo&topUpNetwork=ALGO'
+        style="height: 356px; width: 100%; border: none"></iframe>
+<script defer type='text/javascript'
+        src='https://changenow.io/embeds/exchange-widget/v2/stepper-connector.js'></script>

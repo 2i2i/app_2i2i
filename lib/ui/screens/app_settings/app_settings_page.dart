@@ -130,15 +130,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
               decoration: Custom.getBoxDecoration(context),
               child: Column(
                 children: [
-                  ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.blocks.nameFromPath()),
-                    title: Text(
-                      Keys.blockList.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Icon(
-                      Icons.navigate_next,
+                  Visibility(
+                    visible: false,
+                    child: ListTile(
+                      onTap: () =>
+                          context.pushNamed(Routes.blocks.nameFromPath()),
+                      title: Text(
+                        Keys.blockList.tr(context),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      trailing: Icon(
+                        Icons.navigate_next,
+                      ),
                     ),
                   ),
                   ListTile(
@@ -238,7 +241,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                             .toUpperCase()),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.imi.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -305,8 +308,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       await signUpViewModel.signOutFromAuth();
-                      currentIndex.value = 0;
-                      context.go(Routes.root);
+                      currentIndex.value = 1;
+                      context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context),
                         style: Theme.of(context)
@@ -319,9 +322,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             ),
             SizedBox(height: 20),
             //connect social
-            Text(
-              'Connect account with',
-              style: Theme.of(context).textTheme.subtitle1,
+            Visibility(
+              visible:  !signUpViewModel.authList.contains('google.com') &&  !signUpViewModel.authList.contains('apple.com'),
+              child: Text(
+                'Connect account with',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
             ),
             SizedBox(height: 12),
             Container(

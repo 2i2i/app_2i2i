@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-ValueNotifier<int> currentIndex = ValueNotifier(0);
+ValueNotifier<int> currentIndex = ValueNotifier(1);
 String previousRoute = '';
 
 class BottomNavBar extends ConsumerStatefulWidget {

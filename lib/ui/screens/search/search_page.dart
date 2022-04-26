@@ -1,9 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
-import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,40 +17,6 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // initMethod();
-  }
-
-  void initMethod() {
-    Future.delayed(Duration(seconds: 3)).then((value) {
-      final uid = ref.watch(myUIDProvider)!;
-      final userProviderVal = ref.watch(userProvider(uid));
-      bool isLoaded = !(haveToWait(userProviderVal));
-      if (isLoaded && userProviderVal.asData?.value is UserModel) {
-        final UserModel user = userProviderVal.asData!.value;
-        if (user.name.isEmpty) {
-          CustomAlertWidget.showBidAlert(
-            context,
-            WillPopScope(
-              onWillPop: () {
-                return Future.value(true);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-            ),
-            isDismissible: false,
-          );
-        }
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../../../common_main.dart';
+import 'package:http/http.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -73,7 +75,7 @@ class FirebaseNotifications {
     });
   }
 
-  /*Future sendNotification(String token,Map data,bool isIos) async {
+  Future sendNotification(String token,Map data,bool isIos) async {
     var notification = {};
     if(isIos){
       notification['title'] = data['title'];
@@ -106,7 +108,7 @@ class FirebaseNotifications {
     } catch (e) {
       print(e);
     }
-  }*/
+  }
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {

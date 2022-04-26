@@ -9,7 +9,6 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_profile_image_view.dart';
-import '../faq/faq_keywords_list.dart';
 import 'cv_keywords_list.dart';
 import 'widgets/cv_widget.dart';
 
