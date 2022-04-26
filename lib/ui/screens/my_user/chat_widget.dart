@@ -92,6 +92,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
 
                           return ChatTile(
                             chatMessageModel: chatMessageModel,
+                            uid: widget.user.id,
                           );
                         },
                         itemCount: chatMessageList.length,
