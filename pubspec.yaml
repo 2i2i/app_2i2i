@@ -77,12 +77,16 @@ dependencies:
   store_redirect: ^2.0.1
   share_plus: ^4.0.4
   flutter_inappwebview: ^5.4.2
+  flutter_native_splash: ^2.1.6
+
 #  webview_flutter: ^3.0.2
 #
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
