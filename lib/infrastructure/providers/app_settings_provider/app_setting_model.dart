@@ -39,7 +39,7 @@ class AppSettingModel extends ChangeNotifier {
     try {
       ConnectivityResult result = await Connectivity().checkConnectivity();
       return result != ConnectivityResult.none;
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return false;
     }
   }
