@@ -35,34 +35,41 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.only(right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
-        child: ListView.separated(
-          itemCount: favList.length,
-          shrinkWrap: true,
-          primary: false,
-          itemBuilder: (_, index) {
-            final user = ref.watch(userProvider(favList[index]));
-            if (haveToWait(user)) {
-              return Container();
-            }
-            return UserInfoTile(
-              user: user.value!,
-              myUid: myUid,
-              isForBlockedUser: false,
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            /*final user = users[index];
+      body: favList.isEmpty
+          ? Center(
+              child: Text(
+              Keys.noHostsFound.tr(context),
+              style: Theme.of(context).textTheme.subtitle2,
+            ))
+          : Padding(
+              padding: EdgeInsets.only(
+                  right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
+              child: ListView.separated(
+                itemCount: favList.length,
+                shrinkWrap: true,
+                primary: false,
+                itemBuilder: (_, index) {
+                  final user = ref.watch(userProvider(favList[index]));
+                  if (haveToWait(user)) {
+                    return Container();
+                  }
+                  return UserInfoTile(
+                    user: user.value!,
+                    myUid: myUid,
+                    isForBlockedUser: false,
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  /*final user = users[index];
         if (user.id == mainUserID) {
           return Container();
         }*/
-            return Divider(
-              color: Colors.transparent,
-            );
-          },
-        ),
-      ),
+                  return Divider(
+                    color: Colors.transparent,
+                  );
+                },
+              ),
+            ),
     );
   }
 }
