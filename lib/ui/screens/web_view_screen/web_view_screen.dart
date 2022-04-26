@@ -21,27 +21,36 @@ class _WebViewScreenState extends State<WebViewScreen> {
       body: Stack(
         children: [
           InAppWebView(
-            initialData: InAppWebViewInitialData(data: """
+            initialData: InAppWebViewInitialData(data: """<html>
+
+<head>
+<meta name="viewport" content="width=device-width">
+</head>
 <iframe id='iframe-widget'
         src='https://changenow.io/embeds/exchange-widget/v2/widget.html?FAQ=true&amount=100&backgroundColor=FFFFFF&darkMode=false&from=usd&horizontal=false&lang=en-US&link_id=5cc8755972e91a&locales=true&logo=true&primaryColor=00C26F&to=algo&toTheMoon=true&topUpMode=true&topUpAddress=${widget.walletAddress}&topUpCurrency=algo&topUpNetwork=ALGO'
         style="height: 356px; width: 100%; border: none"></iframe>
 <script defer type='text/javascript'
         src='https://changenow.io/embeds/exchange-widget/v2/stepper-connector.js'></script>
+
+</html>
+
 """),
             initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
-                useShouldOverrideUrlLoading: true,
-                transparentBackground: true,
-                mediaPlaybackRequiresUserGesture: false,
                 supportZoom: false,
                 javaScriptEnabled: true,
-                disableHorizontalScroll: true,
-                disableVerticalScroll: true,
-                preferredContentMode: UserPreferredContentMode.MOBILE,
+                disableHorizontalScroll: false,
+                disableVerticalScroll: false,
+                transparentBackground: true,
               ),
+
               android: AndroidInAppWebViewOptions(
                 useHybridComposition: true,
-                hardwareAcceleration: true
+                hardwareAcceleration: true,
+                useWideViewPort: true,
+                initialScale: 100,
+                allowFileAccess: true,
+                useShouldInterceptRequest: true,
               ),
               ios: IOSInAppWebViewOptions(
                 allowsInlineMediaPlayback: true,
