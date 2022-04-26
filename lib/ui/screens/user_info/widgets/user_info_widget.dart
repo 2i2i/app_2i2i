@@ -58,7 +58,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         Row(
           children: [
             ProfileWidget(
-              stringPath: widget.user.imageUrl ?? '',
+              stringPath: widget.user.imageUrl ?? widget.user.name,
               statusColor: statusColor,
               radius: 80,
             ),

@@ -179,6 +179,7 @@ class es {
       Keys.signInWithTwitter: 'Registrate con Twitter',
       Keys.signInAnonymously: 'Iniciar sesión en forma anónima',
       Keys.searchFaq: 'Buscar palabras clave',
+      Keys.loading:'Cargando...'
     };
   }
 }

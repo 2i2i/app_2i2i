@@ -184,7 +184,7 @@ class en {
       Keys.signInWithTwitter:  'Sign in with Twitter',
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.searchFaq: 'Search keywords',
-
+      Keys.loading:'Loading...'
 
     };
   }
