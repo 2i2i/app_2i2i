@@ -94,8 +94,11 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
                   SizedBox(width: 6),
                   RectangleBox(
                     radius: 42,
-                    icon: Icon(fagProviderModel.isOpenSuggestionView?
-                    Icons.keyboard_arrow_up_rounded:Icons.keyboard_arrow_down_rounded, size: 20),
+                    icon: Icon(
+                        fagProviderModel.isOpenSuggestionView
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        size: 20),
                     curveRadius: 10,
                     onTap: () => fagProviderModel.openCloseSuggestionView(),
                   )
@@ -115,8 +118,6 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
           ),
         ));
   }
-
-
 
   Widget FaqListWidget() {
     if (mainList.isNotEmpty) {
@@ -150,7 +151,7 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
       text: 'twitter',
       style: new TextStyle(color: Colors.blue),
       recognizer: new TapGestureRecognizer()
-        ..onTap = () => launch('https://twitter.com/2i2i_app'),
+        ..onTap = () => launchUrl(Uri.parse(('https://twitter.com/2i2i_app'))),
     ));
   }
 }

@@ -22,14 +22,12 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
-
   @override
   void initState() {
     userIdNav.addListener(() {
-      if(userIdNav.value.isNotEmpty){
-        context.pushNamed(Routes.user.nameFromPath(),params: {
-          'uid':userIdNav.value
-        });
+      if (userIdNav.value.isNotEmpty) {
+        context.pushNamed(Routes.user.nameFromPath(),
+            params: {'uid': userIdNav.value});
         userIdNav.value = '';
       }
     });
@@ -50,8 +48,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
-                  if (firebaseUser != null){
-                    signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+                  if (firebaseUser != null) {
+                    signUpViewModel
+                        .updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
                   return Padding(
@@ -77,8 +76,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
-                              Text(
-                                  Keys.loginMsg2.tr(context),
+                              Text(Keys.loginMsg2.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
@@ -127,19 +125,21 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               },
                               dense: true,
                               leading: Image.asset('assets/apple.png',
-                                  height: 30, width: 30 ,color: Theme.of(context).cardColor),
+                                  height: 30,
+                                  width: 30,
+                                  color: Theme.of(context).cardColor),
                               title: Text(Keys.signInWithApple.tr(context),
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
                                       ?.copyWith(
-                                    color: Theme.of(context).cardColor,
+                                          color: Theme.of(context).cardColor,
                                           fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
                         Visibility(
-                          visible: /*!kIsWeb*/false,
+                          visible: /*!kIsWeb*/ false,
                           child: Card(
                             margin: EdgeInsets.symmetric(vertical: 5),
                             shape: RoundedRectangleBorder(
@@ -175,7 +175,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded,
                                   color: Theme.of(context).cardColor),
-                              title: Text(Keys.signInAnonymously.tr(context),
+                              title: Text(
+                                Keys.signInAnonymously.tr(context),
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
@@ -193,8 +194,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: '2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launch(
-                                            'https://about.2i2i.app/'))
+                                        if (!await launchUrl(Uri.parse(
+                                            'https://about.2i2i.app/')))
                                           throw 'Could not launch https://about.2i2i.app/';
                                       },
                                     style: TextStyle(

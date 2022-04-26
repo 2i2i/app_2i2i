@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
@@ -229,7 +228,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                         valueMain: "${maxDuration}s",
                                         min: minMaxDuration,
                                         showValue: true,
-                                      valueMain: '$maxDuration',max: maxMaxDuration,
+                                        max: maxMaxDuration,
                                       ),
                                     ),
                                     child: Slider(
@@ -491,11 +490,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               ? Theme.of(context).primaryColorDark
                               : Theme.of(context).primaryColor)),
                 ),
-                child: Text(getConfirmSliderText(),
-                    style: TextStyle(
-                        color: isInsufficient()
-                            ? Theme.of(context).primaryColorDark
-                            : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -546,7 +540,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         accountAddListener: (String? address) {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x = myAccountPageViewModel.accounts?.map((a) => a.address).toList();
+            final x =
+                myAccountPageViewModel.accounts?.map((a) => a.address).toList();
             log(X + 'showBidAlert + address=$address x=$x');
             int lastIndex = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
             int index = x?.indexOf(address) ?? lastIndex;

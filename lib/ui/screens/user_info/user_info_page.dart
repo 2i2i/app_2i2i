@@ -233,7 +233,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
 class PulsingWidget extends StatefulWidget {
   final Widget child;
 
-  const PulsingWidget({required this.child}) : assert(child != null);
+  const PulsingWidget({required this.child});
 
   _PulsingWidget createState() => _PulsingWidget();
 }

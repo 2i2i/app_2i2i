@@ -11,6 +11,8 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
+import '../user_setting/user_setting.dart';
 import 'widgtes/user_info_tile.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
