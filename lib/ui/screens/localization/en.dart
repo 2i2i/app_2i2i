@@ -178,7 +178,7 @@ class en {
       Keys.updateAvailable: 'Update Available',
       Keys.loginMsg: 'The place for you to Hangout',
       Keys.loginMsg2: '2i2i provides a safe and private space for Guests and Host to meet in the form of video calls',
-      Keys.loginMsg3: '>305 MEETINGS SINCE LAUNCH',
+      Keys.loginMsg3: '>306 MEETINGS SINCE LAUNCH',
       Keys.signInWithGoogle: 'Sign in with Google',
       Keys.signInWithApple: 'Sign in with Apple',
       Keys.signInWithTwitter:  'Sign in with Twitter',
