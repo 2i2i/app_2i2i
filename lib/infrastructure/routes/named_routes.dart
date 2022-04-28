@@ -345,14 +345,12 @@ class NamedRoutes {
       ),
     ],
     errorPageBuilder: (context, state) {
-      print('state.error ${state.error}');
       return NoTransitionPage<void>(
         key: state.pageKey,
         child: getView(Scaffold(body: ErrorPage(state.error))),
       );
     },
     errorBuilder: (context, state) {
-      print('state.error ${state.error}');
       return getView(Scaffold(body: ErrorPage(state.error)));
     },
   );
@@ -397,9 +395,7 @@ class NamedRoutes {
                     elevation: 12,
                     builder: (BuildContext context) {
                       return WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
+                        onWillPop: () => Future.value(true),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: UserSetting(
@@ -411,6 +407,10 @@ class NamedRoutes {
                     onClosing: () {},
                   );
                 }
+              }else{
+                //TODO CREATE USER API CALL
+                final database = ref.watch(databaseProvider);
+                database.createUser(uid);
               }
             }
             return AddRatingPage(showRating: showRating);

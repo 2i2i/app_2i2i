@@ -399,16 +399,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-
-                  if (!(widget.fromBottomSheet ?? false)) {
-                    CustomDialogs.loader(true, context);
-                  }
-                  await onClickSave(myUserPageViewModel, context);
-                  if (!(widget.fromBottomSheet ?? false)) {
-                    CustomDialogs.loader(false, context);
-                  }
-                  // await Navigator.of(context).maybePop();
-
+                if (!(widget.fromBottomSheet ?? false)) {
+                  CustomDialogs.loader(true, context);
+                }
+                await onClickSave(myUserPageViewModel, context);
+                if (!(widget.fromBottomSheet ?? false)) {
+                  CustomDialogs.loader(false, context);
+                }
+                // await Navigator.of(context).maybePop();
               },
               child: Text(Keys.save.tr(context)),
             )
