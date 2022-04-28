@@ -164,7 +164,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> unLink(BuildContext context) async {
     try {
       User? firebaseUser = FirebaseAuth.instance.currentUser;
-      User? existingUser = await firebaseUser!.unlink('google.com');
+      User? existingUser = await firebaseUser!.unlink('apple.com');
       print(existingUser);
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(
@@ -207,8 +207,11 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
       String? uid = firebaseUser.user?.uid;
-      if (uid is String)
+      if (uid is String) {
+        socialLinksModel!.userName = firebaseUser.user?.displayName ?? '';
+        socialLinksModel.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
+      }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
