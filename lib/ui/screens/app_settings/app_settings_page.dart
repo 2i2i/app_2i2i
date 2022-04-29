@@ -55,7 +55,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30),
-        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -71,9 +70,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
+                    onTap: () =>
+                        context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,9 +95,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
+                    onTap: () =>
+                        context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Text(
                       Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -381,7 +378,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       child: Image.asset('assets/twitter.png',
                           height: 25, width: 25),
                     ),
-                    visible: /*!kIsWeb && !signUpViewModel.authList.contains('twitter.com')*/ false,
+                    visible: /*!kIsWeb &&
+                        !signUpViewModel.authList.contains('twitter.com')*/ false,
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
