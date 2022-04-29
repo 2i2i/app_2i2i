@@ -11,7 +11,10 @@ enum Lounge { chrony, highroller, eccentric, lurker }
 
 extension ParseToStringLounge on Lounge {
   String toStringEnum() {
-    return this.toString().split('.').last;
+    return this
+        .toString()
+        .split('.')
+        .last;
   }
 
   String name() {
@@ -24,7 +27,10 @@ enum Status { ONLINE, IDLE, OFFLINE }
 
 extension ParseToStringStatus on Status {
   String toStringEnum() {
-    return this.toString().split('.').last;
+    return this
+        .toString()
+        .split('.')
+        .last;
   }
 }
 
@@ -63,7 +69,6 @@ class UserModelChanger {
 @immutable
 class Rule extends Equatable {
   static const defaultImportance = {
-    // set also in cloud function userCreated
     Lounge.chrony: 1,
     Lounge.highroller: 4,
     Lounge.eccentric: 0,
@@ -84,8 +89,8 @@ class Rule extends Equatable {
   factory Rule.fromMap(Map<String, dynamic> data) {
     final int maxMeetingDuration = data['maxMeetingDuration'];
     final int minSpeed = data['minSpeed'];
-
     final Map<Lounge, int> importance = {};
+
     final Map<String, dynamic> x = data['importance'];
     for (final k in x.keys) {
       final lounge = Lounge.values.firstWhere((l) => l.toStringEnum() == k);
@@ -104,7 +109,7 @@ class Rule extends Equatable {
       'maxMeetingDuration': maxMeetingDuration,
       'minSpeed': minSpeed,
       'importance':
-          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+      importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
 
@@ -130,6 +135,7 @@ class UserModel extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeatBackground,
+    this.tags = const <String>[],
     this.imageUrl,
     this.heartbeatForeground,
     this.rule = const Rule(),
@@ -153,10 +159,9 @@ class UserModel extends Equatable {
   String name;
   String? imageUrl;
   String bio;
-  late List<String> _tags;
-
+  List<String> tags;
   void setTags() {
-    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+    tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
 
   // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
@@ -182,7 +187,7 @@ class UserModel extends Equatable {
   final int numRatings;
 
   final List<Lounge>
-      loungeHistory; // actually circular array containing recent 100 lounges
+  loungeHistory; // actually circular array containing recent 100 lounges
   final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
 
   final List<String> blocked;
@@ -206,7 +211,7 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final Status status =
-        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final List<SocialLinksModel> socialLinksList = data
                 .containsKey('socialLinks') &&
             data['socialLinks'] != null
@@ -223,7 +228,7 @@ class UserModel extends Equatable {
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule =
-        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+    data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     // log('UserModel.fromMap - loungeHistory=$loungeHistory');
@@ -256,7 +261,7 @@ class UserModel extends Equatable {
       'meeting': meeting,
       'bio': bio,
       'name': name,
-      'tags': _tags,
+      'tags': tags,
       'imageUrl': imageUrl,
       'rating': rating,
       'numRatings': numRatings,
@@ -273,7 +278,7 @@ class UserModel extends Equatable {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
   }
 
   bool isInMeeting() => meeting != null;
