@@ -32,34 +32,35 @@ class FirestoreDatabase {
   //create user function
   Future createUser(String uid) async {
     UserModel createdUserModel = UserModel(
-      id: uid,
-      status: Status.ONLINE,
-      meeting: null,
-      bio: "",
-      name: "",
-      rating: 1,
-      numRatings: 0,
-      tags: [],
-      rule: Rule(
-        maxMeetingDuration: 300,
-        minSpeed: 0,
-        importance: {
-          Lounge.chrony: 1,
-          Lounge.highroller: 4,
-          Lounge.eccentric: 0,
-          Lounge.lurker: 0,
-        },
-      ),
-      loungeHistory: [],
-      loungeHistoryIndex: -1,
-      blocked: [],
-      friends: [],
-      imageUrl: '',
-      heartbeatBackground: DateTime.now(),
-      heartbeatForeground: DateTime.now(),
-      socialLinks: []
-    );
+        id: uid,
+        status: Status.ONLINE,
+        meeting: null,
+        bio: "",
+        name: "",
+        rating: 1,
+        numRatings: 0,
+        tags: [],
+        rule: Rule(
+          maxMeetingDuration: 300,
+          minSpeed: 0,
+          importance: {
+            Lounge.chrony: 1,
+            Lounge.highroller: 4,
+            Lounge.eccentric: 0,
+            Lounge.lurker: 0,
+          },
+        ),
+        loungeHistory: [],
+        loungeHistoryIndex: -1,
+        blocked: [],
+        friends: [],
+        imageUrl: '',
+        heartbeatBackground: DateTime.now(),
+        heartbeatForeground: DateTime.now(),
+        socialLinks: []);
     Map userInfoMap = createdUserModel.toMap();
+    userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
+    userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
     return _service.runTransaction((transaction) {
       final userDocRef =
           _service.firestore.collection(FirestorePath.users()).doc(uid);

@@ -47,9 +47,10 @@ class SetupUserViewModel with ChangeNotifier {
 
   List<String> authList = [];
 
-  Future<void> getUserInfoModel(String uid) async {
+  Future<UserModel?> getUserInfoModel(String uid) async {
     userInfoModel = await database.getUser(uid);
     notifyListeners();
+    return userInfoModel;
   }
 
   Future startAlgoRand(String uid) async {
