@@ -181,6 +181,7 @@ class es {
       Keys.searchFaq: 'Buscar palabras clave',
       Keys.noInternetTitle: 'Sin conexión a Internet',
       Keys.noInternetMessage: 'No estás conectado a Internet. Asegúrate de que el WI-FI esté encendido. El modo avión está desactivado e inténtalo de nuevo',
+      Keys.loading:'Cargando...'
     };
   }
 }

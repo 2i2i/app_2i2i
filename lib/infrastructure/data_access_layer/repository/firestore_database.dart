@@ -7,6 +7,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
+import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
@@ -133,6 +134,7 @@ class FirestoreDatabase {
           ? _updateUserHeartbeat(uid, 'heartbeatForeground',
               newStatus: 'ONLINE')
           : _updateUserHeartbeat(uid, 'heartbeatForeground');
+
   Future<void> updateUserHeartbeatFromBackground(String uid,
           {bool setStatus = false}) =>
       setStatus
@@ -439,6 +441,7 @@ class FirestoreDatabase {
         log(onError);
         return [];
       });
+
   Stream<List<TopMeeting>> topDurationsStream() => _service
           .collectionStream(
         path: FirestorePath.topDurations(),
@@ -456,21 +459,24 @@ class FirestoreDatabase {
   //       merge: true,
   //     );
 
-  Stream<List<Meeting>> meetingHistoryA(String uid) =>
-      _meetingHistoryX(uid, 'A');
+  // Stream<Map> meetingHistory({required MeetingDataModel meetingDataModel}) =>
+  //     _meetingHistoryX(meetingDataModel.uId!, meetingDataModel.userAorB!,lastDocument: meetingDataModel.lastDocument,limit: meetingDataModel.page!);
 
-  Stream<List<Meeting>> meetingHistoryB(String uid, {int? limit}) =>
-      _meetingHistoryX(uid, 'B', limit: limit);
-
-  Stream<List<Meeting>> _meetingHistoryX(String uid, String field,
-      {int? limit}) {
+  Stream<Map> meetingHistory({required MeetingDataModel meetingDataModel}) {
     return _service
-        .collectionStream(
+        .getDocumentStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(field, isEqualTo: uid);
-        if (limit != null) query = query.limit(limit);
+        query = query.where(meetingDataModel.userAorB!,
+            isEqualTo: meetingDataModel.uId!);
+        if (meetingDataModel.lastDocument != null) {
+          query = query
+              .startAfterDocument(meetingDataModel.lastDocument!)
+              .limit(meetingDataModel.page ?? 10);
+        } else {
+          query = query.limit(meetingDataModel.page ?? 10);
+        }
         return query;
       },
     )

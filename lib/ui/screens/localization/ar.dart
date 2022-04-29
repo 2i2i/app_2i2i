@@ -180,6 +180,7 @@ class ar {
       Keys.searchFaq: 'كلمات البحث',
       Keys.noInternetTitle: 'لا يوجد اتصال بالإنترنت',
       Keys.noInternetMessage: 'أنت غير متصل بالإنترنت. تأكد من تشغيل WI-FI. تم إيقاف وضع الطائرة وحاول مرة أخرى',
+      Keys.loading:'جار التحميل...'
     };
   }
 }

@@ -179,6 +179,7 @@ class de {
       Keys.searchFaq: 'Suche Schlüsselwörter',
       Keys.noInternetTitle: 'Keine Internetverbindung',
       Keys.noInternetMessage: 'Sie sind nicht mit dem Internet verbunden. Stellen Sie sicher, dass WLAN eingeschaltet ist. Der Flugmodus ist aus und versuchen Sie es erneut',
+      Keys.loading:'Wird geladen...'
     };
   }
 }

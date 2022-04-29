@@ -398,7 +398,18 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             // const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => onClickSave(myUserPageViewModel, context),
+              onPressed: () async {
+
+                  if (!(widget.fromBottomSheet ?? false)) {
+                    CustomDialogs.loader(true, context);
+                  }
+                  await onClickSave(myUserPageViewModel, context);
+                  if (!(widget.fromBottomSheet ?? false)) {
+                    CustomDialogs.loader(false, context);
+                  }
+                  // await Navigator.of(context).maybePop();
+
+              },
               child: Text(Keys.save.tr(context)),
             )
           ],
@@ -556,9 +567,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       MyUserPageViewModel? myUserPageViewModel, BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    if (!(widget.fromBottomSheet ?? false)) {
-      CustomDialogs.loader(true, context);
-    }
+
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
@@ -586,6 +595,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       } else {
         user!.setNameOrBio(
             name: userNameEditController.text, bio: bioTextController.text);
+        print(user);
       }
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();
@@ -594,10 +604,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         }
       }
       await myUserPageViewModel?.updateHangout(user);
-      if (!(widget.fromBottomSheet ?? false)) {
-        CustomDialogs.loader(false, context);
-      }
-      Navigator.of(context).pop();
     }
   }
 

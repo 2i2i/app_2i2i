@@ -194,6 +194,7 @@ class Keys {
   static const String searchFaq ='searchFaq';
   static const String noInternetTitle ='noInternetTitle';
   static const String noInternetMessage ='noInternetMessage';
+  static const String loading ='loading';
 
 }
 

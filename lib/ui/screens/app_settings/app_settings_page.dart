@@ -15,6 +15,7 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../home/bottom_nav_bar.dart';
+
 class AppSettingPage extends ConsumerStatefulWidget {
   @override
   _AppSettingPageState createState() => _AppSettingPageState();
@@ -23,7 +24,6 @@ class AppSettingPage extends ConsumerStatefulWidget {
 class _AppSettingPageState extends ConsumerState<AppSettingPage>
     with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
-
 
   @override
   void initState() {
@@ -55,7 +55,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 30),
-        // padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -71,9 +70,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
+                    onTap: () =>
+                        context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,9 +95,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
+                    onTap: () =>
+                        context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Text(
                       Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -323,7 +320,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             SizedBox(height: 20),
             //connect social
             Visibility(
-              visible:  !signUpViewModel.authList.contains('google.com') &&  !signUpViewModel.authList.contains('apple.com'),
+              visible: !signUpViewModel.authList.contains('google.com') &&
+                  !signUpViewModel.authList.contains('apple.com'),
               child: Text(
                 'Connect account with',
                 style: Theme.of(context).textTheme.subtitle1,
@@ -338,8 +336,11 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     visible: !signUpViewModel.authList.contains('google.com'),
                     child: FloatingActionButton.small(
                       onPressed: () async {
-                        await signUpViewModel.signInWithGoogle(context,linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
+                        await signUpViewModel.signInWithGoogle(context,
+                            linkWithCredential: true);
+                        await ref
+                            .read(setupUserViewModelProvider)
+                            .getAuthList();
                       },
                       heroTag: 'google',
                       shape: RoundedRectangleBorder(
@@ -352,8 +353,11 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   Visibility(
                     child: FloatingActionButton.small(
                       onPressed: () async {
-                        await signUpViewModel.signInWithTwitter(context,linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
+                        await signUpViewModel.signInWithTwitter(context,
+                            linkWithCredential: true);
+                        await ref
+                            .read(setupUserViewModelProvider)
+                            .getAuthList();
                       },
                       heroTag: 'twitter',
                       shape: RoundedRectangleBorder(
@@ -362,14 +366,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       child: Image.asset('assets/twitter.png',
                           height: 25, width: 25),
                     ),
-                    visible: !kIsWeb && !signUpViewModel.authList.contains('twitter.com'),
+                    visible: !kIsWeb &&
+                        !signUpViewModel.authList.contains('twitter.com'),
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
                       heroTag: 'apple',
                       onPressed: () async {
-                        await signUpViewModel.signInWithApple(context,linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
+                        await signUpViewModel.signInWithApple(context,
+                            linkWithCredential: true);
+                        await ref
+                            .read(setupUserViewModelProvider)
+                            .getAuthList();
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
@@ -377,7 +385,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       child: Image.asset('assets/apple.png',
                           height: 25, width: 25),
                     ),
-                    visible: !kIsWeb && Platform.isIOS && !signUpViewModel.authList.contains('apple.com'),
+                    visible: !kIsWeb &&
+                        Platform.isIOS &&
+                        !signUpViewModel.authList.contains('apple.com'),
                   ),
                 ],
               ),
