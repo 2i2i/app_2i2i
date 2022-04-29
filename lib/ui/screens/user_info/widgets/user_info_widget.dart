@@ -1,8 +1,10 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -41,10 +43,18 @@ class UserInfoWidget extends ConsumerStatefulWidget {
 class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
   ValueNotifier<bool> seeMore = ValueNotifier(false);
 
+  final _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
     final shortBio = widget.user.bio;
+    String shortBio = widget.user.bio;
+
+    final socialLinks = widget.user.socialLinks
+        .map((e) => "\n${e.accountType}: ${e.userName}")
+        .toList()
+        .join(",");
     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -57,11 +67,13 @@ class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
     final totalRating = removeDecimalZeroFormat(widget.user.rating * 5);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileWidget(
-              stringPath: widget.user.imageUrl ?? '',
+              stringPath: widget.user.imageUrl ?? widget.user.name,
               statusColor: statusColor,
               radius: 80,
             ),
@@ -70,9 +82,30 @@ class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
                 title: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        widget.user.name,
-                        style: Theme.of(context).textTheme.headline6,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              widget.user.name,
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ),
+                          Visibility(
+                            visible: widget.user.isVerified(),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 4.0),
+                              child: Tooltip(
+                                triggerMode: TooltipTriggerMode.tap,
+                                message: 'Connected with social account',
+                                child: SvgPicture.asset(
+                                    'assets/icons/done_tick.svg',
+                                    width: 14,
+                                    height: 14),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     InkResponse(
@@ -175,18 +208,58 @@ class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
                         ],
                       ),
                     ),
-                    Padding(
+                    Container(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height / 6),
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: ValueListenableBuilder(
-                        valueListenable: seeMore,
-                        builder:
-                            (BuildContext context, bool value, Widget? child) {
-                          return Text(
-                            shortBio.toString().trim(),
-                            maxLines: value ? null : 2,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          );
-                        },
+                      child: CupertinoScrollbar(
+                        controller: _scrollController,
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: ValueListenableBuilder(
+                            valueListenable: seeMore,
+                            builder: (BuildContext context, bool value,
+                                Widget? child) {
+                              var socialLinks =
+                                  widget.user.socialLinks.map((e) {
+                                if ((e.userName ?? "").isNotEmpty) {
+                                  return TextSpan(
+                                    text: "\n${e.accountType}: ",
+                                    children: [
+                                      TextSpan(
+                                        text: e.userName,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .caption
+                                            ?.copyWith(
+                                                height: 1.2,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                      ),
+                                    ],
+                                    style: Theme.of(context).textTheme.caption,
+                                  );
+                                } else {
+                                  return TextSpan();
+                                }
+                              }).toList();
+                              return RichText(
+                                textAlign: TextAlign.start,
+                                maxLines: value ? null : 2,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: shortBio.toString().trim() + "\n\n",
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    )
+                                  ]..addAll(socialLinks),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                     InkResponse(
@@ -230,7 +303,7 @@ class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
                 ],
               )
             : Container(),
-        SizedBox(height: 20),
+        SizedBox(height: 10),
         UserRulesWidget(
           user: widget.user,
           onTapRules: widget.onTapRules,

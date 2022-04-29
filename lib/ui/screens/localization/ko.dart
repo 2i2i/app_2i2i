@@ -179,6 +179,7 @@ class ko {
       Keys.signInWithTwitter: '트위터로 로그인',
       Keys.signInAnonymously: '익명 로그인',
       Keys.searchFaq: '키워드 검색',
+      Keys.loading:'로드 중...'
     };
   }
 }
