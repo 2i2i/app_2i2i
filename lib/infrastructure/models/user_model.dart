@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
+import 'social_links_model.dart';
 
 enum Lounge { chrony, highroller, eccentric, lurker }
 
@@ -127,6 +128,7 @@ class UserModel extends Equatable {
     // set also in cloud function userCreated
     required this.id,
     this.status = Status.ONLINE,
+    this.socialLinks = const <SocialLinksModel>[],
     this.meeting,
     this.name = '',
     this.bio = '',
@@ -149,6 +151,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
+  List<SocialLinksModel> socialLinks = [];
 
   final String? meeting;
   Rule rule;
@@ -157,7 +160,6 @@ class UserModel extends Equatable {
   String? imageUrl;
   String bio;
   List<String> tags;
-
   void setTags() {
     tags = [name.toLowerCase(), ...tagsFromBio(bio)];
   }
@@ -210,6 +212,12 @@ class UserModel extends Equatable {
 
     final Status status =
     Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final List<SocialLinksModel> socialLinksList = data
+                .containsKey('socialLinks') &&
+            data['socialLinks'] != null
+        ? List<SocialLinksModel>.from(
+            data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
+        : [];
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
@@ -229,22 +237,22 @@ class UserModel extends Equatable {
     final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
-      id: documentId,
-      status: status,
-      meeting: meeting,
-      name: name,
-      bio: bio,
-      imageUrl: imageUrl,
-      rating: rating,
-      numRatings: numRatings,
-      heartbeatBackground: heartbeatBackground,
-      heartbeatForeground: heartbeatForeground,
-      rule: rule,
-      loungeHistory: loungeHistory,
-      loungeHistoryIndex: loungeHistoryIndex,
-      blocked: blocked,
-      friends: friends,
-    );
+        id: documentId,
+        status: status,
+        meeting: meeting,
+        name: name,
+        bio: bio,
+        imageUrl: imageUrl,
+        rating: rating,
+        numRatings: numRatings,
+        heartbeatBackground: heartbeatBackground,
+        heartbeatForeground: heartbeatForeground,
+        rule: rule,
+        loungeHistory: loungeHistory,
+        loungeHistoryIndex: loungeHistoryIndex,
+        blocked: blocked,
+        friends: friends,
+        socialLinks: socialLinksList);
   }
 
   Map<String, dynamic> toMap() {
@@ -264,6 +272,7 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
+      'socialLinks': socialLinks.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -273,6 +282,8 @@ class UserModel extends Equatable {
   }
 
   bool isInMeeting() => meeting != null;
+
+  bool isVerified() => socialLinks.isNotEmpty;
 }
 
 extension ParseToDate on String {
