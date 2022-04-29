@@ -14,6 +14,7 @@ import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -89,6 +90,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
   UserModel? userB;
   FocusNode focusNode = FocusNode();
+  final GlobalObjectKey showOnAccount = GlobalObjectKey('showOnAccount');
+  final GlobalObjectKey showOnFreeCall = GlobalObjectKey('showOnFreeCall');
+  final GlobalObjectKey showOnBidCall = GlobalObjectKey('showOnBidCall');
+  final GlobalObjectKey showOnDuration = GlobalObjectKey('showOnDuration');
 
   @override
   void initState() {
@@ -103,7 +108,40 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
       }
     });
     ref.read(myAccountPageViewModelProvider).initMethod();
+    CustomAlertWidget.showHintWidget(context, ref,
+        [showOnDuration, showOnAccount, showOnFreeCall, showOnBidCall]);
+
     super.initState();
+  }
+
+  Future<void> showHintWidget() async {
+    Future.delayed(Duration(seconds: 1)).then((value) async {
+      List<GlobalObjectKey> stringKey = [];
+      bool showOnDurationKey = await ref
+          .read(appSettingProvider)
+          .checkIfHintShowed('showOnDuration');
+      if (!showOnDurationKey) {
+        stringKey.add(showOnDuration);
+      }
+      bool showOnAccountKey =
+          await ref.read(appSettingProvider).checkIfHintShowed('showOnAccount');
+      if (!showOnAccountKey) {
+        stringKey.add(showOnAccount);
+      }
+      bool showOnFreeCallKey = await ref
+          .read(appSettingProvider)
+          .checkIfHintShowed('showOnFreeCall');
+      if (!showOnFreeCallKey) {
+        stringKey.add(showOnFreeCall);
+      }
+      bool showOnBidCallKey =
+          await ref.read(appSettingProvider).checkIfHintShowed('showOnBidCall');
+      if (!showOnBidCallKey) {
+        stringKey.add(showOnBidCall);
+      }
+      if (stringKey.isNotEmpty)
+        ShowCaseWidget.of(context)!.startShowCase(stringKey);
+    });
   }
 
   @override
@@ -156,59 +194,66 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                         style: Theme.of(context).textTheme.caption,
                       ),
                       SizedBox(height: 4),
-                      Container(
-                        decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.20),
-                            borderRadius: BorderRadius.circular(10)),
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 6),
-                            Text(
-                              '$minMaxDuration ${Keys.secs.tr(context)}',
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    activeTrackColor:
-                                        Theme.of(context).cardColor,
-                                    inactiveTrackColor:
-                                        Theme.of(context).disabledColor,
-                                    thumbShape: CustomSliderThumbRect(
-                                      mainContext: context,
-                                      thumbRadius: 15,
-                                      min: minMaxDuration,
-                                      showValue: true,
-                                      valueMain: '$maxDuration',
-                                      max: maxMaxDuration,
+                      Showcase(
+                        key: showOnDuration,
+                        title: Keys.estMaxDuration.tr(context),
+                        description: 'Set the maximum duration on meeting',
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.20),
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 6),
+                              Text(
+                                '$minMaxDuration ${Keys.secs.tr(context)}',
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor:
+                                          Theme.of(context).cardColor,
+                                      inactiveTrackColor:
+                                          Theme.of(context).disabledColor,
+                                      thumbShape: CustomSliderThumbRect(
+                                        mainContext: context,
+                                        thumbRadius: 20,
+                                        valueMain: "${maxDuration}s",
+                                        min: minMaxDuration,
+                                        showValue: true,
+                                        max: maxMaxDuration,
+                                      ),
                                     ),
-                                  ),
-                                  child: Slider(
-                                    min: minMaxDuration.toDouble(),
-                                    max: maxMaxDuration.toDouble(),
-                                    divisions: maxMaxDuration == minMaxDuration
-                                        ? null
-                                        : min(100,
-                                            maxMaxDuration - minMaxDuration),
-                                    value: maxDuration.toDouble(),
-                                    onChanged: (value) {
-                                      maxDuration = value.round();
-                                      updateAccountBalance(
-                                          myAccountPageViewModel);
-                                    },
+                                    child: Slider(
+                                      min: minMaxDuration.toDouble(),
+                                      max: maxMaxDuration.toDouble(),
+                                      divisions: maxMaxDuration ==
+                                              minMaxDuration
+                                          ? null
+                                          : min(100,
+                                              maxMaxDuration - minMaxDuration),
+                                      value: maxDuration.toDouble(),
+                                      onChanged: (value) {
+                                        maxDuration = value.round();
+                                        updateAccountBalance(
+                                            myAccountPageViewModel);
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Text('$maxMaxDuration ${Keys.secs.tr(context)}',
-                                style: Theme.of(context).textTheme.subtitle1),
-                            SizedBox(width: 6),
-                          ],
+                              Text('$maxMaxDuration ${Keys.secs.tr(context)}',
+                                  style: Theme.of(context).textTheme.subtitle1),
+                              SizedBox(width: 6),
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -251,6 +296,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                 padding: const EdgeInsets.all(8.0),
                                 child: AccountInfo(
                                   false,
+                                  showOnAccount: showOnAccount,
                                   key: ObjectKey(abstractAccount.address),
                                   account: abstractAccount,
                                   afterRefresh: () => updateAccountBalance(
@@ -428,18 +474,22 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         child: Row(
           children: [
             Expanded(
-              child: ElevatedButton(
-                onPressed: isInsufficient() ? null : () => onAddBid(),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(isInsufficient()
-                      ? Theme.of(context).errorColor
-                      : Theme.of(context).colorScheme.secondary),
+              child: Showcase(
+                key: showOnFreeCall,
+                description: 'You can bid user to free call for 30sec',
+                child: ElevatedButton(
+                  onPressed: isInsufficient() ? null : () => onAddBid(),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(isInsufficient()
+                        ? Theme.of(context).errorColor
+                        : Theme.of(context).colorScheme.secondary),
+                  ),
+                  child: Text(getConfirmSliderText(),
+                      style: TextStyle(
+                          color: isInsufficient()
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).primaryColor)),
                 ),
-                child: Text(getConfirmSliderText(),
-                    style: TextStyle(
-                        color: isInsufficient()
-                            ? Theme.of(context).primaryColorDark
-                            : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -449,22 +499,28 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                   visible: !value,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).iconTheme.color,
-                      ),
-                      onPressed: () {
-                        isAddSupportVisible.value = !isAddSupportVisible.value;
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.add,
-                            size: 15,
-                          ),
-                          SizedBox(width: 3),
-                          Text(Keys.waitLess.tr(context)),
-                        ],
+                    child: Showcase(
+                      key: showOnBidCall,
+                      description:
+                          'You can bid user with \n1. Fix the amount of suggested support in the Chrony Lounge\n2. Set the maximum duration per meeting\n3. Choose the importance for each lounge',
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).iconTheme.color,
+                        ),
+                        onPressed: () {
+                          isAddSupportVisible.value =
+                              !isAddSupportVisible.value;
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add,
+                              size: 15,
+                            ),
+                            SizedBox(width: 3),
+                            Text(Keys.waitLess.tr(context)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -484,7 +540,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         accountAddListener: (String? address) {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x = myAccountPageViewModel.accounts?.map((a) => a.address).toList();
+            final x =
+                myAccountPageViewModel.accounts?.map((a) => a.address).toList();
             log(X + 'showBidAlert + address=$address x=$x');
             int lastIndex = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
             int index = x?.indexOf(address) ?? lastIndex;

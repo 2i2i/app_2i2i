@@ -25,33 +25,31 @@ class MyUserPage extends ConsumerStatefulWidget {
   _MyUserPageState createState() => _MyUserPageState();
 }
 
-class _MyUserPageState extends ConsumerState<MyUserPage>
-    with SingleTickerProviderStateMixin {
-  TabController? _tabController;
+class _MyUserPageState extends ConsumerState<MyUserPage> {
+  final GlobalObjectKey showOnQr = GlobalObjectKey('showOnQr');
+  final GlobalObjectKey showOnBidIn = GlobalObjectKey('showOnBidIn');
+  final GlobalObjectKey showOnTalk = GlobalObjectKey('showOnTalk');
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController!.dispose();
-    super.dispose();
+    CustomAlertWidget.showHintWidget(
+        context, ref, [showOnQr, showOnBidIn, showOnTalk]);
   }
 
   @override
   Widget build(BuildContext context) {
     final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
-    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.user == null) {
+    if (haveToWait(myHangoutPageViewModel) ||
+        myHangoutPageViewModel?.user == null) {
       return WaitPage();
     }
 
     UserModel user = myHangoutPageViewModel!.user;
-    final domain =
-        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
-        
+    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet
+        ? '2i2i.app'
+        : 'test.2i2i.app';
+
     return Scaffold(
       body: Column(
         children: [
@@ -64,27 +62,29 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
                   bottomRight: Radius.circular(12)),
             ),
             child: Padding(
-              padding: EdgeInsets.only(right: 20,left: 20, bottom: 8,top: kIsWeb?8:31),
+              padding: EdgeInsets.only(
+                  right: 20, left: 20, bottom: 8, top: kIsWeb ? 8 : 31),
               child: Column(
                 children: [
                   SizedBox(height: 8),
                   UserInfoWidget(
+                    showOnQr: showOnQr,
                     user: user,
-                    onTapRules: (){
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
-                    onTapQr: (){
+                    onTapRules: () =>
+                        context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTapQr: () {
+                      ref.read(appSettingProvider).checkIfHintShowed('showOnQr');
                       showDialog(
-                          context: context,
-                          builder: (context)=>FittedBox(
-                            fit: BoxFit.scaleDown,
-                              child: Container(
-                                decoration: Custom.getBoxDecoration(context,color: Colors.white),
+                        context: context,
+                        builder: (context) => FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            decoration: Custom.getBoxDecoration(context,
+                                color: Colors.white),
                             height: 400,
                             width: 350,
                             child: QrCodeWidget(
-                                message:
-                                    'https://$domain/user/${user.id}'),
+                                message: 'https://$domain/user/${user.id}'),
                           ),
                         ),
                       );
@@ -103,8 +103,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: UserBidInsList(
+                showOnTalk: showOnTalk,
+                showOnBidIn: showOnBidIn,
                 myHangoutPageViewModel: myHangoutPageViewModel,
                 titleWidget: Text(
                   Keys.bidsIn.tr(context),

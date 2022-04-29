@@ -4,10 +4,15 @@ import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
+import '../user_setting/user_setting.dart';
 import 'widgtes/user_info_tile.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -17,6 +22,43 @@ class SearchPage extends ConsumerStatefulWidget {
 
 class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
+  bool isAlreadyShowed = false;
+
+  final GlobalObjectKey mainKey = GlobalObjectKey('mainKey');
+
+  @override
+  void initState() {
+    CustomAlertWidget.showHintWidget(context, ref, [mainKey]);
+    super.initState();
+  }
+
+  void initMethod() {
+    Future.delayed(Duration(seconds: 3)).then((value) {
+      final uid = ref.watch(myUIDProvider)!;
+      final userProviderVal = ref.watch(userProvider(uid));
+      bool isLoaded = !(haveToWait(userProviderVal));
+      if (isLoaded && userProviderVal.asData?.value is UserModel) {
+        final UserModel user = userProviderVal.asData!.value;
+        if (user.name.isEmpty) {
+          CustomAlertWidget.showBidAlert(
+            context,
+            WillPopScope(
+              onWillPop: () {
+                return Future.value(true);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: UserSetting(
+                  fromBottomSheet: true,
+                ),
+              ),
+            ),
+            isDismissible: false,
+          );
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,20 +151,47 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     List<UserModel?> userList = userListProvider.value!;
     userList.removeWhere((element) => element == null);
+    userList.removeWhere((element) => element?.name.isEmpty ?? false);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
     return ScrollConfiguration(
       behavior: MyBehavior(),
       child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-          // physics: ClampingScrollPhysics(),
+        // physics: ClampingScrollPhysics(),
         itemCount: userList.length,
-        itemBuilder: (_, index) => UserInfoTile(
-          user: userList[index]!,
-          myUid: mainUserID,
-          isForBlockedUser: false,
-          marginBottom: 10,
-        ),
+        itemBuilder: (context, index) {
+          Widget userTileWidget = UserInfoTile(
+            user: userList[index]!,
+            myUid: mainUserID,
+            isForBlockedUser: false,
+            marginBottom: 0,
+          );
+
+          if (index == 0)
+            return Container(
+              margin: EdgeInsets.only(bottom: 10),
+              child: Showcase(
+                title: '2i2i User',
+                description: 'Tap info user and bid to hangout',
+                key: mainKey,
+                disposeOnTap: true,
+                onTargetClick: () {
+                  ref.read(appSettingProvider).checkIfHintShowed('mainKey');
+                  context.pushNamed(Routes.user.nameFromPath(), params: {
+                    'uid': userList[index]!.id,
+                  });
+                },
+                radius: BorderRadius.circular(10),
+                child: userTileWidget,
+              ),
+            );
+          return Container(
+            child: userTileWidget,
+            margin: EdgeInsets.only(bottom: 10),
+          );
+        },
       ),
     );
   }

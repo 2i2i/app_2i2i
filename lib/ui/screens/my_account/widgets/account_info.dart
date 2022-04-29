@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -17,9 +18,11 @@ import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
+  final GlobalObjectKey? showOnAccount;
+
 
   AccountInfo(this.shrinkwrap,
-      {Key? key, required this.account, this.afterRefresh})
+      {Key? key, required this.account, this.showOnAccount, this.afterRefresh})
       : super(key: key);
 
   final AbstractAccount account;
@@ -46,13 +49,13 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         ? '${Keys.ALGO.tr(context)}'
         : balanceModel.assetHolding.assetId.toString();
 
-    return Container(
+    Widget accountTile = Container(
       constraints: widget.shrinkwrap == true
           ? null
           : BoxConstraints(
               minHeight: 200,
             ),
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: widget.showOnAccount != null?0:10),
       padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -104,27 +107,26 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             ],
           ),
           SizedBox(height: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              widget.account is WalletConnectAccount
-                  ? Image.asset(
-                      'assets/wc_logo.png',
-                      height: 20,
-                      fit: BoxFit.fill,
-                    )
-                  : Container(),
-              SizedBox(height: 8),
-              Text(
-                widget.account.address,
-                maxLines: 4,
-                style: Theme.of(context).textTheme.caption,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+           Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      widget.account is WalletConnectAccount
+                          ? Image.asset(
+                              'assets/wc_logo.png',
+                              height: 20,
+                              fit: BoxFit.fill,
+                            )
+                          : Container(),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.account.address,
+                        maxLines: 4,
+                        style: Theme.of(context).textTheme.caption,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],),
           Divider(),
           Container(
             // color: Colors.amber,
@@ -148,10 +150,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    iconSize: 18,
+                  child: IconButton(iconSize: 18,
                     icon: SvgPicture.asset(
                       'assets/icons/refresh.svg',
+
                       color: iconColor(context),
                     ),
                     onPressed: () async {
@@ -168,10 +170,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(
-                    iconSize: 18,
+                  child: IconButton(iconSize: 18,
                     icon: SvgPicture.asset(
                       'assets/icons/copy.svg',
+
                       color: iconColor(context),
                     ),
                     onPressed: () {
@@ -195,10 +197,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     child: Container(
                       height: 40,
                       width: 40,
-                      child: IconButton(
-                          iconSize: 18,
+                      child: IconButton(iconSize: 18,
                           icon: SvgPicture.asset(
                             'assets/icons/key.svg',
+
                             color: iconColor(context),
                           ),
                           onPressed: () => CustomDialogs.infoDialog(
@@ -216,6 +218,21 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
         ],
       ),
     );
+
+    return widget.showOnAccount != null
+        ? Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0)
+      ),
+        margin: EdgeInsets.symmetric(vertical: 10),
+          child: Showcase(
+              key: widget.showOnAccount!,
+              title: 'Account',
+              description:
+                  'Here you can bid to user check Amount, Account Address, Recover Private key',
+              child: accountTile),
+        )
+        : accountTile;
   }
 
   Color? iconColor(BuildContext context) =>

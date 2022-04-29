@@ -7,8 +7,11 @@ import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animator/flutter_animator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -30,6 +33,17 @@ class UserInfoPage extends ConsumerStatefulWidget {
 
 class _UserInfoPageState extends ConsumerState<UserInfoPage> {
   var showBio = false;
+
+  final GlobalObjectKey userJoin = GlobalObjectKey('userJoin');
+  final GlobalObjectKey userCronyInfo = GlobalObjectKey('userCronyInfo');
+  final GlobalKey<AnimatorWidgetState> basicAnimation =
+      GlobalKey<AnimatorWidgetState>();
+
+  @override
+  void initState() {
+    CustomAlertWidget.showHintWidget(context, ref, [userCronyInfo, userJoin]);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,45 +106,64 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       ),
       floatingActionButton: Visibility(
         visible: !amBlocked,
-        child: InkResponse(
-          onTap: () => context.pushNamed(
-            Routes.createBid.nameFromPath(),
-            extra: CreateBidPageRouterObject(
-              B: widget.B,
-              bidIns: bidInsSorted,
+        child: Showcase(
+          key: userJoin,
+          description: "You can have a 1-on-1 meeting with the Host.",
+          onTargetClick: () {
+            ref.read(appSettingProvider).checkIfHintShowed('mainKey');
+            context.pushNamed(
+              Routes.createBid.nameFromPath(),
+              extra: CreateBidPageRouterObject(
+                B: widget.B,
+                bidIns: bidInsSorted,
+              ),
+            );
+          },
+          disposeOnTap: true,
+          radius: BorderRadius.circular(18),
+          child: InkResponse(
+            onTap: () => context.pushNamed(
+              Routes.createBid.nameFromPath(),
+              extra: CreateBidPageRouterObject(
+                B: widget.B,
+                bidIns: bidInsSorted,
+              ),
             ),
-          ),
-          child: Container(
-            width: kToolbarHeight * 1.15,
-            height: kToolbarHeight * 1.15,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(2, 2),
-                  blurRadius: 8,
+            child: BounceIn(
+              key: basicAnimation,
+              child: Container(
+                width: kToolbarHeight * 1.15,
+                height: kToolbarHeight * 1.15,
+                decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(2, 2),
+                      blurRadius: 8,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.call_merge,
-                  size: 30,
-                  color: Theme.of(context).cardColor,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.call_merge,
+                      size: 30,
+                      color: Theme.of(context).cardColor,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      Keys.join.tr(context),
+                      style: Theme.of(context).textTheme.button?.copyWith(
+                            color: Theme.of(context).cardColor,
+                          ),
+                    )
+                  ],
                 ),
-                SizedBox(height: 2),
-                Text(
-                  Keys.join.tr(context),
-                  style: Theme.of(context).textTheme.button?.copyWith(
-                        color: Theme.of(context).cardColor,
-                      ),
-                )
-              ],
+              ),
             ),
           ),
         ),
@@ -153,6 +186,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                 user: userB,
                 isFav: isFriend,
                 estWaitTime: estWaitTime,
+                userCronyInfo: userCronyInfo,
                 onTapQr: () {
                   showDialog(
                     context: context,
@@ -193,5 +227,66 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
         ],
       ),
     );
+  }
+}
+
+class PulsingWidget extends StatefulWidget {
+  final Widget child;
+
+  const PulsingWidget({required this.child});
+
+  _PulsingWidget createState() => _PulsingWidget();
+}
+
+class _PulsingWidget extends State<PulsingWidget>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _animationController;
+  double size = kToolbarHeight;
+
+  Animation<double>? _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController!,
+      curve: Curves.ease,
+    );
+
+    _animationController!.forward();
+    _animationController!.addStatusListener((status) {
+      setState(() {
+        if (status == AnimationStatus.completed) {
+          _animationController!.reverse();
+        } else if (status == AnimationStatus.dismissed) {
+          _animationController!.forward();
+        }
+      });
+    });
+
+    _animationController!.addListener(() {
+      setState(() {
+        size = _animationController!.value * 120;
+      });
+    });
+    _animationController!.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _animation!,
+      child: Container(child: widget.child, height: size, width: size),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController!.dispose();
+    super.dispose();
   }
 }

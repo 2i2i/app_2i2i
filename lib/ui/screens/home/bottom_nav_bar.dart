@@ -18,7 +18,8 @@ class BottomNavBar extends ConsumerStatefulWidget {
 }
 
 class _BottomNavBarState extends ConsumerState<BottomNavBar> {
-
+  final GlobalObjectKey showOnHost = GlobalObjectKey('showOnHost');
+  BuildContext? myContext;
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
@@ -80,9 +81,13 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
                         child: SvgPicture.asset('assets/icons/person.svg',
-                            color: Theme.of(context).colorScheme.secondary),
+                            color:
+                            Theme.of(context).colorScheme.secondary),
                       ),
-                      icon: ProfileIcon(),
+                      icon: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ProfileIcon(),
+                      ),
                     ),
                     BottomNavigationBarItem(
                       label: Keys.bidOut.tr(context),
@@ -127,12 +132,12 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                         padding: const EdgeInsets.all(6),
                         child: appSettingModel.updateRequired
                             ? RotatedBox(
-                                quarterTurns: 1,
-                                child: Icon(
-                                  Icons.arrow_circle_left_rounded,
-                                  color: Colors.amber,
-                                ),
-                              )
+                          quarterTurns: 1,
+                          child: Icon(
+                            Icons.arrow_circle_left_rounded,
+                            color: Colors.amber,
+                          ),
+                        )
                             : SvgPicture.asset('assets/icons/setting.svg'),
                       ),
                     ),

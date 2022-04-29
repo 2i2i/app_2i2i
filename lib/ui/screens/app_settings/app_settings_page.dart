@@ -250,17 +250,29 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       try {
-                        await launch(
+                        launchUrl(Uri.parse(
                           Keys.aboutPageUrl.tr(context),
-                          forceSafariVC: true,
-                          forceWebView: true,
-                        );
+                        ));
                       } catch (e) {
                         print(e);
                       }
                     },
                     title: Text(
                       Keys.about.tr(context),
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    trailing: Icon(
+                      Icons.navigate_next,
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      await appSettingModel.exploreApp();
+                      currentIndex.value = 0;
+                      context.go(Routes.root);
+                    },
+                    title: Text(
+                      "Explore app",
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
@@ -366,8 +378,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       child: Image.asset('assets/twitter.png',
                           height: 25, width: 25),
                     ),
-                    visible: !kIsWeb &&
-                        !signUpViewModel.authList.contains('twitter.com'),
+                    visible: /*!kIsWeb &&
+                        !signUpViewModel.authList.contains('twitter.com')*/ false,
                   ),
                   Visibility(
                     child: FloatingActionButton.small(

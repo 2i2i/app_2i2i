@@ -11,27 +11,29 @@ import 'package:app_2i2i/ui/screens/cv/cv_page.dart';
 import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
-import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
 import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
-import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
+import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
 import 'package:app_2i2i/ui/screens/web_view_screen/web_view_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:showcaseview/showcaseview.dart';
+
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
@@ -375,7 +377,22 @@ class NamedRoutes {
                 centerTitle: true,
                 backgroundColor: Colors.green,
               ),
-        body: page,
+        body: Consumer(builder: (context, WidgetRef ref, _) {
+          return ShowCaseWidget(
+            onStart: (index, key) {},
+            onComplete: (index, key) {
+              if (key is GlobalObjectKey) {
+                String id = key.value as String;
+                ref.read(appSettingProvider).checkIfHintShowed(id);
+              }
+            },
+            blurValue: 1,
+            builder: Builder(
+              builder: (context) => page,
+            ),
+            autoPlayDelay: const Duration(seconds: 3),
+          );
+        }),
         bottomSheet: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             final uid = ref.watch(myUIDProvider);

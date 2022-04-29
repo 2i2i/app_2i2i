@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../commons/keys.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -25,6 +26,12 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
+
+  GlobalKey showOnHost = GlobalKey();
+
+  showCaseDialog(BuildContext context, GlobalKey key) {
+    ShowCaseWidget.of(context)!.startShowCase([key]);
+  }
 
   void appInit() {
     isVideoEnabled = true;
@@ -61,8 +68,24 @@ class AppSettingModel extends ChangeNotifier {
     getLocal(local);
   }
 
+  Future<bool> checkIfHintShowed(String hintValue) async {
+    var listData = await storage.read('appHint') ?? "";
+    List<String> listValue = listData.split(',');
+    if (!listValue.contains(hintValue)) {
+      listValue.add(hintValue);
+      await storage.write('appHint', listValue.join(','));
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> exploreApp() async {
+    await storage.remove('appHint');
+  }
+
   Future<void> checkIfUpdateAvailable() async {
-    if(kIsWeb){
+    if (kIsWeb) {
       return;
     }
     AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();

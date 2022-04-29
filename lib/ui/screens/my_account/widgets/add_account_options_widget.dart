@@ -193,9 +193,9 @@ class _AddAccountOptionsWidgetsState
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunch('algorand://');
+    bool isAvailable = await canLaunchUrl(Uri.parse(('algorand://')));
     if (isMobile && isAvailable) {
-      await launch(uri);
+      await launchUrl(Uri.parse((uri)));
     } else {
       isDialogOpen.value = true;
       await showDialog(

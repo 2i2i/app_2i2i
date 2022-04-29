@@ -145,6 +145,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
+  final GlobalKey userTile = GlobalKey();
   List<SocialLinksModel> socialLinks = [];
 
   final String? meeting;
