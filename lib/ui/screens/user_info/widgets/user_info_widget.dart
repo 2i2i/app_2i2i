@@ -48,13 +48,7 @@ class _UserInfoWidgetState extends ConsumerState<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider)!;
-    final shortBio = widget.user.bio;
     String shortBio = widget.user.bio;
-
-    final socialLinks = widget.user.socialLinks
-        .map((e) => "\n${e.accountType}: ${e.userName}")
-        .toList()
-        .join(",");
     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
