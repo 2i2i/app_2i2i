@@ -56,10 +56,10 @@ class FirestoreDatabase {
       friends: [],
       imageUrl: '',
       heartbeatBackground: DateTime.now(),
-      heartbeatForeground: DateTime.now()
+      heartbeatForeground: DateTime.now(),
+      socialLinks: []
     );
     Map userInfoMap = createdUserModel.toMap();
-    print(jsonEncode(userInfoMap));
     return _service.runTransaction((transaction) {
       final userDocRef =
           _service.firestore.collection(FirestorePath.users()).doc(uid);
