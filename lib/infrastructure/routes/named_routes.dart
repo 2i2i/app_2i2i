@@ -32,6 +32,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../ui/screens/auth_screen/auth_screen.dart';
 
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
@@ -346,14 +347,12 @@ class NamedRoutes {
       ),
     ],
     errorPageBuilder: (context, state) {
-      print('state.error ${state.error}');
       return NoTransitionPage<void>(
         key: state.pageKey,
         child: getView(Scaffold(body: ErrorPage(state.error))),
       );
     },
     errorBuilder: (context, state) {
-      print('state.error ${state.error}');
       return getView(Scaffold(body: ErrorPage(state.error)));
     },
   );
@@ -377,46 +376,7 @@ class NamedRoutes {
                 backgroundColor: Colors.green,
               ),
         body: page,
-        bottomSheet: Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final uid = ref.watch(myUIDProvider);
-            if (uid != null) {
-              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
-              userInfoViewModel.getUserInfoModel(uid);
-              if (userInfoViewModel.userInfoModel is UserModel) {
-                final UserModel user = userInfoViewModel.userInfoModel!;
-                if (user.name.trim().isEmpty) {
-                  return BottomSheet(
-                    enableDrag: true,
-                    backgroundColor: Theme.of(context).cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                    ),
-                    elevation: 12,
-                    builder: (BuildContext context) {
-                      return WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: UserSetting(
-                            fromBottomSheet: true,
-                          ),
-                        ),
-                      );
-                    },
-                    onClosing: () {},
-                  );
-                }
-              }
-            }
-            return AddRatingPage(showRating: showRating);
-          },
-        ),
+        bottomSheet: AuthScreen(),
         bottomNavigationBar: BottomNavBar(),
       ),
     );

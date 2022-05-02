@@ -66,7 +66,7 @@
                 <!-- Accepts URIs that begin with "example://gizmos” -->
                 <!-- Registered Callback URLs in TwitterApp -->
                 <data android:scheme="test"
-                    android:host="test.2i2i.app" /> <!-- host is option -->
+                    android:host="twoitwoi.com" /> <!-- host is option -->
             </intent-filter>
 
 
