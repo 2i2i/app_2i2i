@@ -38,7 +38,7 @@ dependencies:
 
 
   flutter_secure_storage: ^5.0.2
-  url_launcher: ^6.1.0
+  url_launcher: ^6.0.20
   uni_links: ^0.5.1
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0
@@ -65,6 +65,7 @@ dependencies:
   google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
   twitter_login: ^4.2.2
+#  fireflutter: ^0.2.21
 
 
   device_info_plus: ^3.2.3

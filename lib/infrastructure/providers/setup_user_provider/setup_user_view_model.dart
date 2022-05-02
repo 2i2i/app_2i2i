@@ -235,7 +235,7 @@ class SetupUserViewModel with ChangeNotifier {
         final twitterLogin = TwitterLogin(
           apiKey: dotenv.env['TWITTER_API_key'].toString(),
           apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
-          redirectURI: "test://test.2i2i.app",
+          redirectURI: "test://twoitwoi.com",
         );
 
         authResult = await twitterLogin.login();
@@ -272,6 +272,7 @@ class SetupUserViewModel with ChangeNotifier {
       if (uid is String)
         await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
+      print(e.message);
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
     }
