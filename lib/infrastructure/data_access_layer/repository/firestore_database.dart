@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
+import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
 import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
@@ -25,6 +28,48 @@ class FirestoreDatabase {
   }
 
   final _service = FirestoreService.instance;
+
+  //create user function
+  Future createUser(String uid) async {
+    UserModel createdUserModel = UserModel(
+        id: uid,
+        status: Status.ONLINE,
+        meeting: null,
+        bio: "",
+        name: "",
+        rating: 1,
+        numRatings: 0,
+        tags: [],
+        rule: Rule(
+          maxMeetingDuration: 300,
+          minSpeed: 0,
+          importance: {
+            Lounge.chrony: 1,
+            Lounge.highroller: 4,
+            Lounge.eccentric: 0,
+            Lounge.lurker: 0,
+          },
+        ),
+        loungeHistory: [],
+        loungeHistoryIndex: -1,
+        blocked: [],
+        friends: [],
+        imageUrl: '',
+        heartbeatBackground: DateTime.now(),
+        heartbeatForeground: DateTime.now(),
+        socialLinks: []);
+    Map userInfoMap = createdUserModel.toMap();
+    userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
+    userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
+    return _service.runTransaction((transaction) {
+      final userDocRef =
+          _service.firestore.collection(FirestorePath.users()).doc(uid);
+      transaction.set(userDocRef, userInfoMap);
+      return Future.value();
+    }).catchError((onError) {
+      print(onError);
+    });
+  }
 
   String newDocId({required String path}) => _service.newDocId(path: path);
 
@@ -474,21 +519,24 @@ class FirestoreDatabase {
   //       merge: true,
   //     );
 
-  Stream<List<Meeting>> meetingHistoryA(String uid) =>
-      _meetingHistoryX(uid, 'A');
+  // Stream<Map> meetingHistory({required MeetingDataModel meetingDataModel}) =>
+  //     _meetingHistoryX(meetingDataModel.uId!, meetingDataModel.userAorB!,lastDocument: meetingDataModel.lastDocument,limit: meetingDataModel.page!);
 
-  Stream<List<Meeting>> meetingHistoryB(String uid, {int? limit}) =>
-      _meetingHistoryX(uid, 'B', limit: limit);
-
-  Stream<List<Meeting>> _meetingHistoryX(String uid, String field,
-      {int? limit}) {
+  Stream<Map> meetingHistory({required MeetingDataModel meetingDataModel}) {
     return _service
-        .collectionStream(
+        .getDocumentStream(
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(field, isEqualTo: uid);
-        if (limit != null) query = query.limit(limit);
+        query = query.where(meetingDataModel.userAorB!,
+            isEqualTo: meetingDataModel.uId!);
+        if (meetingDataModel.lastDocument != null) {
+          query = query
+              .startAfterDocument(meetingDataModel.lastDocument!)
+              .limit(meetingDataModel.page ?? 10);
+        } else {
+          query = query.limit(meetingDataModel.page ?? 10);
+        }
         return query;
       },
     )
