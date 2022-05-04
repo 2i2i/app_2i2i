@@ -17,7 +17,6 @@ import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
 import '../models/meeting_history_model.dart';
-import '../models/meeting_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
 import 'faq_cv_provider/cv_provider.dart';
@@ -78,12 +77,6 @@ final searchUsersStreamProvider =
   // log('usersStreamProvider - database=$database');
   final filter = ref.watch(searchFilterProvider.state).state;
   return database.usersStream(tags: filter);
-});
-
-final meetingStatusProvider =
-    StreamProvider.family<MeetingStatusModel?, String>((ref, meetingId) {
-  final database = ref.watch(databaseProvider);
-  return database.getMeetingStatus(meetingId: meetingId);
 });
 
 final setupUserViewModelProvider =
