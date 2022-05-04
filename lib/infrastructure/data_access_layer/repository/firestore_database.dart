@@ -5,13 +5,13 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
-import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
 import '../../models/user_model.dart';
 import '../services/logging.dart';
@@ -84,12 +84,20 @@ class FirestoreDatabase {
       );
 
   Future acceptBid(Meeting meeting) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _service.runTransaction((transaction) {
       // create meeting
+
+      Map meetingMap = meeting.toMap();
+      meetingMap['mutedVideoA'] = false;
+      meetingMap['mutedAudioA'] = false;
+      meetingMap['mutedAudioB'] = false;
+      meetingMap['mutedVideoB'] = false;
+
       final meetingDocRef = _service.firestore
           .collection(FirestorePath.meetings())
           .doc(meeting.id);
-      transaction.set(meetingDocRef, meeting.toMap());
+      transaction.set(meetingDocRef, meetingMap);
 
       // lock users
       final lockObj = {'meeting': meeting.id};
@@ -110,22 +118,9 @@ class FirestoreDatabase {
       transaction.update(bidInPublicRef, bidObj);
       transaction.update(bidInPrivateRef, bidObj);
 
-      //update meeting status
-      final meetingStatusRef = _service.firestore
-          .collection(FirestorePath.meetingStatus(meeting.id))
-          .doc();
-      transaction.set(
-          meetingStatusRef,
-          MeetingStatusModel(
-              id: meetingStatusRef.id,
-              A: meeting.A,
-              B: meeting.B,
-              mutedAudioA: false,
-              mutedAudioB: false,
-              mutedVideoA: false,
-              mutedVideoB: false).toMap());
-
       return Future.value();
+    }).catchError((onError) {
+      print(onError);
     });
   }
 
@@ -234,26 +229,13 @@ class FirestoreDatabase {
       String meetingId, Map<String, dynamic> data) {
     return _service
         .setData(
-      path: FirestorePath.meetingStatus(meetingId),
+      path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
-    )
-        .catchError((onError) {
+    ).catchError((onError) {
       log(onError);
     });
   }
-
-  Stream<MeetingStatusModel?> getMeetingStatus({required String meetingId}) =>
-      _service
-          .documentStream(
-              path: FirestorePath.meetingStatus(meetingId),
-              builder: (data, documentId) {
-                if (data != null)
-                  return MeetingStatusModel.fromMap(data, documentId);
-              })
-          .handleError((onError) {
-        log(onError);
-      });
 
   Future meetingEndUnlockUser(
       Meeting meeting, Map<String, dynamic> data) async {

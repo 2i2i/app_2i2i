@@ -42,6 +42,7 @@ extension ParseToString on MeetingStatus {
 @immutable
 class MeetingStatusWithTS {
   const MeetingStatusWithTS({required this.value, required this.ts});
+
   final MeetingStatus value;
   final DateTime ts;
 
@@ -210,6 +211,10 @@ class Meeting extends Equatable {
     required this.coinFlowsA,
     required this.coinFlowsB,
     required this.lounge,
+    this.mutedAudioA = false,
+    this.mutedVideoA = false,
+    this.mutedAudioB = false,
+    this.mutedVideoB = false,
   });
 
   final String id;
@@ -244,6 +249,11 @@ class Meeting extends Equatable {
 
   final Rule rule;
 
+  final bool mutedAudioA;
+  final bool mutedVideoA;
+  final bool mutedAudioB;
+  final bool mutedVideoB;
+
   @override
   List<Object> get props => [id];
 
@@ -251,7 +261,9 @@ class Meeting extends Equatable {
   bool get stringify => true;
 
   bool amA(String uid) => uid == A;
+
   bool amB(String uid) => uid == B;
+
   String peerId(String uid) => uid == A ? B : A;
 
   int maxDuration() {
@@ -268,6 +280,11 @@ class Meeting extends Equatable {
 
     final bool active = data['active'] as bool;
     final bool settled = data['settled'] as bool;
+
+    final bool mutedAudioA = data['mutedAudioA'] as bool;
+    final bool mutedVideoA = data['mutedVideoA'] as bool;
+    final bool mutedAudioB = data['mutedAudioB'] as bool;
+    final bool mutedVideoB = data['mutedVideoB'] as bool;
 
     final String A = data['A'];
     final String B = data['B'];
@@ -315,26 +332,31 @@ class Meeting extends Equatable {
 
     return Meeting(
       id: documentId,
-        lounge: lounge,
-        active: active,
-        settled: settled,
-        A: A,
-        B: B,
-        addrA: addrA,
-        addrB: addrB,
-        energy: energy,
-        start: start,
-        end: end,
-        duration: duration,
-        txns: txns,
-        status: status,
-        statusHistory: statusHistory,
-        net: net,
-        speed: speed,
-        room: room,
-        coinFlowsA: coinFlowsA,
-        coinFlowsB: coinFlowsB,
-        rule: rule,);
+      lounge: lounge,
+      active: active,
+      settled: settled,
+      A: A,
+      B: B,
+      addrA: addrA,
+      addrB: addrB,
+      energy: energy,
+      start: start,
+      end: end,
+      duration: duration,
+      txns: txns,
+      status: status,
+      statusHistory: statusHistory,
+      net: net,
+      speed: speed,
+      room: room,
+      coinFlowsA: coinFlowsA,
+      coinFlowsB: coinFlowsB,
+      rule: rule,
+      mutedAudioA: mutedAudioA,
+      mutedVideoA: mutedVideoA,
+      mutedAudioB: mutedAudioB,
+      mutedVideoB: mutedVideoB,
+    );
   }
 
   // used by acceptBid, as B
@@ -365,6 +387,10 @@ class Meeting extends Equatable {
       end: null,
       duration: null,
       txns: {},
+      mutedAudioA: false,
+      mutedVideoA: false,
+      mutedAudioB: false,
+      mutedVideoB: false,
       status: MeetingStatus.ACCEPTED_B,
       statusHistory: [
         MeetingStatusWithTS(
@@ -402,6 +428,10 @@ class Meeting extends Equatable {
       'coinFlowsB': coinFlowsB,
       'lounge': lounge.toStringEnum(),
       'rule': rule.toMap(),
+      /*'mutedAudioA': mutedAudioA,
+      'mutedVideoA': mutedVideoA,
+      'mutedAudioB': mutedAudioB,
+      'mutedVideoB': mutedVideoB,*/
     };
   }
 }
