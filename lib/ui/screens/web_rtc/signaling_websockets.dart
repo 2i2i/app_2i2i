@@ -27,6 +27,7 @@ enum CallState {
 
 class Session {
   Session({required this.sid, required this.pid});
+
   String pid;
   String sid;
   RTCPeerConnection? pc;
@@ -43,6 +44,7 @@ class SignalingWebSockets {
   SimpleWebSocket? _socket;
   var _host;
   var _port = 8086;
+
   // var _turnCredential;
   Map<String, Session> _sessions = {};
   MediaStream? _localStream;
@@ -85,6 +87,7 @@ class SignalingWebSockets {
       }
     ]
   };
+
   // Map<String, dynamic> _iceServers = {
   //   'iceServers': [
   //     {'url': 'stun:stun.l.google.com:19302'},
@@ -114,7 +117,7 @@ class SignalingWebSockets {
     'optional': [],
   };
 
-  close() async {
+  Future close() async {
     await _cleanSessions();
     _socket?.close();
   }
@@ -127,7 +130,7 @@ class SignalingWebSockets {
 
   bool muteAudio() {
     if (_localStream != null) {
-      bool enabled = _localStream!.getAudioTracks()[0].enabled;
+      bool enabled = _localStream?.getAudioTracks()[0].enabled ?? false;
       _localStream!.getAudioTracks()[0].enabled = !enabled;
       return !enabled;
     }
@@ -136,7 +139,7 @@ class SignalingWebSockets {
 
   bool muteVideo() {
     if (_localStream != null) {
-      bool enabled = _localStream!.getVideoTracks()[0].enabled;
+      bool enabled = _localStream?.getVideoTracks()[0].enabled ?? false;
       _localStream!.getVideoTracks()[0].enabled = !enabled;
       return !enabled;
     }
@@ -357,7 +360,6 @@ class SignalingWebSockets {
     var newSession = session ?? Session(sid: sessionId, pid: peerId);
     if (media != 'data')
       _localStream = await createStream(media, screenSharing);
-    print(_iceServers);
     RTCPeerConnection pc = await createPeerConnection({
       ..._iceServers,
       ...{'sdpSemantics': sdpSemantics}

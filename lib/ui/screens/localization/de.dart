@@ -177,6 +177,7 @@ class de {
       Keys.signInWithTwitter:   'Mit Twitter anmelden',
       Keys.signInAnonymously: 'Anonym anmelden',
       Keys.searchFaq: 'Suche Schlüsselwörter',
+      Keys.loading:'Wird geladen...'
     };
   }
 }

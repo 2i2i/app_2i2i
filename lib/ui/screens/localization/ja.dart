@@ -177,6 +177,7 @@ class ja {
       Keys.signInWithTwitter: 'Twitterでログイン',
       Keys.signInAnonymously: '匿名でサインイン',
       Keys.searchFaq: 'キーワードを検索',
+      Keys.loading:'読み込んでいます...'
     };
   }
 }

@@ -12,12 +12,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
-import '../data_access_layer/accounts/local_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../data_access_layer/services/logging.dart';
-import '../models/meeting_status_model.dart';
+import '../models/meeting_history_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
 import 'faq_cv_provider/cv_provider.dart';
@@ -78,12 +77,6 @@ final searchUsersStreamProvider =
   // log('usersStreamProvider - database=$database');
   final filter = ref.watch(searchFilterProvider.state).state;
   return database.usersStream(tags: filter);
-});
-
-final meetingStatusProvider =
-    StreamProvider.family<MeetingStatusModel?, String>((ref, meetingId) {
-  final database = ref.watch(databaseProvider);
-  return database.getMeetingStatus(meetingId: meetingId);
 });
 
 final setupUserViewModelProvider =
@@ -196,17 +189,11 @@ final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   return database.topDurationsStream();
 });
 
-final meetingHistoryA =
-    StreamProvider.family<List<Meeting>, String>((ref, uid) {
+final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
   final database = ref.watch(databaseProvider);
-  return database.meetingHistoryA(uid);
+  return MeetingHistoryModel(database: database);
 });
 
-final meetingHistoryB =
-    StreamProvider.family<List<Meeting>, String>((ref, uid) {
-  final database = ref.watch(databaseProvider);
-  return database.meetingHistoryB(uid);
-});
 
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;

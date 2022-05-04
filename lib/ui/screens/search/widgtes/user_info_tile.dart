@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/theme.dart';
@@ -77,12 +78,31 @@ class UserInfoTile extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            name,
-                            style: Theme.of(context).textTheme.subtitle1,
-                            maxLines: 2,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                  maxLines: 2,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Visibility(
+                                visible: user.isVerified(),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 4.0),
+                                  child: Tooltip(
+                                    triggerMode: TooltipTriggerMode.tap,
+                                    message: 'Connected with social account',
+                                    child: SvgPicture.asset('assets/icons/done_tick.svg',
+                                        width: 12, height: 12),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
                         Row(

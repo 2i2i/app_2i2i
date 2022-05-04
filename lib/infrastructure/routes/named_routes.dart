@@ -1,9 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/test_screen.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
@@ -23,15 +22,16 @@ import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
-import 'package:app_2i2i/ui/screens/rating/add_rating_page.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
 import 'package:app_2i2i/ui/screens/search/search_page.dart';
 import 'package:app_2i2i/ui/screens/top/top_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
+import 'package:app_2i2i/ui/screens/web_view_screen/web_view_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../ui/screens/auth_screen/auth_screen.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
@@ -82,6 +82,7 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
+          // child: getView(TestScreen()),
         ),
       ),
       GoRoute(
@@ -89,6 +90,7 @@ class NamedRoutes {
         path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
+          // child: getView(TestScreen1()),
           child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
@@ -157,7 +159,8 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(LockedUserPage(
-            onHangPhone: (uid, meetingId) {
+            onHangPhone: (uid, meetingId) async {
+              await Future.delayed(Duration(milliseconds: 500));
               showRating.value = {
                 'show': true,
                 'otherUid': uid,
@@ -217,6 +220,23 @@ class NamedRoutes {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(RecoverAccountPage()),
+          );
+        },
+      ),
+      GoRoute(
+        name: Routes.webView.nameFromPath(),
+        path: Routes.webView,
+        pageBuilder: (context, state) {
+          if (state.params['walletAddress'] is String) {
+            return NoTransitionPage<void>(
+              key: state.pageKey,
+              child: getView(
+                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+            );
+          }
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: getView(NotFound()),
           );
         },
       ),
@@ -290,7 +310,6 @@ class NamedRoutes {
         name: Routes.verifyPerhaps.nameFromPath(),
         path: Routes.verifyPerhaps,
         pageBuilder: (context, state) {
-          print('state ${state.extra}');
           if (state.extra is Map) {
             Map map = state.extra as Map;
             List<String> perhaps = map['perhaps'];
@@ -327,14 +346,12 @@ class NamedRoutes {
       ),
     ],
     errorPageBuilder: (context, state) {
-      print('state.error ${state.error}');
       return NoTransitionPage<void>(
         key: state.pageKey,
         child: getView(Scaffold(body: ErrorPage(state.error))),
       );
     },
     errorBuilder: (context, state) {
-      print('state.error ${state.error}');
       return getView(Scaffold(body: ErrorPage(state.error)));
     },
   );
@@ -358,53 +375,17 @@ class NamedRoutes {
                 backgroundColor: Colors.green,
               ),
         body: page,
-        bottomSheet: Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            final uid = ref.watch(myUIDProvider);
-            if (uid != null) {
-              final userInfoViewModel = ref.watch(setupUserViewModelProvider);
-              userInfoViewModel.getUserInfoModel(uid);
-              if (userInfoViewModel.userInfoModel is UserModel) {
-                final UserModel user = userInfoViewModel.userInfoModel!;
-                if (user.name.trim().isEmpty) {
-                  return BottomSheet(
-                    enableDrag: true,
-                    backgroundColor: Theme.of(context).cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                    ),
-                    elevation: 12,
-                    builder: (BuildContext context) {
-                      return WillPopScope(
-                        onWillPop: () {
-                          return Future.value(true);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: UserSetting(
-                            fromBottomSheet: true,
-                          ),
-                        ),
-                      );
-                    },
-                    onClosing: () {},
-                  );
-                }
-              }
-            }
-            return AddRatingPage(showRating: showRating);
-          },
-        ),
+        bottomSheet: AuthScreen(),
         bottomNavigationBar: BottomNavBar(),
       ),
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+        ref.watch(
+            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        if (kIsWeb &&
+            defaultTargetPlatform != TargetPlatform.iOS &&
+            defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(
