@@ -272,7 +272,7 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'socialLinks': socialLinks.map((e) => e.toJson()).toList(),
+      'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }
 
