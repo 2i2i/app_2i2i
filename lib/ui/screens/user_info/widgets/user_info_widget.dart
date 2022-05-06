@@ -46,12 +46,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     String shortBio = widget.user.bio;
-
-    final socialLinks = widget.user.socialLinks
-        .map((e) => "\n${e.accountType}: ${e.userName}")
-        .toList()
-        .join(",");
-    var statusColor = AppTheme().green;
+     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     } else if (widget.user.status == Status.IDLE) {
@@ -200,7 +195,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   widget.user.socialLinks.map((e) {
                                 if ((e.userName ?? "").isNotEmpty) {
                                   return TextSpan(
-                                    text: "\n${e.accountType}: ",
+                                    text: "\n${e.accountName}: ",
                                     children: [
                                       TextSpan(
                                         text: e.userName,
