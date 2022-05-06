@@ -50,7 +50,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
         backgroundColor: Colors.transparent,
         title: Text(
           Keys.settings.tr(context),
-          style: Theme.of(context).textTheme.headline5,
+          style: Theme
+              .of(context)
+              .textTheme
+              .headline5,
         ),
       ),
       body: SingleChildScrollView(
@@ -58,10 +61,15 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
+            ElevatedButton(onPressed: () => signUpViewModel.unLink(context), child: Text('Unlink')),
             //profile
             Text(
               Keys.account.tr(context),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subtitle1,
             ),
             SizedBox(height: 12),
             Container(
@@ -77,12 +85,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       children: [
                         Text(
                           Keys.userName.tr(context) + ' ',
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1,
                         ),
                         Flexible(
                           child: Text(
                             user.value?.name ?? '',
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .subtitle1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -99,7 +113,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                         context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Text(
                       Keys.bio.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                       textAlign: TextAlign.start,
                     ),
                     trailing: Icon(Icons.navigate_next),
@@ -110,7 +127,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     },
                     title: Text(
                       Keys.wallet.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -134,7 +154,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                           context.pushNamed(Routes.blocks.nameFromPath()),
                       title: Text(
                         Keys.blockList.tr(context),
-                        style: Theme.of(context).textTheme.subtitle1,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .subtitle1,
                       ),
                       trailing: Icon(
                         Icons.navigate_next,
@@ -146,7 +169,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                         context.pushNamed(Routes.meetingHistory.nameFromPath()),
                     title: Text(
                       Keys.meetingsHistory.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -160,7 +186,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             //theme
             Text(
               Keys.theme.tr(context),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subtitle1,
             ),
             SizedBox(height: 12),
             Consumer(
@@ -179,13 +208,22 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                         length: 3, vsync: this, initialIndex: selectedIndex),
                     indicatorPadding: EdgeInsets.all(3),
                     indicator: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .secondary,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     unselectedLabelColor:
-                        Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    Theme
+                        .of(context)
+                        .tabBarTheme
+                        .unselectedLabelColor,
                     labelColor:
-                        Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    Theme
+                        .of(context)
+                        .tabBarTheme
+                        .unselectedLabelColor,
                     tabs: [
                       Tab(
                         text: Keys.light.tr(context),
@@ -219,7 +257,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             //link
             Text(
               Keys.more.tr(context),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subtitle1,
             ),
             SizedBox(height: 12),
             Container(
@@ -231,7 +272,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                         context.pushNamed(Routes.language.nameFromPath()),
                     title: Text(
                       Keys.language.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     trailing: Text(
                         (appSettingModel.locale?.languageCode ?? 'EN')
@@ -241,7 +285,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -261,7 +308,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     },
                     title: Text(
                       Keys.about.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -278,29 +328,36 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     },
                     title: Text(
                       Keys.appVersion.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
                         ? Text('Update Available',
-                            style: Theme.of(context)
-                                .textTheme
-                                .caption
-                                ?.copyWith(color: Colors.amber))
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .caption
+                            ?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
                         ? RotatedBox(
-                            quarterTurns: 1,
-                            child: Icon(
-                              Icons.arrow_circle_left_rounded,
-                            ),
-                          )
+                      quarterTurns: 1,
+                      child: Icon(
+                        Icons.arrow_circle_left_rounded,
+                      ),
+                    )
                         : Text("${appSettingModel.version}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .caption
-                                ?.copyWith(
-                                    color: Theme.of(context).disabledColor)),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .caption
+                            ?.copyWith(
+                            color: Theme
+                                .of(context)
+                                .disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
@@ -309,10 +366,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context),
-                        style: Theme.of(context)
+                        style: Theme
+                            .of(context)
                             .textTheme
                             .caption
-                            ?.copyWith(color: Theme.of(context).errorColor)),
+                            ?.copyWith(color: Theme
+                            .of(context)
+                            .errorColor)),
                   ),
                 ],
               ),
@@ -324,7 +384,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   !signUpViewModel.authList.contains('apple.com'),
               child: Text(
                 'Connect account with',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle1,
               ),
             ),
             SizedBox(height: 12),
@@ -395,10 +458,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             SizedBox(height: 32),
             Text('${Keys.appVersion.tr(context)}: v23',
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
+                style: Theme
+                    .of(context)
                     .textTheme
                     .caption
-                    ?.copyWith(color: Theme.of(context).disabledColor)),
+                    ?.copyWith(color: Theme
+                    .of(context)
+                    .disabledColor)),
             SizedBox(height: 20),
           ],
         ),

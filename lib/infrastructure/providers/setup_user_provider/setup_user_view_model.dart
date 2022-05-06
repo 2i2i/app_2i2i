@@ -45,6 +45,8 @@ class SetupUserViewModel with ChangeNotifier {
 
   UserModel? userInfoModel;
 
+  SocialLinksModel? socialLinksModel;
+
   List<String> authList = [];
 
   Future<UserModel?> getUserInfoModel(String uid) async {
@@ -66,17 +68,6 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future updateFirebaseMessagingToken(String uid) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    // NotificationSettings settings = await messaging.requestPermission(
-    //   alert: true,
-    //   announcement: false,
-    //   badge: true,
-    //   carPlay: false,
-    //   criticalAlert: false,
-    //   provisional: false,
-    //   sound: true,
-    // );
-    // log(X + 'about to get token');
-    // log(X + 'settings=$settings');
     return messaging
         .getToken(
       vapidKey: dotenv.env['TOKEN_KEY'].toString(),
@@ -90,8 +81,11 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
     if (socialLinkModel is SocialLinksModel) {
-      userInfoModel!.socialLinks.add(socialLinkModel);
-      await database.updateUser(userInfoModel!);
+      userInfoModel?.socialLinks.add(socialLinkModel);
+      notifyListeners();
+      if (userInfoModel!.name.isNotEmpty) {
+        await database.updateUser(userInfoModel!);
+      }
     }
     final f1 = getUserInfoModel(uid);
     final f2 = updateFirebaseMessagingToken(uid);
@@ -101,8 +95,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future<void> signInAnonymously() async {
-    UserCredential firebaseUser =
-        await FirebaseAuth.instance.signInAnonymously();
+    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
     String? uid = firebaseUser.user?.uid;
     if (uid is String) await signInProcess(uid);
   }
@@ -119,20 +112,17 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signInWithGoogle(BuildContext context,
-      {bool linkWithCredential = false}) async {
+  Future<void> signInWithGoogle(BuildContext context, {bool linkWithCredential = false}) async {
     try {
       User? existingUser;
       UserCredential? firebaseUser;
-      SocialLinksModel? socialLinksModel;
+
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
 
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
@@ -141,18 +131,18 @@ class SetupUserViewModel with ChangeNotifier {
 
       if (linkWithCredential && existingUser != null) {
         firebaseUser = await existingUser.linkWithCredential(credential);
-        socialLinksModel = SocialLinksModel(
-            userName: googleSignInAccount.email,
-            userEmail: googleSignInAccount.email,
-            accountType: 'Google',
-            userId: googleSignInAccount.id);
       } else {
         firebaseUser = await auth.signInWithCredential(credential);
       }
 
+      socialLinksModel = SocialLinksModel(
+          userName: googleSignInAccount.email,
+          userEmail: googleSignInAccount.email,
+          accountType: 'Google',
+          userId: googleSignInAccount.id);
+
       String? uid = firebaseUser.user?.uid;
-      if (uid is String)
-        await signInProcess(uid, socialLinkModel: socialLinksModel);
+      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'credential-already-in-use') {
         await googleSignIn.signOut();
@@ -165,21 +155,18 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> unLink(BuildContext context) async {
     try {
       User? firebaseUser = FirebaseAuth.instance.currentUser;
-      User? existingUser = await firebaseUser!.unlink('apple.com');
+      User? existingUser = await firebaseUser!.unlink('google.com');
       print(existingUser);
     } on FirebaseAuthException catch (e) {
-      CustomDialogs.showToastMessage(
-          context, 'Error occurred using Google Sign In. Try again.');
+      CustomDialogs.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
       throw e;
     }
   }
 
-  Future<void> signInWithApple(BuildContext context,
-      {bool linkWithCredential = false}) async {
+  Future<void> signInWithApple(BuildContext context, {bool linkWithCredential = false}) async {
     try {
       User? existingUser;
       UserCredential? firebaseUser;
-      SocialLinksModel? socialLinksModel;
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
@@ -199,18 +186,20 @@ class SetupUserViewModel with ChangeNotifier {
 
       if (linkWithCredential && existingUser != null) {
         firebaseUser = await existingUser.linkWithCredential(oauthCredential);
-        socialLinksModel = SocialLinksModel(
-            userName: credential.email,
-            userEmail: credential.email,
-            accountType: 'Apple',
-            userId: credential.userIdentifier);
       } else {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
+
+      socialLinksModel = SocialLinksModel(
+          userName: credential.email,
+          userEmail: credential.email,
+          accountType: 'Apple',
+          userId: credential.userIdentifier);
+
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
         socialLinksModel!.userName = firebaseUser.user?.displayName ?? '';
-        socialLinksModel.userEmail = firebaseUser.user?.email ?? '';
+        socialLinksModel!.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
@@ -219,14 +208,12 @@ class SetupUserViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithTwitter(BuildContext context,
-      {bool linkWithCredential = false}) async {
+  Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
     try {
       User? existingUser;
       UserCredential? firebaseUser;
       AuthCredential? twitterAuthCredential;
       AuthResult? authResult;
-      SocialLinksModel? socialLinksModel;
       if (linkWithCredential) {
         existingUser = FirebaseAuth.instance.currentUser;
       }
@@ -240,37 +227,31 @@ class SetupUserViewModel with ChangeNotifier {
 
         authResult = await twitterLogin.login();
 
-        twitterAuthCredential = TwitterAuthProvider.credential(
-            accessToken: authResult.authToken!,
-            secret: authResult.authTokenSecret!);
+        twitterAuthCredential =
+            TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
       }
       if (linkWithCredential && existingUser != null) {
         if (kIsWeb) {
-          firebaseUser =
-              await existingUser.linkWithPopup(TwitterAuthProvider());
+          firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
         } else {
-          firebaseUser =
-              await existingUser.linkWithCredential(twitterAuthCredential!);
+          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential!);
         }
-        if (authResult?.user != null)
-          socialLinksModel = SocialLinksModel(
-              userName: authResult?.user?.name ?? '',
-              userEmail: authResult?.user?.email ?? '',
-              accountType: 'Twitter',
-              userId: "${authResult?.user?.id ?? ""}");
       } else {
         if (kIsWeb) {
-          firebaseUser = await FirebaseAuth.instance
-              .signInWithPopup(TwitterAuthProvider());
+          firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
         } else {
-          firebaseUser =
-              await auth.signInWithCredential(twitterAuthCredential!);
+          firebaseUser = await auth.signInWithCredential(twitterAuthCredential!);
         }
       }
+      if (authResult?.user != null)
+        socialLinksModel = SocialLinksModel(
+            userName: authResult?.user?.name ?? '',
+            userEmail: authResult?.user?.email ?? '',
+            accountType: 'Twitter',
+            userId: "${authResult?.user?.id ?? ""}");
 
       String? uid = firebaseUser.user?.uid;
-      if (uid is String)
-        await signInProcess(uid, socialLinkModel: socialLinksModel);
+      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
       print(e.message);
       CustomDialogs.showToastMessage(context, "${e.message}");
@@ -301,10 +282,8 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount(String uid) async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    final LocalAccount account = await LocalAccount.create(
-        algorandLib: algorandLib,
-        storage: storage,
-        accountService: accountService);
+    final LocalAccount account =
+        await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
     await database.addAlgorandAccount(uid, account.address, 'LOCAL');
     await accountService.setMainAcccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
@@ -312,8 +291,7 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    final HttpsCallable giftALGO =
-        FirebaseFunctions.instance.httpsCallable('giftALGO');
+    final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
       await giftALGO({'account': account.address});
@@ -332,10 +310,8 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   String generateNonce([int length = 32]) {
-    final charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
   }
 }
