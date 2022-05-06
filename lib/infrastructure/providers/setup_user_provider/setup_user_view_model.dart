@@ -291,10 +291,10 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
+    // final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
-      await giftALGO({'account': account.address});
+      // await giftALGO({'account': account.address});
       return account.updateBalances(net: AlgorandNet.testnet);
     }
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
