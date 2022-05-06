@@ -12,7 +12,6 @@ class FirestorePath {
   static String topDurations() => 'topDurations';
   static String appVersion() => 'test/app_version';
   static String meeting(String meetingId) => 'meetings/$meetingId';
-  static String meetingStatus(String meetingId) => 'meetings/$meetingId/private/status';
 
   static String bidInsPublic(String uid) => 'users/$uid/bidInsPublic';
   static String bidInsPrivate(String uid) => 'users/$uid/bidInsPrivate';

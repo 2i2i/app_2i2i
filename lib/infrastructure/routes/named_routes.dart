@@ -1,8 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/test_screen.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
@@ -84,6 +84,7 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
+          // child: getView(TestScreen()),
         ),
       ),
       GoRoute(

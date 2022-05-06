@@ -6,7 +6,6 @@ import 'package:animate_countdown_text/animate_countdown_text.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/infrastructure/models/meeting_status_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -30,6 +29,7 @@ class CallPageWebsockets extends ConsumerStatefulWidget {
 
   static String tag = 'call_sample';
   final String host = 'webrtc.2i2i.app';
+
   CallPageWebsockets({
     required this.meeting,
     required this.meetingChanger,
@@ -66,7 +66,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   UserModel? localUser;
   UserModel? remoteUser;
-  MeetingStatusModel? callStatusModel;
 
   @override
   initState() {
@@ -88,17 +87,14 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     appSettingModel = ref.watch(appSettingProvider);
     final userLocal = ref.watch(userProvider(localId));
     final userRemote = ref.watch(userProvider(remoteId));
-    final callStatus = ref.watch(meetingStatusProvider(widget.meeting.id));
-    if (haveToWait(userLocal) &&
-            haveToWait(userRemote) &&
-            haveToWait(callStatus) ||
+
+    if (haveToWait(userLocal) && haveToWait(userRemote) ||
         lockedUserViewModel == null) {
       return Center(child: CircularProgressIndicator());
     }
-
     localUser = userLocal.value;
     remoteUser = userRemote.value;
-    callStatusModel = callStatus.value;
+    // callStatusModel = callStatus.value;
 
     final List<MeetingStatusWithTS> meetingStatus =
         lockedUserViewModel.meeting.statusHistory;
@@ -325,12 +321,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                               : Icons.videocam_off_rounded,
                           onTap: _muteVideo,
                         ),
-                        // CircleButton(
-                        //     icon: Icons.cameraswitch_rounded,
-                        //     onTap: _switchCamera,
-                        //     // () => callScreenModel!.cameraSwitch(
-                        //     //     context: context, signaling: signaling!)),
-                        // ),
+                        CircleButton(
+                            icon: Icons.cameraswitch_rounded,
+                            onTap: _switchCamera,
+                            // () => callScreenModel!.cameraSwitch(
+                            //     context: context, signaling: signaling!)),
+                        ),
                       ],
                     ),
                   ),
@@ -418,21 +414,18 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   bool checkIfAmA(String userId, {bool? forVideo, bool? forAudio}) {
-    if (callStatusModel == null) {
-      return false;
-    }
     bool status = false;
     if (userId == widget.meeting.A) {
       if (forVideo ?? false) {
-        status = callStatusModel?.mutedVideoA ?? false;
+        status = widget.meeting.mutedVideoA;
       } else if (forAudio ?? false) {
-        status = callStatusModel?.mutedAudioA ?? false;
+        status = widget.meeting.mutedAudioA;
       }
     } else {
       if (forVideo ?? false) {
-        status = callStatusModel?.mutedVideoB ?? false;
+        status = widget.meeting.mutedVideoB;
       } else if (forAudio ?? false) {
-        status = callStatusModel?.mutedAudioB ?? false;
+        status = widget.meeting.mutedAudioB;
       }
     }
     return status;
@@ -638,9 +631,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     }
   }
 
-  // _switchCamera() {
-  //   _signaling?.switchCamera();
-  // }
+  _switchCamera() {
+    _signaling?.switchCamera();
+  }
 
   void _muteAudio() async {
     bool value = _signaling?.muteAudio() ?? false;
