@@ -48,8 +48,8 @@ class UserModelChanger {
 
   Future updateSettings(UserModel user) => database.updateUser(user);
 
-  Future addComment(String targetUid, ChatModel chat) =>
-      database.addChat(targetUid, chat);
+  Future addComment(String targetUid, ChatMessageModel chatMessageModel) =>
+      database.addChat(targetUid, chatMessageModel);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
@@ -128,6 +128,7 @@ class UserModel extends Equatable {
     // set also in cloud function userCreated
     required this.id,
     this.status = Status.ONLINE,
+    this.lastChatMessage,
     this.socialLinks = const <SocialLinksModel>[],
     this.meeting,
     this.name = '',
@@ -151,6 +152,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
+  final ChatMessageModel? lastChatMessage;
   List<SocialLinksModel> socialLinks = [];
 
   final String? meeting;
@@ -200,15 +202,10 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
-    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
-
-    // log('user.fromMap - data=$data');
-    // log('user.fromMap - data=${data['bidsIn']}');
-    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final Status status =
     Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
@@ -219,10 +216,13 @@ class UserModel extends Equatable {
             data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
     final String? meeting = data['meeting'];
+    final ChatMessageModel? lastChatMessage =
+        data.containsKey('lastChatMessage') && data['lastChatMessage'] != null
+            ? ChatMessageModel.fromJson(data['lastChatMessage'])
+            : null;
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final String? imageUrl = data['imageUrl'];
-    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
@@ -231,7 +231,6 @@ class UserModel extends Equatable {
     data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
-    // log('UserModel.fromMap - loungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
@@ -249,10 +248,11 @@ class UserModel extends Equatable {
         heartbeatForeground: heartbeatForeground,
         rule: rule,
         loungeHistory: loungeHistory,
-        loungeHistoryIndex: loungeHistoryIndex,
-        blocked: blocked,
-        friends: friends,
-        socialLinks: socialLinksList);
+        lastChatMessage: lastChatMessage,
+      loungeHistoryIndex: loungeHistoryIndex,
+      blocked: blocked,
+      friends: friends,
+    socialLinks: socialLinksList);
   }
 
   Map<String, dynamic> toMap() {

@@ -528,18 +528,64 @@ class FirestoreDatabase {
   }
 
   //chat
-  Stream<List<ChatModel>> getChat(String uid) {
+  Stream<List<ChatMessageModel?>> getChat(String uid) {
     return _service.collectionStream(
       path: FirestorePath.chat(uid),
-      builder: (data, documentId) => ChatModel.fromMap(data!),
-      queryBuilder: (query) => query.orderBy('ts', descending: true).limit(100),
+      builder: (data, documentId) {
+        if (data != null) return ChatMessageModel.fromJson(data);
+        return null;
+      },
+      queryBuilder: (query) =>
+          query.orderBy('timeStamp', descending: true).limit(100),
     );
   }
 
-  Future<void> addChat(String uid, ChatModel chat) => _service.setData(
-        path: FirestorePath.chat(uid) +
-            '/' +
-            _service.newDocId(path: FirestorePath.chat(uid)),
-        data: chat.toMap(),
-      );
+  Future seenChatMessages(
+      {required ChatMessageModel chatMessageModel,
+      required String uid,
+      required String seenBy}) {
+    return _service.runTransaction((transaction) {
+      Map chatModel = chatMessageModel.toJson();
+      List<String> userIds = chatModel['chatMessageSeenBy'];
+      userIds.add(seenBy);
+      chatModel['chatMessageSeenBy'] = userIds;
+
+      if (chatMessageModel.chatMessageUserId is String) {
+        final chatRef = _service.firestore
+            .doc(FirestorePath.chatSeen(uid, chatMessageModel.chatMessageId!));
+        final userRef = _service.firestore.doc(FirestorePath.user(uid));
+        chatRef.update({
+          'chatMessageSeenBy': FieldValue.arrayUnion([seenBy])
+        });
+        userRef.update({'lastChatMessage': chatModel.cast()});
+      }
+      return Future.value();
+    });
+  }
+
+  Stream<ChatMessageModel?> getSeenChatMessagesList(
+      {required String uid, required String chatMessageId}) {
+    return _service.documentStream(
+      path: FirestorePath.chatSeen(uid, chatMessageId),
+      builder: (data, documentId) => ChatMessageModel.fromJson(data!),
+    );
+  }
+
+  Future<void> addChat(String uid, ChatMessageModel chatMessageModel) {
+    String docId = _service.newDocId(path: FirestorePath.chat(uid));
+    Map map = chatMessageModel.toJson();
+    map['chatMessageId'] = docId;
+    return _service.runTransaction((transaction) {
+      if (chatMessageModel.chatMessageUserId is String) {
+        final chatRef =
+            _service.firestore.doc(FirestorePath.chat(uid) + '/' + docId);
+        final userRef = _service.firestore.doc(FirestorePath.user(uid));
+        chatRef.set(map.cast());
+        userRef.update({
+          'lastChatMessage': map.cast(),
+        });
+      }
+      return Future.value();
+    });
+  }
 }

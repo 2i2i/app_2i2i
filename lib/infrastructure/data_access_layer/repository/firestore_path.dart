@@ -5,6 +5,7 @@ class FirestorePath {
   static String token(String uid) => 'tokens/$uid';
   static String device(String uid) => 'devices/$uid';
   static String chat(String uid) => 'users/$uid/chat';
+  static String chatSeen(String uid,String messageId) => 'users/$uid/chat/$messageId';
 
   static String meetings() => 'meetings';
   static String topSpeeds() => 'topSpeeds';
@@ -29,5 +30,5 @@ class FirestorePath {
       'meetings/$meetingId/rooms/main/$subCollectionName';
 
   static String algorandAccount(String uid, String algorandAccount) => 'users/$uid/algorand_accounts/$algorandAccount';
-      
+
 }
