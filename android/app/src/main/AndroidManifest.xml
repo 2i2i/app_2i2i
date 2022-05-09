@@ -63,10 +63,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "example://gizmos” -->
-                <!-- Registered Callback URLs in TwitterApp -->
                 <data android:scheme="test"
-                    android:host="twoitwoi.com" /> <!-- host is option -->
+                    android:host="twoitwoi.com" />
             </intent-filter>
 
 
