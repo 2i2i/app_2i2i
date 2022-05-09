@@ -56,7 +56,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   @override
   void initState() {
     super.initState();
-    ref.read(setupUserViewModelProvider).getAuthList();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       setData();
     });
@@ -388,9 +387,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   CustomDialogs.loader(true, context);
                 }
                 await onClickSave(
-                    context: context,
-                    myUserPageViewModel: myUserPageViewModel,
-                    setupUserViewModel: signUpViewModel);
+                    context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                 if (!(widget.fromBottomSheet ?? false)) {
                   CustomDialogs.loader(false, context);
                 }
@@ -555,9 +552,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     UserModel? user = myUserPageViewModel?.user;
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
       SocialLinksModel? socialLinksModel = setupUserViewModel?.socialLinksModel;
-      if (setupUserViewModel?.authList.contains(socialLinksModel!.userName) ?? false) {
-        user!.socialLinks = [socialLinksModel!];
-      }
+      user!.socialLinks = [socialLinksModel!];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
