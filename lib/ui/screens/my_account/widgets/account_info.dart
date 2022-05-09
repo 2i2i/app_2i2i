@@ -1,12 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -18,9 +20,7 @@ import 'keys_widget.dart';
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
 
-  AccountInfo(this.shrinkwrap,
-      {Key? key, required this.account, this.afterRefresh})
-      : super(key: key);
+  AccountInfo(this.shrinkwrap, {Key? key, required this.account, this.afterRefresh}) : super(key: key);
 
   final AbstractAccount account;
   final void Function()? afterRefresh;
@@ -42,9 +42,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount / 1000000;
-    String assetName = assetId == 0
-        ? '${Keys.ALGO.tr(context)}'
-        : balanceModel.assetHolding.assetId.toString();
+    String assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
       constraints: widget.shrinkwrap == true
@@ -86,8 +84,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     Flexible(
                       child: Text(
                         assetName,
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                            color: AppTheme().lightSecondaryTextColor),
+                        style:
+                            Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -137,11 +135,19 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
                   child: IconButton(
-                    icon: Icon(Icons.credit_card_rounded,
-                        color: iconColor(context)),
-                    onPressed: () => context.pushNamed(
-                        Routes.webView.nameFromPath(),
-                        params: {'walletAddress': widget.account.address}),
+                    icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
+                    onPressed: () async {
+                      bool camera = true;
+                      bool microphone = true;
+                      if (!kIsWeb) {
+                        camera = await Permission.camera.request().isGranted;
+                        microphone = await Permission.microphone.request().isGranted;
+                      }
+                      if (camera && microphone) {
+                        context.pushNamed(Routes.webView.nameFromPath(),
+                            params: {'walletAddress': widget.account.address});
+                      }
+                    },
                   ),
                 ),
                 Container(
@@ -156,8 +162,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ),
                     onPressed: () async {
                       CustomDialogs.loader(true, context);
-                      await widget.account
-                          .updateBalances(net: AppConfig().ALGORAND_NET);
+                      await widget.account.updateBalances(net: AppConfig().ALGORAND_NET);
                       if (widget.afterRefresh != null) widget.afterRefresh!();
                       CustomDialogs.loader(false, context);
                       setState(() {});
@@ -175,8 +180,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       color: iconColor(context),
                     ),
                     onPressed: () {
-                      Clipboard.setData(
-                          ClipboardData(text: widget.account.address));
+                      Clipboard.setData(ClipboardData(text: widget.account.address));
                       showToast(Keys.copyMessage.tr(context),
                           context: context,
                           animation: StyledToastAnimation.slideFromTop,
@@ -203,8 +207,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                           ),
                           onPressed: () => CustomDialogs.infoDialog(
                                 context: context,
-                                child: KeysWidget(
-                                    account: widget.account as LocalAccount),
+                                child: KeysWidget(account: widget.account as LocalAccount),
                               )
                           // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
                           ),
@@ -219,9 +222,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   }
 
   Color? iconColor(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark
-          ? Theme.of(context).colorScheme.secondary
-          : Color(0XFF2D4E6C);
+      Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(
@@ -229,9 +230,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
       itemCount: balances.length,
       itemBuilder: (_, ix) {
         final assetId = balances[ix].assetHolding.assetId;
-        final assetName = assetId == 0
-            ? 'μALGO'
-            : balances[ix].assetHolding.assetId.toString();
+        final assetName = assetId == 0 ? 'μALGO' : balances[ix].assetHolding.assetId.toString();
         final assetAmount = balances[ix].assetHolding.amount;
         final net = balances[ix].net;
         return Container(
