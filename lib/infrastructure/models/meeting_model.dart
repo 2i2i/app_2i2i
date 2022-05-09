@@ -208,8 +208,8 @@ class Meeting extends Equatable {
     required this.net,
     required this.speed,
     required this.room,
-    required this.coinFlowsA,
-    required this.coinFlowsB,
+    // required this.coinFlowsA,
+    // required this.coinFlowsB,
     required this.lounge,
     this.mutedAudioA = false,
     this.mutedVideoA = false,
@@ -242,8 +242,8 @@ class Meeting extends Equatable {
   final Quantity speed;
   final String? room;
 
-  final List<Quantity> coinFlowsA;
-  final List<Quantity> coinFlowsB;
+  // final List<Quantity> coinFlowsA;
+  // final List<Quantity> coinFlowsB;
 
   final Lounge lounge;
 
@@ -320,10 +320,10 @@ class Meeting extends Equatable {
     final Quantity speed = Quantity.fromMap(data['speed']);
     final String? room = data['room'];
 
-    final List<Quantity> coinFlowsA = List<Quantity>.from(
+    /*final List<Quantity> coinFlowsA = List<Quantity>.from(
         data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
     final List<Quantity> coinFlowsB = List<Quantity>.from(
-        data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
+        data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));*/
 
     final Lounge lounge =
         Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
@@ -349,8 +349,8 @@ class Meeting extends Equatable {
       net: net,
       speed: speed,
       room: room,
-      coinFlowsA: coinFlowsA,
-      coinFlowsB: coinFlowsB,
+      // coinFlowsA: coinFlowsA,
+      // coinFlowsB: coinFlowsB,
       rule: rule,
       mutedAudioA: mutedAudioA,
       mutedVideoA: mutedVideoA,
@@ -399,8 +399,8 @@ class Meeting extends Equatable {
       net: bidIn.public.net,
       speed: bidIn.public.speed,
       room: null,
-      coinFlowsA: [],
-      coinFlowsB: [],
+      // coinFlowsA: [],
+      // coinFlowsB: [],
       rule: bidIn.public.rule,
     );
   }
@@ -424,8 +424,8 @@ class Meeting extends Equatable {
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'room': room,
-      'coinFlowsA': coinFlowsA,
-      'coinFlowsB': coinFlowsB,
+      // 'coinFlowsA': coinFlowsA.map((s) => s.toMap()).toList(),
+      // 'coinFlowsB': coinFlowsB.map((s) => s.toMap()).toList(),
       'lounge': lounge.toStringEnum(),
       'rule': rule.toMap(),
       /*'mutedAudioA': mutedAudioA,
