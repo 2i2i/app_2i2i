@@ -138,7 +138,7 @@ class SetupUserViewModel with ChangeNotifier {
       socialLinksModel = SocialLinksModel(
           userName: googleSignInAccount.email,
           userEmail: googleSignInAccount.email,
-          accountType: 'Google',
+          accountName: 'Google',
           userId: googleSignInAccount.id);
 
       String? uid = firebaseUser.user?.uid;
@@ -193,7 +193,7 @@ class SetupUserViewModel with ChangeNotifier {
       socialLinksModel = SocialLinksModel(
           userName: credential.email,
           userEmail: credential.email,
-          accountType: 'Apple',
+          accountName: 'Apple',
           userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
@@ -247,7 +247,7 @@ class SetupUserViewModel with ChangeNotifier {
         socialLinksModel = SocialLinksModel(
             userName: authResult?.user?.name ?? '',
             userEmail: authResult?.user?.email ?? '',
-            accountType: 'Twitter',
+            accountName: 'Twitter',
             userId: "${authResult?.user?.id ?? ""}");
 
       String? uid = firebaseUser.user?.uid;
@@ -291,10 +291,10 @@ class SetupUserViewModel with ChangeNotifier {
     // TODO uncomment try
     // DEBUG - off for faster debugging
     notifyListeners();
-    final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
+    // final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
-      await giftALGO({'account': account.address});
+      // await giftALGO({'account': account.address});
       return account.updateBalances(net: AlgorandNet.testnet);
     }
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');

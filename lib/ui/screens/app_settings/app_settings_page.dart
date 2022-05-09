@@ -61,8 +61,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
-            ElevatedButton(onPressed: () => signUpViewModel.unLink(context), child: Text('Unlink')),
             //profile
             Text(
               Keys.account.tr(context),
