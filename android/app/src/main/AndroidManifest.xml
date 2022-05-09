@@ -74,7 +74,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with https://YOUR_HOST -->
                 <data
-                    android:host="test.2i2i.app"
+                    android:host="about.2i2i.app"
                     android:pathPrefix="/"
                     android:scheme="https" />
             </intent-filter>
