@@ -1,121 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+    <dict>
 
-<key>compileBitcode</key>
-<false/>
+        <key>compileBitcode</key>
+        <false/>
 
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>$(DEVELOPMENT_LANGUAGE)</string>
 
-	<key>CFBundleDisplayName</key>
-	<string>2i2i</string>
+        <key>CFBundleDisplayName</key>
+        <string>2i2i</string>
 
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
+        <key>CFBundleExecutable</key>
+        <string>$(EXECUTABLE_NAME)</string>
 
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+        <key>CFBundleIdentifier</key>
+        <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
 
-	<key>CFBundleName</key>
-	<string>app.2i2i</string>
+        <key>CFBundleName</key>
+        <string>app.2i2i</string>
 
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
 
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+        <key>CFBundleShortVersionString</key>
+        <string>$(FLUTTER_BUILD_NAME)</string>
 
-	<key>CFBundleSignature</key>
-	<string>????</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
 
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>twoitwoi.com</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>test</string>
-			</array>
-		</dict>
-	</array>
-
-
-
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string></string>
-        <key>CFBundleURLSchemes</key>
+        <key>CFBundleURLTypes</key>
         <array>
-          <string>com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff</string>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLName</key>
+                <string>twoitwoi.com</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>test</string>
+                </array>
+            </dict>
         </array>
-      </dict>
-    </array>
 
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
 
-	<key>FlutterDeepLinkingEnabled</key>
-	<true/>
 
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLName</key>
+                <string>about.2i2i.app</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>https</string>
+                    <string>com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff</string>
+                </array>
+            </dict>
+        </array>
 
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-		<string>voip</string>
-	</array>
+        <key>CFBundleVersion</key>
+        <string>$(FLUTTER_BUILD_NUMBER)</string>
 
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+        <key>FlutterDeepLinkingEnabled</key>
+        <true/>
 
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
+        <key>LSRequiresIPhoneOS</key>
+        <true/>
 
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>fetch</string>
+            <string>remote-notification</string>
+            <string>voip</string>
+        </array>
 
-	<key>LSApplicationQueriesSchemes</key>
-    <array>
-      <string>https</string>
-      <string>http</string>
-    </array>
+        <key>UILaunchStoryboardName</key>
+        <string>LaunchScreen</string>
 
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+        <key>UIMainStoryboardFile</key>
+        <string>Main</string>
 
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+        <key>UISupportedInterfaceOrientations</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>
+            <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
 
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>This app requires access to the photo library.</string>
+        <key>LSApplicationQueriesSchemes</key>
+        <array>
+            <string>https</string>
+            <string>http</string>
+        </array>
 
-    <key>NSMicrophoneUsageDescription</key>
-    <string>$(PRODUCT_NAME) Microphone Usage!</string>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationPortraitUpsideDown</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>
+            <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
 
-    <key>NSCameraUsageDescription</key>
-    <string>This app requires access to the camera.</string>
-</dict>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <false/>
+
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>This app requires access to the photo library.</string>
+
+        <key>NSMicrophoneUsageDescription</key>
+        <string>$(PRODUCT_NAME) Microphone Usage!</string>
+
+        <key>NSCameraUsageDescription</key>
+        <string>This app requires access to the camera.</string>
+    </dict>
 </plist>
