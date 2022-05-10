@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
@@ -81,18 +80,11 @@ class FirestoreDatabase {
       );
 
   Future acceptBid(Meeting meeting) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _service.runTransaction((transaction) {
       // create meeting
 
-      Map meetingMap = meeting.toMap();
-      meetingMap['mutedVideoA'] = false;
-      meetingMap['mutedAudioA'] = false;
-      meetingMap['mutedAudioB'] = false;
-      meetingMap['mutedVideoB'] = false;
-
       final meetingDocRef = _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
-      transaction.set(meetingDocRef, meetingMap);
+      transaction.set(meetingDocRef, meeting.toMap());
 
       // lock users
       final lockObj = {'meeting': meeting.id};

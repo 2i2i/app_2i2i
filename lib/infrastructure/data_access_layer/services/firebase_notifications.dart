@@ -24,9 +24,7 @@ class FirebaseNotifications {
   }
 
   Future<void> awesomeNotificationSetup() async {
-    FirebaseMessaging.instance
-        .getToken()
-        .then((value) => print("\n\nMobile Token ======= $value \n\n"));
+    FirebaseMessaging.instance.getToken().then((value) => print("\n\nMobile Token ======= $value \n\n"));
     await Firebase.initializeApp();
     await AwesomeNotifications().initialize(
       null,
@@ -61,13 +59,11 @@ class FirebaseNotifications {
       }
     });
 
-
     AwesomeNotifications().actionStream.listen((receivedAction) {
       print('AwesomeNotifications().actionStream ${receivedAction.payload.toString()}');
       if (receivedAction.channelKey == 'call_channel') {
         switch (receivedAction.buttonKeyPressed) {
           case 'view':
-
             break;
         }
         return;
@@ -75,15 +71,10 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token,Map data,bool isIos) async {
-    var notification = {};
-    if(isIos){
-      notification['title'] = data['title'];
-      notification['body'] = data['body'];
-    }
+  Future sendNotification(String token, Map data, bool isIos) async {
     Map map = {
       "to": token,
-      "notification": notification,
+      "notification": {'title': data['title'], 'body': data['body']},
       "mutable_content": true,
       "content_available": true,
       "content-available": true,

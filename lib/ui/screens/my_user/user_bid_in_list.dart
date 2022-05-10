@@ -62,6 +62,7 @@ class UserBidInsList extends ConsumerWidget {
             if (camera && microphone && bidIns.isNotEmpty) {
               firstUser = bidIns.first.user;
               if (firstUser == null) {
+
                 return;
               }
 
@@ -87,7 +88,7 @@ class UserBidInsList extends ConsumerWidget {
 
                 if (secondUserTokenModel is TokenModel) {
                   Map jsonDataNextUser = {
-                    "title": 'Hey ${secondUser?.name ?? ""} don"\"t" wait',
+                    "title": 'Hey ${secondUser?.name ?? ""} don\'t wait',
                     "body": 'You are next in line'
                   };
                   await FirebaseNotifications().sendNotification(
