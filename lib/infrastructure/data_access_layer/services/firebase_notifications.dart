@@ -71,13 +71,17 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token, Map data, bool isIos) async {
+  Future sendNotification(String token,Map data,bool isIos) async {
+    var notification = {};
+    if(isIos){
+      notification['title'] = data['title'];
+      notification['body'] = data['body'];
+    }
     Map map = {
       "to": token,
-      "notification": {'title': data['title'], 'body': data['body']},
+      "notification": notification,
       "mutable_content": true,
       "content_available": true,
-      "content-available": true,
       "priority": "high",
       "data": data,
     };
