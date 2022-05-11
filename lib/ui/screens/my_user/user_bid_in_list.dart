@@ -9,9 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/services/firebase_notifications.dart';
 import '../../../infrastructure/models/bid_model.dart';
+import '../../../infrastructure/models/token_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import '../../../infrastructure/routes/app_routes.dart';
 import '../app/no_bid_page.dart';
 import '../home/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
@@ -30,8 +33,8 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers =
-        ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+    final database = ref.watch(databaseProvider);
+    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -44,31 +47,53 @@ class UserBidInsList extends ConsumerWidget {
           onTap: () async {
             bool camera = true;
             bool microphone = true;
+
+            UserModel? firstUser;
+            UserModel? secondUser;
+
+            TokenModel? firstUserTokenModel;
+            TokenModel? secondUserTokenModel;
+
             if (!kIsWeb) {
               camera = await Permission.camera.request().isGranted;
               microphone = await Permission.microphone.request().isGranted;
             }
 
-            if (camera && microphone) {
-              for (BidIn bidIn in bidIns) {
-                UserModel? user = bidIn.user;
-                if (user == null) {
-                  return;
-                }
-                String? token;
-                bool isIos = false;
-                try {
-                  final database = ref.watch(databaseProvider);
-                  Map map = await database.getTokenFromId(bidIn.user!.id) ?? {};
-                  token = map['token'];
-                  isIos = map['isIos'] ?? false;
-                } catch (e) {
-                  print(e);
-                }
+            if (camera && microphone && bidIns.isNotEmpty) {
+              firstUser = bidIns.first.user;
+              if (firstUser == null) {
 
-                final acceptedBid = await myHangoutPageViewModel
-                    .acceptBid(bidIn, token: token, isIos: isIos);
-                if (acceptedBid) break;
+                return;
+              }
+
+              firstUserTokenModel = await database.getTokenFromId(firstUser.id);
+
+              if (bidIns.length > 1) {
+                secondUser = bidIns[1].user;
+                secondUserTokenModel = await database.getTokenFromId(secondUser!.id);
+              }
+
+              final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIns.first);
+
+              if (acceptedBid && (firstUserTokenModel is TokenModel)) {
+                Map jsonDataCurrentUser = {
+                  'route': Routes.lock,
+                  'type': 'Call',
+                  "title": firstUser.name,
+                  "body": 'Incoming video call'
+                };
+
+                await FirebaseNotifications().sendNotification(
+                    (firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
+
+                if (secondUserTokenModel is TokenModel) {
+                  Map jsonDataNextUser = {
+                    "title": 'Hey ${secondUser?.name ?? ""} don\'t wait',
+                    "body": 'You are next in line'
+                  };
+                  await FirebaseNotifications().sendNotification(
+                      (secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
+                }
               }
             }
           },
@@ -82,9 +107,7 @@ class UserBidInsList extends ConsumerWidget {
                 BoxShadow(
                     offset: Offset(2, 2),
                     blurRadius: 8,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary // changes position of shadow
+                    color: Theme.of(context).colorScheme.secondary // changes position of shadow
                     ),
               ],
             ),
