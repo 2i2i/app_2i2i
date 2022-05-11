@@ -59,8 +59,9 @@
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>https</string>
-                    <string>com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff</string>
-                </array>
+          <string>com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff</string>
+          <string>https://app-2i2i.firebaseapp.com/__/auth/handler</string>
+        </array>
             </dict>
         </array>
 
