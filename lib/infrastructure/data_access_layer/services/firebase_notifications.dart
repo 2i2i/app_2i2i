@@ -4,8 +4,10 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../common_main.dart';
 import 'package:http/http.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -60,7 +62,6 @@ class FirebaseNotifications {
     });
 
     AwesomeNotifications().actionStream.listen((receivedAction) {
-      print('AwesomeNotifications().actionStream ${receivedAction.payload.toString()}');
       if (receivedAction.channelKey == 'call_channel') {
         switch (receivedAction.buttonKeyPressed) {
           case 'view':
@@ -71,9 +72,9 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token,Map data,bool isIos) async {
+  Future sendNotification(String token, Map data, bool isIos) async {
     var notification = {};
-    if(isIos){
+    if (isIos) {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
     }
@@ -90,16 +91,15 @@ class FirebaseNotifications {
       return;
     }
     try {
-      await post(
+      Response callApi = await post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization':
-              'key=AAAAaa2e9ys:APA91bHjXVbNkKrkNC6_HxcFYuVal_IMNFxK7738gFxTu87_ACZ8HUeGQd3dkvRwiTmqtfjDd30fMV-d5XiHr_BBTGKOLJdH0OgKs1B9Q6eAXgWadZeiv2hV2E4ydmyb7Ar6Ykl86UlD',
+          'Authorization': 'key=${dotenv.env['FIREBASE_SERVER_KEY'].toString()}',
         },
         body: jsonEncode(map),
       );
-      print('FCM request for device sent!');
+      print('FCM request for device sent!$callApi');
     } catch (e) {
       print(e);
     }
