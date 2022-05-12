@@ -19,8 +19,7 @@ class MeetingHistoryModel extends ChangeNotifier {
     isRequesting = true;
     notifyListeners();
 
-    var meetingHistoryData =
-        database.meetingHistory(meetingDataModel: meetingDataModel);
+    var meetingHistoryData = database.meetingHistory(meetingDataModel: meetingDataModel);
     if (!haveToWait(meetingHistoryData)) {
       Map modelData = await meetingHistoryData.first;
       if (modelData.containsKey('docList') && modelData['docList'] != null) {
@@ -30,8 +29,7 @@ class MeetingHistoryModel extends ChangeNotifier {
       if (meetingDataModel.lastDocument != null) {
         if (modelData.containsKey('meetingList') &&
             modelData['meetingList'] != null &&
-            modelData['meetingList'].isNotEmpty)
-          meetingHistoryList.addAll(modelData['meetingList']);
+            modelData['meetingList'].isNotEmpty) meetingHistoryList.addAll(modelData['meetingList']);
       } else {
         if (modelData.containsKey('meetingList') &&
             modelData['meetingList'] != null &&
@@ -54,11 +52,7 @@ class MeetingDataModel {
   String? userAorB;
   DocumentSnapshot? lastDocument;
 
-  MeetingDataModel(
-      {required this.page,
-      required this.userAorB,
-      required this.uId,
-      this.lastDocument});
+  MeetingDataModel({required this.page, required this.userAorB, required this.uId, this.lastDocument});
 
   MeetingDataModel.fromJson(Map<String, dynamic> json) {
     page = json['page'];
