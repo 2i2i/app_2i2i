@@ -29,7 +29,7 @@ import 'common_main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env_dev");
 
   await Firebase.initializeApp(
       options: kIsWeb?FirebaseOptions(
