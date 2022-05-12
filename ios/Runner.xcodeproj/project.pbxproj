@@ -54,7 +54,6 @@
 		FA42AD0F27CF7C40005450E7 /* video_call.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = video_call.m4a; path = ../../android/app/src/main/res/raw/video_call.m4a; sourceTree = "<group>"; };
 		FAADD91327BE5F5900D90FB3 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		FAB8125A27E12A540073801A /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; path = config; sourceTree = "<group>"; };
-		FACB420F27D0D444007166D6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FC0DCCA0901205325F1EF2C1 /* Pods-Runner.profile-main.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-main.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-main.xcconfig"; sourceTree = "<group>"; };
 		FC4BB872F3F1425D6C6B6CAB /* Pods-Runner.release-main.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-main.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-main.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,7 +105,6 @@
 			isa = PBXGroup;
 			children = (
 				FA42AD0F27CF7C40005450E7 /* video_call.m4a */,
-				FACB420F27D0D444007166D6 /* GoogleService-Info.plist */,
 				FA08D34B27D0A71A00A4DC55 /* RunnerDebug.entitlements */,
 				FA08D34A27D0A4D300A4DC55 /* RunnerProfile.entitlements */,
 				FAADD91327BE5F5900D90FB3 /* Runner.entitlements */,
@@ -417,6 +415,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -554,6 +553,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -584,6 +584,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -670,6 +671,7 @@
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -752,6 +754,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -831,6 +834,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
+				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = (
