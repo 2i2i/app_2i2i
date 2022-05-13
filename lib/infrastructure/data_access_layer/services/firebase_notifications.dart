@@ -91,7 +91,7 @@ class FirebaseNotifications {
       return;
     }
     try {
-      Response callApi = await post(
+      await post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -99,7 +99,6 @@ class FirebaseNotifications {
         },
         body: jsonEncode(map),
       );
-      print('FCM request for device sent!$callApi');
     } catch (e) {
       print(e);
     }
