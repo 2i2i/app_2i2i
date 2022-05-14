@@ -391,7 +391,7 @@ final addBidPageViewModelProvider =
       database: database,
       functions: functions,
       algorand: algorand,
-      accounts: accounts.asData!.value,
+      accounts: accounts.value!,
       accountService: accountService,
       B: B);
 });

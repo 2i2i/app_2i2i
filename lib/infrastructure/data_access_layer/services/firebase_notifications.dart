@@ -74,7 +74,7 @@ class FirebaseNotifications {
 
   Future sendNotification(String token, Map data, bool isIos) async {
     var notification = {};
-    if (isIos) {
+    if (isIos || data['type'] != 'Call') {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
     }
