@@ -83,7 +83,7 @@ class SetupUserViewModel with ChangeNotifier {
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
       notifyListeners();
-      if (userInfoModel!.name.isNotEmpty) {
+      if ((userInfoModel?.name ?? "").isNotEmpty) {
         await database.updateUser(userInfoModel!);
       }
     }
