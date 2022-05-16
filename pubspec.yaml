@@ -54,7 +54,7 @@ dependencies:
   intl: ^0.17.0
   cached_network_image: ^3.2.0
 
-  firebase_messaging: ^11.2.14
+  firebase_messaging: ^11.4.0
   cloud_firestore: ^3.1.13
   firebase_app_check: ^0.0.6+10
   firebase_core: ^1.15.0

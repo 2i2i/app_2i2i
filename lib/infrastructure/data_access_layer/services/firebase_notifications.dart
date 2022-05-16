@@ -106,6 +106,8 @@ class FirebaseNotifications {
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
   print("Handling a background message: ${message.messageId}");
 
   String? imageUrl;
