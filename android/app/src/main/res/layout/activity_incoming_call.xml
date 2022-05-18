@@ -13,17 +13,6 @@
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_marginLeft="6dp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/btn_owl" />
-    </LinearLayout>
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="6dp"
@@ -32,17 +21,18 @@
         android:orientation="vertical">
 
         <TextView
-            style="@style/TextAppearance.AppCompat.Headline"
+            android:id="@+id/user_title"
+            style="@style/TextAppearance.Compat.Notification.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AbhiAndroid"
+            android:text="2i2i"
             android:textStyle="bold" />
 
         <TextView
-            style="@style/TextAppearance.AppCompat.Body1"
+            style="@style/TextAppearance.Compat.Notification.Info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AbhiAndroid" />
+            android:text="2i2i Video..." />
 
     </LinearLayout>
 
@@ -52,11 +42,13 @@
         android:gravity="center|right">
 
         <ImageView
+            android:id="@+id/btn_cut"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:src="@drawable/btn_end_call" />
 
         <ImageView
+            android:id="@+id/btn_accept"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginStart="14dp"

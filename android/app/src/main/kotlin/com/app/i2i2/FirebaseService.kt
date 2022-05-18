@@ -20,13 +20,23 @@ class FirebaseService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.i("My_Lifecycle", "remoteMessage.notification.toString()")
         if (remoteMessage.notification != null) {
-            val title = (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.title)!!
-            val body = (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.body)!!
+            val title =
+                (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.title)!!
+            val body =
+                (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.body)!!
             // sendNotification(title, body);
         } else {
-            //In background we use getData.
+            val hashMap = HashMap<String, String>()
+            hashMap["title"] = remoteMessage.data["title"] ?: ""
+            hashMap["body"] = remoteMessage.data["body"] ?: ""
+            hashMap["type"] = remoteMessage.data["type"] ?: ""
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isBackground) {
-                startForegroundService(Intent(this, HeadsUpNotificationService::class.java))
+                startForegroundService(
+                    Intent(
+                        this,
+                        HeadsUpNotificationService::class.java
+                    ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap)
+                )
             } else {
                 val intent = Intent(this, NotificationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -35,6 +45,7 @@ class FirebaseService : FirebaseMessagingService() {
                 intent.addCategory("android.intent.category.LAUNCHER")
                 application.startActivity(intent)
             }
+
         }
     }
 
