@@ -71,7 +71,7 @@ dependencies:
   device_info_plus: ^3.2.3
   package_info_plus: ^1.4.2
   rich_text_controller: ^1.4.0
-  awesome_notifications: ^0.6.21
+#  awesome_notifications: ^0.6.21
   permission_handler: ^9.2.0
   flutter_dotenv: ^5.0.2
 
