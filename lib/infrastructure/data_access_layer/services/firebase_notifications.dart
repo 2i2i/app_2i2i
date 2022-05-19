@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -28,48 +28,44 @@ class FirebaseNotifications {
   Future<void> awesomeNotificationSetup() async {
     FirebaseMessaging.instance.getToken().then((value) => print("\n\nMobile Token ======= $value \n\n"));
     await Firebase.initializeApp();
-    await AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-          channelGroupKey: 'incoming_call',
-          channelKey: 'call_channel',
-          channelName: 'Calls',
-          channelDescription: 'Incoming call notifications',
-          defaultColor: Color(0xFF9D50DD),
-          importance: NotificationImportance.Max,
-          ledColor: Colors.white,
-          channelShowBadge: false,
-          locked: true,
-          playSound: true,
-          soundSource: 'resource://raw/video_call',
-          vibrationPattern: highVibrationPattern,
-        ),
-      ],
-      channelGroups: [
-        NotificationChannelGroup(
-          channelGroupkey: 'incoming_call',
-          channelGroupName: 'Calls',
-        )
-      ],
-      debug: true,
-    );
 
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        AwesomeNotifications().requestPermissionToSendNotifications();
-      }
-    });
-
-    AwesomeNotifications().actionStream.listen((receivedAction) {
-      if (receivedAction.channelKey == 'call_channel') {
-        switch (receivedAction.buttonKeyPressed) {
-          case 'view':
-            break;
-        }
-        return;
-      }
-    });
+    // await AwesomeNotifications().initialize(
+    //     null,
+    //     [
+    //       NotificationChannel(
+    //           channelKey: 'alerts',
+    //           channelName: 'Alerts',
+    //           channelDescription: 'Notification alerts',
+    //           importance: NotificationImportance.High,
+    //           defaultColor: Color(0xFF9D50DD),
+    //           ledColor: Colors.white,
+    //           groupKey: 'alerts',
+    //           channelShowBadge: true)
+    //     ],
+    //     debug: true);
+    //
+    // await Firebase.initializeApp();
+    // await AwesomeNotificationsFcm().initialize(
+    //     debug: true,
+    //     onSilentDataHandle: (SilentData silentData) async {
+    //       debugPrint('"SilentData": ${silentData.toString()}');
+    //     });
+    //
+    // AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    //   if (!isAllowed) {
+    //     AwesomeNotifications().requestPermissionToSendNotifications();
+    //   }
+    // });
+    //
+    // AwesomeNotifications().actionStream.listen((receivedAction) {
+    //   if (receivedAction.channelKey == 'call_channel') {
+    //     switch (receivedAction.buttonKeyPressed) {
+    //       case 'view':
+    //         break;
+    //     }
+    //     return;
+    //   }
+    // });
   }
 
   Future sendNotification(String token, Map data, bool isIos) async {
@@ -119,31 +115,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (type == 'Call') {
     if (Platform.isIOS) {
       await platform.invokeMethod('INCOMING_CALL', {'name': data['title']});
-    } else {
-      AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: 10,
-          channelKey: 'call_channel',
-          title: title,
-          body: body,
-          category: NotificationCategory.Call,
-          largeIcon: imageUrl,
-          wakeUpScreen: true,
-          fullScreenIntent: true,
-          autoDismissible: true,
-          backgroundColor: Colors.white,
-          customSound: 'resource://raw/video_call',
-          payload: data.cast<String, String>(),
-        ),
-        actionButtons: [
-          NotificationActionButton(
-            key: 'view',
-            label: 'View',
-            color: Colors.green,
-            autoDismissible: true,
-          ),
-        ],
-      );
     }
   }
 }
