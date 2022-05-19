@@ -35,16 +35,16 @@ class FirebaseService : FirebaseMessagingService() {
                     Intent(
                         this,
                         HeadsUpNotificationService::class.java
-                    ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap)
+                    ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap).setAction(ConfigKey.CALL_NEW_NOTIFICATION)
                 )
-            } else {
+            }/* else {
                 val intent = Intent(this, NotificationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(ConfigKey.FCM_DATA_KEY, remoteMessage)
                 intent.action = "android.intent.action.MAIN"
                 intent.addCategory("android.intent.category.LAUNCHER")
                 application.startActivity(intent)
-            }
+            }*/
 
         }
     }

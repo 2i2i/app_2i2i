@@ -21,14 +21,16 @@
 
 
     <application
+        android:name="com.app.i2i2.MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="2i2i">
         <activity
-            android:name=".MainActivity"
+            android:name="app.i2i2.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:theme="@style/LaunchTheme"
             android:turnScreenOn="true"
@@ -84,12 +86,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
+
         <activity
             android:name="com.app.i2i2.NotificationActivity"
             android:screenOrientation="portrait" />
@@ -105,9 +109,11 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/alert_color" />
         <service android:name="com.app.i2i2.HeadsUpNotificationService" />
-        <receiver android:name="com.app.i2i2.HeadsUpNotificationActionReceiver"  android:exported="true">
+        <receiver
+            android:name="com.app.i2i2.HeadsUpNotificationActionReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
             </intent-filter>
         </receiver>

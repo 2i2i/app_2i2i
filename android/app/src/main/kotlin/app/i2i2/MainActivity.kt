@@ -12,8 +12,6 @@ import com.google.firebase.FirebaseApp
 import io.flutter.embedding.android.FlutterActivity
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.android.gms.tasks.OnCompleteListener
 
 class MainActivity : FlutterActivity() {
 
@@ -23,14 +21,6 @@ class MainActivity : FlutterActivity() {
         firebaseAppCheck.installAppCheckProviderFactory(
             DebugAppCheckProviderFactory.getInstance()
         )
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                return@OnCompleteListener
-            }
-
-            val token = task.result
-            Log.i("My_Lifecycle", "FIREBASE_TOKEN $token")
-        })
         requestAppBackground()
 
         super.onCreate(savedInstanceState)

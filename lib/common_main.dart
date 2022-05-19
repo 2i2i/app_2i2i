@@ -39,8 +39,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
     await Firebase.initializeApp();
-    await FirebaseAppCheck.instance.activate(
-        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
+    await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
     String? token = await FirebaseAppCheck.instance.getToken(true);
     print(token);
@@ -63,8 +62,7 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn =
-      'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {
@@ -93,8 +91,7 @@ class MainWidget extends ConsumerStatefulWidget {
   final String themeMode;
   final String local;
 
-  const MainWidget(this.local, {required this.themeMode, Key? key})
-      : super(key: key);
+  const MainWidget(this.local, {required this.themeMode, Key? key}) : super(key: key);
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -137,8 +134,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         print('Message data: ${message.data}');
 
         if (message.notification != null) {
-          print(
-              'Message also contained a notification: ${message.notification}');
+          print('Message also contained a notification: ${message.notification}');
         }
 
         if (message.data['action'] == 'update') {
@@ -159,8 +155,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //     }
       //   });
       //}
-
-
 
       await Custom.deepLinks(context, mounted);
     });

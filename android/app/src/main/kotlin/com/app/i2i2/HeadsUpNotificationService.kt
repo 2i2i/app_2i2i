@@ -1,19 +1,18 @@
 package com.app.i2i2
 
 import android.app.*
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import app.i2i2.MainActivity
 import app.i2i2.R
 import java.util.*
@@ -26,60 +25,60 @@ import java.util.*
 
 class HeadsUpNotificationService : Service() {
     val timer = Timer()
+    var hashMap = HashMap<String, String>()
+    var incomingCallNotification: Notification? = null
+    var mediaPlayer: MediaPlayer? = null
+
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        var hashMap = HashMap<String, String>()
+    override fun onDestroy() {
+        timer.cancel()
+    }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.extras != null) {
-            Log.i("My_Lifecycle", "onStartCommand: ")
             hashMap = intent.getSerializableExtra(ConfigKey.FCM_DATA_KEY) as HashMap<String, String>
         }
-        createChannel()
-        showNotification(hashMap)
-        if (intent.action.equals(ConfigKey.CALL_ACCEPT)) {
-            var openIntent: Intent? = null
-            openIntent = Intent(application, MainActivity::class.java)
-            openIntent.putExtra(application.packageName, "NOTIFICATION_ID")
-            openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            application.startActivity(openIntent)
+        if (intent.action.equals(ConfigKey.CALL_NEW_NOTIFICATION)) {
+            createChannel()
+            showNotification(hashMap)
+        } else if (intent.action.equals(ConfigKey.CALL_ACCEPT)) {
             disposeNotification()
-            stopSelf()
+            var openIntent: Intent? = null
+            openIntent = Intent(this, MainActivity::class.java)
+            openIntent.putExtra(this.packageName, "NOTIFICATION_ID")
+            openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(openIntent)
+
         } else if (intent.action.equals(ConfigKey.CALL_DECLINE)) {
             disposeNotification()
             stopForeground(true)
-            stopSelf()
         }
         return START_STICKY
     }
 
     private fun showNotification(hashMap: HashMap<String, String>) {
 
-        val views = RemoteViews(
-            packageName,
-            R.layout.activity_incoming_call
-        )
-        val callDecline = Intent(this, HeadsUpNotificationService::class.java)
-        callDecline.action = ConfigKey.CALL_DECLINE
-        val callDeclineIntent = PendingIntent.getService(
+        val notificationDismiss = Intent(this, HeadsUpNotificationService::class.java)
+        notificationDismiss.action = ConfigKey.CALL_DECLINE
+        val notificationDismissIntent = PendingIntent.getService(
             this, 0,
-            callDecline, 0
+            notificationDismiss, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        views.setOnClickPendingIntent(R.id.btn_cut, callDeclineIntent)
-
 
         val callAccept = Intent(this, HeadsUpNotificationService::class.java)
         callAccept.action = ConfigKey.CALL_ACCEPT
         val callAcceptIntent = PendingIntent.getService(
             this, 0,
-            callAccept, 0
+            callAccept, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        views.setOnClickPendingIntent(R.id.btn_accept, callAcceptIntent)
 
 
+        mediaPlayer = MediaPlayer.create(applicationContext, R.raw.video_call)
+        mediaPlayer?.start()
         var notificationBuilder: NotificationCompat.Builder? = null
         notificationBuilder = NotificationCompat.Builder(
             this,
@@ -87,41 +86,52 @@ class HeadsUpNotificationService : Service() {
         ).setContentText(hashMap["title"] ?: "2i2i")
             .setContentTitle(hashMap["body"] ?: "mobile")
             .setSmallIcon(android.R.drawable.sym_call_incoming)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setAutoCancel(true)
-            .setOngoing(true).setContent(views)
+            .setOngoing(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
-            .setSound(Uri.parse("android.resource://" + application.packageName + "/" + R.raw.video_call))
-        var incomingCallNotification: Notification? = null
-        if (notificationBuilder != null) {
-            incomingCallNotification = notificationBuilder.build()
-        }
         if ((hashMap["type"] ?: "").lowercase() == ConfigKey.FCM_CALL_TYPE.lowercase()) {
-            val view = RemoteViews(packageName, R.layout.activity_incoming_call)
-            view.setTextViewText(R.id.user_title, hashMap["title"] ?: "2i2i")
-            notificationBuilder.setCustomContentView(view)
+            val views = RemoteViews(
+                packageName,
+                R.layout.activity_incoming_call
+            )
+            views.setTextViewText(R.id.user_title, hashMap["title"] ?: "2i2i")
+            notificationBuilder.setCustomContentView(views)
+            notificationBuilder.setCustomBigContentView(views)
+
+            val callDecline = Intent(this, HeadsUpNotificationService::class.java)
+            callDecline.action = ConfigKey.CALL_DECLINE
+            val callDeclineIntent = PendingIntent.getService(
+                this, 0,
+                callDecline, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.btn_cut, callDeclineIntent)
+            views.setOnClickPendingIntent(R.id.btn_accept, callAcceptIntent)
         } else {
+            notificationBuilder.setContentText(hashMap["title"] ?: "2i2i")
+                .setContentTitle(hashMap["body"] ?: "mobile")
             notificationBuilder.addAction(
-                android.R.drawable.ic_menu_close_clear_cancel,
-                "Reject",
-                callDeclineIntent
-            ).addAction(
-                android.R.drawable.sym_action_call,
-                "Accept",
+                android.R.drawable.stat_notify_chat,
+                "View",
                 callAcceptIntent
+            ).addAction(
+                android.R.drawable.stat_notify_chat,
+                "Dismiss",
+                notificationDismissIntent
             )
         }
-        val pm =
-            applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+        incomingCallNotification = notificationBuilder.build()
+
+        val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = pm.isInteractive
         if (!isScreenOn) {
             pm.newWakeLock(
                 PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
                 "MyLock"
-            )
-                .acquire(10000)
+            ).acquire(10000)
             pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyCpuLock")
                 .acquire(10000)
         }
@@ -129,10 +139,7 @@ class HeadsUpNotificationService : Service() {
         val task: TimerTask = object : TimerTask() {
             override fun run() {
                 disposeNotification()
-                stopSelf()
             }
-
-
         }
         timer.schedule(task, 15000)
     }
@@ -143,13 +150,16 @@ class HeadsUpNotificationService : Service() {
     }
 
     private fun disposeNotification() {
-        val pm: PackageManager = application.packageManager
-        val componentName =
-            ComponentName(application, HeadsUpNotificationActionReceiver::class.java)
-        pm.setComponentEnabledSetting(
-            componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP
+        NotificationManagerCompat.from(this).cancel(null, 1)
+        mediaPlayer?.stop()
+        mediaPlayer?.prepare()
+        val myService: Intent = Intent(
+            this,
+            HeadsUpNotificationService::class.java
         )
+
+        stopService(myService)
+        stopSelf()
     }
 
     private fun createChannel() {
