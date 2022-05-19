@@ -1,5 +1,5 @@
 // change version in build.gradle and pubspec.yaml
-// flutter build appbundle --flavor main -t lib/main.dart -> 
+// flutter build appbundle --flavor main -t lib/main.dart ->
 // flutter build ipa --flavor main -t lib/main.dart -> open archive in xcode and distribute
 
 // A -> B
@@ -17,6 +17,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,6 +34,7 @@ import 'common_main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown,DeviceOrientation.portraitUp]);
   await dotenv.load(fileName: ".env");
   // await Firebase.initializeApp(
   //     options: kIsWeb
