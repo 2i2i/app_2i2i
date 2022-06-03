@@ -32,7 +32,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:showOnLockScreen="true"
-            android:theme="@style/LaunchTheme"
+            android:theme="@style/Theme.AppCompat"
             android:turnScreenOn="true"
             android:windowSoftInputMode="adjustResize">
             <meta-data

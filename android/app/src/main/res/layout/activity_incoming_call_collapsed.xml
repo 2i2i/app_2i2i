@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:internal="http://schemas.android.com/apk/prv/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/status_bar_latest_event_content"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="48dp"
     android:gravity="center"
     android:orientation="horizontal" >
 
@@ -43,14 +39,14 @@
 
         <ImageView
             android:id="@+id/btn_cut"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:src="@drawable/btn_end_call" />
 
         <ImageView
             android:id="@+id/btn_accept"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:layout_marginStart="14dp"
             android:src="@drawable/btn_accept_call" />
 

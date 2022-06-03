@@ -11,16 +11,12 @@ import com.google.firebase.messaging.RemoteMessage
  * Created by NguyenLinh on 26,May,2020
  */
 class FirebaseService : FirebaseMessagingService() {
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
-    // [START receive_message]
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.i("My_Lifecycle", "remoteMessage.notification.toString()")
         if (remoteMessage.notification != null) {
             val title =
+
                 (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.title)!!
             val body =
                 (if (remoteMessage.notification == null) "" else remoteMessage.notification!!.body)!!
@@ -30,21 +26,21 @@ class FirebaseService : FirebaseMessagingService() {
             hashMap["title"] = remoteMessage.data["title"] ?: ""
             hashMap["body"] = remoteMessage.data["body"] ?: ""
             hashMap["type"] = remoteMessage.data["type"] ?: ""
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isBackground) {
-                startForegroundService(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBackground) {
+                application.startForegroundService(
                     Intent(
                         this,
                         HeadsUpNotificationService::class.java
                     ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap).setAction(ConfigKey.CALL_NEW_NOTIFICATION)
                 )
-            }/* else {
+            } else {
                 val intent = Intent(this, NotificationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(ConfigKey.FCM_DATA_KEY, remoteMessage)
                 intent.action = "android.intent.action.MAIN"
                 intent.addCategory("android.intent.category.LAUNCHER")
                 application.startActivity(intent)
-            }*/
+            }
 
         }
     }
