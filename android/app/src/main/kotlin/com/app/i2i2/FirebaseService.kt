@@ -26,22 +26,28 @@ class FirebaseService : FirebaseMessagingService() {
             hashMap["title"] = remoteMessage.data["title"] ?: ""
             hashMap["body"] = remoteMessage.data["body"] ?: ""
             hashMap["type"] = remoteMessage.data["type"] ?: ""
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBackground) {
-                application.startForegroundService(
-                    Intent(
-                        this,
-                        HeadsUpNotificationService::class.java
-                    ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap).setAction(ConfigKey.CALL_NEW_NOTIFICATION)
+            if ((remoteMessage.data["type"] ?: "").equals(
+                    ConfigKey.FCM_CALL_TYPE,
+                    ignoreCase = true
                 )
-            } else {
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBackground) {
+                    application.startForegroundService(
+                        Intent(
+                            this,
+                            HeadsUpNotificationService::class.java
+                        ).putExtra(ConfigKey.FCM_DATA_KEY, hashMap)
+                            .setAction(ConfigKey.CALL_NEW_NOTIFICATION)
+                    )
+                }/* else {
                 val intent = Intent(this, NotificationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(ConfigKey.FCM_DATA_KEY, remoteMessage)
                 intent.action = "android.intent.action.MAIN"
                 intent.addCategory("android.intent.category.LAUNCHER")
                 application.startActivity(intent)
+            }*/
             }
-
         }
     }
 
