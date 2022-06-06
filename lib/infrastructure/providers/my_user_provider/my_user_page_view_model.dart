@@ -67,9 +67,6 @@ class MyUserPageViewModel {
         "body": 'Incoming video call',
         "meetingData": meeting.toMap(),
       };
-
-      print(jsonDataCurrentUser);
-
       await FirebaseNotifications()
           .sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
 

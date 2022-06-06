@@ -51,12 +51,6 @@ class UserBidInsList extends ConsumerWidget {
             bool camera = true;
             bool microphone = true;
 
-            UserModel? firstUser;
-            UserModel? secondUser;
-
-            TokenModel? firstUserTokenModel;
-            TokenModel? secondUserTokenModel;
-
             if (!kIsWeb) {
               camera = await Permission.camera.request().isGranted;
               microphone = await Permission.microphone.request().isGranted;
@@ -64,7 +58,7 @@ class UserBidInsList extends ConsumerWidget {
 
             if (camera && microphone && bidIns.isNotEmpty) {
               bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
-              if(!hostStatus){
+              if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
             }
