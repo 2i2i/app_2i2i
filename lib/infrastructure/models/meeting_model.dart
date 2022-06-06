@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
+import 'user_model.dart';
 
 enum MeetingStatus {
   ACCEPTED_B, // B accepts bid
@@ -49,7 +49,7 @@ class MeetingStatusWithTS {
   Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
-      'ts': ts,
+      'ts': ts.toString(),
     };
   }
 
@@ -94,7 +94,7 @@ class TopMeeting extends Equatable {
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
-    final DateTime ts = data['ts'].toDate();
+    final DateTime ts = data['ts']?.toString().toDate() ?? DateTime.now();
 
     return TopMeeting(id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
@@ -271,6 +271,7 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
+    final String id = data['id'] ?? documentId;
     final bool active = data['active'] as bool;
     final bool settled = data['settled'] as bool;
 
@@ -289,8 +290,8 @@ class Meeting extends Equatable {
       energy[k] = data['energy'][k] as int?;
     }
 
-    final DateTime? start = data['start']?.toDate();
-    final DateTime? end = data['end']?.toDate();
+    final DateTime? start = data['start']?.toString().toDate();
+    final DateTime? end = data['end']?.toString().toDate();
     final int? duration = data['duration'];
 
     final Map<String, String> txns = {};
@@ -301,8 +302,8 @@ class Meeting extends Equatable {
     final MeetingStatus status = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final List<MeetingStatusWithTS> statusHistory = List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
       final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
-      final DateTime ts = item['ts'].toDate();
-      return MeetingStatusWithTS(value: value, ts: ts);
+      final DateTime? ts = item['ts']?.toString().toDate();
+      return MeetingStatusWithTS(value: value, ts: ts ?? DateTime.now());
     }));
 
     final AlgorandNet net = AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
@@ -319,7 +320,7 @@ class Meeting extends Equatable {
     final Rule rule = Rule.fromMap(data['rule']);
 
     return Meeting(
-      id: documentId,
+      id: id,
       lounge: lounge,
       active: active,
       settled: settled,
@@ -391,6 +392,7 @@ class Meeting extends Equatable {
   Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
+      'id': id,
       'active': active,
       'settled': settled,
       'A': A,
@@ -398,8 +400,8 @@ class Meeting extends Equatable {
       'addrA': addrA,
       'addrB': addrB,
       'energy': energy,
-      'start': start,
-      'end': end,
+      'start': start?.toString(),
+      'end': end?.toString(),
       'duration': duration,
       'txns': txns,
       'status': status.toStringEnum(),

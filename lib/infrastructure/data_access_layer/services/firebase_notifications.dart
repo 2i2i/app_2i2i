@@ -70,13 +70,16 @@ class FirebaseNotifications {
 
   Future sendNotification(String token, Map data, bool isIos) async {
     var notification = {};
+    Map notificationMap = {};
+
     if (isIos || data['type'] != 'Call') {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
+      notificationMap['notification'] = notification;
     }
-    Map map = {
-      "to": token,
-      "notification": notification,
+
+    notificationMap = {
+      "registration_ids": [token],
       "mutable_content": true,
       "content_available": true,
       "priority": "high",
@@ -93,7 +96,7 @@ class FirebaseNotifications {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'key=${dotenv.env['FIREBASE_SERVER_KEY'].toString()}',
         },
-        body: jsonEncode(map),
+        body: jsonEncode(notificationMap),
       );
     } catch (e) {
       print(e);

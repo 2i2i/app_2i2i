@@ -7,9 +7,6 @@ import com.app.i2i2.MyApplication.Companion.isBackground
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-/**
- * Created by NguyenLinh on 26,May,2020
- */
 class FirebaseService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -23,15 +20,16 @@ class FirebaseService : FirebaseMessagingService() {
             // sendNotification(title, body);
         } else {
             val hashMap = HashMap<String, String>()
-            hashMap["title"] = remoteMessage.data["title"] ?: ""
-            hashMap["body"] = remoteMessage.data["body"] ?: ""
-            hashMap["type"] = remoteMessage.data["type"] ?: ""
+            for ((key, value) in remoteMessage.data.entries) {
+                hashMap[key] = value ?: ""
+            }
             if ((remoteMessage.data["type"] ?: "").equals(
                     ConfigKey.FCM_CALL_TYPE,
                     ignoreCase = true
                 )
             ) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isBackground) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isBackground) {
+                    Log.i("My_Lifecycle", "service fire")
                     application.startForegroundService(
                         Intent(
                             this,

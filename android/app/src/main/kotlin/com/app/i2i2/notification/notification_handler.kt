@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.icu.number.NumberRangeFormatter
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
@@ -86,12 +85,12 @@ class NotificationBuilder(private val context: Context) {
         hashMap: HashMap<String, String>,
         isCollapse: Boolean
     ): RemoteViews {
-        var incomingCallNotificationView: RemoteViews? = null
-        if (isCollapse) {
-            incomingCallNotificationView = RemoteViews(context.packageName, R.layout.activity_incoming_call_collapsed)
+        val incomingCallNotificationView: RemoteViews = if (isCollapse) {
+            RemoteViews(context.packageName, R.layout.activity_incoming_call_collapsed)
         } else {
-            incomingCallNotificationView = RemoteViews(context.packageName, R.layout.activity_incoming_call)
+            RemoteViews(context.packageName, R.layout.activity_incoming_call)
         }
+
 
         val answerCallIntent: Intent = Intent(context, MainActivity::class.java)
         val hangUpIntent: Intent = Intent(context, HeadsUpNotificationService::class.java)
@@ -106,6 +105,8 @@ class NotificationBuilder(private val context: Context) {
         )
 
         answerCallIntent.action = ConfigKey.CALL_ACCEPT
+        answerCallIntent.putExtra("CALL_ACCEPT_DATA", hashMap)
+        answerCallIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         val answerCallPendingIntent = PendingIntent.getActivity(
             context,
             0,

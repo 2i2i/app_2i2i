@@ -3,6 +3,8 @@
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/firebase_notifications.dart';
 import '../../../infrastructure/models/bid_model.dart';
+import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/models/token_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
@@ -60,40 +63,9 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
-              firstUser = bidIns.first.user;
-              if (firstUser == null) {
-
-                return;
-              }
-
-              firstUserTokenModel = await database.getTokenFromId(firstUser.id);
-
-              if (bidIns.length > 1) {
-                secondUser = bidIns[1].user;
-                secondUserTokenModel = await database.getTokenFromId(secondUser!.id);
-              }
-
-              final acceptedBid = await myHangoutPageViewModel.acceptBid(bidIns.first);
-
-              if (acceptedBid && (firstUserTokenModel is TokenModel)) {
-                Map jsonDataCurrentUser = {
-                  'route': Routes.lock,
-                  'type': 'Call',
-                  "title": firstUser.name,
-                  "body": 'Incoming video call'
-                };
-
-                await FirebaseNotifications().sendNotification(
-                    (firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
-
-                if (secondUserTokenModel is TokenModel) {
-                  Map jsonDataNextUser = {
-                    "title": 'Hey ${secondUser?.name ?? ""} don\'t wait',
-                    "body": 'You are next in line'
-                  };
-                  await FirebaseNotifications().sendNotification(
-                      (secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
-                }
+              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
+              if(!hostStatus){
+                CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
             }
           },
