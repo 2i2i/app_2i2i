@@ -380,8 +380,7 @@ class NamedRoutes {
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        ref.watch(
-            lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
+        ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
         if (kIsWeb &&
             defaultTargetPlatform != TargetPlatform.iOS &&
             defaultTargetPlatform != TargetPlatform.android) {

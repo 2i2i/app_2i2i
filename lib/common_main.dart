@@ -164,7 +164,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
-            Meeting meetingModel = Meeting.fromMap(notificationData, "");
+            Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.watch(meetingChangerProvider);
             switch (methodCall.method) {
               case 'CUT':

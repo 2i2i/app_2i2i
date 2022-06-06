@@ -39,26 +39,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
   @override
   void initState() {
     super.initState();
-
-    platform.setMethodCallHandler((MethodCall methodCall) async {
-
-      if (ringingPageViewModel == null) {
-        return;
-      }
-      switch (methodCall.method) {
-        case 'CUT':
-          ringingPageViewModel!.endMeeting(MeetingStatus.END_A);
-          break;
-        case 'ANSWER':
-          ringingPageViewModel!.acceptMeeting();
-          break;
-        case 'MUTE':
-          break;
-        default:
-          throw MissingPluginException('notImplemented');
-      }
-    });
-
     start();
   }
 
