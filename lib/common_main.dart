@@ -171,7 +171,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
                 break;
               case 'ANSWER':
-                meetingChanger.acceptMeeting(meetingModel.id);
+                await meetingChanger.acceptMeeting(meetingModel.id);
+                ref.watch(lockedUserViewModelProvider);
                 break;
               case 'MUTE':
                 break;

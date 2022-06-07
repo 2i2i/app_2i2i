@@ -23,6 +23,13 @@ class FirebaseService : FirebaseMessagingService() {
             for ((key, value) in remoteMessage.data.entries) {
                 hashMap[key] = value ?: ""
             }
+            if (isBackground) {
+                hashMap["app_status"] = "IN_BACKGROUND"
+            } else {
+                hashMap["app_status"] = "IN_FOREGROUND"
+            }
+
+
             if ((remoteMessage.data["type"] ?: "").equals(
                     ConfigKey.FCM_CALL_TYPE,
                     ignoreCase = true

@@ -22,6 +22,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private var notificationManager: NotificationManager? = null
     private var incomingCallNotificationBuilder: NotificationBuilder? = null
+    var places: HashMap<String, String>? = null
 
     companion object {
         var channel: MethodChannel? = null
@@ -34,6 +35,18 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "app.2i2i/notification"
         )
+
+        channel?.setMethodCallHandler { call, result ->
+            if (call.method == "ANSWER") {
+                if (places != null) {
+                    channel?.invokeMethod("ANSWER", places)
+                }
+//                result.success(places)
+            } else {
+                result.notImplemented()
+            }
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,10 +84,11 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onNewIntent(intent: Intent) {
-        val places = intent.getSerializableExtra("CALL_ACCEPT_DATA") as HashMap<String, String>?
+        places = intent.getSerializableExtra("CALL_ACCEPT_DATA") as HashMap<String, String>?
+        Log.e("TAG", "onNewIntent====> $places ")
         if (intent.action != null && intent.action.equals(ConfigKey.CALL_ACCEPT)) {
             try {
-                channel?.invokeMethod("ANSWER", places);
+//                channel?.invokeMethod("ANSWER", places)
                 notificationManager?.cancel(11)
                 (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(11)
                 application.stopService(

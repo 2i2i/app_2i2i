@@ -302,7 +302,7 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
     log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
-    if (user.asData!.value.meeting == null) {
+    if (user.value!.meeting == null) {
       isUserLocked.value = false;
       return null;
     }
