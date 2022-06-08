@@ -20,9 +20,8 @@ class MyApplication : Application(), LifecycleObserver {
     }
 
     private fun setupLifecycleListener() {
-        ProcessLifecycleOwner.get().lifecycle
-                .addObserver(this)
-    }
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+            }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onMoveToForeground() {

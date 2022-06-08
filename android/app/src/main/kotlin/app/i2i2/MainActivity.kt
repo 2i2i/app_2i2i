@@ -40,6 +40,18 @@ class MainActivity : FlutterActivity() {
             if (call.method == "ANSWER") {
                 if (places != null) {
                     channel?.invokeMethod("ANSWER", places)
+                    try {
+                        notificationManager?.cancel(11)
+                        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(11)
+                        application.stopService(
+                            Intent(
+                                this,
+                                HeadsUpNotificationService::class.java
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.e("notification", "onNewIntent Exception: ", e);
+                    }
                 }
 //                result.success(places)
             } else {
@@ -85,10 +97,8 @@ class MainActivity : FlutterActivity() {
 
     override fun onNewIntent(intent: Intent) {
         places = intent.getSerializableExtra("CALL_ACCEPT_DATA") as HashMap<String, String>?
-        Log.e("TAG", "onNewIntent====> $places ")
         if (intent.action != null && intent.action.equals(ConfigKey.CALL_ACCEPT)) {
             try {
-//                channel?.invokeMethod("ANSWER", places)
                 notificationManager?.cancel(11)
                 (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(11)
                 application.stopService(

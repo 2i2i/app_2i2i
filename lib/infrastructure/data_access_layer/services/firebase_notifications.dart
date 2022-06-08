@@ -117,7 +117,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
   if (type == 'Call') {
     if (Platform.isIOS) {
-      await platform.invokeMethod('INCOMING_CALL', {'name': data['title']});
+      await platform.invokeMethod('INCOMING_CALL', data);
     }
   }
 }
