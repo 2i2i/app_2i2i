@@ -26,8 +26,8 @@ import Firebase
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             
             if(call.method == "INCOMING_CALL"){
-                args = call.arguments as? Dictionary<String, Any>
-                self.createNotification(value: args?["title"] as! String)
+                self.args = call.arguments as? Dictionary<String, Any>
+                self.createNotification(value:   self.args?["title"] as! String)
             }else if(call.method == "CUT_CALL"){
                 self.provider?.reportCall(with: self.uuid, endedAt: Date(), reason: .remoteEnded)
             }
@@ -38,6 +38,7 @@ import Firebase
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    
     
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         
@@ -77,17 +78,18 @@ import Firebase
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         action.fulfill()
-        notificationChannel?.invokeMethod("ANSWER", arguments: args)
+        notificationChannel?.invokeMethod("ANSWER", arguments:   self.args)
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         action.fulfill()
-        notificationChannel?.invokeMethod("CUT", arguments: args)
+        notificationChannel?.invokeMethod("CUT", arguments:   self.args)
         
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         notificationChannel?.invokeMethod("MUTE", arguments: "CALL MUTE")
     }
+    
     
 }

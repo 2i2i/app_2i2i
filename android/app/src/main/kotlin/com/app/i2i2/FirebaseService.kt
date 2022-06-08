@@ -37,9 +37,6 @@ class FirebaseService : FirebaseMessagingService() {
                     ignoreCase = true
                 )
             ) {
-                val myKeyManager: KeyguardManager =
-                    getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isBackground) {
                     Log.i("My_Lifecycle", "service fire")
                     application.startForegroundService(
