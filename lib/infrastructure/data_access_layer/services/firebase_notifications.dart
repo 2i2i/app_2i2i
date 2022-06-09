@@ -72,19 +72,19 @@ class FirebaseNotifications {
     var notification = {};
     Map notificationMap = {};
 
-    if (isIos || data['type'] != 'Call') {
+    if (isIos || data['type'].toString().toLowerCase() != 'Call'.toLowerCase()) {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
       notificationMap['notification'] = notification;
     }
 
-    notificationMap = {
+    notificationMap.addAll({
       "registration_ids": [token],
       "mutable_content": true,
       "content_available": true,
       "priority": "high",
       "data": data,
-    };
+    });
     if (token.isEmpty) {
       print('Unable to send FCM message, no token exists.');
       return;
