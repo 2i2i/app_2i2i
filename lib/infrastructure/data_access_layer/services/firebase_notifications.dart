@@ -70,18 +70,21 @@ class FirebaseNotifications {
 
   Future sendNotification(String token, Map data, bool isIos) async {
     var notification = {};
-    if (isIos || data['type'] != 'Call') {
+    Map notificationMap = {};
+
+    if (isIos || data['type'].toString().toLowerCase() != 'Call'.toLowerCase()) {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
+      notificationMap['notification'] = notification;
     }
-    Map map = {
-      "to": token,
-      "notification": notification,
+
+    notificationMap.addAll({
+      "registration_ids": [token],
       "mutable_content": true,
       "content_available": true,
       "priority": "high",
       "data": data,
-    };
+    });
     if (token.isEmpty) {
       print('Unable to send FCM message, no token exists.');
       return;
@@ -93,7 +96,7 @@ class FirebaseNotifications {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'key=${dotenv.env['FIREBASE_SERVER_KEY'].toString()}',
         },
-        body: jsonEncode(map),
+        body: jsonEncode(notificationMap),
       );
     } catch (e) {
       print(e);
@@ -112,9 +115,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (data['imageUrl'] != null) {
     imageUrl = data['imageUrl'];
   }
-  if (type == 'Call') {
+  if (type.toLowerCase() == 'Call'.toLowerCase()) {
     if (Platform.isIOS) {
-      await platform.invokeMethod('INCOMING_CALL', {'name': data['title']});
+      await platform.invokeMethod('INCOMING_CALL', data);
     }
   }
 }
