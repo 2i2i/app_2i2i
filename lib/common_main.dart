@@ -7,11 +7,14 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
+import 'dart:convert';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -26,6 +29,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
+import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
@@ -155,6 +159,31 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //     }
       //   });
       //}
+
+      platform.setMethodCallHandler((MethodCall methodCall) async {
+        Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
+        try {
+          if (notificationData.isNotEmpty) {
+            Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
+            final meetingChanger = ref.watch(meetingChangerProvider);
+            switch (methodCall.method) {
+              case 'CUT':
+                meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
+                break;
+              case 'ANSWER':
+                await meetingChanger.acceptMeeting(meetingModel.id);
+                ref.watch(lockedUserViewModelProvider);
+                break;
+              case 'MUTE':
+                break;
+              default:
+                throw MissingPluginException('notImplemented');
+            }
+          }
+        } catch (e) {
+          print(e);
+        }
+      });
 
       await Custom.deepLinks(context, mounted);
     });

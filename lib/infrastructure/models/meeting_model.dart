@@ -49,7 +49,7 @@ class MeetingStatusWithTS {
   Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
-      'ts': ts,
+      'ts': ts.toString(),
     };
   }
 
@@ -271,13 +271,13 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
-    final bool active = data['active'] as bool;
-    final bool settled = data['settled'] as bool;
+    final bool active = data['active'] ?? false;
+    final bool settled = data['settled'] ?? false;
 
-    final bool mutedAudioA = data['mutedAudioA'] as bool;
-    final bool mutedVideoA = data['mutedVideoA'] as bool;
-    final bool mutedAudioB = data['mutedAudioB'] as bool;
-    final bool mutedVideoB = data['mutedVideoB'] as bool;
+    final bool mutedAudioA = data['mutedAudioA'] ?? false;
+    final bool mutedVideoA = data['mutedVideoA'] ?? false;
+    final bool mutedAudioB = data['mutedAudioB'] ?? false;
+    final bool mutedVideoB = data['mutedVideoB'] ?? false;
 
     final String A = data['A'];
     final String B = data['B'];
@@ -301,7 +301,14 @@ class Meeting extends Equatable {
     final MeetingStatus status = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final List<MeetingStatusWithTS> statusHistory = List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
       final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
-      final DateTime ts = item['ts'].toDate();
+      var timeFromMap = item['ts'];
+      DateTime ts;
+      if(timeFromMap is Timestamp){
+        ts = timeFromMap.toDate();
+      }else {
+        var strTime = item['ts']?.toString()??'';
+        ts = DateTime.tryParse(strTime)?.toLocal() ?? DateTime.now();
+      }
       return MeetingStatusWithTS(value: value, ts: ts);
     }));
 

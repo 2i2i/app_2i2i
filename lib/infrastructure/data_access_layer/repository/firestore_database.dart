@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
@@ -414,15 +415,17 @@ class FirestoreDatabase {
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
-  Stream<Meeting> meetingStream({required String id}) => _service
-          .documentStream(
-              path: FirestorePath.meeting(id),
-              builder: (data, documentId) {
-                return Meeting.fromMap(data, documentId);
-              })
-          .handleError((onError) {
-        log(onError);
-      });
+  Stream<Meeting> meetingStream({required String id}) {
+    return _service
+        .documentStream(
+            path: FirestorePath.meeting(id),
+            builder: (data, documentId) {
+              return Meeting.fromMap(data, documentId);
+            })
+        .handleError((onError) {
+      log(onError);
+    });
+  }
 
   Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(

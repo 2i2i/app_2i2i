@@ -35,11 +35,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
         meetingStatus == MeetingStatus.RECEIVED_REMOTE_A ||
         meetingStatus == MeetingStatus.RECEIVED_REMOTE_B ||
         meetingStatus == MeetingStatus.CALL_STARTED;
-    bool showCallPage = (meetingStatus == MeetingStatus.ACCEPTED_A &&
-            lockedUserViewModel.amA()) ||
-        isActive;
-    bool showRingingPage = meetingStatus == MeetingStatus.ACCEPTED_B ||
-        meetingStatus == MeetingStatus.ACCEPTED_A;
+    bool showCallPage = (meetingStatus == MeetingStatus.ACCEPTED_A && lockedUserViewModel.amA()) || isActive;
+    bool showRingingPage = meetingStatus == MeetingStatus.ACCEPTED_B || meetingStatus == MeetingStatus.ACCEPTED_A;
     bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(

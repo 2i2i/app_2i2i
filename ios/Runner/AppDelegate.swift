@@ -12,20 +12,22 @@ import Firebase
     var provider: CXProvider? = nil
     var uuid = UUID()
     
+    var args:Dictionary<String, Any>? = nil
+    
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-FirebaseApp.configure()
+        FirebaseApp.configure()
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         notificationChannel = FlutterMethodChannel(name: "app.2i2i/notification",
                                                    binaryMessenger: controller.binaryMessenger)
         notificationChannel?.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-
+            
             if(call.method == "INCOMING_CALL"){
-                let args = call.arguments as? Dictionary<String, Any>
-                self.createNotification(value: args?["name"] as! String)
+                self.args = call.arguments as? Dictionary<String, Any>
+                self.createNotification(value:   self.args?["title"] as! String)
             }else if(call.method == "CUT_CALL"){
                 self.provider?.reportCall(with: self.uuid, endedAt: Date(), reason: .remoteEnded)
             }
@@ -36,6 +38,7 @@ FirebaseApp.configure()
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    
     
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         
@@ -75,17 +78,18 @@ FirebaseApp.configure()
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         action.fulfill()
-        notificationChannel?.invokeMethod("ANSWER", arguments: "Call ANSWER")
+        notificationChannel?.invokeMethod("ANSWER", arguments:   self.args)
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         action.fulfill()
-        notificationChannel?.invokeMethod("CUT", arguments: "CALL CUT")
+        notificationChannel?.invokeMethod("CUT", arguments:   self.args)
         
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         notificationChannel?.invokeMethod("MUTE", arguments: "CALL MUTE")
     }
+    
     
 }
