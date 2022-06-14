@@ -68,7 +68,7 @@ class MainActivity : FlutterActivity() {
             firebaseAppCheck.installAppCheckProviderFactory(
                 DebugAppCheckProviderFactory.getInstance()
             )
-            requestAppBackground()
+//            requestAppBackground()
             incomingCallNotificationBuilder = NotificationBuilder(this)
             notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(11)
