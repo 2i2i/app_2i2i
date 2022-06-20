@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/gestures.dart';
@@ -6,11 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
 import '../home/wait_page.dart';
+import '../my_account/widgets/qr_image_widget.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -22,6 +28,9 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
+  String _displayUri = '';
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
+
 
   @override
   void initState() {
@@ -182,6 +191,34 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     ?.copyWith(fontWeight: FontWeight.w500),
                               )),
                         ),
+                        Card(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          color: Theme.of(context).iconTheme.color,
+                          child: ListTile(
+                              onTap: () async {
+                                var accountService = await ref.watch(accountServiceProvider);
+                                // String address = '64D6KFQLNXOVMBQ3NYLGLEST2RFUCZS2QBWB5N4TCBPNN4WFJG7GL3QSWI';
+                                String? address = await _createSession(accountService);
+                                if(address is String){
+                                  await signUpViewModel.signInWithWalletConnect(context,address);
+                                }
+                              },
+                              dense: true,
+                              leading: Image.asset('assets/algo_logo.png',height: 30,),
+                              title: Text(Keys.signInWithWalletConnect.tr(context),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    ?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: Theme.of(context).cardColor
+                                ),
+                              ),
+                          ),
+                        ),
                         SizedBox(height: kToolbarHeight * 1.25),
                         Center(
                           child: RichText(
@@ -225,5 +262,48 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         ),
       ),
     );
+  }
+
+  Future<String?> _createSession(AccountService accountService) async {
+    final account = WalletConnectAccount.fromNewConnector(
+      accountService: accountService,
+    );
+    if (!account.connector.connected) {
+      SessionStatus sessionStatus = await account.connector.createSession(
+        chainId: 4160,
+        onDisplayUri: (uri) => _changeDisplayUri(uri),
+      );
+      isDialogOpen.value = false;
+      if(sessionStatus.accounts.isNotEmpty){
+        return sessionStatus.accounts.first;
+      }
+    }
+    return null;
+  }
+
+  Future _changeDisplayUri(String uri) async {
+    _displayUri = uri;
+    if (mounted) {
+      setState(() {});
+    }
+    bool isAvailable = await canLaunchUrl(Uri.parse('wc://'));
+    if (!kIsWeb && isAvailable) {
+      await launchUrl(Uri.parse(uri));
+    } else {
+      isDialogOpen.value = true;
+      await showDialog(
+        context: context,
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: isDialogOpen,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (!value) {
+              Navigator.of(context).pop();
+            }
+            return QrImagePage(imageUrl: _displayUri);
+          },
+        ),
+        barrierDismissible: true,
+      );
+    }
   }
 }

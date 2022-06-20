@@ -338,6 +338,27 @@ class FirestoreDatabase {
     return null;
   }
 
+  Future<String?> checkAddressAvailable(String address) async {
+
+    var documentSnapshot = await _service.getCollectionGroupData(
+      path: FirestorePath.alograndAccountPath(),
+      queryBuilder: (query) => query.where('id',isEqualTo: address).orderBy('ts',descending: true),
+      builder: (Map<String, dynamic>? data, DocumentReference documentID) {
+        if(data is Map) {
+          List paths = documentID.path.split('/');
+          if(paths.length > 1){
+            String userId= paths[1];
+            return userId;
+          }
+        }
+      },
+    );
+    if(documentSnapshot.isNotEmpty){
+      return documentSnapshot.first;
+    }
+    return null;
+  }
+
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
     return _service

@@ -73,7 +73,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     amA = widget.meeting.A == widget.user.id;
     localId = amA ? widget.meeting.A : widget.meeting.B;
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(appSettingProvider).appInit();
       initRenderers();
       _connect();

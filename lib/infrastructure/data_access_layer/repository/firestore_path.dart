@@ -1,6 +1,8 @@
 class FirestorePath {
   static String user(String uid) => 'users/$uid';
   static String users() => 'users';
+  static String alograndAccounts(String address) => 'alogorand_aaccounts/$address';
+  static String alograndAccountPath() => 'algorand_accounts';
 
   static String token(String uid) => 'tokens/$uid';
   static String device(String uid) => 'devices/$uid';

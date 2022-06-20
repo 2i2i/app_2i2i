@@ -114,8 +114,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       window.addEventListener('blur', onBlur);
     }
 
-    WidgetsBinding.instance?.addObserver(this);
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
@@ -220,7 +220,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   @override
   void dispose() {
     // html.document.removeEventListener('visibilitychange', (event) => null);
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

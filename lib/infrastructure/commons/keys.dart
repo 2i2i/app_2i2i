@@ -190,6 +190,7 @@ class Keys {
   static const String signInWithApple ='signInWithApple';
   static const String signInWithTwitter ='signInWithTwitter';
   static const String signInAnonymously ='signInAnonymously';
+  static const String signInWithWalletConnect ='Wallet Connect';
 
   static const String searchFaq ='searchFaq';
   static const String loading ='loading';

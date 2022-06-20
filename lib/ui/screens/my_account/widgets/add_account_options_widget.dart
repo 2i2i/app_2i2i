@@ -159,8 +159,7 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
