@@ -27,7 +27,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
     });
     super.initState();

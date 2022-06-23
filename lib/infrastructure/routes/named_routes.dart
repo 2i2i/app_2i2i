@@ -32,6 +32,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../test_screen.dart';
 import '../../ui/screens/auth_screen/auth_screen.dart';
+import '../../ui/screens/instagram_login.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
@@ -81,8 +82,9 @@ class NamedRoutes {
         path: Routes.root,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(SearchPage()),
+          // child: getView(SearchPage()),
           // child: getView(TestScreen()),
+          child: getView(InstagramLogin()),
         ),
       ),
       GoRoute(

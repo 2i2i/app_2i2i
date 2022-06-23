@@ -63,17 +63,16 @@ dependencies:
   firebase_auth: ^3.3.15
   firebase_admin: ^0.2.0-dev.7
   path_provider: ^2.0.11
+  http: ^0.13.4
 
   google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
   twitter_login: ^4.2.2
-#  fireflutter: ^0.2.21
 
 
   device_info_plus: ^3.2.3
   package_info_plus: ^1.4.2
   rich_text_controller: ^1.4.0
-#  awesome_notifications: ^0.6.21
   permission_handler: ^9.2.0
   flutter_dotenv: ^5.0.2
 
@@ -82,8 +81,6 @@ dependencies:
   flutter_inappwebview: ^5.4.2
   flutter_native_splash: ^2.1.6
 
-#  webview_flutter: ^3.0.2
-#
 
 dev_dependencies:
   flutter_test:
