@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
+import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
@@ -167,7 +168,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                 color: Colors.amber,
                               ),
                               onRatingUpdate: (rating) {
-                                print(rating);
+                                log("$rating");
                               },
                             ),
                           ),

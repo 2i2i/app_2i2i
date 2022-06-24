@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import '../../../../infrastructure/data_access_layer/services/logging.dart';
+
+
 class SimpleWebSocket {
   String _url;
   var _socket;
@@ -30,7 +33,7 @@ class SimpleWebSocket {
   send(data) {
     if (_socket != null) {
       _socket.add(data);
-      print('send: $data');
+      log('send: $data');
     }
   }
 
@@ -45,7 +48,7 @@ class SimpleWebSocket {
       HttpClient client = HttpClient(context: SecurityContext());
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) {
-        print(
+        log(
             'SimpleWebSocket: Allow self-signed certificate => $host:$port. ');
         return true;
       };

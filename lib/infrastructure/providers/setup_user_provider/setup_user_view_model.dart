@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -156,7 +155,7 @@ class SetupUserViewModel with ChangeNotifier {
     try {
       User? firebaseUser = FirebaseAuth.instance.currentUser;
       User? existingUser = await firebaseUser!.unlink('google.com');
-      print(existingUser);
+      log("$existingUser");
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
       throw e;
@@ -253,7 +252,6 @@ class SetupUserViewModel with ChangeNotifier {
       String? uid = firebaseUser.user?.uid;
       if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
     }

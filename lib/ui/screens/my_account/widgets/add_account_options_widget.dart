@@ -20,23 +20,18 @@ class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
   final ValueChanged<String?>? accountAddListener;
 
-  const AddAccountOptionsWidgets(
-      {Key? key, this.showBottom, this.accountAddListener})
-      : super(key: key);
+  const AddAccountOptionsWidgets({Key? key, this.showBottom, this.accountAddListener}) : super(key: key);
 
   @override
-  _AddAccountOptionsWidgetsState createState() =>
-      _AddAccountOptionsWidgetsState();
+  _AddAccountOptionsWidgetsState createState() => _AddAccountOptionsWidgetsState();
 }
 
-class _AddAccountOptionsWidgetsState
-    extends ConsumerState<AddAccountOptionsWidgets> {
+class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidgets> {
   String _displayUri = '';
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
-  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-      defaultTargetPlatform == TargetPlatform.android;
+  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
 
   @override
@@ -49,10 +44,8 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel =
-                  ref.read(myAccountPageViewModelProvider);
-              final address = await _createSession(myAccountPageViewModel,
-                  myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+              final address = await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
               if (widget.accountAddListener != null) {
                 widget.accountAddListener!.call(address);
               }
@@ -159,8 +152,7 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
@@ -173,10 +165,9 @@ class _AddAccountOptionsWidgetsState
 
       isDialogOpen.value = false;
       CustomDialogs.loader(true, context, rootNavigator: true);
-      print(sessionStatus);
+      log("$sessionStatus");
       await account.save();
-      await myAccountPageViewModel.updateDBWithNewAccount(
-          account.address, type: 'WC');
+      await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
@@ -193,9 +184,9 @@ class _AddAccountOptionsWidgetsState
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunch('algorand://');
+    bool isAvailable = await canLaunchUrl(Uri.parse('algorand://'));
     if (isMobile && isAvailable) {
-      await launch(uri);
+      await launchUrl(Uri.parse(uri));
     } else {
       isDialogOpen.value = true;
       await showDialog(
