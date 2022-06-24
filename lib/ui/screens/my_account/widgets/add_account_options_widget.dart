@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +12,7 @@ import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import 'qr_image_widget.dart';
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
@@ -48,22 +48,22 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-             /* final myAccountPageViewModel =
+              final myAccountPageViewModel =
                   ref.read(myAccountPageViewModelProvider);
               final address = await _createSession(myAccountPageViewModel,
                   myAccountPageViewModel.accountService!);
               if (widget.accountAddListener != null) {
                 widget.accountAddListener!.call(address);
               }
-              widget.showBottom?.value = false;*/
+              widget.showBottom?.value = false;
 
-              await LaunchApp.openApp(
+             /* await LaunchApp.openApp(
                 androidPackageName: 'com.algorand.android',
                 iosUrlScheme: 'algorand://',
                 appStoreLink: 'https://apps.apple.com/in/app/pera-algo-wallet/id1459898525',
                 openStore: true
                 // openStore: false
-              );
+              );*/
             },
             leading: Container(
               height: 50,
@@ -200,9 +200,9 @@ class _AddAccountOptionsWidgetsState
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunch('algorand://');
+    bool isAvailable = await canLaunchUrl(Uri.parse('algorand://'));
     if (isMobile && isAvailable) {
-      await launch(uri);
+      await launchUrl(Uri.parse(_displayUri));
     } else {
       isDialogOpen.value = true;
       await showDialog(
