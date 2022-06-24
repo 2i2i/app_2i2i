@@ -2,8 +2,6 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/data_access_layer/services/firebase_notifications.dart';
 import '../../../infrastructure/models/bid_model.dart';
-import '../../../infrastructure/models/meeting_model.dart';
-import '../../../infrastructure/models/token_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import '../../../infrastructure/routes/app_routes.dart';
 import '../app/no_bid_page.dart';
 import '../home/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
@@ -36,7 +30,6 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final database = ref.watch(databaseProvider);
     final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 

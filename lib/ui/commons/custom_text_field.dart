@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String title;
@@ -11,6 +12,8 @@ class CustomTextField extends StatelessWidget {
   final AutovalidateMode? autovalidateMode;
   final FocusNode? focusNode;
   final FormFieldValidator<String>? validator;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextInputType? keyboardType;
   const CustomTextField(
       {Key? key,
       required this.title,
@@ -20,6 +23,8 @@ class CustomTextField extends StatelessWidget {
       this.suffixIcon,
       this.autovalidateMode,
       this.controller,
+      this.inputFormatters,
+      this.keyboardType,
       this.onChanged, this.focusNode})
       : super(key: key);
 
@@ -39,8 +44,10 @@ class CustomTextField extends StatelessWidget {
           autovalidateMode: autovalidateMode,
           validator: validator,
           autofocus: false,
+          keyboardType: keyboardType,
           style: TextStyle(color: AppTheme().cardDarkColor),
           onChanged: onChanged,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
             filled: true,

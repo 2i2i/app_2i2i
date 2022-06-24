@@ -509,7 +509,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     //   _localRenderer.srcObject!.dispose();
     //   _localRenderer.srcObject = null;
     // }
-    // print("\n\n outInit Local Dispose \n\n");
     // _localRenderer.dispose();
 
     /*if (_remoteRenderer.srcObject != null) {
@@ -519,7 +518,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       _remoteRenderer.srcObject!.dispose();
       _remoteRenderer.srcObject = null;
     }
-    print("\n\n outInit Remote Dispose \n\n");
     _remoteRenderer.dispose();*/
 
     // if (mounted) setState(() {});

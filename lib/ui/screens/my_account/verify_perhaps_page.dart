@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 
 class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
@@ -112,7 +114,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                         .saveLocalAccount(widget.account);
                     await widget.account.setMainAccount();
                   } catch (e) {
-                    print(e);
+                    log("$e");
                   }
                   CustomDialogs.loader(false, context);
                   Navigator.of(context).pop();
