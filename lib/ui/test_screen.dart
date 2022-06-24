@@ -12,7 +12,6 @@ class TestScreen extends StatefulWidget {
 }
 
 class _TestScreenState extends State<TestScreen> {
-
   int val = 0;
   @override
   void initState() {

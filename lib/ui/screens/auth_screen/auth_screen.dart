@@ -22,8 +22,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final uid = ref.read(myUIDProvider);
       if (uid is String) {
-        UserModel? userModel =
-            await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
+        UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
         if (userModel == null) {
           final database = ref.read(databaseProvider);
           await database.createUser(uid);

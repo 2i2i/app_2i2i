@@ -23,10 +23,7 @@ class RatingTile extends StatelessWidget {
               isRating: true,
               showBorder: true,
               radius: 65,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline5!
-                  .copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: 10),
@@ -70,10 +67,7 @@ class RatingTile extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       ratingModel.comment ?? "",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1
-                          ?.copyWith(fontStyle: FontStyle.italic),
+                      style: Theme.of(context).textTheme.subtitle1?.copyWith(fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),

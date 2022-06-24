@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -17,8 +15,8 @@ class ProgressBar extends StatelessWidget {
       quarterTurns: 45,
       child: MyAnimatedLoading(
         offsetSpeed: Offset(1, 0),
-        width: height??MediaQuery.of(context).size.width/4,
-        height: lineWidth??20,
+        width: height ?? MediaQuery.of(context).size.width / 4,
+        height: lineWidth ?? 20,
         radius: radius,
         colors: [
           Color(0xFFEF6654),
@@ -35,7 +33,6 @@ class ProgressBar extends StatelessWidget {
   }
 }
 
-
 class MyAnimatedLoading extends StatefulWidget {
   final Offset offsetSpeed;
   final List<Color> colors;
@@ -44,12 +41,7 @@ class MyAnimatedLoading extends StatefulWidget {
 
   final double? radius;
 
-  const MyAnimatedLoading(
-      {Key? key,
-        required this.offsetSpeed,
-        required this.colors,
-        required this.width,
-        required this.height, this.radius})
+  const MyAnimatedLoading({Key? key, required this.offsetSpeed, required this.colors, required this.width, required this.height, this.radius})
       : super(key: key);
 
   @override
@@ -68,9 +60,9 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
     nodes = List.generate(widget.colors.length, (index) {
       return Node(
         rect: Rect.fromCenter(
-            center: Offset(index * width + width / 2, widget.height / 2),
-            width: width,
-            height: widget.height,
+          center: Offset(index * width + width / 2, widget.height / 2),
+          width: width,
+          height: widget.height,
         ),
         color: widget.colors.elementAt(index),
       );
@@ -79,10 +71,7 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
     List<Node> tempNodes = <Node>[];
     for (int i = -widget.colors.length; i <= -1; i++) {
       tempNodes.add(Node(
-        rect: Rect.fromCenter(
-            center: Offset(i * width + width / 2, widget.height / 2),
-            width: width,
-            height: widget.height),
+        rect: Rect.fromCenter(center: Offset(i * width + width / 2, widget.height / 2), width: width, height: widget.height),
         color: widget.colors.first,
       ));
     }
@@ -105,7 +94,7 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
     _calculateNewPositions();
     return ClipRRect(
       clipBehavior: Clip.hardEdge,
-      borderRadius: BorderRadius.all(Radius.circular(widget.radius??25)),
+      borderRadius: BorderRadius.all(Radius.circular(widget.radius ?? 25)),
       child: CustomPaint(
         size: Size(widget.width, widget.height),
         painter: MyCustomPaint(nodes: nodes),
@@ -120,17 +109,9 @@ class _MyAnimatedLoadingState extends State<MyAnimatedLoading> {
 
       if (offset.dx - width / 2 >= widget.width) {
         node.rect = Rect.fromCenter(
-            center: Offset(
-                (-width / 2) * (widget.colors.length * 2) + width / 2,
-                widget.height / 2) +
-                widget.offsetSpeed,
-            width: width,
-            height: widget.height);
+            center: Offset((-width / 2) * (widget.colors.length * 2) + width / 2, widget.height / 2) + widget.offsetSpeed, width: width, height: widget.height);
       } else {
-        node.rect = Rect.fromCenter(
-            center: offset + widget.offsetSpeed,
-            width: width,
-            height: widget.height);
+        node.rect = Rect.fromCenter(center: offset + widget.offsetSpeed, width: width, height: widget.height);
       }
     }
   }
@@ -179,13 +160,11 @@ class MyCustomPaint extends CustomPainter {
   );
   @override
   void paint(Canvas canvas, Size size) {
-
     for (int i = 0; i < nodes.length; i++) {
-      final Paint paint =  Paint();
+      final Paint paint = Paint();
       paint..shader = gradient.createShader(nodes[i].rect);
       paint..color = nodes[i].color;
       canvas.drawRect(nodes[i].rect, paint);
-
     }
   }
 
@@ -194,5 +173,3 @@ class MyCustomPaint extends CustomPainter {
     return true;
   }
 }
-
-

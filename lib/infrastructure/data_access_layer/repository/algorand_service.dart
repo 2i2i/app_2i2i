@@ -40,11 +40,8 @@ class AlgorandLib {
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
-        algodClient: AlgodClient(
-            apiUrl: API_URL[AppConfig().ALGORAND_NET]!,
-            apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
-        indexerClient:
-            IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
+        algodClient: AlgodClient(apiUrl: API_URL[AppConfig().ALGORAND_NET]!, apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
   final Map<AlgorandNet, Algorand> client = {};
 }
@@ -62,12 +59,7 @@ class AlgorandService {
   };
   static const int MIN_TXN_FEE = 1000;
 
-  AlgorandService(
-      {required this.storage,
-      required this.functions,
-      required this.accountService,
-      required this.algorandLib,
-      required this.meetingChanger});
+  AlgorandService({required this.storage, required this.functions, required this.accountService, required this.algorandLib, required this.meetingChanger});
   final MeetingChanger meetingChanger;
   final FirebaseFunctions functions;
   final SecureStorage storage;
@@ -80,8 +72,7 @@ class AlgorandService {
   //     algorandLib.client[net]!.indexer().getTransactionById(transactionId);
 
   // not using this method in the other methods due to naming clash
-  Future<PendingTransaction> waitForConfirmation(
-      {required String txId, required AlgorandNet net}) {
+  Future<PendingTransaction> waitForConfirmation({required String txId, required AlgorandNet net}) {
     log('AlgorandService - waitForConfirmation - txId=$txId');
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
@@ -94,13 +85,11 @@ class AlgorandService {
   }) async {
     final List<RawTransaction> txns = [];
 
-    final params =
-        await algorandLib.client[net]!.getSuggestedTransactionParams();
+    final params = await algorandLib.client[net]!.getSuggestedTransactionParams();
 
     final lockTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..receiver =
-              Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
           ..amount = amount.num + 4 * MIN_TXN_FEE
           ..suggestedParams = params
           ..noteText = note)
@@ -123,8 +112,7 @@ class AlgorandService {
     log('lockALGO - signed');
 
     try {
-      final groupTxId =
-          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
+      final groupTxId = await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
 
       return {
         'group': groupTxId,

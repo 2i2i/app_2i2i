@@ -26,8 +26,7 @@ import '../my_account/widgets/add_account_options_widget.dart';
 import 'top_card_widget.dart';
 
 class CreateBidPageRouterObject {
-  CreateBidPageRouterObject(
-      {required this.bidIns, required this.B, this.sliderHeight, this.min, this.max, this.fullWidth});
+  CreateBidPageRouterObject({required this.bidIns, required this.B, this.sliderHeight, this.min, this.max, this.fullWidth});
 
   final String B;
   final List<BidInPublic> bidIns;
@@ -45,13 +44,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   late final int max;
   late final fullWidth;
 
-  CreateBidPage(
-      {this.sliderHeight = 48,
-      this.max = 10,
-      required this.B,
-      required this.bidIns,
-      this.min = 0,
-      this.fullWidth = false});
+  CreateBidPage({this.sliderHeight = 48, this.max = 10, required this.B, required this.bidIns, this.min = 0, this.fullWidth = false});
 
   CreateBidPage.fromObject(CreateBidPageRouterObject obj) {
     B = obj.B;
@@ -147,9 +140,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       ),
                       SizedBox(height: 4),
                       Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).shadowColor.withOpacity(0.20),
-                            borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                         padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
                           children: [
@@ -177,9 +168,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                   child: Slider(
                                     min: minMaxDuration.toDouble(),
                                     max: maxMaxDuration.toDouble(),
-                                    divisions: maxMaxDuration == minMaxDuration
-                                        ? null
-                                        : min(100, maxMaxDuration - minMaxDuration),
+                                    divisions: maxMaxDuration == minMaxDuration ? null : min(100, maxMaxDuration - minMaxDuration),
                                     value: maxDuration.toDouble(),
                                     onChanged: (value) {
                                       maxDuration = value.round();
@@ -189,8 +178,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 ),
                               ),
                             ),
-                            Text('$maxMaxDuration ${Keys.secs.tr(context)}',
-                                style: Theme.of(context).textTheme.subtitle1),
+                            Text('$maxMaxDuration ${Keys.secs.tr(context)}', style: Theme.of(context).textTheme.subtitle1),
                             SizedBox(width: 6),
                           ],
                         ),
@@ -321,7 +309,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             controller: speedController,
                             title: Keys.speed.tr(context),
                             hintText: "0",
-                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                            ],
                             keyboardType: TextInputType.numberWithOptions(decimal: true),
                             suffixIcon: GestureDetector(
                               onTap: () {
@@ -393,12 +383,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
               child: ElevatedButton(
                 onPressed: isInsufficient() ? null : () => onAddBid(),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
+                  backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: TextStyle(
-                        color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: TextStyle(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -497,16 +485,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final now = DateTime.now().toUtc();
     final tmpBidIn = BidInPublic(
-        active: false,
-        id: now.microsecondsSinceEpoch.toString(),
-        speed: speed,
-        net: AppConfig().ALGORAND_NET,
-        ts: now,
-        energy: amount.num,
-        rule: userB!.rule);
+        active: false, id: now.microsecondsSinceEpoch.toString(), speed: speed, net: AppConfig().ALGORAND_NET, ts: now, energy: amount.num, rule: userB!.rule);
 
-    final sortedBidIns =
-        combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
+    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
 
     int waitTime = 0;
     for (final bidIn in sortedBidIns) {
@@ -571,8 +552,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     if (account is WalletConnectAccount) {
-      CustomDialogs.loader(true, context,
-          title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+      CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }

@@ -54,14 +54,10 @@ class AboutPage extends StatelessWidget {
             '• Anyone with an internet connection can earn coins by talking.',
             '• Examples include: tutors, people with fans, somone with an ear to listen, etc.'
           ]),
-          paragraph(context, 'Zero credit risk', [
-            '• 2i2i never gets your coins.',
-            '• The coins are transfered from one user to another via a smart contract.'
-          ]),
-          paragraph(context, 'Full privacy', [
-            '• The live video calls are end-to-end encrypted and peer-to-peer.',
-            '• Meaning we never see data, plus its encrypted.'
-          ]),
+          paragraph(
+              context, 'Zero credit risk', ['• 2i2i never gets your coins.', '• The coins are transfered from one user to another via a smart contract.']),
+          paragraph(context, 'Full privacy',
+              ['• The live video calls are end-to-end encrypted and peer-to-peer.', '• Meaning we never see data, plus its encrypted.']),
           paragraph(context, 'Coin agnostic', [
             '• Use any coin on the Algorand blockchain.',
           ]),

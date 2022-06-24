@@ -16,8 +16,7 @@ class ApplicationLocalizations {
   ApplicationLocalizations(this.appLocale);
 
   static ApplicationLocalizations? of(BuildContext context) {
-    return Localizations.of<ApplicationLocalizations>(
-        context, ApplicationLocalizations);
+    return Localizations.of<ApplicationLocalizations>(context, ApplicationLocalizations);
   }
 
   Map<String, String>? _localizedStrings;
@@ -56,8 +55,7 @@ class ApplicationLocalizations {
   }
 }
 
-class ApplicationLocalizationsDelegate
-    extends LocalizationsDelegate<ApplicationLocalizations> {
+class ApplicationLocalizationsDelegate extends LocalizationsDelegate<ApplicationLocalizations> {
   @override
   bool isSupported(Locale locale) {
     return ['en', 'zh', 'es', 'ar', 'de', 'ja', 'ko'].contains(locale.languageCode);
@@ -69,8 +67,7 @@ class ApplicationLocalizationsDelegate
   }
 
   @override
-  bool shouldReload(
-      covariant LocalizationsDelegate<ApplicationLocalizations> old) {
+  bool shouldReload(covariant LocalizationsDelegate<ApplicationLocalizations> old) {
     return false;
   }
 }

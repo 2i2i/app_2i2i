@@ -5,9 +5,9 @@ import 'package:uni_links/uni_links.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
+
 class Custom {
-  static getBoxDecoration(BuildContext context,
-      {Color? color, double radius = 10}) {
+  static getBoxDecoration(BuildContext context, {Color? color, double radius = 10}) {
     return BoxDecoration(
       color: color ?? Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(radius),
@@ -30,11 +30,11 @@ class Custom {
         if (!_initialUriIsHandled) {
           _initialUriIsHandled = true;
           Uri? uri = await getInitialUri();
-          if(uri?.pathSegments.contains('user')??false) {
-            log( "user");
+          if (uri?.pathSegments.contains('user') ?? false) {
+            log("user");
             String userId = '';
-            if(uri!.pathSegments.contains('user')){
-              log( "userId");
+            if (uri!.pathSegments.contains('user')) {
+              log("userId");
               userId = uri.pathSegments.last;
               userIdNav.value = userId;
             }
@@ -43,8 +43,8 @@ class Custom {
         uriLinkStream.listen((Uri? uri) {
           if (!mounted) return;
           String userId = '';
-          if(uri!.pathSegments.contains('user')){
-            log( "user go");
+          if (uri!.pathSegments.contains('user')) {
+            log("user go");
             userId = uri.pathSegments.last;
             userIdNav.value = userId;
           }

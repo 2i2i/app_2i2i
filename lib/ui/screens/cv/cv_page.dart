@@ -36,8 +36,7 @@ class _CVPageState extends ConsumerState<CVPage> {
   @override
   Widget build(BuildContext context) {
     var cvProviderModel = ref.watch(cvProvider);
-    if (cvProviderModel.searchCVList.isNotEmpty ||
-        cvProviderModel.keywordList.isNotEmpty) {
+    if (cvProviderModel.searchCVList.isNotEmpty || cvProviderModel.keywordList.isNotEmpty) {
       mainList = cvProviderModel.searchCVList;
     } else {
       mainList = cvProviderModel.mainCvList;
@@ -62,9 +61,8 @@ class _CVPageState extends ConsumerState<CVPage> {
                     ),
                     Spacer(),
                     TextButton(
-                        onPressed: () => launchUrl(Uri.parse(widget.person == CVPerson.imi
-                            ? 'https://twitter.com/2i2i_app'
-                            : 'https://twitter.com/2i2i_solli')),
+                        onPressed: () =>
+                            launchUrl(Uri.parse(widget.person == CVPerson.imi ? 'https://twitter.com/2i2i_app' : 'https://twitter.com/2i2i_solli')),
                         child: Text(
                           'twitter',
                           style: new TextStyle(color: Colors.blue),
@@ -100,8 +98,7 @@ class _CVPageState extends ConsumerState<CVPage> {
                               )
                             : IconButton(icon: Container(), onPressed: null),
                         filled: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                         prefixIcon: Icon(Icons.search_rounded),
                         // suffixIcon: Icon(Icons.mic),
                       ),
@@ -110,11 +107,7 @@ class _CVPageState extends ConsumerState<CVPage> {
                   SizedBox(width: 6),
                   RectangleBox(
                     radius: 42,
-                    icon: Icon(
-                        cvProviderModel.isOpenSuggestionView
-                            ? Icons.keyboard_arrow_up_rounded
-                            : Icons.keyboard_arrow_down_rounded,
-                        size: 20),
+                    icon: Icon(cvProviderModel.isOpenSuggestionView ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, size: 20),
                     curveRadius: 10,
                     onTap: () => cvProviderModel.openCloseSuggestionView(),
                   )
@@ -135,9 +128,7 @@ class _CVPageState extends ConsumerState<CVPage> {
                       primary: false,
                       itemCount: mainList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        Color backgroundColor = index % 2 == 0
-                            ? Color.fromRGBO(223, 239, 223, 1)
-                            : Color.fromRGBO(197, 234, 197, 1);
+                        Color backgroundColor = index % 2 == 0 ? Color.fromRGBO(223, 239, 223, 1) : Color.fromRGBO(197, 234, 197, 1);
                         return CVWidget(
                           data: mainList[index],
                           backgroundColor: backgroundColor,

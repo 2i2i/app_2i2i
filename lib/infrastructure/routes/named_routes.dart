@@ -47,9 +47,7 @@ class NamedRoutes {
       }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
-      bool validForPrevious = !goingToLocked &&
-          state.location != Routes.root &&
-          state.location != previousRouteLocation;
+      bool validForPrevious = !goingToLocked && state.location != Routes.root && state.location != previousRouteLocation;
       if (validForPrevious) {
         previousRouteLocation = state.location;
       }
@@ -229,8 +227,7 @@ class NamedRoutes {
           if (state.params['walletAddress'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(
-                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+              child: getView(WebViewScreen(walletAddress: state.params['walletAddress']!)),
             );
           }
           return NoTransitionPage<void>(
@@ -333,8 +330,7 @@ class NamedRoutes {
           if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage.fromObject(
-                  state.extra as CreateBidPageRouterObject)),
+              child: getView(CreateBidPage.fromObject(state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(
@@ -363,13 +359,8 @@ class NamedRoutes {
             : AppBar(
                 leading: Container(),
                 toolbarHeight: 20,
-                title: Text(AlgorandNet.testnet.name +
-                    ' - v41' +
-                    (updateAvailable ? ' - update: reload page' : '')),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyText2
-                    ?.copyWith(color: Theme.of(context).cardColor),
+                title: Text(AlgorandNet.testnet.name + ' - v41' + (updateAvailable ? ' - update: reload page' : '')),
+                titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
                 centerTitle: true,
                 backgroundColor: Colors.green,
               ),

@@ -206,7 +206,7 @@ class ConfirmationSliderState extends State<ConfirmationSlider> {
           AnimatedPositioned(
             duration: Duration(milliseconds: _duration),
             curve: Curves.bounceOut,
-            left: getPosition()-10,
+            left: getPosition() - 10,
             child: GestureDetector(
               onTapDown: (_) => widget.onTapDown != null ? widget.onTapDown!() : null,
               onTapUp: (_) => widget.onTapUp != null ? widget.onTapUp!() : null,
@@ -227,19 +227,12 @@ class ConfirmationSliderState extends State<ConfirmationSlider> {
                 child: widget.sliderButtonContent,
               ),*/
               child: Container(
-                height: widget.height+5,
+                height: widget.height + 5,
                 width: 100,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: widget.thumbColor,
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 20,
-                      spreadRadius: 1.2,
-                      color: widget.thumbColor.withAlpha(26)
-                    )
-                  ]
-                ),
+                    borderRadius: BorderRadius.circular(12),
+                    color: widget.thumbColor,
+                    boxShadow: [BoxShadow(blurRadius: 20, spreadRadius: 1.2, color: widget.thumbColor.withAlpha(26))]),
               ),
             ),
           ),

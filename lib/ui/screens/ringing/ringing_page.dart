@@ -162,10 +162,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     SizedBox(height: 12),
                     Text(
                       callerName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
+                      style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
                     ),
                     SizedBox(height: 14),
                     Text(
@@ -185,8 +182,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                     ),
                     SizedBox(height: 14),
@@ -225,8 +221,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           )
                         ],
                       ),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
+                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
                     ),
                     Container(
                       width: kTextTabBarHeight,
@@ -243,8 +238,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                   ],
                 ),
@@ -256,9 +250,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    (!isClicked &&
-                            ringingPageViewModel!.amA() &&
-                            ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
+                    (!isClicked && ringingPageViewModel!.amA() && ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
                         ? Ripples(
                             color: Colors.white.withOpacity(0.3),
                             child: InkWell(
@@ -275,8 +267,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   radius: kToolbarHeight,
                                   child: Text(
                                     '${Keys.Start.tr(context)}',
-                                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                        fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1
+                                        ?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
                                   )),
                             ),
                           )
@@ -284,14 +278,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 22),
                             padding: EdgeInsets.symmetric(vertical: 14, horizontal: 22),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
-                            child: Text(
-                                amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(color: Theme.of(context).primaryColorDark)),
+                            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
+                            child: Text(amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
+                                style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark)),
                           ),
                   ],
                 )),

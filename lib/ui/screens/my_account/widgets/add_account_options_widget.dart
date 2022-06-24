@@ -54,17 +54,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -89,17 +86,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -124,17 +118,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/wallet.svg',

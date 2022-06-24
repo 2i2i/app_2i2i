@@ -9,8 +9,7 @@ class TopCard extends StatelessWidget {
   final String minWait;
   final UserModel B;
 
-  const TopCard({Key? key, required this.minWait, required this.B})
-      : super(key: key);
+  const TopCard({Key? key, required this.minWait, required this.B}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +35,7 @@ class TopCard extends StatelessWidget {
               SizedBox(width: 2),
               Text(
                 'Est. Wait Time is $minWait',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme.of(context).errorColor),
+                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
               ),
             ],
           ),
@@ -95,8 +91,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
     final Canvas canvas = context.canvas;
 
     final rRect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-          center: center, width: 40, height: kToolbarHeight * 0.5),
+      Rect.fromCenter(center: center, width: 40, height: kToolbarHeight * 0.5),
       Radius.circular(thumbRadius!),
     );
 
@@ -104,16 +99,9 @@ class CustomSliderThumbRect extends SliderComponentShape {
       ..color = Theme.of(mainContext).cardColor
       ..style = PaintingStyle.fill;
 
-    TextSpan span = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1?.copyWith(
-          color: Colors.green
-        ),
-        text: showValue ? '$valueMain' : '');
+    TextSpan span = new TextSpan(style: Theme.of(mainContext).textTheme.subtitle1?.copyWith(color: Colors.green), text: showValue ? '$valueMain' : '');
 
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
+    TextPainter tp = new TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
     tp.layout();
     // Offset textCenter =
     //     Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));

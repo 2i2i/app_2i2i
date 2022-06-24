@@ -18,7 +18,8 @@ class QrWidget extends ConsumerWidget {
     this.imageSize,
     this.logoSize,
     this.hideLogo,
-    required this.message,  this.lightOnly=false,
+    required this.message,
+    this.lightOnly = false,
   }) : super(key: key);
 
   Future<ui.Image> _loadOverlayImage(BuildContext context) async {
@@ -62,9 +63,8 @@ class QrWidget extends ConsumerWidget {
                 // color: Theme.of(context).colorScheme.secondary,
                 color: Colors.black,
               ),
-              embeddedImage: (hideLogo??false)?null:snapshot.data,
-              embeddedImageStyle: QrEmbeddedImageStyle(
-                  size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
+              embeddedImage: (hideLogo ?? false) ? null : snapshot.data,
+              embeddedImageStyle: QrEmbeddedImageStyle(size: Size(logoWidth.toDouble(), logoHeight.toDouble())),
             ),
           );
         });

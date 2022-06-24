@@ -6,16 +6,14 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'custom.dart';
 
 class CustomDialogs {
-  static loader(bool isLoading, BuildContext context,
-      {String title = '', String message = '', bool rootNavigator = true}) {
+  static loader(bool isLoading, BuildContext context, {String title = '', String message = '', bool rootNavigator = true}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       content: Center(
         child: Container(
           padding: EdgeInsets.all(8),
-          decoration:
-              Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
+          decoration: Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -90,8 +88,7 @@ class CustomDialogs {
     }
   }
 
-  static inAppRatingDialog(BuildContext context,
-      {required Function onPressed, bool rootNavigator = false}) {
+  static inAppRatingDialog(BuildContext context, {required Function onPressed, bool rootNavigator = false}) {
     double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
@@ -115,8 +112,7 @@ class CustomDialogs {
       actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
       actions: [
         TextButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          onPressed: () => Navigator.of(context, rootNavigator: rootNavigator).pop(),
           child: Text(Keys.cancel.tr(context)),
         ),
         TextButton(
@@ -183,10 +179,7 @@ class CustomDialogs {
     );
   }
 
-  static infoDialog(
-      {required BuildContext context,
-      required Widget child,
-      bool rootNavigator = true}) async {
+  static infoDialog({required BuildContext context, required Widget child, bool rootNavigator = true}) async {
     showDialog(
       barrierDismissible: false,
       context: context,

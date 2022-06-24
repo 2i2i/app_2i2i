@@ -56,8 +56,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
-    final bidInsSorted =
-        combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
+    final bidInsSorted = combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
 
     // show est. wait time?
     int? estWaitTime;
@@ -74,16 +73,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             break;
           }
 
-          int duration = bidIn.speed.num == 0
-              ? userB.rule.maxMeetingDuration
-              : (bidIn.energy / bidIn.speed.num).round();
+          int duration = bidIn.speed.num == 0 ? userB.rule.maxMeetingDuration : (bidIn.energy / bidIn.speed.num).round();
           totalDuration += duration;
         }
       }
     }
 
-    final domain =
-        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       appBar: AppBar(
@@ -147,8 +143,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(
-                  right: 20, left: 20, bottom: 14, top: 4),
+              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 14, top: 4),
               child: UserInfoWidget(
                 user: userB,
                 isFav: isFriend,
@@ -161,17 +156,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                       child: Container(
                         height: 400,
                         width: 350,
-                        decoration: Custom.getBoxDecoration(context,
-                            color: Colors.white),
-                        child: QrCodeWidget(
-                            message: 'https://$domain/user/${userB.id}'),
+                        decoration: Custom.getBoxDecoration(context, color: Colors.white),
+                        child: QrCodeWidget(message: 'https://$domain/user/${userB.id}'),
                       ),
                     ),
                   );
                 },
-                onTapChat: () => CustomAlertWidget.showBidAlert(
-                    context, ChatWidget(user: userB),
-                    backgroundColor: Colors.transparent),
+                onTapChat: () => CustomAlertWidget.showBidAlert(context, ChatWidget(user: userB), backgroundColor: Colors.transparent),
                 onTapFav: () {
                   if (userModelChanger != null) {
                     if (!isFriend) {

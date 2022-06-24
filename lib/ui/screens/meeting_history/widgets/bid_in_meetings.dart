@@ -28,8 +28,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      ref.read(meetingHistory).getMeetingHistoryList(
-          MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'A'));
+      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'A'));
     });
     controller.addListener(_scrollListener);
     super.initState();
@@ -67,10 +66,9 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
             return MeetingHistoryTile(
               currentUid: widget.uid,
               meetingModel: meetingModel,
-              onTap: () =>
-                  context.pushNamed(Routes.user.nameFromPath(), params: {
-                    'uid': amA ? meetingModel.B : meetingModel.A,
-                  }),
+              onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                'uid': amA ? meetingModel.B : meetingModel.A,
+              }),
             );
           },
         ),
@@ -99,11 +97,9 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     double currentScroll = controller.position.pixels;
     double delta = MediaQuery.of(context).size.height * 0.20;
     if (maxScroll - currentScroll <= delta && !(meetingHistoryModel?.isRequesting ?? false)) {
-      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(
-          uId: widget.uid,
-          page: 10,
-          userAorB: 'A',
-          lastDocument: meetingHistoryModel?.lastDocument));
+      ref
+          .read(meetingHistory)
+          .getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'A', lastDocument: meetingHistoryModel?.lastDocument));
     }
   }
 }

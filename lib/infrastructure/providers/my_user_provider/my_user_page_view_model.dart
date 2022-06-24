@@ -68,13 +68,11 @@ class MyUserPageViewModel {
         "meetingId": bidIn.public.id,
         "meetingData": meeting.toMap(),
       };
-      await FirebaseNotifications()
-          .sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
+      await FirebaseNotifications().sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
 
       if (secondUserTokenModel is TokenModel) {
         Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
-        await FirebaseNotifications().sendNotification(
-            (secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
+        await FirebaseNotifications().sendNotification((secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
       }
     }
     return true;

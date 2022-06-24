@@ -12,8 +12,7 @@ class BidInTile extends StatelessWidget {
   final List<BidIn> bidInList;
   final int index;
 
-  const BidInTile({Key? key, required this.bidInList, required this.index})
-      : super(key: key);
+  const BidInTile({Key? key, required this.bidInList, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +28,7 @@ class BidInTile extends StatelessWidget {
       budgetCountInt += bidInList[i].public.energy;
       int thisBidMaxDuration = bidInList[i].public.rule.maxMeetingDuration;
       if (0 < bidInList[i].public.speed.num) {
-        final thisBidMaxDurationTmp =
-            (bidInList[i].public.energy / bidInList[i].public.speed.num)
-                .floor();
+        final thisBidMaxDurationTmp = (bidInList[i].public.energy / bidInList[i].public.speed.num).floor();
         thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
       }
       totalDuration += thisBidMaxDuration;
@@ -79,9 +76,7 @@ class BidInTile extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 0.3,
-                                  color: Theme.of(context).disabledColor),
+                              border: Border.all(width: 0.3, color: Theme.of(context).disabledColor),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.08),
@@ -92,11 +87,7 @@ class BidInTile extends StatelessWidget {
                           alignment: Alignment.center,
                           child: Text(
                             firstNameChar,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(
-                                fontWeight: FontWeight.w600, fontSize: 20),
+                            style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.w600, fontSize: 20),
                           ),
                         ),
                         Align(
@@ -104,11 +95,8 @@ class BidInTile extends StatelessWidget {
                           child: Container(
                             height: 15,
                             width: 15,
-                            decoration: BoxDecoration(
-                                color: statusColor,
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                Border.all(color: Colors.white, width: 2)),
+                            decoration:
+                                BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
                           ),
                         ),
                       ],
@@ -127,8 +115,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -137,8 +125,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.caption?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
+                              fontWeight: FontWeight.w400,
+                            ),
                       ),
                     ],
                   ),
@@ -151,21 +139,13 @@ class BidInTile extends StatelessWidget {
                         text: '\nμAlgo/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
-                        ),
+                              color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                            ),
                       )
                     ],
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.color
-                          ?.withOpacity(0.7),
-                    ),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                        ),
                   ),
                 ),
                 // Text(bid.speed.num.toString() + ' μAlgo/s'),
@@ -188,12 +168,7 @@ class BidInTile extends StatelessWidget {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: '${Keys.accumulatedSupport.tr(context)} ',
-                        children: [
-                          TextSpan(
-                              text: ' $budgetCount',
-                              children: [],
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' $budgetCount', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
@@ -207,12 +182,7 @@ class BidInTile extends StatelessWidget {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: '${Keys.startsIn.tr(context)} ',
-                        children: [
-                          TextSpan(
-                              text:
-                              ' ${secondsToSensibleTimePeriod(totalDuration)}',
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' ${secondsToSensibleTimePeriod(totalDuration)}', style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

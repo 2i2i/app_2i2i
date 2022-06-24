@@ -32,19 +32,15 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
     isLargeScreen = (MediaQuery.of(context).size.width > 600);
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Container(
           height: isLargeScreen ? 844 : MediaQuery.of(context).size.width,
           width: isLargeScreen ? 500 : MediaQuery.of(context).size.width,
-          margin: EdgeInsets.only(
-              top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
+          margin: EdgeInsets.only(top: kToolbarHeight + 12, right: 8, left: 8, bottom: 12),
           padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(8)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -68,8 +64,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               Expanded(
                 child: StreamBuilder(
                   stream: FirestoreDatabase().getChat(widget.user.id),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
                       List<ChatModel> chatList = snapshot.data;
                       return ListView.builder(
@@ -88,33 +83,17 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                   imageType: ImageType.NAME_IMAGE,
                                   radius: 44,
                                   hideShadow: true,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.copyWith(fontWeight: FontWeight.w800)),
+                                  style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800)),
                               title: Row(
                                 children: [
-                                  Text(chat.writerName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .caption
-                                          ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .primaryColorLight)),
+                                  Text(chat.writerName, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColorLight)),
                                   Visibility(
                                     visible: chat.writerUid == widget.user.id,
                                     child: Container(
                                       margin: EdgeInsets.only(left: 10),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 4),
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context).cardColor,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Text('Host',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .caption),
+                                      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                                      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(6)),
+                                      child: Text('Host', style: Theme.of(context).textTheme.caption),
                                     ),
                                   )
                                 ],
@@ -123,16 +102,9 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(chat.message,
                                     textAlign: TextAlign.start,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        ?.copyWith(
-                                            fontWeight:
-                                                chat.writerUid == widget.user.id
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                            color: Theme.of(context)
-                                                .primaryColorLight)),
+                                    style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                        fontWeight: chat.writerUid == widget.user.id ? FontWeight.bold : FontWeight.normal,
+                                        color: Theme.of(context).primaryColorLight)),
                               ),
                             ),
                           );
@@ -141,9 +113,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                         reverse: true,
                       );
                     }
-                    return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: LinearProgressIndicator());
+                    return Align(alignment: Alignment.bottomCenter, child: LinearProgressIndicator());
                   },
                 ),
               ),
@@ -162,8 +132,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                         hintText: 'Write a comment...',
                         filled: true,
                         fillColor: Theme.of(context).primaryColorLight,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                         // suffixIcon: Icon(Icons.mic),
                       ),
                     ),
@@ -172,13 +141,8 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                   InkResponse(
                     onTap: () async {
                       if (commentController.text.isNotEmpty) {
-                        await userModelChanger.addComment(
-                            widget.user.id,
-                            ChatModel(
-                                message: commentController.text,
-                                ts: DateTime.now().toUtc(),
-                                writerName: currentUser.name,
-                                writerUid: currentUserId));
+                        await userModelChanger.addComment(widget.user.id,
+                            ChatModel(message: commentController.text, ts: DateTime.now().toUtc(), writerName: currentUser.name, writerUid: currentUserId));
                         commentController.clear();
                       }
                     },
@@ -186,8 +150,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                       padding: const EdgeInsets.all(8.0),
                       child: CircleAvatar(
                         radius: 23,
-                        child: SvgPicture.asset('assets/icons/send.svg',
-                            width: 20, height: 20),
+                        child: SvgPicture.asset('assets/icons/send.svg', width: 20, height: 20),
                         backgroundColor: Colors.white,
                       ),
                     ),

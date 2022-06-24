@@ -267,8 +267,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
-                        ? Text('Update Available',
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                        ? Text('Update Available', style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
@@ -278,9 +277,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               Icons.arrow_circle_left_rounded,
                             ),
                           )
-                        : Text("${appSettingModel.version}",
-                            style:
-                                Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
+                        : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
@@ -288,8 +285,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
                     },
-                    title: Text(Keys.logOut.tr(context),
-                        style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
+                    title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
               ),
@@ -297,8 +293,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 20),
             //connect social
             Visibility(
-              visible:
-                  !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
+              visible: !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
               child: Text(
                 'Connect account with',
                 style: Theme.of(context).textTheme.subtitle1,
@@ -356,8 +351,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             ),
             SizedBox(height: 32),
             Text('${Keys.appVersion.tr(context)}: v23',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
+                textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
             SizedBox(height: 20),
           ],
         ),

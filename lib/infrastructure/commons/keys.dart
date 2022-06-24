@@ -181,23 +181,22 @@ class Keys {
   static const String appVersion = 'appVersion';
   static const String logOut = 'logOut';
 
-  static const String connectAccount ='connectAccount';
-  static const String updateAvailable ='updateAvailable';
-  static const String loginMsg ='loginMsg';
-  static const String loginMsg2 ='loginMsg2';
-  static const String loginMsg3 ='loginMsg3';
-  static const String signInWithGoogle ='signInWithGoogle';
-  static const String signInWithApple ='signInWithApple';
-  static const String signInWithTwitter ='signInWithTwitter';
-  static const String signInAnonymously ='signInAnonymously';
+  static const String connectAccount = 'connectAccount';
+  static const String updateAvailable = 'updateAvailable';
+  static const String loginMsg = 'loginMsg';
+  static const String loginMsg2 = 'loginMsg2';
+  static const String loginMsg3 = 'loginMsg3';
+  static const String signInWithGoogle = 'signInWithGoogle';
+  static const String signInWithApple = 'signInWithApple';
+  static const String signInWithTwitter = 'signInWithTwitter';
+  static const String signInAnonymously = 'signInAnonymously';
 
-  static const String searchFaq ='searchFaq';
-  static const String loading ='loading';
-
+  static const String searchFaq = 'searchFaq';
+  static const String loading = 'loading';
 }
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)?.translate(this)??'';
+    return ApplicationLocalizations.of(context)?.translate(this) ?? '';
   }
 }

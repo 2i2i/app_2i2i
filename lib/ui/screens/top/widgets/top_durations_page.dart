@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 class TopDurationsPage extends ConsumerStatefulWidget {
   const TopDurationsPage({Key? key}) : super(key: key);
 
@@ -22,7 +21,7 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
     if (haveToWait(topMeetingsAsyncValue)) {
       return WaitPage();
     }
-    if(topMeetingsAsyncValue.value is List) {
+    if (topMeetingsAsyncValue.value is List) {
       final topMeetings = topMeetingsAsyncValue.value!;
       return ListView.builder(
         itemCount: topMeetings.length,
@@ -33,7 +32,7 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
             child: ListTile(
               contentPadding: EdgeInsets.all(8),
               onTap: () {
-                context.pushNamed(Routes.user.nameFromPath(),params: {'uid':meeting.B});
+                context.pushNamed(Routes.user.nameFromPath(), params: {'uid': meeting.B});
               },
               title: Row(
                 children: [
@@ -44,19 +43,14 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
                         SizedBox(width: 8),
                         Text(
                           meeting.name,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                       ],
                     ),
                   ),
-                  Text(secondsToSensibleTimePeriod(meeting.duration),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle2,
+                  Text(
+                    secondsToSensibleTimePeriod(meeting.duration),
+                    style: Theme.of(context).textTheme.subtitle2,
                   ),
                 ],
               ),

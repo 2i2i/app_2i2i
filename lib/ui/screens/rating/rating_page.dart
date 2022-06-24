@@ -23,7 +23,6 @@ class _RatingPageState extends ConsumerState<RatingPage> {
 
   @override
   Widget build(BuildContext context) {
-
     user = ref.watch(userPageViewModelProvider(widget.uid))?.user;
 
     final ratingListAsyncValue = ref.watch(ratingListProvider(widget.uid));
@@ -33,7 +32,7 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     } else if (ratingListAsyncValue is AsyncError) {
       return Scaffold(
         body: Center(
-          child: Text(Keys.somethingWantWrong.tr(context),style: Theme.of(context).textTheme.subtitle1),
+          child: Text(Keys.somethingWantWrong.tr(context), style: Theme.of(context).textTheme.subtitle1),
         ),
       );
     }
@@ -67,17 +66,14 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                   ),
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.circular(20)),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColorLight, borderRadius: BorderRadius.circular(20)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('($totalRating/5)',
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2,
+                        Text(
+                          '($totalRating/5)',
+                          style: Theme.of(context).textTheme.subtitle2,
                         ),
                         SizedBox(width: 4),
                         Icon(
@@ -98,7 +94,8 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                       child: Text(
                         Keys.noRatingsFound.tr(context),
                         style: Theme.of(context).textTheme.subtitle2,
-                      ),)
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: ratingList.length,
                       itemBuilder: (BuildContext context, int index) {

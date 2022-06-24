@@ -21,8 +21,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
       body: Padding(
-        padding: EdgeInsets.only(
-            right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),
+        padding: EdgeInsets.only(right: 30, left: 30, bottom: 10, top: kIsWeb ? 15 : 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,8 +54,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                     shrinkWrap: true,
                     primary: false,
                     itemBuilder: (_, index) {
-                      final blockedUserAsyncValue =
-                          ref.watch(userProvider(myUid));
+                      final blockedUserAsyncValue = ref.watch(userProvider(myUid));
                       if (haveToWait(blockedUserAsyncValue)) {
                         return CupertinoActivityIndicator();
                       }

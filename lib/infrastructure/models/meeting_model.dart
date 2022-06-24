@@ -303,10 +303,10 @@ class Meeting extends Equatable {
       final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
       var timeFromMap = item['ts'];
       DateTime ts;
-      if(timeFromMap is Timestamp){
+      if (timeFromMap is Timestamp) {
         ts = timeFromMap.toDate();
-      }else {
-        var strTime = item['ts']?.toString()??'';
+      } else {
+        var strTime = item['ts']?.toString() ?? '';
         ts = DateTime.tryParse(strTime)?.toLocal() ?? DateTime.now();
       }
       return MeetingStatusWithTS(value: value, ts: ts);
@@ -316,10 +316,8 @@ class Meeting extends Equatable {
     final Quantity speed = Quantity.fromMap(data['speed']);
     final String? room = data['room'];
 
-    final List<Quantity> coinFlowsA =
-        List<Quantity>.from(data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
-    final List<Quantity> coinFlowsB =
-        List<Quantity>.from(data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
+    final List<Quantity> coinFlowsA = List<Quantity>.from(data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
+    final List<Quantity> coinFlowsB = List<Quantity>.from(data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
     final Lounge lounge = Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
 

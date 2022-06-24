@@ -62,7 +62,7 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   Future<void> checkIfUpdateAvailable() async {
-    if(kIsWeb){
+    if (kIsWeb) {
       return;
     }
     AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();

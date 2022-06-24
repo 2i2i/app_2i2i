@@ -11,8 +11,7 @@ import '../all_providers.dart';
 class MyAccountPageViewModel extends ChangeNotifier {
   var ref;
 
-  MyAccountPageViewModel(
-      {required this.ref, required this.uid, required this.database});
+  MyAccountPageViewModel({required this.ref, required this.uid, required this.database});
 
   AlgorandLib? algorandLib;
   SecureStorage? storage;
@@ -54,8 +53,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     // return localAccount;
   }
 
-  Future updateDBWithNewAccount(String address, {String type = 'LOCAL'}) =>
-      database.addAlgorandAccount(uid!, address, type);
+  Future updateDBWithNewAccount(String address, {String type = 'LOCAL'}) => database.addAlgorandAccount(uid!, address, type);
 
   Future<void> saveLocalAccount(LocalAccount account) async {
     if (uid == null) return;

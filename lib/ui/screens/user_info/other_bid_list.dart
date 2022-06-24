@@ -31,16 +31,11 @@ class OtherBidInList extends ConsumerWidget {
     if (bidIns.isEmpty)
       return Center(
         child: Text(Keys.beFirstJoin.tr(context),
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .subtitle1
-                ?.copyWith(color: Theme.of(context).disabledColor)),
+            textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).disabledColor)),
       );
     return ListView.builder(
       itemCount: bidIns.length,
-      padding: const EdgeInsets.only(
-          top: 10, left: 10, right: 10, bottom: kToolbarHeight),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: kToolbarHeight),
       itemBuilder: (_, ix) {
         final myBidOut = bidOutIdsList.contains(bidIns[ix].id);
 

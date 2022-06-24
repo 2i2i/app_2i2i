@@ -12,7 +12,5 @@ class AppConfig {
 
   int RINGPAGEDURATION = 30;
 
-  AlgorandNet ALGORAND_NET = Firebase.app().options.projectId == 'app-2i2i'
-      ? AlgorandNet.mainnet
-      : AlgorandNet.testnet;
+  AlgorandNet ALGORAND_NET = Firebase.app().options.projectId == 'app-2i2i' ? AlgorandNet.mainnet : AlgorandNet.testnet;
 }

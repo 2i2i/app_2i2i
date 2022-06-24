@@ -17,12 +17,12 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller =  TabController(length: 2, vsync: this);
+    controller = TabController(length: 2, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -39,27 +39,18 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                   height: MediaQuery.of(context).size.height * 0.18,
                   width: MediaQuery.of(context).size.height * 0.18,
                 ),
-                Text(Keys.whoTop.tr(context).toUpperCase(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5?.copyWith(
-                      color: AppTheme().lightSecondaryTextColor
-                    ),
+                Text(
+                  Keys.whoTop.tr(context).toUpperCase(),
+                  style: Theme.of(context).textTheme.headline5?.copyWith(color: AppTheme().lightSecondaryTextColor),
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 20),
-                  decoration: BoxDecoration(
-                      color: AppTheme().tabColor,
-                      borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: AppTheme().tabColor, borderRadius: BorderRadius.circular(10)),
                   padding: EdgeInsets.all(2),
                   child: TabBar(
-                    unselectedLabelColor:
-                        Theme.of(context).tabBarTheme.unselectedLabelColor,
-                    labelColor:
-                        Theme.of(context).tabBarTheme.unselectedLabelColor,
-                    indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Theme.of(context).primaryColorLight),
+                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    indicator: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Theme.of(context).primaryColorLight),
                     tabs: [
                       Container(
                           child: Tab(

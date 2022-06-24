@@ -63,12 +63,10 @@ class ProfileIcon extends ConsumerWidget {
         });
   }
 
-  Widget selectedIcon(String iconPath, BuildContext context,
-      {bool isSelected = false}) {
+  Widget selectedIcon(String iconPath, BuildContext context, {bool isSelected = false}) {
     return Padding(
       padding: const EdgeInsets.all(6),
-      child: SvgPicture.asset(iconPath,
-          color: isSelected ? Theme.of(context).colorScheme.secondary : null),
+      child: SvgPicture.asset(iconPath, color: isSelected ? Theme.of(context).colorScheme.secondary : null),
     );
   }
 }

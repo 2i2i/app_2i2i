@@ -157,13 +157,11 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) => setStatus
-      ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE')
-      : _updateUserHeartbeat(uid, 'heartbeatForeground');
+  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
+      setStatus ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE') : _updateUserHeartbeat(uid, 'heartbeatForeground');
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) => setStatus
-      ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE')
-      : _updateUserHeartbeat(uid, 'heartbeatBackground');
+  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
+      setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
   Future<void> _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
     final data = <String, dynamic>{
@@ -235,8 +233,7 @@ class FirestoreDatabase {
 
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
-        .collectionStream(
-            path: FirestorePath.ratings(uid), builder: (data, documentId) => RatingModel.fromMap(data, documentId))
+        .collectionStream(path: FirestorePath.ratings(uid), builder: (data, documentId) => RatingModel.fromMap(data, documentId))
         .handleError((value) {
       log(value);
     });

@@ -26,8 +26,7 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
 
-    selectedIndex = languageList.indexWhere(
-        (element) => Locale(element['languageCode']) == appSettingModel.locale);
+    selectedIndex = languageList.indexWhere((element) => Locale(element['languageCode']) == appSettingModel.locale);
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
@@ -50,8 +49,7 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
                         child: ListTile(
                           onTap: () {
                             selectedIndex = index;
-                            appSettingModel
-                                .setLocal(languageList[index]['languageCode']);
+                            appSettingModel.setLocal(languageList[index]['languageCode']);
                             setState(() {});
                           },
                           title: Text(languageList[index]['title']),
@@ -59,9 +57,7 @@ class _LanguagePageState extends ConsumerState<LanguagePage> {
                               icon: (selectedIndex == index)
                                   ? Icon(
                                       Icons.done,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                      color: Theme.of(context).colorScheme.secondary,
                                     )
                                   : Container(),
                               onPressed: null),

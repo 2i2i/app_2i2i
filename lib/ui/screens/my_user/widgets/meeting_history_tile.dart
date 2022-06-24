@@ -15,12 +15,7 @@ class MeetingHistoryTile extends ConsumerWidget {
   final String currentUid;
   final Meeting meetingModel;
 
-  const MeetingHistoryTile(
-      {Key? key,
-      this.onTap,
-      required this.currentUid,
-      required this.meetingModel})
-      : super(key: key);
+  const MeetingHistoryTile({Key? key, this.onTap, required this.currentUid, required this.meetingModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,8 +23,7 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     bool amA = meetingModel.A == currentUid;
 
-    final user =
-        ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
+    final user = ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
     if (haveToWait(user)) {
       return Container();
     }
@@ -80,10 +74,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context)
-                                  .iconTheme
-                                  .color!
-                                  .withOpacity(0.08),
+                              color: Theme.of(context).iconTheme.color!.withOpacity(0.08),
                               blurRadius: 20,
                               spreadRadius: 0.5,
                             )
@@ -99,10 +90,8 @@ class MeetingHistoryTile extends ConsumerWidget {
                       child: Container(
                         height: 15,
                         width: 15,
-                        decoration: BoxDecoration(
-                            color: statusColor,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white, width: 2)),
+                        decoration:
+                            BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
                       ),
                     ),
                   ],

@@ -18,13 +18,7 @@ class UserInfoTile extends ConsumerWidget {
   final bool isForBlockedUser;
   final double? marginBottom;
 
-  const UserInfoTile(
-      {Key? key,
-      required this.user,
-      this.marginBottom,
-      required this.myUid,
-      this.isForBlockedUser = false})
-      : super(key: key);
+  const UserInfoTile({Key? key, required this.user, this.marginBottom, required this.myUid, this.isForBlockedUser = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,10 +52,8 @@ class UserInfoTile extends ConsumerWidget {
           child: Row(
             children: [
               ProfileWidget(
-                stringPath: (user.imageUrl ?? "").isEmpty ? user.name: user.imageUrl!,
-                imageType: (user.imageUrl ?? "").isEmpty
-                    ? ImageType.NAME_IMAGE
-                    : ImageType.NETWORK_IMAGE,
+                stringPath: (user.imageUrl ?? "").isEmpty ? user.name : user.imageUrl!,
+                imageType: (user.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
                 radius: 62,
                 hideShadow: true,
                 showBorder: false,
@@ -97,8 +89,7 @@ class UserInfoTile extends ConsumerWidget {
                                   child: Tooltip(
                                     triggerMode: TooltipTriggerMode.tap,
                                     message: 'Connected with social account',
-                                    child: SvgPicture.asset('assets/icons/done_tick.svg',
-                                        width: 12, height: 12),
+                                    child: SvgPicture.asset('assets/icons/done_tick.svg', width: 12, height: 12),
                                   ),
                                 ),
                               )
@@ -130,8 +121,7 @@ class UserInfoTile extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(width: 6),
-                            Text('${(user.rating * 5).toStringAsFixed(1)}',
-                                style: Theme.of(context).textTheme.caption)
+                            Text('${(user.rating * 5).toStringAsFixed(1)}', style: Theme.of(context).textTheme.caption)
                           ],
                         ),
                       ],
@@ -149,18 +139,11 @@ class UserInfoTile extends ConsumerWidget {
                           ),
                         ),
                         isForBlockedUser
-                            ? IconButton(
-                                onPressed: () =>
-                                    userModelChanger.removeBlocked(user.id),
-                                icon: Icon(Icons.remove_circle_rounded))
+                            ? IconButton(onPressed: () => userModelChanger.removeBlocked(user.id), icon: Icon(Icons.remove_circle_rounded))
                             : IconButton(
                                 padding: EdgeInsets.zero,
-                                onPressed: () => isFriend
-                                    ? userModelChanger.removeFriend(user.id)
-                                    : userModelChanger.addFriend(user.id),
-                                icon: Icon(isFriend
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded),
+                                onPressed: () => isFriend ? userModelChanger.removeFriend(user.id) : userModelChanger.addFriend(user.id),
+                                icon: Icon(isFriend ? Icons.favorite_rounded : Icons.favorite_border_rounded),
                                 color: isFriend ? Colors.red : Colors.grey,
                               )
                       ],

@@ -84,8 +84,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     Flexible(
                       child: Text(
                         assetName,
-                        style:
-                            Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -144,8 +143,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         microphone = await Permission.microphone.request().isGranted;
                       }
                       if (camera && microphone) {
-                        context.pushNamed(Routes.webView.nameFromPath(),
-                            params: {'walletAddress': widget.account.address});
+                        context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.account.address});
                       }
                     },
                   ),
@@ -221,8 +219,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 
-  Color? iconColor(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
+  Color? iconColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(

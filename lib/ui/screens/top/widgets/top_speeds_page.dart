@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 class TopSpeedsPage extends ConsumerStatefulWidget {
   const TopSpeedsPage({Key? key}) : super(key: key);
 
@@ -27,14 +26,13 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
     return ListView.builder(
       itemCount: topMeetings.length,
       padding: EdgeInsets.symmetric(vertical: 8),
-      itemBuilder: (BuildContext context, int index)
-      {
-        TopMeeting meeting=topMeetings[index];
+      itemBuilder: (BuildContext context, int index) {
+        TopMeeting meeting = topMeetings[index];
         return Card(
           child: ListTile(
             contentPadding: EdgeInsets.all(8),
             onTap: () {
-              context.pushNamed(Routes.user.nameFromPath(),params: {'uid':meeting.B});
+              context.pushNamed(Routes.user.nameFromPath(), params: {'uid': meeting.B});
             },
             title: Row(
               children: [
@@ -43,18 +41,14 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
                   child: Row(
                     children: [
                       SizedBox(width: 8),
-                      Text(meeting.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1,
+                      Text(
+                        meeting.name,
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
                     ],
                   ),
                 ),
-                Text('${meeting.speed.num / 1000000} ALGO/sec',
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2),
+                Text('${meeting.speed.num / 1000000} ALGO/sec', style: Theme.of(context).textTheme.subtitle2),
               ],
             ),
           ),

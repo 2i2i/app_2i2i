@@ -135,8 +135,7 @@ class SignalingWebSockets {
 
   void invite(String peerId, String media, bool useScreen) async {
     var sessionId = _selfId + '-' + peerId;
-    Session session =
-        await _createSession(null, peerId: peerId, sessionId: sessionId, media: media, screenSharing: useScreen);
+    Session session = await _createSession(null, peerId: peerId, sessionId: sessionId, media: media, screenSharing: useScreen);
     _sessions[sessionId] = session;
     if (media == 'data') {
       _createDataChannel(session);
@@ -176,8 +175,7 @@ class SignalingWebSockets {
         var media = data['media'];
         var sessionId = data['session_id'];
         var session = _sessions[sessionId];
-        var newSession =
-            await _createSession(session, peerId: peerId, sessionId: sessionId, media: media, screenSharing: false);
+        var newSession = await _createSession(session, peerId: peerId, sessionId: sessionId, media: media, screenSharing: false);
         _sessions[sessionId] = newSession;
         await newSession.pc?.setRemoteDescription(RTCSessionDescription(description['sdp'], description['type']));
         await _createAnswer(newSession, media);
@@ -202,8 +200,7 @@ class SignalingWebSockets {
         var candidateMap = data['candidate'];
         var sessionId = data['session_id'];
         var session = _sessions[sessionId];
-        RTCIceCandidate candidate =
-            RTCIceCandidate(candidateMap['candidate'], candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
+        RTCIceCandidate candidate = RTCIceCandidate(candidateMap['candidate'], candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
 
         if (session != null) {
           if (session.pc != null) {
@@ -309,9 +306,8 @@ class SignalingWebSockets {
             }
     };
 
-    MediaStream stream = userScreen
-        ? await navigator.mediaDevices.getDisplayMedia(mediaConstraints)
-        : await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream stream =
+        userScreen ? await navigator.mediaDevices.getDisplayMedia(mediaConstraints) : await navigator.mediaDevices.getUserMedia(mediaConstraints);
     onLocalStream?.call(stream);
     return stream;
   }

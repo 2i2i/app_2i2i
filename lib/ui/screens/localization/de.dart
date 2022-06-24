@@ -9,7 +9,8 @@ class de {
       Keys.automatic: 'Automatisch',
       Keys.shareQr: 'Teile dich',
       Keys.error: 'Fehler',
-      Keys.errorWhileAddBid: 'Fehler beim Hinzufügen des Gebots, versuchen Sie es mit einem anderen Konto oder reduzieren Sie die maximale Dauer oder reduzieren Sie die Geschwindigkeit',
+      Keys.errorWhileAddBid:
+          'Fehler beim Hinzufügen des Gebots, versuchen Sie es mit einem anderen Konto oder reduzieren Sie die maximale Dauer oder reduzieren Sie die Geschwindigkeit',
       Keys.less: 'weniger',
       Keys.importance: 'Bedeutung',
       Keys.chrony: 'Chronik',
@@ -165,7 +166,7 @@ class de {
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Bitte treten Sie den Räumen einiger Leute bei',
       Keys.beFirstJoin: 'Seien Sie der Erste, der diesem Raum beitritt',
-      Keys.appVersion:'Ausführung',
+      Keys.appVersion: 'Ausführung',
       Keys.logOut: 'AUSLOGGEN',
       Keys.connectAccount: 'Konto verbinden mit',
       Keys.updateAvailable: 'Update verfügbar',
@@ -174,10 +175,10 @@ class de {
       Keys.loginMsg3: '>305 MEETINGS SEIT DEM START',
       Keys.signInWithGoogle: 'Anmeldung mit Google',
       Keys.signInWithApple: 'Mit Apple anmelden',
-      Keys.signInWithTwitter:   'Mit Twitter anmelden',
+      Keys.signInWithTwitter: 'Mit Twitter anmelden',
       Keys.signInAnonymously: 'Anonym anmelden',
       Keys.searchFaq: 'Suche Schlüsselwörter',
-      Keys.loading:'Wird geladen...'
+      Keys.loading: 'Wird geladen...'
     };
   }
 }

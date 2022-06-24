@@ -2,12 +2,7 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 
 class SuccessData {
-  const SuccessData(
-      {Key? key,
-      required this.title,
-      this.tags,
-      required this.description,
-      required this.timestamp});
+  const SuccessData({Key? key, required this.title, this.tags, required this.description, required this.timestamp});
   final String title;
   final String description;
   final int timestamp;

@@ -17,8 +17,7 @@ class UserBidOut extends ConsumerWidget {
       return WaitPage();
     }
     final bidInsWithUsers = ref.watch(bidOutsProvider(userId!));
-    if (haveToWait(bidInsWithUsers) ||
-        (bidInsWithUsers.asData?.value == null)) {
+    if (haveToWait(bidInsWithUsers) || (bidInsWithUsers.asData?.value == null)) {
       return WaitPage();
     }
     List<BidOut> bidOutList = bidInsWithUsers.asData!.value;
@@ -29,32 +28,27 @@ class UserBidOut extends ConsumerWidget {
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
-      body:bidOutList.isNotEmpty? ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        shrinkWrap: true,
-        itemCount: bidOutList.length,
-        itemBuilder: (_, ix) {
-          return BidOutTile(
-            bidOut: bidOutList[ix],
-            onCancelClick: (bidOut) async {
-              CustomDialogs.loader(true, context);
-              final myHangoutPageViewModel =
-                  ref.read(myUserPageViewModelProvider);
-              await myHangoutPageViewModel?.cancelOwnBid(bidOut: bidOut);
-              CustomDialogs.loader(false, context);
-            },
-          );
-        },
-      ):Center(
-        child: Text(
-            Keys.joinOtherRoom.tr(context),
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .subtitle1?.copyWith(
-              color: Theme.of(context).disabledColor
-            )),
-      ),
+      body: bidOutList.isNotEmpty
+          ? ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              shrinkWrap: true,
+              itemCount: bidOutList.length,
+              itemBuilder: (_, ix) {
+                return BidOutTile(
+                  bidOut: bidOutList[ix],
+                  onCancelClick: (bidOut) async {
+                    CustomDialogs.loader(true, context);
+                    final myHangoutPageViewModel = ref.read(myUserPageViewModelProvider);
+                    await myHangoutPageViewModel?.cancelOwnBid(bidOut: bidOut);
+                    CustomDialogs.loader(false, context);
+                  },
+                );
+              },
+            )
+          : Center(
+              child: Text(Keys.joinOtherRoom.tr(context),
+                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).disabledColor)),
+            ),
     );
   }
 }

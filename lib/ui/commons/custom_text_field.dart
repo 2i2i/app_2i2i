@@ -25,7 +25,8 @@ class CustomTextField extends StatelessWidget {
       this.controller,
       this.inputFormatters,
       this.keyboardType,
-      this.onChanged, this.focusNode})
+      this.onChanged,
+      this.focusNode})
       : super(key: key);
 
   @override

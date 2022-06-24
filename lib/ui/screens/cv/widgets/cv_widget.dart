@@ -25,8 +25,7 @@ class CVWidget extends StatelessWidget {
         elevation: 4,
         key: key,
         leading: Icon(Icons.label_important),
-        title: Text(data.title,
-            overflow: TextOverflow.ellipsis, softWrap: true, maxLines: 2),
+        title: Text(data.title, overflow: TextOverflow.ellipsis, softWrap: true, maxLines: 2),
         baseColor: backgroundColor,
         expandedTextColor: Theme.of(context).colorScheme.secondary,
         children: <Widget>[
@@ -44,9 +43,7 @@ class CVWidget extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: 'Title: ',
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                        fontWeight: FontWeight.bold
-                    ),
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
                     text: '${data.title}\n\n',
@@ -90,20 +87,11 @@ class CVWidget extends StatelessWidget {
                   (index) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .iconTheme
-                                  .color
-                                  ?.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(30)),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          decoration: BoxDecoration(color: Theme.of(context).iconTheme.color?.withOpacity(0.8), borderRadius: BorderRadius.circular(30)),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           child: Text(
                             "#${data.tags![index]}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .overline
-                                ?.copyWith(color: Theme.of(context).cardColor),
+                            style: Theme.of(context).textTheme.overline?.copyWith(color: Theme.of(context).cardColor),
                           ),
                           // backgroundColor: Theme.of(context).iconTheme.color,
                         ),

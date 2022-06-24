@@ -134,11 +134,8 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(credential);
       }
 
-      socialLinksModel = SocialLinksModel(
-          userName: googleSignInAccount.email,
-          userEmail: googleSignInAccount.email,
-          accountName: 'Google',
-          userId: googleSignInAccount.id);
+      socialLinksModel =
+          SocialLinksModel(userName: googleSignInAccount.email, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
@@ -189,11 +186,7 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
 
-      socialLinksModel = SocialLinksModel(
-          userName: credential.email,
-          userEmail: credential.email,
-          accountName: 'Apple',
-          userId: credential.userIdentifier);
+      socialLinksModel = SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
@@ -226,8 +219,7 @@ class SetupUserViewModel with ChangeNotifier {
 
         authResult = await twitterLogin.login();
 
-        twitterAuthCredential =
-            TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+        twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
       }
       if (linkWithCredential && existingUser != null) {
         if (kIsWeb) {
@@ -244,10 +236,7 @@ class SetupUserViewModel with ChangeNotifier {
       }
       if (authResult?.user != null)
         socialLinksModel = SocialLinksModel(
-            userName: authResult?.user?.name ?? '',
-            userEmail: authResult?.user?.email ?? '',
-            accountName: 'Twitter',
-            userId: "${authResult?.user?.id ?? ""}");
+            userName: authResult?.user?.name ?? '', userEmail: authResult?.user?.email ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
@@ -280,8 +269,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount(String uid) async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    final LocalAccount account =
-        await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
+    final LocalAccount account = await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
     await database.addAlgorandAccount(uid, account.address, 'LOCAL');
     await accountService.setMainAcccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');

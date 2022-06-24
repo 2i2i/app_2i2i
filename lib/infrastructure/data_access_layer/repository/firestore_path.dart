@@ -25,9 +25,7 @@ class FirestorePath {
   // static String meetingMessages(String meetingId, String sourceUid, String targetUid) => 'meetings/$meetingId/$sourceUid->$targetUid';
   static String room(String meetingId) => 'meetings/$meetingId/rooms/main';
 
-  static String iceCandidates(String meetingId, String subCollectionName) =>
-      'meetings/$meetingId/rooms/main/$subCollectionName';
+  static String iceCandidates(String meetingId, String subCollectionName) => 'meetings/$meetingId/rooms/main/$subCollectionName';
 
   static String algorandAccount(String uid, String algorandAccount) => 'users/$uid/algorand_accounts/$algorandAccount';
-      
 }

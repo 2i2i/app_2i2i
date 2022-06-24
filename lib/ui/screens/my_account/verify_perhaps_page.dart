@@ -13,8 +13,7 @@ class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
   final LocalAccount account;
 
-  const VerifyPerhapsPage(this.perhaps, this.account, {Key? key})
-      : super(key: key);
+  const VerifyPerhapsPage(this.perhaps, this.account, {Key? key}) : super(key: key);
 
   @override
   _VerifyPerhapsPageState createState() => _VerifyPerhapsPageState();
@@ -67,14 +66,11 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              margin:
-                                  EdgeInsets.only(left: 5, right: 5, top: 20),
+                              margin: EdgeInsets.only(left: 5, right: 5, top: 20),
                               padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: question.selected == text
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Theme.of(context).cardColor,
+                                color: question.selected == text ? Theme.of(context).colorScheme.secondary : Theme.of(context).cardColor,
                               ),
                               child: Text(
                                 text,
@@ -108,10 +104,8 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
               ? () async {
                   CustomDialogs.loader(true, context);
                   try {
-                    final myAccountPageViewModel =
-                        ref.read(myAccountPageViewModelProvider);
-                    await myAccountPageViewModel
-                        .saveLocalAccount(widget.account);
+                    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+                    await myAccountPageViewModel.saveLocalAccount(widget.account);
                     await widget.account.setMainAccount();
                   } catch (e) {
                     log("$e");

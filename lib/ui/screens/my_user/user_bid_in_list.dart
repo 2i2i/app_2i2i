@@ -63,10 +63,7 @@ class UserBidInsList extends ConsumerWidget {
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
-                BoxShadow(
-                    offset: Offset(2, 2),
-                    blurRadius: 8,
-                    color: Theme.of(context).colorScheme.secondary // changes position of shadow
+                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary // changes position of shadow
                     ),
               ],
             ),

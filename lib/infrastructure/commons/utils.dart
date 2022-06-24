@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 String shortString(String string, {int maxLength = 10}) {
-  if (maxLength < string.length)
-    return string.substring(0, maxLength - 3) + '...';
+  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
   return string;
 }
 
@@ -27,10 +26,8 @@ String microALGOToLargerUnit(int microALGO, {int maxDigits = 2, String unitALGO 
   if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} k$unitALGO';
   if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} M$unitALGO';
   if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} G$unitALGO';
-  if (N <= maxDigits + 12)
-    return '~${(microALGO / 1000000000000).round()} MALGO';
-  throw Exception(
-      'microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
+  if (N <= maxDigits + 12) return '~${(microALGO / 1000000000000).round()} MALGO';
+  throw Exception('microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
 }
 
 int epochSecsNow() {
@@ -121,6 +118,7 @@ num getMaxDuration({required num budget, required num speed}) {
   }
   return (budget / speed).floor();
 }
+
 extension NoRoundingDecimal on double {
   String toDecimalAsFixed(int toDecimal) {
     var right;
@@ -135,6 +133,7 @@ extension NoRoundingDecimal on double {
     return number.toStringAsFixed(toDecimal);
   }
 }
+
 String getDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
@@ -159,8 +158,7 @@ String prettyDuration(Duration duration) {
   }
 
   var seconds = duration.inSeconds % 60;
-  var centiseconds =
-      (duration.inMilliseconds % 1000) ~/ 10;
+  var centiseconds = (duration.inMilliseconds % 1000) ~/ 10;
   if (components.isEmpty || seconds != 0 || centiseconds != 0) {
     components.add('$seconds');
     if (centiseconds != 0) {
@@ -178,6 +176,7 @@ bool haveToWait(var provider) {
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;
 }
+
 class MyBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) => ClampingScrollPhysics();

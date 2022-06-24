@@ -12,8 +12,7 @@ class MeetingHistory extends ConsumerStatefulWidget {
   _MeetingHistoryState createState() => _MeetingHistoryState();
 }
 
-class _MeetingHistoryState extends ConsumerState<MeetingHistory>
-    with TickerProviderStateMixin {
+class _MeetingHistoryState extends ConsumerState<MeetingHistory> with TickerProviderStateMixin {
   TabController? _tabController;
 
   @override
@@ -53,31 +52,21 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
                   color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                unselectedLabelColor:
-                    Theme.of(context).tabBarTheme.unselectedLabelColor,
+                unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
                 labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
                 tabs: [
                   Tab(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(Keys.asHost.tr(context).toUpperCase()),
-                        SizedBox(width: 8),
-                        Icon(Icons.call_received_rounded,
-                            color: AppTheme().green)
-                      ],
+                      children: [Text(Keys.asHost.tr(context).toUpperCase()), SizedBox(width: 8), Icon(Icons.call_received_rounded, color: AppTheme().green)],
                     ),
                   ),
                   Tab(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(Keys.asGuest.tr(context).toUpperCase()),
-                        SizedBox(width: 8),
-                        Icon(Icons.call_made_rounded, color: AppTheme().red)
-                      ],
+                      children: [Text(Keys.asGuest.tr(context).toUpperCase()), SizedBox(width: 8), Icon(Icons.call_made_rounded, color: AppTheme().red)],
                     ),
                   ),
                 ],
@@ -85,14 +74,12 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory>
             ),
             Expanded(
               child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        BidInMeetings(
-                            uid: uid),
-                        BidOutMeetings(
-                            uid: uid),
-                      ],
-                    ),
+                controller: _tabController,
+                children: [
+                  BidInMeetings(uid: uid),
+                  BidOutMeetings(uid: uid),
+                ],
+              ),
             ),
           ],
         ),

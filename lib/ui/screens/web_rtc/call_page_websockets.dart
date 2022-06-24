@@ -88,20 +88,16 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     final userLocal = ref.watch(userProvider(localId));
     final userRemote = ref.watch(userProvider(remoteId));
 
-    if (haveToWait(userLocal) && haveToWait(userRemote) ||
-        lockedUserViewModel == null) {
+    if (haveToWait(userLocal) && haveToWait(userRemote) || lockedUserViewModel == null) {
       return Center(child: CircularProgressIndicator());
     }
     localUser = userLocal.value;
     remoteUser = userRemote.value;
     // callStatusModel = callStatus.value;
 
-    final List<MeetingStatusWithTS> meetingStatus =
-        lockedUserViewModel.meeting.statusHistory;
-    bool isActive = meetingStatus.any(
-            (element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) &&
-        meetingStatus
-            .any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
+    final List<MeetingStatusWithTS> meetingStatus = lockedUserViewModel.meeting.statusHistory;
+    bool isActive = meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) &&
+        meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -114,18 +110,10 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 fullView: true,
-                isVideoMuted: checkIfAmA(
-                    (appSettingModel?.swapVideo ?? false) ? localId : remoteId,
-                    forVideo: true),
-                isAudioMuted: checkIfAmA(
-                    (appSettingModel?.swapVideo ?? false) ? localId : remoteId,
-                    forAudio: true),
-                userModel: (appSettingModel?.swapVideo ?? false)
-                    ? localUser
-                    : remoteUser,
-                renderer: (appSettingModel?.swapVideo ?? false)
-                    ? _localRenderer
-                    : _remoteRenderer,
+                isVideoMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? localId : remoteId, forVideo: true),
+                isAudioMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? localId : remoteId, forAudio: true),
+                userModel: (appSettingModel?.swapVideo ?? false) ? localUser : remoteUser,
+                renderer: (appSettingModel?.swapVideo ?? false) ? _localRenderer : _remoteRenderer,
               ),
               Positioned(
                 top: 40,
@@ -136,23 +124,11 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     borderRadius: BorderRadius.circular(16.0),
                     child: VideoView(
                       height: MediaQuery.of(context).size.height * 0.19,
-                      isVideoMuted: checkIfAmA(
-                          (appSettingModel?.swapVideo ?? false)
-                              ? remoteId
-                              : localId,
-                          forVideo: true),
-                      isAudioMuted: checkIfAmA(
-                          (appSettingModel?.swapVideo ?? false)
-                              ? remoteId
-                              : localId,
-                          forAudio: true),
+                      isVideoMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? remoteId : localId, forVideo: true),
+                      isAudioMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? remoteId : localId, forAudio: true),
                       width: MediaQuery.of(context).size.height * 0.16,
-                      userModel: (appSettingModel?.swapVideo ?? false)
-                          ? remoteUser
-                          : localUser,
-                      renderer: (appSettingModel?.swapVideo ?? false)
-                          ? _remoteRenderer
-                          : _localRenderer,
+                      userModel: (appSettingModel?.swapVideo ?? false) ? remoteUser : localUser,
+                      renderer: (appSettingModel?.swapVideo ?? false) ? _remoteRenderer : _localRenderer,
                     ),
                   ),
                 ),
@@ -163,8 +139,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   alignment: Alignment.centerRight,
                   child: ValueListenableBuilder(
                     valueListenable: progress,
-                    builder:
-                        (BuildContext context, double value, Widget? child) {
+                    builder: (BuildContext context, double value, Widget? child) {
                       var val = value;
                       if (amA && value > 0) {
                         val = 100 - value;
@@ -233,9 +208,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                                   child: Container(
                                     height: height,
                                     width: 20,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white24,
-                                        border: Border(bottom: BorderSide())),
+                                    decoration: BoxDecoration(color: Colors.white24, border: Border(bottom: BorderSide())),
                                   ),
                                 ),
                               ),
@@ -258,14 +231,10 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                       width: 100,
                       child: Center(
                         child: AnimateCountdownText(
-                          dateTime:
-                              countDownTimerDate ?? DateTime.now().toUtc(),
+                          dateTime: countDownTimerDate ?? DateTime.now().toUtc(),
                           format: _formatHMS,
                           animationType: AnimationType.scaleIn,
-                          characterTextStyle: Theme.of(context)
-                              .textTheme
-                              .headline3!
-                              .copyWith(color: Colors.white),
+                          characterTextStyle: Theme.of(context).textTheme.headline3!.copyWith(color: Colors.white),
                         ),
                       ),
                     ),
@@ -280,11 +249,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   alignment: Alignment.center,
                   color: Colors.transparent,
                   child: Center(
-                    child: Text('Connecting...',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5
-                            ?.copyWith(color: Colors.white)),
+                    child: Text('Connecting...', style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
                   ),
                 ),
               ),
@@ -295,10 +260,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20)),
+                    decoration: BoxDecoration(color: Colors.white38, shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(20)),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -306,26 +268,20 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                             icon: Icons.call_end,
                             iconColor: Colors.white,
                             backgroundColor: AppTheme().red,
-                            onTap: () => _hangUp(amA
-                                ? MeetingStatus.END_A
-                                : MeetingStatus.END_B)),
+                            onTap: () => _hangUp(amA ? MeetingStatus.END_A : MeetingStatus.END_B)),
                         CircleButton(
-                          icon: (appSettingModel?.isAudioEnabled ?? false)
-                              ? Icons.mic_rounded
-                              : Icons.mic_off_rounded,
+                          icon: (appSettingModel?.isAudioEnabled ?? false) ? Icons.mic_rounded : Icons.mic_off_rounded,
                           onTap: _muteAudio,
                         ),
                         CircleButton(
-                          icon: (appSettingModel?.isVideoEnabled ?? false)
-                              ? Icons.videocam_rounded
-                              : Icons.videocam_off_rounded,
+                          icon: (appSettingModel?.isVideoEnabled ?? false) ? Icons.videocam_rounded : Icons.videocam_off_rounded,
                           onTap: _muteVideo,
                         ),
                         CircleButton(
-                            icon: Icons.cameraswitch_rounded,
-                            onTap: _switchCamera,
-                            // () => callScreenModel!.cameraSwitch(
-                            //     context: context, signaling: signaling!)),
+                          icon: Icons.cameraswitch_rounded,
+                          onTap: _switchCamera,
+                          // () => callScreenModel!.cameraSwitch(
+                          //     context: context, signaling: signaling!)),
                         ),
                       ],
                     ),
@@ -456,24 +412,17 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                 )
-              : RTCVideoView(renderer,
-                  mirror: mirror,
-                  objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+              : RTCVideoView(renderer, mirror: mirror, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
           decoration: BoxDecoration(color: Colors.black54),
         ),
         Positioned(
           child: Row(
             children: [
-              Icon(isAudioMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
-                  size: 16, color: Colors.white),
+              Icon(isAudioMuted ? Icons.mic_off_rounded : Icons.mic_rounded, size: 16, color: Colors.white),
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted",
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption
-                        ?.copyWith(color: Theme.of(context).primaryColor)),
+                child: Text("Muted", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -529,8 +478,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     // _inCalling = false;
     _session = null;
 
-    if (endReason is MeetingStatus)
-      await widget.meetingChanger.endMeeting(widget.meeting, endReason);
+    if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
     widget.onHangPhone(remoteId, widget.meeting.id);
 
@@ -572,11 +520,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
             // _inCalling = true;
           });
 
-          log(K +
-              '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
+          log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
-            return widget.meetingChanger.roomCreatedMeeting(
-                widget.meeting.id, _session!.sid + '-' + _session!.pid);
+            return widget.meetingChanger.roomCreatedMeeting(widget.meeting.id, _session!.sid + '-' + _session!.pid);
 
           break;
         case CallState.CallStateBye:
@@ -605,16 +551,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     });
 
     _signaling?.onAddRemoteStream = ((_, stream) {
-      log(K +
-          '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
+      log(K + '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
       _remoteRenderer.srcObject = stream;
 
       if (amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
-        return widget.meetingChanger
-            .remoteReceivedByAMeeting(widget.meeting.id);
-      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
-        return widget.meetingChanger
-            .remoteReceivedByBMeeting(widget.meeting.id);
+        return widget.meetingChanger.remoteReceivedByAMeeting(widget.meeting.id);
+      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B) return widget.meetingChanger.remoteReceivedByBMeeting(widget.meeting.id);
     });
 
     _signaling?.onRemoveRemoteStream = ((_, stream) {
@@ -635,15 +577,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   void _muteAudio() async {
     bool value = _signaling?.muteAudio() ?? false;
-    await widget.meetingChanger
-        .muteAudio(widget.meeting.id, amA: amA, audioStatus: !value);
+    await widget.meetingChanger.muteAudio(widget.meeting.id, amA: amA, audioStatus: !value);
     appSettingModel?.setAudioStatus(value);
   }
 
   void _muteVideo() async {
     bool value = _signaling?.muteVideo() ?? false;
-    await widget.meetingChanger
-        .muteVideo(widget.meeting.id, amA: amA, videoStatus: !value);
+    await widget.meetingChanger.muteVideo(widget.meeting.id, amA: amA, videoStatus: !value);
     appSettingModel?.setVideoStatus(value);
   }
 
@@ -709,8 +649,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   int getDurationLeft(int maxDuration) {
-    final DateTime maxEndTime =
-        widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final DateTime maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
     final durationObj = maxEndTime.difference(DateTime.now().toUtc());
     return durationObj.inSeconds;
   }
@@ -723,8 +662,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     final duration = getDurationLeft(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
-      countDownTimerDate =
-          DateTime.now().toUtc().add(Duration(seconds: duration));
+      countDownTimerDate = DateTime.now().toUtc().add(Duration(seconds: duration));
       if (mounted) {
         setState(() {});
       }

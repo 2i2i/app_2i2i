@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class AppTheme{
+class AppTheme {
   static final AppTheme _singleton = AppTheme._internal();
 
   AppTheme._internal();
@@ -63,16 +63,16 @@ class AppTheme{
       colorScheme: ColorScheme.light(
         secondary: secondaryColor,
       ),
-      appBarTheme: appBarTheme(false,context),
+      appBarTheme: appBarTheme(false, context),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(primary: primaryTextColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          elevation: 0,
-          selectedItemColor: secondaryColor,
-          unselectedItemColor: disableColor,
-          backgroundColor: primaryLightColor,
-          selectedIconTheme: IconThemeData(color: Colors.white),
+        elevation: 0,
+        selectedItemColor: secondaryColor,
+        unselectedItemColor: disableColor,
+        backgroundColor: primaryLightColor,
+        selectedIconTheme: IconThemeData(color: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -83,12 +83,11 @@ class AppTheme{
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
             primary: secondaryColor,
-            padding: EdgeInsets.all(kIsWeb?22:14),
-            side:BorderSide(color: secondaryColor),
-            shape:RoundedRectangleBorder(
+            padding: EdgeInsets.all(kIsWeb ? 22 : 14),
+            side: BorderSide(color: secondaryColor),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
-            )
-        ),
+            )),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryLightColor,
@@ -96,8 +95,7 @@ class AppTheme{
       tabBarTheme: TabBarTheme(
         labelColor: primaryColor,
         unselectedLabelColor: primaryTextColor,
-        indicator: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0), color: secondaryColor),
+        indicator: BoxDecoration(borderRadius: BorderRadius.circular(25.0), color: secondaryColor),
       ),
       inputDecorationTheme: InputDecorationTheme(
         fillColor: fillColor.withOpacity(0.12),
@@ -186,7 +184,7 @@ class AppTheme{
   ThemeData darkTheme(BuildContext context) {
     return ThemeData(
       brightness: Brightness.dark,
-      appBarTheme: appBarTheme(true, context,textColor: darkSecondaryTextColor),
+      appBarTheme: appBarTheme(true, context, textColor: darkSecondaryTextColor),
       primaryColor: primaryDarkColor,
       primaryColorLight: secondaryDarkColor,
       primaryColorDark: secondaryTextColor,
@@ -204,23 +202,21 @@ class AppTheme{
         backgroundColor: primaryDarkColor,
         selectedIconTheme: IconThemeData(color: secondaryDarkColor),
       ),
-
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           primary: secondaryDarkColor,
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-              primary: secondaryDarkColor,
-              padding: EdgeInsets.all(kIsWeb?22:14),
-              side:BorderSide(color: secondaryDarkColor),
-              shape:RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-              )
-          ),
-        ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+            primary: secondaryDarkColor,
+            padding: EdgeInsets.all(kIsWeb ? 22 : 14),
+            side: BorderSide(color: secondaryDarkColor),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            )),
+      ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           primary: secondaryDarkColor,
@@ -230,14 +226,12 @@ class AppTheme{
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryLightColor,
       ),
-
       tabBarTheme: TabBarTheme(
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(25.0),
           color: primaryColor,
         ),
       ),
-
       inputDecorationTheme: InputDecorationTheme(
         fillColor: shaDowColor,
         iconColor: fillColor,
@@ -264,13 +258,10 @@ class AppTheme{
           borderSide: BorderSide.none,
         ),
       ),
-
       colorScheme: ColorScheme.dark(secondary: secondaryDarkColor),
-
       textSelectionTheme: TextSelectionThemeData(cursorColor: primaryDarkColor),
       fontFamily: 'SofiaPro',
       textTheme: TextTheme(
-
         headline4: TextStyle(
           fontStyle: FontStyle.normal,
           fontWeight: FontWeight.w600,
@@ -328,28 +319,25 @@ class AppTheme{
           color: darkSecondaryTextColor,
           // color: Color(0xff8E8E93),
         ),
-        button: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 17,
-            color: darkSecondaryTextColor
+        button: TextStyle(fontWeight: FontWeight.w400, fontSize: 17, color: darkSecondaryTextColor
             // color: Color(0xff8E8E93),
             ),
       ),
     );
   }
 
-  AppBarTheme appBarTheme(bool dark,BuildContext context,{Color? textColor}) => AppBarTheme(
-    elevation: 0,
-    backgroundColor: !dark ? primaryColor : null,
-    iconTheme: CupertinoIconThemeData(color: dark ? white : cardDarkColor),
-    titleTextStyle: TextStyle(
-      fontStyle: FontStyle.normal,
-      fontWeight: FontWeight.w800,
-      fontSize: 28,
-      color: textColor,
-      // color: Color(0xff8E8E93),
-    ),
-  );
+  AppBarTheme appBarTheme(bool dark, BuildContext context, {Color? textColor}) => AppBarTheme(
+        elevation: 0,
+        backgroundColor: !dark ? primaryColor : null,
+        iconTheme: CupertinoIconThemeData(color: dark ? white : cardDarkColor),
+        titleTextStyle: TextStyle(
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w800,
+          fontSize: 28,
+          color: textColor,
+          // color: Color(0xff8E8E93),
+        ),
+      );
 
 /*ThemeMode getThemeMode() {
     String _themeMode = GetStorage().read<String>('theme_mode') ?? '';

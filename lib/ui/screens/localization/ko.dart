@@ -9,8 +9,7 @@ class ko {
       Keys.automatic: '자동적 인',
       Keys.shareQr: '자신을 공유',
       Keys.error: '오류',
-      Keys.errorWhileAddBid:
-          '입찰가를 추가하는 동안 오류가 발생했습니다. 다른 계정을 시도하거나 최대 기간을 줄이거나 속도를 줄이세요',
+      Keys.errorWhileAddBid: '입찰가를 추가하는 동안 오류가 발생했습니다. 다른 계정을 시도하거나 최대 기간을 줄이거나 속도를 줄이세요',
       Keys.less: '더 적은',
       Keys.importance: '중요성',
       Keys.chrony: 'Chrony',
@@ -140,8 +139,7 @@ class ko {
       Keys.warning: '경고',
       Keys.doNotShare: '귀하의 계정에 대한 전체 액세스 권한을 부여하므로 이 단어를 누구와도 공유하지 마십시오',
       Keys.createLocalAccount: '로컬 계정 생성',
-      Keys.createLocalAccountWarning:
-          '귀하의 계정에 대한 전체 액세스 권한을 부여하므로 이 단어를 누구와도 공유하지 마십시오.',
+      Keys.createLocalAccountWarning: '귀하의 계정에 대한 전체 액세스 권한을 부여하므로 이 단어를 누구와도 공유하지 마십시오.',
       Keys.recoverAccounts: '계정 복구',
       Keys.recover: '다시 덮다',
       Keys.recoverAccountWarning: '복구하려는 계정의 유효한 키 25개를 모두 입력하십시오',
@@ -179,7 +177,7 @@ class ko {
       Keys.signInWithTwitter: '트위터로 로그인',
       Keys.signInAnonymously: '익명 로그인',
       Keys.searchFaq: '키워드 검색',
-      Keys.loading:'로드 중...'
+      Keys.loading: '로드 중...'
     };
   }
 }

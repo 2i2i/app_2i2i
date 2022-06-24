@@ -64,8 +64,7 @@ class BidOut extends Equatable {
     final String? addrA = data['addrA'];
     final String B = data['B'];
     final Quantity speed = Quantity.fromMap(data['speed']);
-    final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
+    final AlgorandNet net = AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
 
     final Map<String, String> txns = {};
     for (final String k in data['txns'].keys) {
@@ -121,8 +120,7 @@ class BidIn extends Equatable {
   @override
   bool get stringify => true;
 
-  static List<BidIn> createList(
-      List<BidInPublic> publics, List<BidInPrivate> privates) {
+  static List<BidIn> createList(List<BidInPublic> publics, List<BidInPrivate> privates) {
     if (publics.length != privates.length) {
       return [];
       // throw Exception('BidIn createList publics.length (${publics.length}) != privates.length (${privates.length})');
@@ -131,8 +129,7 @@ class BidIn extends Equatable {
     List<BidIn> bidIns = [];
     for (int i = 0; i < publics.length; i++) {
       final bidInPublic = publics[i];
-      final bidInPrivate =
-          privates.firstWhere((element) => element.id == bidInPublic.id);
+      final bidInPrivate = privates.firstWhere((element) => element.id == bidInPublic.id);
       BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
       bidIns.add(bidIn);
     }
@@ -174,8 +171,7 @@ class BidInPublic extends Equatable {
 
     final bool active = data['active'];
     final Quantity speed = Quantity.fromMap(data['speed']);
-    final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
+    final AlgorandNet net = AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final DateTime ts = data['ts'].toDate();
     final Rule rule = Rule.fromMap(data['rule']);
     int energy = data['energy'];
@@ -202,11 +198,9 @@ class BidInPublic extends Equatable {
     };
   }
 
-  Future<int> estMaxDuration(
-      BidInPrivate bidInPrivate, AccountService accountService) async {
+  Future<int> estMaxDuration(BidInPrivate bidInPrivate, AccountService accountService) async {
     if (bidInPrivate.addrA == null) return rule.maxMeetingDuration;
-    final balance = await accountService.getBalance(
-        address: bidInPrivate.addrA!, assetId: speed.assetId, net: net);
+    final balance = await accountService.getBalance(address: bidInPrivate.addrA!, assetId: speed.assetId, net: net);
     return (balance!.amount / speed.num).floor();
   }
 }
