@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
@@ -65,7 +64,7 @@ class FirestoreDatabase {
       transaction.set(userDocRef, userInfoMap);
       return Future.value();
     }).catchError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -105,7 +104,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      print(onError);
+      log(onError);
     });
   }
 
@@ -286,13 +285,13 @@ class FirestoreDatabase {
       },
     )
         .handleError((error) {
-      print(error);
+      log(error);
     });
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
     DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
-      print(onError);
+      log(onError);
     });
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
@@ -309,7 +308,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((error) {
-      print(error);
+      log(error);
     });
   }
 
@@ -368,7 +367,7 @@ class FirestoreDatabase {
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
     )
         .handleError((error) {
-      print(error);
+      log(error);
     });
   }
 

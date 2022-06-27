@@ -19,7 +19,6 @@ class FirestoreService {
     bool merge = false,
   }) async {
     final reference = firestore.collection(path).doc();
-    // print('$path: $data');
     await reference.set(data);
   }
 
@@ -34,7 +33,6 @@ class FirestoreService {
 
   Future<DocumentSnapshot> getData({required String path}) async {
     final reference = firestore.doc(path);
-    // print('$path: $data');
     return await reference.get(GetOptions(source: Source.serverAndCache));
   }
 
@@ -72,7 +70,6 @@ class FirestoreService {
     required String path,
   }) async {
     final reference = firestore.doc(path);
-    // print('delete: $path');
     await reference.delete();
   }
 

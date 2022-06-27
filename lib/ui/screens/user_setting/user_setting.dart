@@ -14,6 +14,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -572,7 +573,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user.rule = rule;
       } else {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
-        print(user);
       }
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();
@@ -593,7 +593,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       TaskSnapshot snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
-      print(e);
+      log("$e");
     }
     return "";
   }

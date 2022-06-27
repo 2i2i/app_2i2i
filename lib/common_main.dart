@@ -1,20 +1,10 @@
-// A -> B
-// main actions:
-// createBid - A
-// acceptBid - B
-// acceptMeeting - A
-// createRoom - A
-// import 'package:http/http.dart' as html;
-// import 'dart:html' as html;
 import 'dart:async';
 import 'dart:convert';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -46,7 +36,7 @@ Future<void> main() async {
     await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
     String? token = await FirebaseAppCheck.instance.getToken(true);
-    print(token);
+    log("$token");
   } else {
     await Firebase.initializeApp(
         options: FirebaseOptions(
@@ -134,11 +124,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
 
       // TODO the following is not working yet
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
+        log('Got a message whilst in the foreground!');
+        log('Message data: ${message.data}');
 
         if (message.notification != null) {
-          print('Message also contained a notification: ${message.notification}');
+          log('Message also contained a notification: ${message.notification}');
         }
 
         if (message.data['action'] == 'update') {
@@ -181,7 +171,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
             }
           }
         } catch (e) {
-          print(e);
+          log("$e");
         }
       });
 

@@ -52,13 +52,13 @@ class AlgorandLib {
 class AlgorandService {
   static Map<AlgorandNet, int> SYSTEM_ID = {
     AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
-    AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
-    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_NET_MAINNET']!),
+    AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_TESTNET']!),
+    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_BETANET']!),
   };
   static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
-    AlgorandNet.mainnet: dotenv.env['ALGORAND_NET_MAINNET']!,
-    AlgorandNet.testnet: dotenv.env['ALGORAND_NET_TESTNET']!,
-    AlgorandNet.betanet: dotenv.env['ALGORAND_NET_BETANET']!,
+    AlgorandNet.mainnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_MAINNET']!,
+    AlgorandNet.testnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_TESTNET']!,
+    AlgorandNet.betanet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 

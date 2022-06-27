@@ -156,7 +156,7 @@ class SetupUserViewModel with ChangeNotifier {
     try {
       User? firebaseUser = FirebaseAuth.instance.currentUser;
       User? existingUser = await firebaseUser!.unlink('google.com');
-      print(existingUser);
+      log("$existingUser");
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
       throw e;
@@ -294,7 +294,6 @@ class SetupUserViewModel with ChangeNotifier {
       String? uid = firebaseUser.user?.uid;
       if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
     }

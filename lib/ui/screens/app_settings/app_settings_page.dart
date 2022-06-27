@@ -12,6 +12,7 @@ import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../home/bottom_nav_bar.dart';
@@ -21,8 +22,7 @@ class AppSettingPage extends ConsumerStatefulWidget {
   _AppSettingPageState createState() => _AppSettingPageState();
 }
 
-class _AppSettingPageState extends ConsumerState<AppSettingPage>
-    with TickerProviderStateMixin {
+class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
 
   @override
@@ -50,10 +50,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
         backgroundColor: Colors.transparent,
         title: Text(
           Keys.settings.tr(context),
-          style: Theme
-              .of(context)
-              .textTheme
-              .headline5,
+          style: Theme.of(context).textTheme.headline5,
         ),
       ),
       body: SingleChildScrollView(
@@ -64,10 +61,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             //profile
             Text(
               Keys.account.tr(context),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subtitle1,
+              style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
             Container(
@@ -76,25 +70,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           Keys.userName.tr(context) + ' ',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Flexible(
                           child: Text(
                             user.value?.name ?? '',
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .subtitle1,
+                            style: Theme.of(context).textTheme.subtitle1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -107,14 +94,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
                     title: Text(
                       Keys.bio.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                       textAlign: TextAlign.start,
                     ),
                     trailing: Icon(Icons.navigate_next),
@@ -125,10 +108,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     },
                     title: Text(
                       Keys.wallet.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -148,14 +128,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   Visibility(
                     visible: false,
                     child: ListTile(
-                      onTap: () =>
-                          context.pushNamed(Routes.blocks.nameFromPath()),
+                      onTap: () => context.pushNamed(Routes.blocks.nameFromPath()),
                       title: Text(
                         Keys.blockList.tr(context),
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .subtitle1,
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
                       trailing: Icon(
                         Icons.navigate_next,
@@ -163,14 +139,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.meetingHistory.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.meetingHistory.nameFromPath()),
                     title: Text(
                       Keys.meetingsHistory.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -184,10 +156,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             //theme
             Text(
               Keys.theme.tr(context),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subtitle1,
+              style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
             Consumer(
@@ -202,26 +171,14 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 return Container(
                   decoration: Custom.getBoxDecoration(context),
                   child: TabBar(
-                    controller: TabController(
-                        length: 3, vsync: this, initialIndex: selectedIndex),
+                    controller: TabController(length: 3, vsync: this, initialIndex: selectedIndex),
                     indicatorPadding: EdgeInsets.all(3),
                     indicator: BoxDecoration(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    unselectedLabelColor:
-                    Theme
-                        .of(context)
-                        .tabBarTheme
-                        .unselectedLabelColor,
-                    labelColor:
-                    Theme
-                        .of(context)
-                        .tabBarTheme
-                        .unselectedLabelColor,
+                    unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                    labelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
                     tabs: [
                       Tab(
                         text: Keys.light.tr(context),
@@ -255,10 +212,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             //link
             Text(
               Keys.more.tr(context),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subtitle1,
+              style: Theme.of(context).textTheme.subtitle1,
             ),
             SizedBox(height: 12),
             Container(
@@ -266,27 +220,18 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.language.nameFromPath()),
+                    onTap: () => context.pushNamed(Routes.language.nameFromPath()),
                     title: Text(
                       Keys.language.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
-                    trailing: Text(
-                        (appSettingModel.locale?.languageCode ?? 'EN')
-                            .toUpperCase()),
+                    trailing: Text((appSettingModel.locale?.languageCode ?? 'EN').toUpperCase()),
                   ),
                   ListTile(
                     onTap: () => context.pushNamed(Routes.faq.nameFromPath()),
                     title: Text(
                       Keys.faq.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -295,21 +240,14 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       try {
-                        await launch(
-                          Keys.aboutPageUrl.tr(context),
-                          forceSafariVC: true,
-                          forceWebView: true,
-                        );
+                        await launchUrl(Uri.parse(Keys.aboutPageUrl.tr(context)));
                       } catch (e) {
-                        print(e);
+                        log("$e");
                       }
                     },
                     title: Text(
                       Keys.about.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -326,36 +264,23 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     },
                     title: Text(
                       Keys.appVersion.tr(context),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle1,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
                         ? Text('Update Available',
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .caption
-                            ?.copyWith(color: Colors.amber))
+                            style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
                         ? RotatedBox(
-                      quarterTurns: 1,
-                      child: Icon(
-                        Icons.arrow_circle_left_rounded,
-                      ),
-                    )
+                            quarterTurns: 1,
+                            child: Icon(
+                              Icons.arrow_circle_left_rounded,
+                            ),
+                          )
                         : Text("${appSettingModel.version}",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .caption
-                            ?.copyWith(
-                            color: Theme
-                                .of(context)
-                                .disabledColor)),
+                            style:
+                                Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
@@ -364,13 +289,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context),
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .caption
-                            ?.copyWith(color: Theme
-                            .of(context)
-                            .errorColor)),
+                        style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
               ),
@@ -378,14 +297,11 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             SizedBox(height: 20),
             //connect social
             Visibility(
-              visible: !signUpViewModel.authList.contains('google.com') &&
-                  !signUpViewModel.authList.contains('apple.com'),
+              visible:
+                  !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
               child: Text(
                 'Connect account with',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle1,
+                style: Theme.of(context).textTheme.subtitle1,
               ),
             ),
             SizedBox(height: 12),
@@ -397,58 +313,43 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     visible: !signUpViewModel.authList.contains('google.com'),
                     child: FloatingActionButton.small(
                       onPressed: () async {
-                        await signUpViewModel.signInWithGoogle(context,
-                            linkWithCredential: true);
-                        await ref
-                            .read(setupUserViewModelProvider)
-                            .getAuthList();
+                        await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);
+                        await ref.read(setupUserViewModelProvider).getAuthList();
                       },
                       heroTag: 'google',
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      child: Image.asset('assets/google.png',
-                          height: 25, width: 25),
+                      child: Image.asset('assets/google.png', height: 25, width: 25),
                     ),
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
                       onPressed: () async {
-                        await signUpViewModel.signInWithTwitter(context,
-                            linkWithCredential: true);
-                        await ref
-                            .read(setupUserViewModelProvider)
-                            .getAuthList();
+                        await signUpViewModel.signInWithTwitter(context, linkWithCredential: true);
+                        await ref.read(setupUserViewModelProvider).getAuthList();
                       },
                       heroTag: 'twitter',
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      child: Image.asset('assets/twitter.png',
-                          height: 25, width: 25),
+                      child: Image.asset('assets/twitter.png', height: 25, width: 25),
                     ),
-                    visible: !kIsWeb &&
-                        !signUpViewModel.authList.contains('twitter.com'),
+                    visible: !kIsWeb && !signUpViewModel.authList.contains('twitter.com'),
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
                       heroTag: 'apple',
                       onPressed: () async {
-                        await signUpViewModel.signInWithApple(context,
-                            linkWithCredential: true);
-                        await ref
-                            .read(setupUserViewModelProvider)
-                            .getAuthList();
+                        await signUpViewModel.signInWithApple(context, linkWithCredential: true);
+                        await ref.read(setupUserViewModelProvider).getAuthList();
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      child: Image.asset('assets/apple.png',
-                          height: 25, width: 25),
+                      child: Image.asset('assets/apple.png', height: 25, width: 25),
                     ),
-                    visible: !kIsWeb &&
-                        Platform.isIOS &&
-                        !signUpViewModel.authList.contains('apple.com'),
+                    visible: !kIsWeb && Platform.isIOS && !signUpViewModel.authList.contains('apple.com'),
                   ),
                 ],
               ),
@@ -456,13 +357,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             SizedBox(height: 32),
             Text('${Keys.appVersion.tr(context)}: v23',
                 textAlign: TextAlign.center,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme
-                    .of(context)
-                    .disabledColor)),
+                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
             SizedBox(height: 20),
           ],
         ),
