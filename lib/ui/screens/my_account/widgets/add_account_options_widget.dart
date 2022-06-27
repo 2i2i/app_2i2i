@@ -15,27 +15,24 @@ import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import 'qr_image_widget.dart';
+import 'package:http/http.dart' as http;
+
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
   final ValueChanged<String?>? accountAddListener;
 
-  const AddAccountOptionsWidgets(
-      {Key? key, this.showBottom, this.accountAddListener})
-      : super(key: key);
+  const AddAccountOptionsWidgets({Key? key, this.showBottom, this.accountAddListener}) : super(key: key);
 
   @override
-  _AddAccountOptionsWidgetsState createState() =>
-      _AddAccountOptionsWidgetsState();
+  _AddAccountOptionsWidgetsState createState() => _AddAccountOptionsWidgetsState();
 }
 
-class _AddAccountOptionsWidgetsState
-    extends ConsumerState<AddAccountOptionsWidgets> {
+class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidgets> {
   String _displayUri = '';
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
-  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-      defaultTargetPlatform == TargetPlatform.android;
+  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
 
   @override
@@ -48,16 +45,14 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel =
-                  ref.read(myAccountPageViewModelProvider);
-              final address = await _createSession(myAccountPageViewModel,
-                  myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+              final address = await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
               if (widget.accountAddListener != null) {
                 widget.accountAddListener!.call(address);
               }
               widget.showBottom?.value = false;
 
-             /* await LaunchApp.openApp(
+              /* await LaunchApp.openApp(
                 androidPackageName: 'com.algorand.android',
                 iosUrlScheme: 'algorand://',
                 appStoreLink: 'https://apps.apple.com/in/app/pera-algo-wallet/id1459898525',
@@ -68,17 +63,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -103,17 +95,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -138,17 +127,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/wallet.svg',
@@ -166,14 +152,13 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
     // Create a new session
     if (!account.connector.connected) {
-      SessionStatus sessionStatus = await account.connector.createSession(
+      SessionStatus sessionStatus = await account.connector.connect(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
@@ -182,8 +167,7 @@ class _AddAccountOptionsWidgetsState
       CustomDialogs.loader(true, context, rootNavigator: true);
       print(sessionStatus);
       await account.save();
-      await myAccountPageViewModel.updateDBWithNewAccount(
-          account.address, type: 'WC');
+      await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
@@ -195,14 +179,25 @@ class _AddAccountOptionsWidgetsState
     }
   }
 
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
+  Future _changeDisplayUri(String url) async {
+    _displayUri = url;
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunchUrl(Uri.parse('algorand://'));
+
+    bool isAvailable = await canLaunchUrl(Uri.parse(defaultTargetPlatform == TargetPlatform.iOS ? 'algorand-wc://' : 'wc://'));
     if (isMobile && isAvailable) {
-      await launchUrl(Uri.parse(_displayUri));
+      final uriObj;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        uriObj = Uri(
+          scheme: 'algorand-wc',
+          host: 'wc',
+          queryParameters: {'uri': _displayUri},
+        );
+      } else {
+        uriObj = Uri.parse(_displayUri);
+      }
+      await launchUrl(uriObj, mode: LaunchMode.externalApplication);
     } else {
       isDialogOpen.value = true;
       await showDialog(
