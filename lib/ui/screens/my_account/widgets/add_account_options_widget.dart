@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
-import '../../../../common_main.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -15,7 +14,6 @@ import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import 'qr_image_widget.dart';
-import 'package:http/http.dart' as http;
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
@@ -51,14 +49,6 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
                 widget.accountAddListener!.call(address);
               }
               widget.showBottom?.value = false;
-
-              /* await LaunchApp.openApp(
-                androidPackageName: 'com.algorand.android',
-                iosUrlScheme: 'algorand://',
-                appStoreLink: 'https://apps.apple.com/in/app/pera-algo-wallet/id1459898525',
-                openStore: true
-                // openStore: false
-              );*/
             },
             leading: Container(
               height: 50,
