@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import '../../infrastructure/data_access_layer/repository/instagram_service.dart';
 import '../../infrastructure/commons/instagram_config.dart';
+import '../../infrastructure/data_access_layer/repository/instagram_service.dart';
 
 class InstagramLogin extends StatefulWidget {
-  const InstagramLogin({Key? key}) : super(key: key);
+  final Function(InAppWebViewController controller, Uri? url, bool? androidIsReload) onUpdateVisitedHistory;
+  const InstagramLogin({Key? key, required this.onUpdateVisitedHistory}) : super(key: key);
 
   @override
   State<InstagramLogin> createState() => _InstagramLoginState();
@@ -18,28 +19,23 @@ class _InstagramLoginState extends State<InstagramLogin> {
 
   InstagramService instagram = InstagramService();
 
+
+  @override
+  void dispose() {
+    _webViewController?.reload();
+    _webViewController?.clearCache();
+    _webViewController?.clearFocus();
+    _webViewController?.clearMatches();
+    _webViewController?.removeAllUserScripts();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(InstagramConfig.url),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                _webViewController?.reload();
-                _webViewController?.clearCache();
-                _webViewController?.clearFocus();
-                _webViewController?.clearMatches();
-                _webViewController?.removeAllUserScripts();
-              },
-              child: Text("reload"))
-        ],
-      ),
-      body: Container(
-        child: Column(children: <Widget>[
-          Container(
-              padding: EdgeInsets.all(10.0),
-              child: progress < 1.0 ? LinearProgressIndicator(value: progress) : Container()),
+      body: Column(
+        children: <Widget>[
+          Container(padding: EdgeInsets.all(10.0), child: progress < 1.0 ? LinearProgressIndicator(value: progress) : Container()),
           Expanded(
             child: InAppWebView(
               initialUrlRequest: URLRequest(url: Uri.parse(InstagramConfig.url)),
@@ -47,25 +43,14 @@ class _InstagramLoginState extends State<InstagramLogin> {
               onWebViewCreated: (InAppWebViewController controller) {
                 _webViewController = controller;
               },
-              onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
-                instagram.getAuthorizationCode(url.toString());
-                if (url.toString().contains(InstagramConfig.redirectUri)) {
-                  bool isDone = await instagram.getTokenAndUserID();
-                  if (isDone) {
-                    instagram.getUserProfile().then((isDone) async {
-                      print('${instagram.username} logged in!');
-                    });
-                  }
-                }
-              },
+              onUpdateVisitedHistory: widget.onUpdateVisitedHistory,
               onProgressChanged: (InAppWebViewController controller, int progress) {
-                setState(() {
-                  this.progress = progress / 100;
-                });
+                this.progress = progress / 100;
+                setState(() {});
               },
             ),
           ),
-        ]),
+        ],
       ),
     );
   }

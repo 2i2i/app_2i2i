@@ -54,8 +54,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     // return localAccount;
   }
 
-  Future updateDBWithNewAccount(String address, {String type = 'LOCAL'}) =>
-      database.addAlgorandAccount(uid!, address, type);
+  Future updateDBWithNewAccount(String address, {String userId = '',String type = 'LOCAL'}) => database.addAlgorandAccount(uid??userId, address, type);
 
   Future<void> saveLocalAccount(LocalAccount account) async {
     if (uid == null) return;

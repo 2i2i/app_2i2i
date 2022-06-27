@@ -185,7 +185,8 @@ class en {
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.signInWithWalletConnect: 'Wallet Connect',
       Keys.searchFaq: 'Search keywords',
-      Keys.loading:'Loading...'
+      Keys.loading:'Loading...',
+      Keys.signInWithInstagram:'Sign in with Instagram',
 
     };
   }

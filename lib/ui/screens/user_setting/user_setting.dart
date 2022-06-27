@@ -57,7 +57,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setData();
     });
   }

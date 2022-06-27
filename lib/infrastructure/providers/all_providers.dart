@@ -399,8 +399,7 @@ final accountsProvider = FutureProvider((ref) {
   return accountService.getAllAccounts();
 });
 
-final myAccountPageViewModelProvider =
-    ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
+final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
   final database = ref.watch(databaseProvider);
   final uid = ref.watch(myUIDProvider);
   return MyAccountPageViewModel(ref: ref, uid: uid, database: database);

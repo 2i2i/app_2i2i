@@ -1,9 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_admin/firebase_admin.dart' as admin;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/entity/auth_result.dart';
 import 'package:twitter_login/twitter_login.dart';
@@ -204,53 +204,66 @@ class SetupUserViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithWalletConnect(BuildContext context, String address) async {
+  Future<void> signInWithWalletConnect(context, address, account, myAccountPageViewModel) async {
+    String? uid;
+
     try {
-      admin.App app = await initializeAdmin();
-      var result = await app.auth().createCustomToken(address);
-      String? uid = await database.checkAddressAvailable(address);
-      print(uid);
-      if (uid is String) {
-        result = await app.auth().createCustomToken(uid);
-      }
-      var firebaseUser = await auth.signInWithCustomToken(result);
-      if (firebaseUser is UserModel) {
-        String? uid = firebaseUser.user?.uid;
-        if (uid is String) {
-          await signInProcess(uid, socialLinkModel: socialLinksModel);
+      final app = admin.FirebaseAdmin.instance.app();
+      if (app is admin.App) {
+        CustomDialogs.loader(true, context, rootNavigator: true);
+        var result = await app.auth().createCustomToken(address);
+        List ids = await database.checkAddressAvailable(address);
+        if (ids.length > 1) {
+          final id = await showDialog(
+            context: context,
+            builder: (context) => ChooseAccountDialog(
+              userIds: ids,
+              onSelectId: (String value) {
+                Navigator.of(context).pop(value);
+              },
+            ),
+            // barrierDismissible: false,
+          );
+          if (id is String) {
+            uid = id;
+          }
         }
+        else if (ids.isNotEmpty) {
+          uid = ids.first;
+        }
+        else {
+          uid = address;
+        }
+
+        if (uid?.isNotEmpty ?? false) {
+          result = await app.auth().createCustomToken(uid!);
+          var firebaseUser = await auth.signInWithCustomToken(result);
+          CustomDialogs.loader(false, context, rootNavigator: true);
+          if (firebaseUser.user is User) {
+            String? uid = firebaseUser.user?.uid;
+            if (uid is String) {
+              await signInProcess(uid, socialLinkModel: socialLinksModel).then((_) async{
+                await account.save().then((_) {
+                  myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC',userId:uid).then((_) {
+                    myAccountPageViewModel.updateAccounts().then((_) {
+                      account.setMainAccount();
+                    });
+                  });
+                });
+              });
+            }
+          }
+        }
+        else{
+          CustomDialogs.loader(false, context, rootNavigator: true);
+        }
+
       }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
+      CustomDialogs.loader(false, context, rootNavigator: true);
       throw e;
     }
-  }
-
-  Future<admin.App> initializeAdmin() async {
-    final adminObj = admin.FirebaseAdmin.instance;
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/service-account.json');
-    final data = jsonEncode({
-      "type": "service_account",
-      "project_id": "i2i-test",
-      "private_key_id": "cbd4940871b30452337d0d74af1eb414c52cd5ed",
-      "private_key":
-          "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCiApuROI4U/fVz\nxrtORfvGXL0iCe9Ne1FGR8YuCBlXlU0xIKzHiDfefaTzVcX5Pc/Qyzag7+6KoiYY\nwRmcJZ0uUAJUEp2NngXo7Z4W3RPTiPCiPlyqLmYbxkJRiPpXHg2lJWi7QWxgXwJx\n0zWwgyAatCEMjYDq+Xow8g7N5Fk0gaKgO7Nx8XaRla8o3kFnX2S/eIKFT/1kkogs\nAipx/Oy31UEGQHN4uQ1z+TGZifzGBy8a8qnF8QIaCCHOaBW0ZW3X9YiuXkSKPdBw\n8sYNLUl2imqWTr7w32XMssq7DWG7OHOyJlgiEKxbm5z3jj32tWdwB/gLjwYTkrl0\nN00cutUjAgMBAAECggEAOarz9R1MdexwEmYLBjGjDVi1eghPRiU/KOUjhf8cBjD+\n6R3YYq36NRhEPtmpPq7h6lBrgZ3mKzLMnMMfepVo/bM9IO//ZQl60Q7D1x+ajxGP\nljDcizc44WoQ8TTw51GrSb2nKgB/s04ecKXd1pbWNqsnmHBGE136QLHo0yEVH7r0\nOasswufzCtq0vMCC/waPel35zoR168RpGwD1u0L0vObI9hGsU/uXsPq2UTE+Qq8K\nv5UQqt1yWRj3P3TXhVyMY9sT71FHmtR+YJvVPhzK7fSt0is+2lmi5jdduJMk3GJo\nyJ0l03CJ687TfolO/421KWkftdcPjFj2VEvuI6HjAQKBgQDSQKju9aP/NMMJ3OzI\nkeGH/2Q93zALBy7YvDyhq55vPGGLX+pXTclFfryh0X+WGJWEymawMO/ZF4juFkFd\nxyK0uycExpmen7lWkfUD6+IFck/6eTYrV3hi8lmy5lDZoqVPwxTIPEgbdJgNNzsY\nsWAo+18Mrf3Ex7kY9eRI4FoOZwKBgQDFQsjGygi/fxYS9EUNYdppNN6rZ0j8BPUw\nrA/MPX6fMhuAqICTJqK/ZFqujaoDFDCNW8lAKswqKsG+g1f7ECgw2w6EflxzkQNS\nTxOkWO51abgzo1FHVbWz15oD/aNGm9TAbtPzGHUEeeGBjthwrJynjUKhR+V5y+6q\n4gfXHaaV5QKBgE+r1NgIGQbh9W5NWyR9sxqXumJ/qnLjW+shGVCh+b1pAgWQaPqA\nLV66MbyX6GL2GeJh2Bu3z4tSEb82i7p/dTVLHfP/VcL3/4FAebnsro8lzAy71b0C\nvkmwUDEseUKfEUlyQPPHdAODYQLRBQHMZQXiixgA7oKctBUzSDgdW8LNAoGBAJ45\nq4KIm+u+rJ4XgSvyyZaJ6fHirxA3idS4rxNMYDyhnJ3eiwN9gh2zCWnqB+zgTPGW\nJh9qNMm98ho2kGO52gMWMtbj5JRuRRPIiiDRlLRpUG9bGN73SQAweEGrOURxyn1w\naGIdw/8LJG8ffU0jp6ReEov7d33yrkYzd8Z86hphAoGBAMlgfrlVObzO+XiVgEar\nvIizlH83sjavS5rxuaFOkIbtRoVb0poPvCKdtOT2DrdGLa4M3+Ub4YiEJCFLlkay\n9foRThjbJYfZPuYrgzIsFtP5FmG+78qyYM24QXNqETcIXjktivvGQetUtr/fr2yW\nDuGWynz0OF4emG2LELVMivi3\n-----END PRIVATE KEY-----\n",
-      "client_email": "firebase-adminsdk-fwd7n@i2i-test.iam.gserviceaccount.com",
-      "client_id": "110784426908109511374",
-      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-      "token_uri": "https://oauth2.googleapis.com/token",
-      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fwd7n%40i2i-test.iam.gserviceaccount.com"
-    });
-    await file.writeAsString(data);
-    final cert = admin.FirebaseAdmin.instance.certFromPath(file.path);
-    final app = adminObj.initializeApp(
-      admin.AppOptions(
-        credential: cert,
-      ),
-    );
-    return app;
   }
 
   Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {

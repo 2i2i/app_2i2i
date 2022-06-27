@@ -337,7 +337,7 @@ class FirestoreDatabase {
     return null;
   }
 
-  Future<String?> checkAddressAvailable(String address) async {
+  Future<List> checkAddressAvailable(String address) async {
 
     var documentSnapshot = await _service.getCollectionGroupData(
       path: FirestorePath.alograndAccountPath(),
@@ -353,9 +353,9 @@ class FirestoreDatabase {
       },
     );
     if(documentSnapshot.isNotEmpty){
-      return documentSnapshot.first;
+      return documentSnapshot.toList();
     }
-    return null;
+    return [];
   }
 
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {

@@ -82,9 +82,9 @@ class NamedRoutes {
         path: Routes.root,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          // child: getView(SearchPage()),
+          child: getView(SearchPage()),
           // child: getView(TestScreen()),
-          child: getView(InstagramLogin()),
+          // child: getView(InstagramLogin()),
         ),
       ),
       GoRoute(

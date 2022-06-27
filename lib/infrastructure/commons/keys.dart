@@ -195,6 +195,8 @@ class Keys {
   static const String searchFaq ='searchFaq';
   static const String loading ='loading';
 
+  static const String signInWithInstagram = 'Sign in with Instagram';
+
 }
 
 extension CustomTranslation on String {
