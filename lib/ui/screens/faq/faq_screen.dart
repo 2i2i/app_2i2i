@@ -150,7 +150,7 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
       text: 'twitter',
       style: new TextStyle(color: Colors.blue),
       recognizer: new TapGestureRecognizer()
-        ..onTap = () => launch('https://twitter.com/2i2i_app'),
+        ..onTap = () => launchUrl(Uri.parse('https://twitter.com/2i2i_app')),
     ));
   }
 }

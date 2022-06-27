@@ -90,7 +90,7 @@ class AddBidPageViewModel {
         }
         return;
       } catch (e) {
-        print('AlgorandException catch $e');
+        log('AlgorandException catch $e');
       }
     }
 

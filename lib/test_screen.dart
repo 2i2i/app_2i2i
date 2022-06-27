@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TestScreen extends StatefulWidget {
@@ -41,27 +40,14 @@ class _TestScreenState extends State<TestScreen> {
               "rule": {
                 "maxMeetingDuration": 300,
                 "minSpeed": 0,
-                "importance": {
-                  "eccentric": 0,
-                  "highroller": 4,
-                  "lurker": 0,
-                  "chrony": 1
-                }
+                "importance": {"eccentric": 0, "highroller": 4, "lurker": 0, "chrony": 1}
               },
               "mutedVideoA": false,
               "mutedAudioA": false,
               "mutedAudioB": false,
               "mutedVideoB": false,
             };
-            final uid = FirebaseAuth.instance.currentUser?.uid;
-            FirebaseFirestore.instance
-                .doc('meetings/Chandresh')
-                .set(map)
-                .catchError((e) {
-              print(e);
-            }).then((value) {
-              print('value');
-            });
+            FirebaseFirestore.instance.doc('meetings/Chandresh').set(map);
           },
           child: Text('data'),
         ),

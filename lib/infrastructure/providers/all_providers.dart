@@ -299,7 +299,6 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
       return null;
     }
     final user = ref.watch(userProvider(uid));
-    log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
     if (user.value!.meeting == null) {

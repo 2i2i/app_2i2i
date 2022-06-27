@@ -165,7 +165,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
 
       isDialogOpen.value = false;
       CustomDialogs.loader(true, context, rootNavigator: true);
-      print(sessionStatus);
+      log("$sessionStatus");
       await account.save();
       await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();

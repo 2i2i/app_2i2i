@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
@@ -54,7 +55,7 @@ class RatingTile extends StatelessWidget {
                             color: Colors.amber,
                           ),
                           onRatingUpdate: (rating) {
-                            print(rating);
+                            log("$rating");
                           },
                         ),
                       ),

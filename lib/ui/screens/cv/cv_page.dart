@@ -62,9 +62,9 @@ class _CVPageState extends ConsumerState<CVPage> {
                     ),
                     Spacer(),
                     TextButton(
-                        onPressed: () => launch(widget.person == CVPerson.imi
+                        onPressed: () => launchUrl(Uri.parse(widget.person == CVPerson.imi
                             ? 'https://twitter.com/2i2i_app'
-                            : 'https://twitter.com/2i2i_solli'),
+                            : 'https://twitter.com/2i2i_solli')),
                         child: Text(
                           'twitter',
                           style: new TextStyle(color: Colors.blue),
