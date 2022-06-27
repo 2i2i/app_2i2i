@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
@@ -188,7 +190,15 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
         uriObj = Uri.parse(_displayUri);
       }
       await launchUrl(uriObj, mode: LaunchMode.externalApplication);
-    } else {
+    } else if (!isAvailable){
+      bool isAndroid = Platform.isAndroid;
+      if(isAndroid){
+        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.algorand.android'), mode: LaunchMode.externalApplication);
+      }else{
+        await launchUrl(Uri.parse('https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'), mode: LaunchMode.externalApplication);
+      }
+    }
+     else {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
