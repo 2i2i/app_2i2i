@@ -4,10 +4,12 @@ import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -32,7 +34,6 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
-  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
 
   @override
@@ -172,33 +173,17 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future _changeDisplayUri(String url) async {
+    bool isAvailable = false;
     _displayUri = url;
     if (mounted) {
       setState(() {});
     }
 
-    bool isAvailable = await canLaunchUrl(Uri.parse(defaultTargetPlatform == TargetPlatform.iOS ? 'algorand-wc://' : 'wc://'));
-    if (isMobile && isAvailable) {
-      final uriObj;
-      if (defaultTargetPlatform == TargetPlatform.iOS) {
-        uriObj = Uri(
-          scheme: 'algorand-wc',
-          host: 'wc',
-          queryParameters: {'uri': _displayUri},
-        );
-      } else {
-        uriObj = Uri.parse(_displayUri);
-      }
-      await launchUrl(uriObj, mode: LaunchMode.externalApplication);
-    } else if (!isAvailable){
-      bool isAndroid = Platform.isAndroid;
-      if(isAndroid){
-        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.algorand.android'), mode: LaunchMode.externalApplication);
-      }else{
-        await launchUrl(Uri.parse('https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'), mode: LaunchMode.externalApplication);
-      }
-    }
-     else {
+    /*bool isAvailable4 = await canLaunchUrlString("wc");
+    bool isAvailable5 = await canLaunch("wc");
+    bool isAvailable6 = await canLaunchUrl(Uri.parse("wc"));
+    bool isAvailable = await canLaunchUrl(Uri.parse(defaultTargetPlatform == TargetPlatform.iOS ? 'algorand-wc://' : 'wc://'));*/
+    if (kIsWeb) {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
@@ -213,6 +198,29 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
         ),
         barrierDismissible: true,
       );
+    } else {
+      var launchUri;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        launchUri = Uri(
+          scheme: 'algorand-wc',
+          host: 'wc',
+          queryParameters: {'uri': _displayUri},
+        );
+      } else {
+        launchUri = Uri.parse(_displayUri);
+      }
+      try {
+        isAvailable = await launchUrl(launchUri);
+      } on PlatformException catch (err) {
+        print(err);
+      }
+      if (!isAvailable) {
+        if (Platform.isAndroid) {
+          await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.algorand.android'), mode: LaunchMode.externalApplication);
+        } else {
+          await launchUrl(Uri.parse('https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'), mode: LaunchMode.externalApplication);
+        }
+      }
     }
   }
 }
