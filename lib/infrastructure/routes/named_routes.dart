@@ -6,8 +6,6 @@ import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
-import 'package:app_2i2i/ui/screens/cv/cv_page.dart';
-import 'package:app_2i2i/ui/screens/cv/cv_page_data.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
@@ -109,28 +107,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(FAQScreen()),
-          // child: Scaffold(),
-        ),
-      ),
-      GoRoute(
-        name: Routes.imi.nameFromPath(),
-        path: Routes.imi,
-        pageBuilder: (context, state) => NoTransitionPage<void>(
-          key: state.pageKey,
-          child: getView(CVPage(
-            person: CVPerson.imi,
-          )),
-          // child: Scaffold(),
-        ),
-      ),
-      GoRoute(
-        name: Routes.solli.nameFromPath(),
-        path: Routes.solli,
-        pageBuilder: (context, state) => NoTransitionPage<void>(
-          key: state.pageKey,
-          child: getView(CVPage(
-            person: CVPerson.solli,
-          )),
           // child: Scaffold(),
         ),
       ),
