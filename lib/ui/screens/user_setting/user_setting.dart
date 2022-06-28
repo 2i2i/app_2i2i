@@ -57,7 +57,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setData();
     });
   }
@@ -309,9 +309,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).shadowColor.withOpacity(0.20),
-                        borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
                       children: [
@@ -328,10 +326,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                 activeTrackColor: Theme.of(context).cardColor,
                                 inactiveTrackColor: Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
-                                    mainContext: context,
-                                    thumbRadius: 15,
-                                    showValue: true,
-                                    valueMain: (_importanceRatioValue?.round() ?? 0).toString()),
+                                    mainContext: context, thumbRadius: 15, showValue: true, valueMain: (_importanceRatioValue?.round() ?? 0).toString()),
                               ),
                               child: _importanceSliderValue == null
                                   ? Container()
@@ -342,11 +337,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                       onChanged: (value) {
                                         setState(() {
                                           _importanceSliderValue = value;
-                                          _importanceRatioValue =
-                                              (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                      (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                      _importanceSliderMaxHalf +
-                                                  2.0;
+                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                                  _importanceSliderMaxHalf +
+                                              2.0;
                                           // log(X +
                                           //     '_importanceSliderValue=$_importanceSliderValue');
                                           // log(X +
@@ -387,8 +381,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 if (!(widget.fromBottomSheet ?? false)) {
                   CustomDialogs.loader(true, context);
                 }
-                await onClickSave(
-                    context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                 if (!(widget.fromBottomSheet ?? false)) {
                   CustomDialogs.loader(false, context);
                 }
@@ -445,54 +438,70 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     setState(() {});
   }
 
+  // Map<Lounge, int> oldFindImportances(double ratio, Lounge lounge) {
+  //   // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
+  //   final a = ratio - 1.0;
+  //   // log(X + 'findImportances: a=$a');
+
+  //   int small = 1;
+  //   double largeDouble = a * small;
+  //   int largeInt = largeDouble.round();
+
+  //   // log(X +
+  //   //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+  //   int minSmall = small;
+  //   int minLarge = largeInt;
+  //   double minError = (largeDouble - largeInt).abs();
+
+  //   // log(X +
+  //   //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+  //   while (small < _importanceSliderMaxHalf * 2.0) {
+  //     small++;
+  //     largeDouble = a * small;
+  //     largeInt = largeDouble.round();
+  //     // log(X +
+  //     //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+  //     if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
+  //     final error = (largeDouble - largeInt).abs();
+  //     // log(X + 'findImportances: error=$error');
+  //     if (error < minError) {
+  //       minSmall = small;
+  //       minLarge = largeInt;
+  //       minError = error;
+  //       // log(X +
+  //       //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+  //     }
+  //   }
+  //   // log(X +
+  //   //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+  //   return lounge == Lounge.chrony
+  //       ? {
+  //           Lounge.chrony: minSmall,
+  //           Lounge.highroller: minLarge,
+  //         }
+  //       : {
+  //           Lounge.chrony: minLarge,
+  //           Lounge.highroller: minSmall,
+  //         };
+  // }
+
+  // let's use a trivial implementation for now
   Map<Lounge, int> findImportances(double ratio, Lounge lounge) {
-    // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
-    final a = ratio - 1.0;
-    // log(X + 'findImportances: a=$a');
-
-    int small = 1;
-    double largeDouble = a * small;
-    int largeInt = largeDouble.round();
-
-    // log(X +
-    //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-    int minSmall = small;
-    int minLarge = largeInt;
-    double minError = (largeDouble - largeInt).abs();
-
-    // log(X +
-    //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
-    while (small < _importanceSliderMaxHalf * 2.0) {
-      small++;
-      largeDouble = a * small;
-      largeInt = largeDouble.round();
-      // log(X +
-      //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-      if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
-      final error = (largeDouble - largeInt).abs();
-      // log(X + 'findImportances: error=$error');
-      if (error < minError) {
-        minSmall = small;
-        minLarge = largeInt;
-        minError = error;
-        // log(X +
-        //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-      }
-    }
-    // log(X +
-    //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
+    // final o = oldFindImportances(ratio, lounge);
+    // log(Y + 'findImportances: ratio=$ratio lounge=$lounge o=$o');
+    final m = ratio.round() - 1;
     return lounge == Lounge.chrony
         ? {
-            Lounge.chrony: minSmall,
-            Lounge.highroller: minLarge,
+            Lounge.chrony: 1,
+            Lounge.highroller: m,
           }
         : {
-            Lounge.chrony: minLarge,
-            Lounge.highroller: minSmall,
+            Lounge.chrony: m,
+            Lounge.highroller: 1,
           };
   }
 
@@ -544,9 +553,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   }
 
   Future<void> onClickSave(
-      {required MyUserPageViewModel? myUserPageViewModel,
-      required SetupUserViewModel? setupUserViewModel,
-      required BuildContext context}) async {
+      {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
     FocusScope.of(context).requestFocus(FocusNode());
 
     bool validate = formKey.currentState?.validate() ?? false;
