@@ -92,8 +92,7 @@ class AboutPage extends StatelessWidget {
                   text: TextSpan(
             text: 'contact us @2i2i_app',
             style: new TextStyle(color: Colors.blue),
-            recognizer: new TapGestureRecognizer()
-              ..onTap = () => launch('https://twitter.com/2i2i_app'),
+            recognizer: new TapGestureRecognizer()..onTap = () => launchUrl(Uri.parse('https://twitter.com/2i2i_app')),
           ))),
         ],
       ),
