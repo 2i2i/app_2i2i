@@ -160,7 +160,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       CustomDialogs.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
       await account.save();
-      await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
@@ -178,11 +178,6 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
     if (mounted) {
       setState(() {});
     }
-
-    /*bool isAvailable4 = await canLaunchUrlString("wc");
-    bool isAvailable5 = await canLaunch("wc");
-    bool isAvailable6 = await canLaunchUrl(Uri.parse("wc"));
-    bool isAvailable = await canLaunchUrl(Uri.parse(defaultTargetPlatform == TargetPlatform.iOS ? 'algorand-wc://' : 'wc://'));*/
     if (kIsWeb) {
       isDialogOpen.value = true;
       await showDialog(
@@ -204,7 +199,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
         launchUri = Uri(
           scheme: 'algorand-wc',
           host: 'wc',
-          queryParameters: {'uri': _displayUri},
+          queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
         );
       } else {
         launchUri = Uri.parse(_displayUri);
