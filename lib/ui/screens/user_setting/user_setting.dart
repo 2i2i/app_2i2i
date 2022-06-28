@@ -171,10 +171,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   TextFormField(
                     onChanged: (value) => setState(() {}),
                     controller: speedEditController,
-                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
                       value ??= '';
