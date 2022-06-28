@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
@@ -7,7 +9,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
-
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -54,17 +55,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -89,17 +87,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -124,17 +119,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/wallet.svg',
@@ -158,7 +150,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
     );
     // Create a new session
     if (!account.connector.connected) {
-      SessionStatus sessionStatus = await account.connector.createSession(
+      SessionStatus sessionStatus = await account.connector.connect(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
@@ -179,15 +171,34 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
     }
   }
 
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
+  Future _changeDisplayUri(String url) async {
+    _displayUri = url;
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunchUrl(Uri.parse('algorand://'));
+
+    bool isAvailable = await canLaunchUrl(Uri.parse(defaultTargetPlatform == TargetPlatform.iOS ? 'algorand-wc://' : 'wc://'));
     if (isMobile && isAvailable) {
-      await launchUrl(Uri.parse(uri));
-    } else {
+      final uriObj;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        uriObj = Uri(
+          scheme: 'algorand-wc',
+          host: 'wc',
+          queryParameters: {'uri': _displayUri},
+        );
+      } else {
+        uriObj = Uri.parse(_displayUri);
+      }
+      await launchUrl(uriObj, mode: LaunchMode.externalApplication);
+    } else if (!isAvailable){
+      bool isAndroid = Platform.isAndroid;
+      if(isAndroid){
+        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.algorand.android'), mode: LaunchMode.externalApplication);
+      }else{
+        await launchUrl(Uri.parse('https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'), mode: LaunchMode.externalApplication);
+      }
+    }
+     else {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
