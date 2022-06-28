@@ -100,7 +100,6 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
 
     // update loungeSum
     if (recentLoungesHistory.length == N) {
-      // print('recentLoungesHistory=$recentLoungesHistory');
       loungeSum -= recentLoungesHistory.removeFirst();
     }
     final M = recentLoungesHistory.length + 1;
@@ -373,8 +372,6 @@ Map combineQueuesTestCreate_random_single(double changeRuleProb,
     final b = bTest(speed, minSpeed, c, h, 10000 + i * 1000);
     bidInsPublic.add(b);
   }
-  print('${rulesStrings.join(',')}');
-  print('${speedsStrings.join(',')}');
   return {
     'public': bidInsPublic,
     'loungeHistory': loungeHistory,

@@ -1,5 +1,5 @@
-// ignore: avoid_web_libraries_in_flutter
 import 'package:universal_html/html.dart';
+import '../../../../infrastructure/data_access_layer/services/logging.dart';
 
 class SimpleWebSocket {
   String _url;
@@ -34,9 +34,9 @@ class SimpleWebSocket {
   send(data) {
     if (_socket != null && _socket.readyState == WebSocket.OPEN) {
       _socket.send(data);
-      print('send: $data');
+      log('send: $data');
     } else {
-      print('WebSocket not connected, message $data not sent');
+      log('WebSocket not connected, message $data not sent');
     }
   }
 

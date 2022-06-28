@@ -594,6 +594,5 @@ Contributes to the smooth supply of products by playing an efficient bridge role
         .where((element) => (element.tags ?? []).any((searchKeyword) =>
             keywordList.contains(searchKeyword.toLowerCase())))
         .toList();
-    print(searchCVList);
   }
 }

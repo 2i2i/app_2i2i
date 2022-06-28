@@ -38,7 +38,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
       log('MyAccountPageViewModel initMethod 5');
       isLoading = false;
     } catch (e) {
-      print(e);
+      log("$e");
     }
     notifyListeners();
   }
