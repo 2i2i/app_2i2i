@@ -222,14 +222,26 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     return InstagramLogin(
                                       onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
                                         instagram.getAuthorizationCode(url.toString());
-                                        if (url.toString().contains(InstagramConfig.redirectUri)) {
-                                          bool isDone = await instagram.getTokenAndUserID();
-                                          if (isDone) {
-                                            instagram.getUserProfile().then((isDone) async {
-                                              print('${instagram.username} logged in!');
-                                            });
+                                        if (url?.host == InstagramConfig.redirectUriHost) {
+                                          String idToken = await instagram.getTokenAndUserID();
+                                          if (idToken.split(':').isNotEmpty) {
+                                            // _webViewController?.reload();
+                                            await _webViewController?.clearCache();
+                                            await _webViewController?.clearFocus();
+                                            await _webViewController?.clearMatches();
+                                            await _webViewController?.removeAllUserScripts();
+                                            Navigator.of(context).pop();
+                                            String token =idToken.split(':').first;
+                                            String id =idToken.split(':').last;
+                                            await signUpViewModel.signInWithInstagram(context, id);
+                                            // instagram.getUserProfile().then((isDone) async {
+                                            //   print('${instagram.username} logged in!');
+                                            // });
                                           }
                                         }
+                                      },
+                                      onWebViewCreated: (InAppWebViewController? value) {
+                                        _webViewController = value;
                                       },
                                     );
                                   },

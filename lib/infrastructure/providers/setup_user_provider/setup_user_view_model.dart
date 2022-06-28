@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
-import 'package:app_2i2i/infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -204,6 +202,52 @@ class SetupUserViewModel with ChangeNotifier {
     }
   }
 
+  Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
+    try {
+      User? existingUser;
+      UserCredential? firebaseUser;
+      AuthCredential? twitterAuthCredential;
+      AuthResult? authResult;
+      if (linkWithCredential) {
+        existingUser = FirebaseAuth.instance.currentUser;
+      }
+
+      if (!kIsWeb) {
+        final twitterLogin = TwitterLogin(
+          apiKey: dotenv.env['TWITTER_API_key'].toString(),
+          apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
+          redirectURI: "test://twoitwoi.com",
+        );
+
+        authResult = await twitterLogin.login();
+
+        twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+      }
+      if (linkWithCredential && existingUser != null) {
+        if (kIsWeb) {
+          firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
+        } else {
+          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential!);
+        }
+      } else {
+        if (kIsWeb) {
+          firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
+        } else {
+          firebaseUser = await auth.signInWithCredential(twitterAuthCredential!);
+        }
+      }
+      if (authResult?.user != null)
+        socialLinksModel = SocialLinksModel(
+            userName: authResult?.user?.name ?? '', userEmail: authResult?.user?.email ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
+
+      String? uid = firebaseUser.user?.uid;
+      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
+    } on FirebaseAuthException catch (e) {
+      CustomDialogs.showToastMessage(context, "${e.message}");
+      throw e;
+    }
+  }
+
   Future<void> signInWithWalletConnect(context, address, account, myAccountPageViewModel) async {
     String? uid;
 
@@ -266,48 +310,59 @@ class SetupUserViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
+  Future<void> signInWithInstagram(context, id) async {
+    String? uid;
+    socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id);
+
     try {
-      User? existingUser;
-      UserCredential? firebaseUser;
-      AuthCredential? twitterAuthCredential;
-      AuthResult? authResult;
-      if (linkWithCredential) {
-        existingUser = FirebaseAuth.instance.currentUser;
-      }
+      final app = admin.FirebaseAdmin.instance.app();
+      if (app is admin.App) {
+        CustomDialogs.loader(true, context, rootNavigator: true);
+        var result = await app.auth().createCustomToken(id);
 
-      if (!kIsWeb) {
-        final twitterLogin = TwitterLogin(
-          apiKey: dotenv.env['TWITTER_API_key'].toString(),
-          apiSecretKey: dotenv.env['TWITTER_API_SECRET_key'].toString(),
-          redirectURI: "test://twoitwoi.com",
-        );
-
-        authResult = await twitterLogin.login();
-
-        twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
-      }
-      if (linkWithCredential && existingUser != null) {
-        if (kIsWeb) {
-          firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
-        } else {
-          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential!);
+        List ids = await database.checkAddressAvailable(id);
+        if (ids.length > 1) {
+          final id = await showDialog(
+            context: context,
+            builder: (context) => ChooseAccountDialog(
+              userIds: ids,
+              onSelectId: (String value) {
+                Navigator.of(context).pop(value);
+              },
+            ),
+            // barrierDismissible: false,
+          );
+          if (id is String) {
+            uid = id;
+          }
         }
-      } else {
-        if (kIsWeb) {
-          firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
-        } else {
-          firebaseUser = await auth.signInWithCredential(twitterAuthCredential!);
+        else if (ids.isNotEmpty) {
+          uid = ids.first;
         }
-      }
-      if (authResult?.user != null)
-        socialLinksModel = SocialLinksModel(
-            userName: authResult?.user?.name ?? '', userEmail: authResult?.user?.email ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
+        else {
+          uid = id;
+        }
 
-      String? uid = firebaseUser.user?.uid;
-      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
+        if (uid?.isNotEmpty ?? false) {
+          result = await app.auth().createCustomToken(uid!);
+          var firebaseUser = await auth.signInWithCustomToken(result);
+          CustomDialogs.loader(false, context, rootNavigator: true);
+          if (firebaseUser.user is User) {
+            String? uid = firebaseUser.user?.uid;
+            if (uid is String) {
+              // socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: uid);
+              await signInProcess(uid, socialLinkModel: socialLinksModel);
+            }
+          }
+        }
+        else{
+          CustomDialogs.loader(false, context, rootNavigator: true);
+        }
+
+      }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
+      CustomDialogs.loader(false, context, rootNavigator: true);
       throw e;
     }
   }

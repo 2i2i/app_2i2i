@@ -14,7 +14,7 @@ class InstagramService {
     authorizationCode = url.replaceAll('${InstagramConfig.redirectUri}?code=', '').replaceAll('#_', '');
   }
 
-  Future<bool> getTokenAndUserID() async {
+  Future<String> getTokenAndUserID() async {
     try {
       var url = Uri.parse('https://api.instagram.com/oauth/access_token');
       final response = await http.post(url, body: {
@@ -25,13 +25,14 @@ class InstagramService {
         'grant_type': 'authorization_code'
       });
       accessToken = json.decode(response.body)['access_token'];
-      print(accessToken);
       userID = json.decode(response.body)['user_id'].toString();
-      return (accessToken != null && userID != null) ? true : false;
+      if(accessToken != null && userID != null){
+        return '$accessToken:$userID';
+      }
     } catch (e) {
       print(e);
     }
-    return false;
+    return '';
   }
 
   Future<bool> getUserProfile() async {

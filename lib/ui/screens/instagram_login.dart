@@ -5,30 +5,21 @@ import '../../infrastructure/commons/instagram_config.dart';
 import '../../infrastructure/data_access_layer/repository/instagram_service.dart';
 
 class InstagramLogin extends StatefulWidget {
+  final ValueChanged<InAppWebViewController?> onWebViewCreated;
   final Function(InAppWebViewController controller, Uri? url, bool? androidIsReload) onUpdateVisitedHistory;
-  const InstagramLogin({Key? key, required this.onUpdateVisitedHistory}) : super(key: key);
+  const InstagramLogin({Key? key, required this.onUpdateVisitedHistory, required this.onWebViewCreated}) : super(key: key);
 
   @override
   State<InstagramLogin> createState() => _InstagramLoginState();
 }
 
 class _InstagramLoginState extends State<InstagramLogin> {
-  InAppWebViewController? _webViewController;
-  String url = "";
+  String url = '';
   double progress = 0;
 
   InstagramService instagram = InstagramService();
 
 
-  @override
-  void dispose() {
-    _webViewController?.reload();
-    _webViewController?.clearCache();
-    _webViewController?.clearFocus();
-    _webViewController?.clearMatches();
-    _webViewController?.removeAllUserScripts();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +32,7 @@ class _InstagramLoginState extends State<InstagramLogin> {
               initialUrlRequest: URLRequest(url: Uri.parse(InstagramConfig.url)),
               initialOptions: InAppWebViewGroupOptions(crossPlatform: InAppWebViewOptions()),
               onWebViewCreated: (InAppWebViewController controller) {
-                _webViewController = controller;
+                widget.onWebViewCreated.call(controller);
               },
               onUpdateVisitedHistory: widget.onUpdateVisitedHistory,
               onProgressChanged: (InAppWebViewController controller, int progress) {

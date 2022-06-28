@@ -357,6 +357,26 @@ class FirestoreDatabase {
     }
     return [];
   }
+  Future<List> checkInstaUserAvailable(String id) async {
+
+    var documentSnapshot = await _service.getCollectionGroupData(
+      path: FirestorePath.users(),
+      queryBuilder: (query) => query.where('socialLinks',arrayContains: {}).orderBy('ts',descending: true),
+      builder: (Map<String, dynamic>? data, DocumentReference documentID) {
+        if(data is Map) {
+          List paths = documentID.path.split('/');
+          if(paths.length > 1){
+            String userId= paths[1];
+            return userId;
+          }
+        }
+      },
+    );
+    if(documentSnapshot.isNotEmpty){
+      return documentSnapshot.toList();
+    }
+    return [];
+  }
 
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');

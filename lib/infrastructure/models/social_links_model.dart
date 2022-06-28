@@ -4,8 +4,7 @@ class SocialLinksModel {
   String? userId;
   String? userName;
 
-  SocialLinksModel(
-      {this.accountName, this.userEmail, this.userId, this.userName});
+  SocialLinksModel({this.accountName, this.userEmail, this.userId, this.userName});
 
   SocialLinksModel.fromJson(Map<String, dynamic> json) {
     accountName = json['account_name'];
