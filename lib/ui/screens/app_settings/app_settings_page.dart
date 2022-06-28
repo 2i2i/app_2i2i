@@ -28,7 +28,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
     });
     super.initState();
@@ -356,9 +356,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               ),
             ),
             SizedBox(height: 32),
-            Text('${Keys.appVersion.tr(context)}: v23',
-                textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
-            SizedBox(height: 20),
           ],
         ),
       ),
