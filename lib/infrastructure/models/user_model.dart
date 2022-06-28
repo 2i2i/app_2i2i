@@ -125,7 +125,6 @@ class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
   UserModel({
-    // set also in cloud function userCreated
     required this.id,
     this.status = Status.ONLINE,
     this.socialLinks = const <SocialLinksModel>[],

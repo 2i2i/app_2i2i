@@ -245,7 +245,6 @@ class SetupUserViewModel with ChangeNotifier {
       if (authResult?.user != null)
         socialLinksModel = SocialLinksModel(
             userName: authResult?.user?.name ?? '',
-            userEmail: authResult?.user?.email ?? '',
             accountName: 'Twitter',
             userId: "${authResult?.user?.id ?? ""}");
 

@@ -25,8 +25,7 @@ class MyUserPage extends ConsumerStatefulWidget {
   _MyUserPageState createState() => _MyUserPageState();
 }
 
-class _MyUserPageState extends ConsumerState<MyUserPage>
-    with SingleTickerProviderStateMixin {
+class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
   @override
@@ -49,61 +48,67 @@ class _MyUserPageState extends ConsumerState<MyUserPage>
     }
 
     UserModel user = myHangoutPageViewModel!.user;
-    final domain =
-        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
-        
+    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+
     return Scaffold(
       body: Column(
         children: [
-          Card(
-            elevation: 4,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(right: 20,left: 20, bottom: 8,top: kIsWeb?8:31),
-              child: Column(
-                children: [
-                  SizedBox(height: 8),
-                  UserInfoWidget(
-                    user: user,
-                    onTapRules: (){
-                      context.pushNamed(Routes.userSetting.nameFromPath());
-                    },
-                    onTapQr: (){
-                      showDialog(
-                          context: context,
-                          builder: (context)=>FittedBox(
-                            fit: BoxFit.scaleDown,
-                              child: Container(
-                                decoration: Custom.getBoxDecoration(context,color: Colors.white),
-                            height: 400,
-                            width: 350,
-                            child: QrCodeWidget(
-                                message:
-                                    'https://$domain/user/${user.id}'),
-                          ),
-                        ),
-                      );
-                    },
-                    onTapWallet: () {
-                      context.pushNamed(Routes.account.nameFromPath());
-                    },
-                    onTapChat: () => CustomAlertWidget.showBidAlert(
-                        context, ChatWidget(user: user),
-                        backgroundColor: Colors.transparent),
-                    isFav: true,
-                  ),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Colors.black54,
+                  blurRadius: 0.5,
+                  offset: Offset(0.0, 1.0),
+                )
+              ],
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).cardColor,
+                  Theme.of(context).scaffoldBackgroundColor,
                 ],
+                begin: FractionalOffset.bottomCenter,
+                end: FractionalOffset.topCenter,
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp,
               ),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
+            ),
+            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8, top: kIsWeb ? 8 : 31),
+            child: Column(
+              children: [
+                SizedBox(height: 8),
+                UserInfoWidget(
+                  user: user,
+                  onTapRules: () {
+                    context.pushNamed(Routes.userSetting.nameFromPath());
+                  },
+                  onTapQr: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Container(
+                          decoration: Custom.getBoxDecoration(context, color: Colors.white),
+                          height: 400,
+                          width: 350,
+                          child: QrCodeWidget(message: 'https://$domain/user/${user.id}'),
+                        ),
+                      ),
+                    );
+                  },
+                  onTapWallet: () {
+                    context.pushNamed(Routes.account.nameFromPath());
+                  },
+                  onTapChat: () => CustomAlertWidget.showBidAlert(context, ChatWidget(user: user), backgroundColor: Colors.transparent),
+                  isFav: true,
+                ),
+              ],
             ),
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: UserBidInsList(
                 myHangoutPageViewModel: myHangoutPageViewModel,
                 titleWidget: Text(

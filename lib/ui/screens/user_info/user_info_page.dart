@@ -56,8 +56,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
-    final bidInsSorted =
-        combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
+    final bidInsSorted = combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
 
     // show est. wait time?
     int? estWaitTime;
@@ -74,21 +73,18 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             break;
           }
 
-          int duration = bidIn.speed.num == 0
-              ? userB.rule.maxMeetingDuration
-              : (bidIn.energy / bidIn.speed.num).round();
+          int duration = bidIn.speed.num == 0 ? userB.rule.maxMeetingDuration : (bidIn.energy / bidIn.speed.num).round();
           totalDuration += duration;
         }
       }
     }
 
-    final domain =
-        AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
+    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Theme.of(context).cardColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       floatingActionButton: Visibility(
         visible: !amBlocked,
@@ -137,51 +133,56 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       ),
       body: Column(
         children: [
-          Card(
-            elevation: 4,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Colors.black54,
+                  blurRadius: 0.5,
+                  offset: Offset(0.0, 1.0),
+                )
+              ],
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).cardColor,
+                  Theme.of(context).scaffoldBackgroundColor,
+                ],
+                begin: FractionalOffset.bottomCenter,
+                end: FractionalOffset.topCenter,
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp,
               ),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  right: 20, left: 20, bottom: 14, top: 4),
-              child: UserInfoWidget(
-                user: userB,
-                isFav: isFriend,
-                estWaitTime: estWaitTime,
-                onTapQr: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        height: 400,
-                        width: 350,
-                        decoration: Custom.getBoxDecoration(context,
-                            color: Colors.white),
-                        child: QrCodeWidget(
-                            message: 'https://$domain/user/${userB.id}'),
-                      ),
+            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8),
+            child: UserInfoWidget(
+              user: userB,
+              isFav: isFriend,
+              estWaitTime: estWaitTime,
+              onTapQr: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      height: 400,
+                      width: 350,
+                      decoration: Custom.getBoxDecoration(context, color: Colors.white),
+                      child: QrCodeWidget(message: 'https://$domain/user/${userB.id}'),
                     ),
-                  );
-                },
-                onTapChat: () => CustomAlertWidget.showBidAlert(
-                    context, ChatWidget(user: userB),
-                    backgroundColor: Colors.transparent),
-                onTapFav: () {
-                  if (userModelChanger != null) {
-                    if (!isFriend) {
-                      userModelChanger.addFriend(widget.B);
-                    } else {
-                      userModelChanger.removeFriend(widget.B);
-                    }
+                  ),
+                );
+              },
+              onTapChat: () => CustomAlertWidget.showBidAlert(context, ChatWidget(user: userB), backgroundColor: Colors.transparent),
+              onTapFav: () {
+                if (userModelChanger != null) {
+                  if (!isFriend) {
+                    userModelChanger.addFriend(widget.B);
+                  } else {
+                    userModelChanger.removeFriend(widget.B);
                   }
-                },
-              ),
+                }
+              },
             ),
           ),
           Expanded(

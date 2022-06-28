@@ -85,7 +85,6 @@ class Keys {
   static const String topAppBarTitle = 'topAppBarTitle';
   static const String newCardTitle = 'newCardTitle';
   static const String createABid = 'createABid';
-  static const String algoSec = 'algoSec';
   static const String speed = 'speed';
   static const String bidAmount = 'bidAmount';
   static const String duration = 'duration';

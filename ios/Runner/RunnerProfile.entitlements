@@ -13,6 +13,6 @@
 		<string>applinks:about.2i2i.app</string>
 	</array>
 	<key>com.apple.developer.devicecheck.appattest-environment</key>
-	<string>production</string>
+	<string>development</string>
 </dict>
 </plist>

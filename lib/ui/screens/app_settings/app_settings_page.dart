@@ -6,6 +6,7 @@ import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store_redirect/store_redirect.dart';
@@ -27,7 +28,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
     });
     super.initState();
@@ -194,11 +195,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       switch (index) {
                         case 0:
                           appSettingModel.setThemeMode(Keys.light);
+                          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
                           break;
                         case 1:
                           appSettingModel.setThemeMode(Keys.dark);
+                          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
                           break;
                         case 2:
+                          var brightness = MediaQuery.of(context).platformBrightness;
+                          bool isDarkMode = brightness == Brightness.dark;
+                          SystemChrome.setSystemUIOverlayStyle(isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
                           appSettingModel.setThemeMode(Keys.auto);
                           break;
                       }
@@ -267,8 +273,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
-                        ? Text('Update Available',
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                        ? Text('Update Available', style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
@@ -278,9 +283,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               Icons.arrow_circle_left_rounded,
                             ),
                           )
-                        : Text("${appSettingModel.version}",
-                            style:
-                                Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
+                        : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
@@ -288,8 +291,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
                     },
-                    title: Text(Keys.logOut.tr(context),
-                        style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
+                    title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
               ),
@@ -297,8 +299,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 20),
             //connect social
             Visibility(
-              visible:
-                  !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
+              visible: !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
               child: Text(
                 'Connect account with',
                 style: Theme.of(context).textTheme.subtitle1,
@@ -355,10 +356,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               ),
             ),
             SizedBox(height: 32),
-            Text('${Keys.appVersion.tr(context)}: v23',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
-            SizedBox(height: 20),
           ],
         ),
       ),
