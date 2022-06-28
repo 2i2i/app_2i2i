@@ -349,7 +349,7 @@ class NamedRoutes {
                 centerTitle: true,
                 backgroundColor: Colors.green,
               ),
-        body: page,
+        body: SafeArea(child: page),
         bottomSheet: AuthScreen(),
         bottomNavigationBar: BottomNavBar(),
       ),
