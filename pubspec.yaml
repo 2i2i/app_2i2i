@@ -55,7 +55,7 @@ dependencies:
 
   firebase_messaging: ^11.2.14
   cloud_firestore: ^3.1.13
-  firebase_app_check: ^0.0.6+10
+  firebase_app_check: ^0.0.6+14
   firebase_core: ^1.15.0
   cloud_functions: ^3.2.13
   firebase_storage: ^10.2.13

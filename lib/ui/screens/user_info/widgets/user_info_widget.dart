@@ -280,7 +280,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           user: widget.user,
           onTapRules: widget.onTapRules,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 8),
       ],
     );
   }

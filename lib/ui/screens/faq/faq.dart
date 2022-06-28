@@ -50,13 +50,16 @@ class FAQWidget extends StatelessWidget {
                   ),
           ),
           Divider(),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-            child: Row(
-              children: List.generate(data.tags?.length ?? 0, (index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Container(
+          Container(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(data.tags?.length ?? 0, (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(30)
@@ -69,8 +72,8 @@ class FAQWidget extends StatelessWidget {
                     ),
                   ),
                   // backgroundColor: Theme.of(context).iconTheme.color,
-                ),
-              )),
+                )),
+              ),
             ),
           )
         ],
