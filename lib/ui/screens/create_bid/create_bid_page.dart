@@ -89,9 +89,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   void initState() {
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
-        var val = int.tryParse(speedController.text) ?? 0;
+        var val = getSpeedFromText(speedController.text);
         if (val < speed.num) {
-          speedController.text = speed.num.toString();
+          speedController.text = (speed.num / MILLION).toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
@@ -359,17 +359,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               ),
                             ),
                             onChanged: (String value) {
-                              final num = int.tryParse(value) ?? 0;
-                              log('num $num = ${(num >= (userB?.rule.minSpeed ?? 0))}');
+                              final num = getSpeedFromText(value);
                               if (num >= (userB?.rule.minSpeed ?? 0)) {
                                 speed = Quantity(num: num, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
                             },
                             validator: (value) {
-                              int num = int.tryParse(value ?? '') ?? 0;
+                              int num = getSpeedFromText(value??'');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / MILLION}';
                               }
                               return null;
                             },
@@ -457,7 +456,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) {
-    var val = int.tryParse(speedController.text) ?? 0;
+    var val = getSpeedFromText(speedController.text);
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) {
       speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
@@ -465,7 +464,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       speed = Quantity(num: val, assetId: 0);
     }
     if (!focusNode.hasFocus) {
-      speedController.text = speed.num.toString();
+      speedController.text = (speed.num / MILLION).toString();
     }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       if (accountIndex != null) {
@@ -491,6 +490,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
     setState(() {});
   }
+
+  int getSpeedFromText(String value) => ((num.tryParse(value)??0) * MILLION).round();
 
   String calcWaitTime() {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
@@ -542,9 +543,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / 1000000).toString()} A';
+    var amountStr = '${(amount.num / MILLION).toString()} A';
     if (isInsufficient()) {
-      var val = int.tryParse(speedController.text) ?? 0;
+      var val = getSpeedFromText(speedController.text);
       bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
       if (isLessVal) {
         return Keys.addBid.tr(context) + ' : ' + amountStr;
@@ -556,7 +557,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   bool isInsufficient() {
-    var val = int.tryParse(speedController.text) ?? 0;
+    var val = getSpeedFromText(speedController.text);
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) return true;
     if (speed.num == 0) return false;
