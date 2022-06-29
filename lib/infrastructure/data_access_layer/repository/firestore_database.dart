@@ -358,7 +358,7 @@ class FirestoreDatabase {
   Future<List> checkInstaUserAvailable(SocialLinksModel socialLinksModel) async {
     var documentSnapshot = await _service.getCollectionData(
       path: FirestorePath.users(),
-      queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()).orderBy('heartbeatBackground', descending: true),
+      queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
         return documentID.id;
       },
