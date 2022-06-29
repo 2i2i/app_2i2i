@@ -148,7 +148,7 @@ class BidInTile extends StatelessWidget {
                     text: (bidIn.public.speed.num / MILLION).toString(),
                     children: [
                       TextSpan(
-                        text: '\nAlgo/s',
+                        text: '\nALGO/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
                           color: Theme.of(context)
@@ -168,7 +168,6 @@ class BidInTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Text(bid.speed.num.toString() + ' μAlgo/s'),
                 SizedBox(width: 8),
                 Image.asset(
                   'assets/algo_logo.png',

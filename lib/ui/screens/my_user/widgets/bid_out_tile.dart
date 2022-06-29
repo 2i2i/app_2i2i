@@ -161,7 +161,6 @@ class BidOutTile extends ConsumerWidget {
                         ),
                   ),
                 ),
-                // Text(bid.speed.num.toString() + ' μAlgo/s'),
                 SizedBox(width: 8),
                 Image.asset(
                   'assets/algo_logo.png',

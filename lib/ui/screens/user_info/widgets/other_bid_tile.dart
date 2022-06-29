@@ -41,7 +41,7 @@ class OtherBidTile extends ConsumerWidget {
                 text: (bidIn.speed.num / MILLION).toString(),
                 children: [
                   TextSpan(
-                    text: ' Algo/s',
+                    text: ' ALGO/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
                           color: Theme.of(context)
