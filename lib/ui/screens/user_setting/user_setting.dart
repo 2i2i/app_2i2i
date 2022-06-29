@@ -178,7 +178,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     autofocus: false,
                     validator: (value) {
                       value ??= '';
-                      if (value.trim().isEmpty || int.tryParse(value) == null) {
+                      if (value.trim().isEmpty || num.tryParse(value) == null) {
                         return Keys.enterValidData.tr(context);
                       }
                       return null;
@@ -411,7 +411,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = user.rule.minSpeed.toString();
+      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -515,12 +515,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   String minSpeedString() {
     if (speedEditController.text.isEmpty) return '';
-    final minSpeedPerSec = int.parse(speedEditController.text);
+    final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / 1000000;
+    final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
     // final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$minSpeedPerHourinALGO ALGO/hour';
   }
+
+  int getSpeedFromText() => (num.parse(speedEditController.text) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -573,10 +575,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
         final importances = findImportances(_importanceRatioValue!, lounge);
 
-        Rule rule = Rule(minSpeed: int.parse(speedEditController.text), maxMeetingDuration: seconds, importance: {
-          Lounge.chrony: importances[Lounge.chrony]!,
-          Lounge.highroller: importances[Lounge.highroller]!,
-        });
+        Rule rule = Rule(
+            minSpeed: getSpeedFromText(),
+            maxMeetingDuration: seconds, importance: {
+              Lounge.chrony: importances[Lounge.chrony]!,
+              Lounge.highroller: importances[Lounge.highroller]!,
+          },
+        );
         user.rule = rule;
       } else {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);

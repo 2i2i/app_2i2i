@@ -38,10 +38,10 @@ class OtherBidTile extends ConsumerWidget {
             ),
             title: RichText(
               text: TextSpan(
-                text: bidIn.speed.num.toString(),
+                text: (bidIn.speed.num / MILLION).toString(),
                 children: [
                   TextSpan(
-                    text: ' μAlgo/s',
+                    text: ' Algo/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
                           color: Theme.of(context)

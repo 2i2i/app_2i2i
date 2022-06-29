@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class BidOutTile extends ConsumerWidget {
     }
 
     UserModel user = userAsyncValue.asData!.value;
-    bidSpeed = (bidOut.speed.num / 1000000).toString();
+    bidSpeed = (bidOut.speed.num / MILLION).toString();
 
     if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -186,7 +187,7 @@ class BidOutTile extends ConsumerWidget {
                         text: '${Keys.speed.tr(context)} :',
                         children: [
                           TextSpan(
-                              text: ' ${bidOut.energy}',
+                              text: ' ${bidOut.energy / MILLION} ALGO',
                               children: [],
                               style: Theme.of(context).textTheme.bodyText2)
                         ],
