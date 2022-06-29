@@ -9,7 +9,7 @@ class FirestorePath {
   static String meetings() => 'meetings';
   static String topSpeeds() => 'topSpeeds';
   static String topDurations() => 'topDurations';
-  static String appVersion() => 'test/app_version';
+  static String appVersion() => 'system/app_versions';
   static String meeting(String meetingId) => 'meetings/$meetingId';
 
   static String bidInsPublic(String uid) => 'users/$uid/bidInsPublic';
