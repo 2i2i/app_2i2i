@@ -6,6 +6,7 @@ import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_admin/firebase_admin.dart' as admin;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,7 @@ class SetupUserViewModel with ChangeNotifier {
     if (uid is String) await signInProcess(uid);
   }
 
-  Future<void> getAuthList() async {
+  Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
     authList = [];
@@ -110,7 +111,10 @@ class SetupUserViewModel with ChangeNotifier {
         authList.add(element.providerId);
       });
     }
-    notifyListeners();
+    List<String> list = userInfoModel?.socialLinks.map((e) => e.accountName??'').toList()??[];
+    authList.addAll(list);
+    Future.delayed(Duration.zero).then((value) => notifyListeners());
+    return authList;
   }
 
   Future<void> signInWithGoogle(BuildContext context, {bool linkWithCredential = false}) async {
@@ -286,6 +290,7 @@ class SetupUserViewModel with ChangeNotifier {
           if (firebaseUser.user is User) {
             String? uid = firebaseUser.user?.uid;
             if (uid is String) {
+              socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: uid);
               await signInProcess(uid, socialLinkModel: socialLinksModel).then((_) async{
                 await account.save().then((_) {
                   myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC',userId:uid).then((_) {
@@ -310,56 +315,61 @@ class SetupUserViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithInstagram(context, id) async {
+  Future<void> signInWithInstagram(context, id,[bool forLink = false]) async {
     String? uid;
     socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id);
 
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
     try {
-      final app = admin.FirebaseAdmin.instance.app();
-      if (app is admin.App) {
-        CustomDialogs.loader(true, context, rootNavigator: true);
-        var result = await app.auth().createCustomToken(id);
+      if(userId is String && forLink){
+        await signInProcess(userId, socialLinkModel: socialLinksModel);
+      }else{
+        final app = admin.FirebaseAdmin.instance.app();
+        if (app is admin.App) {
+          CustomDialogs.loader(true, context, rootNavigator: true);
+          var result = await app.auth().createCustomToken(id);
 
-        List ids = await database.checkAddressAvailable(id);
-        if (ids.length > 1) {
-          final id = await showDialog(
-            context: context,
-            builder: (context) => ChooseAccountDialog(
-              userIds: ids,
-              onSelectId: (String value) {
-                Navigator.of(context).pop(value);
-              },
-            ),
-            // barrierDismissible: false,
-          );
-          if (id is String) {
-            uid = id;
-          }
-        }
-        else if (ids.isNotEmpty) {
-          uid = ids.first;
-        }
-        else {
-          uid = id;
-        }
-
-        if (uid?.isNotEmpty ?? false) {
-          result = await app.auth().createCustomToken(uid!);
-          var firebaseUser = await auth.signInWithCustomToken(result);
-          CustomDialogs.loader(false, context, rootNavigator: true);
-          if (firebaseUser.user is User) {
-            String? uid = firebaseUser.user?.uid;
-            if (uid is String) {
-              // socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: uid);
-              await signInProcess(uid, socialLinkModel: socialLinksModel);
+          List ids = await database.checkInstaUserAvailable(socialLinksModel!);
+          if (ids.length > 1) {
+            final id = await showDialog(
+              context: context,
+              useRootNavigator: true,
+              builder: (context) => ChooseAccountDialog(
+                userIds: ids,
+                onSelectId: (String value) {
+                  Navigator.of(context,rootNavigator: true).pop(value);
+                },
+              ),
+              // barrierDismissible: false,
+            );
+            if (id is String) {
+              uid = id;
             }
           }
-        }
-        else{
-          CustomDialogs.loader(false, context, rootNavigator: true);
-        }
+          else if (ids.isNotEmpty) {
+            uid = ids.first;
+          }
+          else {
+            uid = id;
+          }
 
+          if (uid?.isNotEmpty ?? false) {
+            result = await app.auth().createCustomToken(uid!);
+            var firebaseUser = await auth.signInWithCustomToken(result);
+            CustomDialogs.loader(false, context, rootNavigator: true);
+            if (firebaseUser.user is User) {
+              String? uid = firebaseUser.user?.uid;
+              if (uid is String) {
+                await signInProcess(id, socialLinkModel: socialLinksModel);
+              }
+            }
+          }
+          else{
+            CustomDialogs.loader(false, context, rootNavigator: true);
+          }
+        }
       }
+
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       CustomDialogs.loader(false, context, rootNavigator: true);

@@ -225,18 +225,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                         if (url?.host == InstagramConfig.redirectUriHost) {
                                           String idToken = await instagram.getTokenAndUserID();
                                           if (idToken.split(':').isNotEmpty) {
-                                            // _webViewController?.reload();
                                             await _webViewController?.clearCache();
                                             await _webViewController?.clearFocus();
                                             await _webViewController?.clearMatches();
                                             await _webViewController?.removeAllUserScripts();
-                                            Navigator.of(context).pop();
-                                            String token =idToken.split(':').first;
-                                            String id =idToken.split(':').last;
-                                            await signUpViewModel.signInWithInstagram(context, id);
-                                            // instagram.getUserProfile().then((isDone) async {
-                                            //   print('${instagram.username} logged in!');
-                                            // });
+                                            Navigator.of(context).pop(idToken);
                                           }
                                         }
                                       },
@@ -246,7 +239,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     );
                                   },
                                 );
-                                Navigator.of(context).push(route);
+                                final result = await Navigator.of(context).push(route);
+                                if(result is String) {
+                                  String token = result.split(':').first;
+                                  String id = result.split(':').last;
+                                  await signUpViewModel.signInWithInstagram(context, id);
+                                }
                               },
                               dense: true,
                               leading: SvgPicture.asset('assets/instagram.svg', height: 30),

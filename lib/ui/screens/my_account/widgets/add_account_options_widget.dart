@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
@@ -153,6 +154,9 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+    String userId = ref.read(myUIDProvider)??'';
+
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
@@ -167,9 +171,11 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       CustomDialogs.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
       await account.save();
+      var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
       await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
+      await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
       CustomDialogs.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;

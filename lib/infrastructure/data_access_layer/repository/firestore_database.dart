@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -157,13 +158,11 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) => setStatus
-      ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE')
-      : _updateUserHeartbeat(uid, 'heartbeatForeground');
+  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
+      setStatus ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE') : _updateUserHeartbeat(uid, 'heartbeatForeground');
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) => setStatus
-      ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE')
-      : _updateUserHeartbeat(uid, 'heartbeatBackground');
+  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
+      setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
   Future<void> _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
     final data = <String, dynamic>{
@@ -235,8 +234,7 @@ class FirestoreDatabase {
 
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
-        .collectionStream(
-            path: FirestorePath.ratings(uid), builder: (data, documentId) => RatingModel.fromMap(data, documentId))
+        .collectionStream(path: FirestorePath.ratings(uid), builder: (data, documentId) => RatingModel.fromMap(data, documentId))
         .handleError((value) {
       log(value);
     });
@@ -275,18 +273,18 @@ class FirestoreDatabase {
       );
 
   Stream<UserModel> userStream({required String uid}) {
-    log(uid);
-    return _service
-        .documentStream(
-      path: FirestorePath.user(uid),
-      builder: (data, documentId) {
-        data ??= {};
-        return UserModel.fromMap(data, documentId);
-      },
-    )
-        .handleError((error) {
-      log(error);
-    });
+    if (uid.isNotEmpty) {
+      return _service.documentStream(
+        path: FirestorePath.user(uid),
+        builder: (data, documentId) {
+          data ??= {};
+          return UserModel.fromMap(data, documentId);
+        },
+      ).handleError((error) {
+        log('error ${error}');
+      });
+    }
+    return Stream.empty();
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
@@ -338,41 +336,34 @@ class FirestoreDatabase {
   }
 
   Future<List> checkAddressAvailable(String address) async {
-
     var documentSnapshot = await _service.getCollectionGroupData(
       path: FirestorePath.alograndAccountPath(),
-      queryBuilder: (query) => query.where('id',isEqualTo: address).orderBy('ts',descending: true),
+      queryBuilder: (query) => query.where('id', isEqualTo: address).orderBy('ts', descending: true),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
-        if(data is Map) {
+        if (data is Map) {
           List paths = documentID.path.split('/');
-          if(paths.length > 1){
-            String userId= paths[1];
+          if (paths.length > 1) {
+            String userId = paths[1];
             return userId;
           }
         }
       },
     );
-    if(documentSnapshot.isNotEmpty){
+    if (documentSnapshot.isNotEmpty) {
       return documentSnapshot.toList();
     }
     return [];
   }
-  Future<List> checkInstaUserAvailable(String id) async {
 
-    var documentSnapshot = await _service.getCollectionGroupData(
+  Future<List> checkInstaUserAvailable(SocialLinksModel socialLinksModel) async {
+    var documentSnapshot = await _service.getCollectionData(
       path: FirestorePath.users(),
-      queryBuilder: (query) => query.where('socialLinks',arrayContains: {}).orderBy('ts',descending: true),
+      queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()).orderBy('heartbeatBackground', descending: true),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
-        if(data is Map) {
-          List paths = documentID.path.split('/');
-          if(paths.length > 1){
-            String userId= paths[1];
-            return userId;
-          }
-        }
+        return documentID.id;
       },
     );
-    if(documentSnapshot.isNotEmpty){
+    if (documentSnapshot.isNotEmpty) {
       return documentSnapshot.toList();
     }
     return [];
@@ -380,15 +371,15 @@ class FirestoreDatabase {
 
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
-    return _service
-        .collectionStream(
+    return _service.collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) => UserModel.fromMap(data, documentId),
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
-    )
-        .handleError((error) {
-      log(error);
-    });
+    ).handleError(
+      (error) {
+        log(error);
+      }
+    );
   }
 
   Stream<Room> roomStream({required String meetingId}) => _service.documentStream(

@@ -211,7 +211,7 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final Status status =
-    Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    Status.values.firstWhere((e) => e.toStringEnum() == data['status'],orElse: ()=>Status.ONLINE);
     final List<SocialLinksModel> socialLinksList = data
                 .containsKey('socialLinks') &&
             data['socialLinks'] != null
@@ -229,8 +229,7 @@ class UserModel extends Equatable {
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule =
     data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']?.map((item) => Lounge.values.firstWhere((e) => e.index == item,orElse: ()=>Lounge.chrony))??[]);
     // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
