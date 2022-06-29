@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   Widget build(BuildContext context) {
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
-    final amount = balanceModel.assetHolding.amount / 1000000;
+    final amount = balanceModel.assetHolding.amount / MILLION;
     String assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
 
     return Container(

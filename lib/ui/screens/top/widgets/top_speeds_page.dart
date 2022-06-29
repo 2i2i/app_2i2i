@@ -51,7 +51,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
                     ],
                   ),
                 ),
-                Text('${meeting.speed.num / 1000000} ALGO/sec',
+                Text('${meeting.speed.num / MILLION} ALGO/sec',
                     style: Theme.of(context)
                         .textTheme
                         .subtitle2),

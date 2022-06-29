@@ -323,7 +323,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${(user.rule.minSpeed / 1000000)} A/sec',
+                    '${(user.rule.minSpeed / MILLION)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
