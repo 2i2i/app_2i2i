@@ -36,12 +36,10 @@ class UserBidOut extends ConsumerWidget {
         itemBuilder: (_, ix) {
           return BidOutTile(
             bidOut: bidOutList[ix],
-            onCancelClick: (bidOut) async {
-              CustomDialogs.loader(true, context);
-              final myHangoutPageViewModel =
-                  ref.read(myUserPageViewModelProvider);
-              await myHangoutPageViewModel?.cancelOwnBid(bidOut: bidOut);
-              CustomDialogs.loader(false, context);
+            onCancelClick: (bidOut) {
+              // CustomDialogs.loader(true, context);
+              ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
+              // CustomDialogs.loader(false, context);
             },
           );
         },
