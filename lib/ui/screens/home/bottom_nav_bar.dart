@@ -21,7 +21,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
       await ref.watch(appSettingProvider).checkIfUpdateAvailable();
     });
     super.initState();

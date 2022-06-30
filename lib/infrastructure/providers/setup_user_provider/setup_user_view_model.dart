@@ -21,6 +21,7 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
+import '../all_providers.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(

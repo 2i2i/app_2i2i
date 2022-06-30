@@ -286,9 +286,7 @@ class FirestoreDatabase {
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
-      log(onError);
-    });
+    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
@@ -369,8 +367,7 @@ class FirestoreDatabase {
       path: FirestorePath.bidInsPublic(uid),
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true).orderBy('ts'),
-    )
-        .handleError((onError) {
+    ).handleError((onError) {
       log('\n\n\n\n ---=== ${onError} \n\n\n');
     });
   }
