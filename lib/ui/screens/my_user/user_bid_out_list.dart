@@ -1,7 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,12 +35,10 @@ class UserBidOut extends ConsumerWidget {
         itemBuilder: (_, ix) {
           return BidOutTile(
             bidOut: bidOutList[ix],
-            onCancelClick: (bidOut) async {
-              CustomDialogs.loader(true, context);
-              final myHangoutPageViewModel =
-                  ref.read(myUserPageViewModelProvider);
-              await myHangoutPageViewModel?.cancelOwnBid(bidOut: bidOut);
-              CustomDialogs.loader(false, context);
+            onCancelClick: (bidOut) {
+              // CustomDialogs.loader(true, context);
+              ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
+              // CustomDialogs.loader(false, context);
             },
           );
         },
