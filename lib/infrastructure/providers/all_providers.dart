@@ -1,5 +1,7 @@
 // TODO break up file into multiple files
 
+import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -48,7 +50,7 @@ final myUIDProvider = Provider((ref) {
 });
 final userProvider = StreamProvider.family<UserModel, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.userStream(uid: uid) ?? Stream<UserModel>.empty();
+  return database.userStream(uid: uid);
 });
 final userPageViewModelProvider = Provider.family<UserPageViewModel?, String>((ref, uid) {
   // log('userPageViewModelProvider');
@@ -210,26 +212,38 @@ final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidOutsStream(uid: uid);
 });
-final bidInsPublicProvider = StreamProvider.family<List<BidInPublic>?, String>((ref, uid) {
+final bidInsPublicProvider = StreamProvider.autoDispose.family<List<BidInPublic>?, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidInsPublicStream(uid: uid);
 });
-final bidInsPrivateProvider = StreamProvider.family<List<BidInPrivate>, String>((ref, uid) {
+final bidInsPrivateProvider = StreamProvider.autoDispose.family<List<BidInPrivate>, String>((ref, uid) {
+  StreamSubscription? streamController;
+  ref.onDispose(() {
+    streamController?.cancel();
+  });
   final database = ref.watch(databaseProvider);
-  return database.bidInsPrivateStream(uid: uid);
+  var stream = database.bidInsPrivateStream(uid: uid);
+  streamController = stream.listen((event) { });
+  return stream;
 });
 
 final bidInsWithUsersProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   final bidIns = ref.watch(bidInsProvider(uid));
-  if (bidIns == null) return null;
+  if (bidIns == null) {
+    return null;
+  }
 
   final bidInsWithUsersTrial = bidIns.map((bid) {
     final bidInAndUser = ref.watch(bidInAndUserProvider(bid));
-    if (bidInAndUser == null) return null;
+    if (bidInAndUser == null) {
+      return null;
+    }
     return bidInAndUser;
   }).toList();
 
-  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
+  if (bidInsWithUsersTrial.any((element) => element == null)) {
+    return null;
+  }
 
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
 
@@ -256,11 +270,15 @@ final bidInsProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, u
   final bidInsPublicSorted = combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
 
   // private bid ins
-  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
-    return null;
+  List<BidInPrivate> bidInsPrivate = [];
+  var userId =ref.watch(myUIDProvider);
+  if(userId == uid) {
+    final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
+    if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
+      return null;
+    }
+    bidInsPrivate = bidInsPrivateAsyncValue.value!;
   }
-  List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
 
   // create bid ins
   final bidIns = BidIn.createList(bidInsPublicSorted, bidInsPrivate);

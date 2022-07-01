@@ -121,28 +121,26 @@ class SetupUserViewModel with ChangeNotifier {
         existingUser = FirebaseAuth.instance.currentUser;
       }
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      if(googleSignInAccount != null){
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+        if (linkWithCredential && existingUser != null) {
+          firebaseUser = await existingUser.linkWithCredential(credential);
+        } else {
+          firebaseUser = await auth.signInWithCredential(credential);
+        }
 
-      if (linkWithCredential && existingUser != null) {
-        firebaseUser = await existingUser.linkWithCredential(credential);
-      } else {
-        firebaseUser = await auth.signInWithCredential(credential);
+        socialLinksModel =
+            SocialLinksModel(userName: googleSignInAccount.email, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
+
+        String? uid = firebaseUser.user?.uid;
+        if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
-
-      socialLinksModel = SocialLinksModel(
-          userName: googleSignInAccount.email,
-          userEmail: googleSignInAccount.email,
-          accountName: 'Google',
-          userId: googleSignInAccount.id);
-
-      String? uid = firebaseUser.user?.uid;
-      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'credential-already-in-use') {
         await googleSignIn.signOut();
@@ -226,31 +224,31 @@ class SetupUserViewModel with ChangeNotifier {
         );
 
         authResult = await twitterLogin.login();
-
-        twitterAuthCredential =
-            TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+        if(authResult.authToken is String && authResult.authTokenSecret is String) {
+          twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+        }
       }
       if (linkWithCredential && existingUser != null) {
         if (kIsWeb) {
           firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
-        } else {
-          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential!);
+        } else if(twitterAuthCredential != null){
+          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
         }
       } else {
         if (kIsWeb) {
           firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
-        } else {
-          firebaseUser = await auth.signInWithCredential(twitterAuthCredential!);
+        } else if(twitterAuthCredential != null){
+          firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
         }
       }
-      if (authResult?.user != null)
-        socialLinksModel = SocialLinksModel(
-            userName: authResult?.user?.name ?? '',
-            accountName: 'Twitter',
-            userId: "${authResult?.user?.id ?? ""}");
+      if (authResult?.user != null) {
+        socialLinksModel = SocialLinksModel(userName: authResult?.user?.name ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
+      }
 
-      String? uid = firebaseUser.user?.uid;
-      if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
+      String? uid = firebaseUser?.user?.uid;
+      if (uid is String) {
+        await signInProcess(uid, socialLinkModel: socialLinksModel);
+      }
     } on FirebaseAuthException catch (e) {
       CustomDialogs.showToastMessage(context, "${e.message}");
       throw e;
