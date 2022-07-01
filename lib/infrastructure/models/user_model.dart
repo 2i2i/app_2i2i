@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart';
 
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/services/logging.dart';
