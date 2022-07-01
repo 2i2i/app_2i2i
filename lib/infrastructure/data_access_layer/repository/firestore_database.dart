@@ -273,22 +273,26 @@ class FirestoreDatabase {
 
   Stream<UserModel> userStream({required String uid}) {
     log(uid);
-    return _service
-        .documentStream(
-      path: FirestorePath.user(uid),
-      builder: (data, documentId) {
-        data ??= {};
-        return UserModel.fromMap(data, documentId);
-      },
-    ).handleError((error) {
-      log(error);
-    });
+    // try {
+      return _service.documentStream(
+        path: FirestorePath.user(uid),
+        builder: (data, documentId) {
+          if (data == null) {
+            return UserModel(id: documentId);
+          }
+          return UserModel.fromMap(data, documentId);
+        },
+      ).handleError((e) {
+        print(e);
+      });
+    // } catch (e) {
+    //   print(e);
+    // }
+    return Stream.empty();
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
-      log(onError);
-    });
+    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
@@ -297,15 +301,11 @@ class FirestoreDatabase {
   }
 
   Future<void> updateUser(UserModel user) {
-    return _service
-        .setData(
+    return _service.setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    )
-        .catchError((error) {
-      log(error);
-    });
+    );
   }
 
   Future<AppVersionModel?> getAppVersion() async {
@@ -369,8 +369,7 @@ class FirestoreDatabase {
       path: FirestorePath.bidInsPublic(uid),
       builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true).orderBy('ts'),
-    )
-        .handleError((onError) {
+    ).handleError((onError) {
       log('\n\n\n\n ---=== ${onError} \n\n\n');
     });
   }
@@ -380,7 +379,9 @@ class FirestoreDatabase {
       path: FirestorePath.bidInsPrivate(uid),
       builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
-    );
+    ).handleError((err){
+      print("----------> $err");
+    });
   }
 
   Stream<List<BidOut>> bidOutsStream({required String uid}) {
