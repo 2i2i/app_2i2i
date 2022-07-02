@@ -19,7 +19,7 @@ class CreateLocalAccount extends ConsumerStatefulWidget {
 class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(myAccountPageViewModelProvider).addLocalAccount();
     });
     super.initState();

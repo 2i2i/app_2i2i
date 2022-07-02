@@ -13,10 +13,11 @@ import '../../../../infrastructure/providers/all_providers.dart';
 
 class BidOutTile extends ConsumerWidget {
   final BidOut bidOut;
-  final void Function(BidOut bidOut) onCancelClick;
+  final ValueNotifier<bool> showLoader = ValueNotifier(false);
 
-  const BidOutTile(
-      {Key? key, required this.bidOut, required this.onCancelClick})
+  BidOutTile(
+      {Key? key,
+      required this.bidOut})
       : super(key: key);
 
   @override
@@ -58,7 +59,8 @@ class BidOutTile extends ConsumerWidget {
               children: [
                 SizedBox(width: 4),
                 InkResponse(
-                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                  onTap: () =>
+                      context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': user.id,
                   }),
                   child: SizedBox(
@@ -115,7 +117,7 @@ class BidOutTile extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        user.name,
+                        "${user.name}",
                         maxLines: 2,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
@@ -175,9 +177,24 @@ class BidOutTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  IconButton(
-                      onPressed: () => onCancelClick(bidOut),
-                      icon: Icon(Icons.cancel)),
+                  ValueListenableBuilder(
+                    builder: (BuildContext context, bool value, Widget? child) {
+                      return IconButton(
+                        onPressed: () async {
+                          showLoader.value = true;
+                          await ref
+                              .read(myUserPageViewModelProvider)
+                              ?.cancelOwnBid(bidOut: bidOut);
+                          await Future.delayed(Duration(milliseconds: 500));
+                          showLoader.value = false;
+                        },
+                        icon: value
+                            ? CupertinoActivityIndicator()
+                            : Icon(Icons.cancel),
+                      );
+                    },
+                    valueListenable: showLoader,
+                  ),
                   Spacer(),
                   Expanded(
                     child: RichText(
