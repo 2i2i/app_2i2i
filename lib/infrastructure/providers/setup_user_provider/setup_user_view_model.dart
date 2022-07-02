@@ -21,7 +21,6 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
-import '../all_providers.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -80,6 +79,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
+    await getUserInfoModel(uid);
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
       notifyListeners();
@@ -87,11 +87,11 @@ class SetupUserViewModel with ChangeNotifier {
         await database.updateUser(userInfoModel!);
       }
     }
-    final f1 = getUserInfoModel(uid);
+
     final f2 = updateFirebaseMessagingToken(uid);
     final f3 = startAlgoRand(uid);
     final f4 = updateDeviceInfo(uid);
-    return Future.wait([f1, f2, f3, f4]);
+    return Future.wait([f2, f3, f4]);
   }
 
   Future<void> signInAnonymously() async {
