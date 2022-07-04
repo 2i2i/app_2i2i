@@ -1,5 +1,7 @@
 // TODO break up file into multiple files
 
+import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -32,17 +34,13 @@ final loadingViewProvider = Provider<bool>((ref) {
   return ref.watch(loadingProvider) != false;
 });
 
-final firebaseAuthProvider =
-    Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
+final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
-final firebaseFunctionsProvider =
-    Provider<FirebaseFunctions>((ref) => FirebaseFunctions.instance);
+final firebaseFunctionsProvider = Provider<FirebaseFunctions>((ref) => FirebaseFunctions.instance);
 
-final authStateChangesProvider = StreamProvider<User?>(
-    (ref) => ref.watch(firebaseAuthProvider).authStateChanges());
+final authStateChangesProvider = StreamProvider<User?>((ref) => ref.watch(firebaseAuthProvider).authStateChanges());
 
-final databaseProvider =
-    Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
+final databaseProvider = Provider<FirestoreDatabase>((ref) => FirestoreDatabase());
 
 /*final fireBaseMessagingProvider = Provider<FireBaseMessagingService>((ref) => FireBaseMessagingService());*/
 
@@ -54,16 +52,13 @@ final accountServiceProvider = Provider((ref) {
 
 final myUIDProvider = Provider((ref) {
   final authUser = ref.watch(authStateChangesProvider);
-  return authUser.when(
-      data: (user) => user?.uid, loading: () => null, error: (_, __) => null);
+  return authUser.when(data: (user) => user?.uid, loading: () => null, error: (_, __) => null);
 });
 final userProvider = StreamProvider.family<UserModel, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.userStream(uid: uid);
 });
-
-final userPageViewModelProvider =
-    Provider.family<UserPageViewModel?, String>((ref, uid) {
+final userPageViewModelProvider = Provider.family<UserPageViewModel?, String>((ref, uid) {
   // log('userPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('userPageViewModelProvider - functions=$functions');
@@ -74,8 +69,7 @@ final userPageViewModelProvider =
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
-final searchUsersStreamProvider =
-    StreamProvider.autoDispose<List<UserModel?>>((ref) {
+final searchUsersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((ref) {
   // log('usersStreamProvider');
   final database = ref.watch(databaseProvider);
   // log('usersStreamProvider - database=$database');
@@ -83,8 +77,7 @@ final searchUsersStreamProvider =
   return database.usersStream(tags: filter);
 });
 
-final setupUserViewModelProvider =
-    ChangeNotifierProvider<SetupUserViewModel>((ref) {
+final setupUserViewModelProvider = ChangeNotifierProvider<SetupUserViewModel>((ref) {
   // log('setupUserViewModelProvider');
   final auth = ref.watch(firebaseAuthProvider);
   // log('setupUserViewModelProvider - auth=$auth');
@@ -119,12 +112,7 @@ final algorandProvider = Provider((ref) {
   final algorandLib = ref.watch(algorandLibProvider);
   final meetingChanger = ref.watch(meetingChangerProvider);
   // log('algorandProvider - functions=$functions');
-  return AlgorandService(
-      storage: storage,
-      functions: functions,
-      accountService: accountService,
-      algorandLib: algorandLib,
-      meetingChanger: meetingChanger);
+  return AlgorandService(storage: storage, functions: functions, accountService: accountService, algorandLib: algorandLib, meetingChanger: meetingChanger);
 });
 
 final appSettingProvider = ChangeNotifierProvider<AppSettingModel>((ref) {
@@ -194,27 +182,23 @@ final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((
   return MeetingHistoryModel(database: database);
 });
 
-
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidOut(uid: uid, bidId: bidIn);
 });
-final bidInPublicProvider =
-    StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
+final bidInPublicProvider = StreamProvider.family<BidInPublic?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidInPublic(uid: uid, bidId: bidIn);
 });
-final bidInPrivateProvider =
-    StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
+final bidInPrivateProvider = StreamProvider.family<BidInPrivate?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
   final database = ref.watch(databaseProvider);
   return database.getBidInPrivate(uid: uid, bidId: bidIn);
 });
 
-final getBidFromMeeting =
-    StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
+final getBidFromMeeting = StreamProvider.family<BidInPrivate?, Meeting>((ref, meeting) {
   final database = ref.watch(databaseProvider);
   return database.getBidInPrivate(uid: meeting.B, bidId: meeting.id);
 });
@@ -234,35 +218,48 @@ final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidOutsStream(uid: uid);
 });
-final bidInsPublicProvider =
-    StreamProvider.family<List<BidInPublic>, String>((ref, uid) {
+final bidInsPublicProvider = StreamProvider.autoDispose.family<List<BidInPublic>?, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidInsPublicStream(uid: uid);
 });
-final bidInsPrivateProvider =
-    StreamProvider.family<List<BidInPrivate>, String>((ref, uid) {
+final bidInsPrivateProvider = StreamProvider.autoDispose.family<List<BidInPrivate>, String>((ref, uid) {
+  StreamSubscription? streamController;
+  ref.onDispose(() {
+    streamController?.cancel();
+  });
   final database = ref.watch(databaseProvider);
-  return database.bidInsPrivateStream(uid: uid);
+  var stream = database.bidInsPrivateStream(uid: uid);
+  streamController = stream.listen((event) { });
+  return stream;
 });
 
-final bidInsWithUsersProvider =
-    Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
+final bidInsWithUsersProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   final bidIns = ref.watch(bidInsProvider(uid));
-  if (bidIns == null) return null;
+  if (bidIns == null) {
+    return null;
+  }
 
-  final bidInsWithUsersTrial =
-      bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
-  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
+  final bidInsWithUsersTrial = bidIns.map((bid) {
+    final bidInAndUser = ref.watch(bidInAndUserProvider(bid));
+    if (bidInAndUser == null) {
+      return null;
+    }
+    return bidInAndUser;
+  }).toList();
+
+  if (bidInsWithUsersTrial.any((element) => element == null)) {
+    return null;
+  }
+
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
+
   return bidInsWithUsers;
 });
 
-final bidInsProvider =
-    Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
+final bidInsProvider = Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   // public bid ins
   final bidInsPublicAsyncValue = ref.watch(bidInsPublicProvider(uid));
-  if (haveToWait(bidInsPublicAsyncValue) ||
-      bidInsPublicAsyncValue.value == null) {
+  if (haveToWait(bidInsPublicAsyncValue) || bidInsPublicAsyncValue.value == null) {
     return null;
   }
   if (bidInsPublicAsyncValue.value!.isEmpty) {
@@ -276,16 +273,18 @@ final bidInsProvider =
     return null;
   }
   final user = userAsyncValue.value!;
-  final bidInsPublicSorted =
-      combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
+  final bidInsPublicSorted = combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
 
   // private bid ins
-  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (haveToWait(bidInsPrivateAsyncValue) ||
-      bidInsPrivateAsyncValue.value == null) {
-    return null;
+  List<BidInPrivate> bidInsPrivate = [];
+  var userId =ref.watch(myUIDProvider);
+  if(userId == uid) {
+    final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
+    if (haveToWait(bidInsPrivateAsyncValue) || bidInsPrivateAsyncValue.value == null) {
+      return null;
+    }
+    bidInsPrivate = bidInsPrivateAsyncValue.value!;
   }
-  List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
 
   // create bid ins
   final bidIns = BidIn.createList(bidInsPublicSorted, bidInsPrivate);
@@ -317,8 +316,7 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
     } else {
       isUserLocked.value = false;
     }
-    return LockedUserViewModel(
-        user: user.asData!.value, meeting: meeting.asData!.value);
+    return LockedUserViewModel(user: user.asData!.value, meeting: meeting.asData!.value);
   },
 );
 
@@ -366,8 +364,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meeting: meeting.asData!.value);
 });
 
-final addBidPageViewModelProvider =
-    StateProvider.family<AddBidPageViewModel?, UserModel>((ref, B) {
+final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, UserModel>((ref, B) {
   // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('addBidPageViewModelProvider - functions=$functions');
@@ -385,13 +382,7 @@ final addBidPageViewModelProvider =
   if (myUid == null) return null;
 
   return AddBidPageViewModel(
-      A: myUid,
-      database: database,
-      functions: functions,
-      algorand: algorand,
-      accounts: accounts.value!,
-      accountService: accountService,
-      B: B);
+      A: myUid, database: database, functions: functions, algorand: algorand, accounts: accounts.value!, accountService: accountService, B: B);
 });
 
 final accountsProvider = FutureProvider((ref) {
@@ -399,8 +390,7 @@ final accountsProvider = FutureProvider((ref) {
   return accountService.getAllAccounts();
 });
 
-final myAccountPageViewModelProvider =
-    ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
+final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
   final database = ref.watch(databaseProvider);
   final uid = ref.watch(myUIDProvider);
   return MyAccountPageViewModel(ref: ref, uid: uid, database: database);
@@ -426,8 +416,7 @@ final meetingChangerProvider = Provider((ref) {
 });
 
 //Rating Module
-final ratingListProvider =
-    StreamProvider.family<List<RatingModel>, String>((ref, uid) {
+final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
 });
