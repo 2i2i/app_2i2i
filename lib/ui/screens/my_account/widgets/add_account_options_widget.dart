@@ -247,17 +247,11 @@ class _AddAccountOptionsWidgetsState
           ),
         );
       } else {
-        if (Platform.isAndroid) {
-          await launchUrl(
-              Uri.parse(
-                  'https://play.google.com/store/apps/details?id=com.algorand.android'),
-              mode: LaunchMode.externalApplication);
-        } else {
-          await launchUrl(
-              Uri.parse(
-                  'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
-              mode: LaunchMode.externalApplication);
-        }
+        await launchUrl(
+            Uri.parse(Platform.isAndroid
+                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+            mode: LaunchMode.externalApplication);
       }
     }
   }
