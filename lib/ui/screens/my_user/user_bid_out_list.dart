@@ -10,7 +10,6 @@ import '../../../infrastructure/models/bid_model.dart';
 import 'widgets/bid_out_tile.dart';
 
 class UserBidOut extends ConsumerWidget {
-  ValueNotifier<List<String>> cancelledIds = ValueNotifier([]);
 
   Widget build(BuildContext context, WidgetRef ref) {
     var userId = ref.watch(myUIDProvider);

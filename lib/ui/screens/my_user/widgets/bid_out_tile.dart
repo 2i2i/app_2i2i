@@ -11,14 +11,12 @@ import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 
+ValueNotifier<List> showLoaderIds = ValueNotifier([]);
+
 class BidOutTile extends ConsumerWidget {
   final BidOut bidOut;
-  final ValueNotifier<bool> showLoader = ValueNotifier(false);
 
-  BidOutTile(
-      {Key? key,
-      required this.bidOut})
-      : super(key: key);
+  BidOutTile({Key? key, required this.bidOut}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,8 +57,7 @@ class BidOutTile extends ConsumerWidget {
               children: [
                 SizedBox(width: 4),
                 InkResponse(
-                  onTap: () =>
-                      context.pushNamed(Routes.user.nameFromPath(), params: {
+                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': user.id,
                   }),
                   child: SizedBox(
@@ -74,9 +71,7 @@ class BidOutTile extends ConsumerWidget {
                           decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 0.3,
-                                  color: Theme.of(context).disabledColor),
+                              border: Border.all(width: 0.3, color: Theme.of(context).disabledColor),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.08),
@@ -87,11 +82,7 @@ class BidOutTile extends ConsumerWidget {
                           alignment: Alignment.center,
                           child: Text(
                             firstNameChar,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(
-                                    fontWeight: FontWeight.w600, fontSize: 20),
+                            style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.w600, fontSize: 20),
                           ),
                         ),
                         Align(
@@ -99,11 +90,8 @@ class BidOutTile extends ConsumerWidget {
                           child: Container(
                             height: 15,
                             width: 15,
-                            decoration: BoxDecoration(
-                                color: statusColor,
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                    Border.all(color: Colors.white, width: 2)),
+                            decoration:
+                                BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
                           ),
                         ),
                       ],
@@ -146,20 +134,12 @@ class BidOutTile extends ConsumerWidget {
                         text: ' ALGO/sec',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.color
-                                  ?.withOpacity(0.7),
+                              color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                             ),
                       )
                     ],
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                         ),
                   ),
                 ),
@@ -177,23 +157,21 @@ class BidOutTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  ValueListenableBuilder(
-                    builder: (BuildContext context, bool value, Widget? child) {
-                      return IconButton(
-                        onPressed: () async {
-                          showLoader.value = true;
-                          await ref
-                              .read(myUserPageViewModelProvider)
-                              ?.cancelOwnBid(bidOut: bidOut);
-                          await Future.delayed(Duration(milliseconds: 500));
-                          showLoader.value = false;
-                        },
-                        icon: value
-                            ? CupertinoActivityIndicator()
-                            : Icon(Icons.cancel),
-                      );
+                  IconButton(
+                    onPressed: () async {
+                      if(!showLoaderIds.value.contains(bidOut.id)) {
+                        showLoaderIds.value.add(bidOut.id);
+                        showLoaderIds.value = List.from(showLoaderIds.value);
+                        await ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
+                      }
                     },
-                    valueListenable: showLoader,
+                    icon: ValueListenableBuilder(
+                      valueListenable: showLoaderIds,
+                      builder: (BuildContext context, List<dynamic> value, Widget? child) {
+                        bool showLoader = value.contains(bidOut.id);
+                        return showLoader ? CupertinoActivityIndicator() : Icon(Icons.cancel);
+                      },
+                    ),
                   ),
                   Spacer(),
                   Expanded(
@@ -201,12 +179,7 @@ class BidOutTile extends ConsumerWidget {
                       textAlign: TextAlign.end,
                       text: TextSpan(
                         text: '${Keys.speed.tr(context)} :',
-                        children: [
-                          TextSpan(
-                              text: ' ${bidOut.energy / MILLION} ALGO',
-                              children: [],
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' ${bidOut.energy / MILLION} ALGO', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

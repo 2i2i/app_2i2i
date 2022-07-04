@@ -94,6 +94,7 @@ class MyUserPageViewModel {
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
+    await Future.delayed(Duration(seconds: 5));
     if (!bidOut.active) return;
 
     if (bidOut.speed.num == 0) {
