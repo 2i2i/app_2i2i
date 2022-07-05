@@ -405,13 +405,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             TextButton(
                 onPressed: () async {
                   await signUpViewModel.deleteUser(
-                      title: "Delete account",
+                      title: "Delete account!",
                       description:
                           "Are you sure want to delete your account permanently from 2i2i?",
-                      context: context);
+                      mainContext: context);
                 },
                 child: Text(
-                  'Delete account',
+                  'Delete Account',
                   style: Theme.of(context)
                       .textTheme
                       .caption

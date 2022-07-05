@@ -287,32 +287,38 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future<void> deleteUser(
-      {required BuildContext context,
+      {required BuildContext mainContext,
       required String title,
       required String description}) async {
     Future.delayed(Duration.zero).then(
       (value) => showCupertinoDialog(
-        context: context,
+        context: mainContext,
         builder: (context) => CustomAlertWidget.confirmDialog(
           context,
           title: title,
           description: description,
           onPressed: () async {
-            CustomDialogs.loader(true, context);
-            final HttpsCallable deleteUser =
-                functions.httpsCallable('deleteMe');
-            HttpsCallableResult result = await deleteUser.call();
-            CustomDialogs.loader(false, context);
-            if (result.data is List) {
-              List dataList = result.data;
-              int mapIndex = dataList
-                  .indexWhere((element) => element.containsKey('successCount'));
-              if (mapIndex > -1) {
-                Map dataMap = dataList[mapIndex];
-                if ((dataMap['successCount'] ?? 0) > 0) {
-                  await signOutFromAuth();
+            try {
+              CustomDialogs.loader(true, mainContext);
+              final HttpsCallable deleteUser =
+                  functions.httpsCallable('deleteMe');
+              HttpsCallableResult result = await deleteUser.call();
+              if (result.data is List) {
+                List dataList = result.data;
+                int mapIndex = dataList.indexWhere(
+                    (element) => element.containsKey('successCount'));
+                if (mapIndex > -1) {
+                  Map dataMap = dataList[mapIndex];
+                  if ((dataMap['successCount'] ?? 0) > 0) {
+                    await Future.delayed(Duration(milliseconds: 300));
+                    await signOutFromAuth();
+                    CustomDialogs.loader(false, mainContext);
+                  }
                 }
               }
+            } catch (e) {
+              CustomDialogs.loader(false, mainContext);
+              print(e);
             }
           },
           yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
