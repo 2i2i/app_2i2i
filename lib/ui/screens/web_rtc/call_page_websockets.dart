@@ -16,6 +16,7 @@ import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:ntp/ntp.dart';
 
 import '../../../common_main.dart';
 import '../../commons/custom_profile_image_view.dart';
@@ -165,13 +166,16 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     valueListenable: progress,
                     builder:
                         (BuildContext context, double value, Widget? child) {
-                      var val = value;
-                      if (amA && value > 0) {
+                          var val = value;
+                      if (!amA && value > 0) {
                         val = 100 - value;
                       }
 
                       double width = MediaQuery.of(context).size.height / 3;
                       double height = (val * width) / 100;
+                      if (height.isNegative) {
+                        height = 0;
+                      }
                       return Container(
                         height: width,
                         width: 28,
@@ -691,7 +695,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     final maxDuration = widget.meeting.maxDuration();
     // log(X + 'maxDuration=$maxDuration');
-    final duration = getDurationLeft(maxDuration);
+    final duration = await getDurationLeft(maxDuration);
     // log(X + 'duration=$duration');
     budgetTimer = Timer(Duration(seconds: duration), () {
       // log(X + 'budgetTimer');
@@ -700,31 +704,32 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       // signaling?.hangUp(reason: MeetingStatus.END_TIMER_CALL_PAGE);
     });
 
-    progressTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      double percentage = (timer.tick * 100) / maxDuration;
+    progressTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      final durationLeft = await getDurationLeft(maxDuration);
+      double percentage = (durationLeft * 100) / maxDuration;
       progress.value = 100 - percentage;
-      if (timer.tick >= maxDuration) progressTimer?.cancel();
-      showCountDown(duration);
+      if (durationLeft >= maxDuration) progressTimer?.cancel();
+      showCountDown(durationLeft);
     });
   }
 
-  int getDurationLeft(int maxDuration) {
-    final DateTime maxEndTime =
-        widget.meeting.start!.add(Duration(seconds: maxDuration));
-    final durationObj = maxEndTime.difference(DateTime.now().toUtc());
+  Future<int> getDurationLeft(int maxDuration) async {
+    final maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
+    DateTime nowDate = await NTP.now();
+
+    final durationObj = maxEndTime.difference(nowDate);
     return durationObj.inSeconds;
   }
 
-  void showCountDown(int duration) {
+  Future<void> showCountDown(int duration) async {
     if (countDownTimerDate != null) {
       return;
     }
     final maxDuration = widget.meeting.maxDuration();
-    final duration = getDurationLeft(maxDuration);
+    final duration = await getDurationLeft(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
-      countDownTimerDate =
-          DateTime.now().toUtc().add(Duration(seconds: duration));
+      countDownTimerDate = DateTime.now().toUtc().add(Duration(seconds: duration));
       if (mounted) {
         setState(() {});
       }

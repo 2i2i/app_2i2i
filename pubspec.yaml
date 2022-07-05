@@ -74,6 +74,7 @@ dependencies:
   share_plus: ^4.0.4
   flutter_inappwebview: ^5.4.2
   flutter_native_splash: ^2.1.6
+  ntp: ^2.0.0
 
 
 dev_dependencies:
