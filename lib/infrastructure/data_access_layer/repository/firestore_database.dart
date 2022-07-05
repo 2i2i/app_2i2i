@@ -288,7 +288,6 @@ class FirestoreDatabase {
     // } catch (e) {
     //   print(e);
     // }
-    return Stream.empty();
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {

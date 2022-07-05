@@ -28,7 +28,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
     });
     super.initState();
@@ -71,7 +71,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -95,7 +98,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Text(
                       Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,

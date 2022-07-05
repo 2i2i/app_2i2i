@@ -57,7 +57,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setData();
     });
   }
@@ -81,7 +81,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 28),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileWidget(
                     onTap: () {
@@ -106,14 +106,21 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 1),
                       TextFormField(
+                        //maxLength: 30,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(30),
+                          // FilteringTextInputFormatter.deny(' ',),
+                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
+                        ],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: userNameEditController,
                         textInputAction: TextInputAction.next,
@@ -123,6 +130,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           value ??= '';
                           if (value.trim().isEmpty) {
                             return Keys.required.tr(context);
+                          }
+                          if (value.trim().length < 3) {
+                            return "name must be 3 characters long";
                           }
                           return null;
                         },
@@ -143,6 +153,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(200),
+              ],
               controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -173,7 +186,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     controller: speedEditController,
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                    ],
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
@@ -371,12 +386,50 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                       );
                     },
                   ),
-                  const SizedBox(height: 30),
+                  // const SizedBox(height: 30),
                 ],
               ),
             ),
-            // const SizedBox(height: 20),
-            ElevatedButton(
+            const SizedBox(height: 20),
+            Visibility(
+              visible: false,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (!(widget.fromBottomSheet ?? false)) {
+                    CustomDialogs.loader(true, context);
+                  }
+                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                  if (!(widget.fromBottomSheet ?? false)) {
+                    CustomDialogs.loader(false, context);
+                  }
+                  // await Navigator.of(context).maybePop();
+                },
+                child: Text(Keys.save.tr(context)),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    if (widget.fromBottomSheet ?? false) {
+      return body;
+    }
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all(0),
+                padding: MaterialStateProperty.all(
+                  EdgeInsets.symmetric(horizontal: 12,vertical: 0),
+                ),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))),
+                backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+              ),
               onPressed: () async {
                 if (!(widget.fromBottomSheet ?? false)) {
                   CustomDialogs.loader(true, context);
@@ -388,16 +441,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 // await Navigator.of(context).maybePop();
               },
               child: Text(Keys.save.tr(context)),
-            )
-          ],
-        ),
+            ),
+          ),
+          SizedBox(width: 8)
+        ],
       ),
-    );
-    if (widget.fromBottomSheet ?? false) {
-      return body;
-    }
-    return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
       body: body,
     );
   }
@@ -576,10 +624,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final importances = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-            minSpeed: getSpeedFromText(),
-            maxMeetingDuration: seconds, importance: {
-              Lounge.chrony: importances[Lounge.chrony]!,
-              Lounge.highroller: importances[Lounge.highroller]!,
+          minSpeed: getSpeedFromText(),
+          maxMeetingDuration: seconds,
+          importance: {
+            Lounge.chrony: importances[Lounge.chrony]!,
+            Lounge.highroller: importances[Lounge.highroller]!,
           },
         );
         user.rule = rule;

@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -155,6 +156,9 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(1000)
+                      ],
                       controller: commentController,
                       style: TextStyle(color: AppTheme().cardDarkColor),
                       maxLines: 1,

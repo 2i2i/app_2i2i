@@ -19,7 +19,7 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final uid = ref.read(myUIDProvider);
       if (uid is String) {
         UserModel? userModel =
