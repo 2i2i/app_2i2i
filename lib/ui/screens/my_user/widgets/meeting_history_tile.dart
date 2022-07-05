@@ -50,7 +50,7 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     int amount = meetingModel.energy['B'] ?? 0;
     if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
-    double amountInALGO = amount / 1000000;
+    double amountInALGO = amount / MILLION;
 
     return InkResponse(
       onTap: onTap,

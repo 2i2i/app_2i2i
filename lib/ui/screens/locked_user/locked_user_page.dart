@@ -19,8 +19,6 @@ class LockedUserPage extends ConsumerStatefulWidget {
 }
 
 class _LockedUserPageState extends ConsumerState<LockedUserPage> {
-
-
   @override
   Widget build(BuildContext context) {
     final lockedUserViewModel = ref.watch(lockedUserViewModelProvider);
@@ -37,11 +35,8 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
         meetingStatus == MeetingStatus.RECEIVED_REMOTE_A ||
         meetingStatus == MeetingStatus.RECEIVED_REMOTE_B ||
         meetingStatus == MeetingStatus.CALL_STARTED;
-    bool showCallPage = (meetingStatus == MeetingStatus.ACCEPTED_A &&
-            lockedUserViewModel.amA()) ||
-        isActive;
-    bool showRingingPage = meetingStatus == MeetingStatus.ACCEPTED_B ||
-        meetingStatus == MeetingStatus.ACCEPTED_A;
+    bool showCallPage = (meetingStatus == MeetingStatus.ACCEPTED_A && lockedUserViewModel.amA()) || isActive;
+    bool showRingingPage = meetingStatus == MeetingStatus.ACCEPTED_B || meetingStatus == MeetingStatus.ACCEPTED_A;
     bool showWaitPage = !(showCallPage || showRingingPage);
 
     return Stack(
@@ -54,9 +49,7 @@ class _LockedUserPageState extends ConsumerState<LockedUserPage> {
             meetingChanger: meetingChanger,
             userChanger: userModelChanger,
             user: lockedUserViewModel.user,
-            onHangPhone: (uid, meetingId) {
-              widget.onHangPhone?.call(uid, meetingId);
-            },
+            onHangPhone: (uid, meetingId) => widget.onHangPhone?.call(uid, meetingId),
           ),
         ),
         Visibility(

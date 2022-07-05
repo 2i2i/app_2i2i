@@ -26,7 +26,7 @@ class _BidOutMeetingsState extends ConsumerState<BidOutMeetings> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(meetingHistory).getMeetingHistoryList(
           MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'B'));
     });

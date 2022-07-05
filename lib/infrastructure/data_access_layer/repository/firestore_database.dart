@@ -9,8 +9,8 @@ import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
-import '../../models/meeting_status_model.dart';
 import '../../models/room_model.dart';
+import '../../models/token_model.dart';
 import '../../models/user_model.dart';
 import '../services/logging.dart';
 import 'firestore_path.dart';
@@ -27,6 +27,48 @@ class FirestoreDatabase {
 
   final _service = FirestoreService.instance;
 
+  //create user function
+  Future createUser(String uid) async {
+    UserModel createdUserModel = UserModel(
+        id: uid,
+        status: Status.ONLINE,
+        meeting: null,
+        bio: "",
+        name: "",
+        rating: 1,
+        numRatings: 0,
+        tags: [],
+        rule: Rule(
+          maxMeetingDuration: 300,
+          minSpeed: 0,
+          importance: {
+            Lounge.chrony: 1,
+            Lounge.highroller: 4,
+            Lounge.eccentric: 0,
+            Lounge.lurker: 0,
+          },
+        ),
+        loungeHistory: [],
+        loungeHistoryIndex: -1,
+        blocked: [],
+        friends: [],
+        imageUrl: '',
+        heartbeatBackground: DateTime.now(),
+        heartbeatForeground: DateTime.now(),
+        socialLinks: []);
+    Map userInfoMap = createdUserModel.toMap();
+    userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
+    userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
+    return _service.runTransaction((transaction) {
+      final userDocRef =
+          _service.firestore.collection(FirestorePath.users()).doc(uid);
+      transaction.set(userDocRef, userInfoMap);
+      return Future.value();
+    }).catchError((onError) {
+      log(onError);
+    });
+  }
+
   String newDocId({required String path}) => _service.newDocId(path: path);
 
   Future addAlgorandAccount(String uid, String algorandAccount, String type) =>
@@ -42,6 +84,7 @@ class FirestoreDatabase {
   Future acceptBid(Meeting meeting) async {
     return _service.runTransaction((transaction) {
       // create meeting
+
       final meetingDocRef = _service.firestore
           .collection(FirestorePath.meetings())
           .doc(meeting.id);
@@ -67,6 +110,8 @@ class FirestoreDatabase {
       transaction.update(bidInPrivateRef, bidObj);
 
       return Future.value();
+    }).catchError((onError) {
+      log(onError);
     });
   }
 
@@ -175,7 +220,7 @@ class FirestoreDatabase {
       String meetingId, Map<String, dynamic> data) {
     return _service
         .setData(
-      path: FirestorePath.meetingStatus(meetingId),
+      path: FirestorePath.meeting(meetingId),
       data: data,
       merge: true,
     )
@@ -183,17 +228,6 @@ class FirestoreDatabase {
       log(onError);
     });
   }
-
-  Stream<MeetingStatusModel> getMeetingStatus({required String meetingId}) =>
-      _service
-          .documentStream(
-        path: FirestorePath.meetingStatus(meetingId),
-        builder: (data, documentId) =>
-            MeetingStatusModel.fromMap(data!, documentId),
-      )
-          .handleError((onError) {
-        log(onError);
-      });
 
   Future meetingEndUnlockUser(
       Meeting meeting, Map<String, dynamic> data) async {
@@ -271,40 +305,41 @@ class FirestoreDatabase {
 
   Stream<UserModel> userStream({required String uid}) {
     log(uid);
+    // try {
     return _service
         .documentStream(
       path: FirestorePath.user(uid),
       builder: (data, documentId) {
-        data ??= {};
+        if (data == null) {
+          return UserModel(id: documentId);
+        }
         return UserModel.fromMap(data, documentId);
       },
     )
-        .handleError((error) {
-      print(error);
+        .handleError((e) {
+      print(e);
     });
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
-  Future<Map?> getTokenFromId(String uid) async {
+  Future<TokenModel?> getTokenFromId(String uid) async {
     DocumentSnapshot snapshot =
         await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
-      Map data = snapshot.data() as Map;
-      log('\n\n${data['token']}\n\n');
-      return data;
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      return TokenModel.fromJson(data!);
     }
     return null;
   }
 
   Future<void> updateUser(UserModel user) {
-    return _service
-        .setData(
+    return _service.setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    )
-        .catchError((error) {
-      print(error);
-    });
+    );
   }
 
   Future<AppVersionModel?> getAppVersion() async {
@@ -339,13 +374,15 @@ class FirestoreDatabase {
     return _service
         .collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) => UserModel.fromMap(data, documentId),
+      builder: (data, documentId) {
+        return UserModel.fromMap(data, documentId);
+      },
       queryBuilder: tags.isEmpty
           ? null
           : (query) => query.where('tags', arrayContainsAny: tags),
     )
         .handleError((error) {
-      print(error);
+      log(error);
     });
   }
 
@@ -382,11 +419,15 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidInsPrivate(uid),
       builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
-    );
+    )
+        .handleError((err) {
+      print("----------> $err");
+    });
   }
 
   Stream<List<BidOut>> bidOutsStream({required String uid}) {
@@ -421,15 +462,17 @@ class FirestoreDatabase {
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       );
 
-  Stream<Meeting> meetingStream({required String id}) => _service
-          .documentStream(
-              path: FirestorePath.meeting(id),
-              builder: (data, documentId) {
-                return Meeting.fromMap(data, documentId);
-              })
-          .handleError((onError) {
-        log(onError);
-      });
+  Stream<Meeting> meetingStream({required String id}) {
+    return _service
+        .documentStream(
+            path: FirestorePath.meeting(id),
+            builder: (data, documentId) {
+              return Meeting.fromMap(data, documentId);
+            })
+        .handleError((onError) {
+      log(onError);
+    });
+  }
 
   Stream<List<TopMeeting>> topSpeedsStream() => _service
           .collectionStream(

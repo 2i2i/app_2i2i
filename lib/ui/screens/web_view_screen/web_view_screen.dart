@@ -15,12 +15,18 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool isLoading = true;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: Stack(
         children: [
           InAppWebView(
+            // initialUrlRequest: URLRequest(url: Uri.parse('https://webcamera.io/')),
             initialData: InAppWebViewInitialData(data: """<html>
 
 <head>
@@ -42,8 +48,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 disableHorizontalScroll: false,
                 disableVerticalScroll: false,
                 transparentBackground: true,
+                mediaPlaybackRequiresUserGesture: false,
               ),
-
               android: AndroidInAppWebViewOptions(
                 useHybridComposition: true,
                 hardwareAcceleration: true,
@@ -56,6 +62,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 allowsInlineMediaPlayback: true,
               ),
             ),
+            androidOnPermissionRequest:
+                (InAppWebViewController controller, String origin, List<String> resources) async {
+              return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
+            },
             onLoadStop: (InAppWebViewController controller, Uri? url) {
               setState(() {
                 isLoading = false;

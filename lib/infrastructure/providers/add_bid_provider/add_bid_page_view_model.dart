@@ -15,7 +15,9 @@ import 'package:flutter/cupertino.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
+import '../../data_access_layer/services/firebase_notifications.dart';
 import '../../data_access_layer/services/logging.dart';
+import '../../models/token_model.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
@@ -62,15 +64,13 @@ class AddBidPageViewModel {
 
     final net = AppConfig().ALGORAND_NET;
     final String? addrA = speed.num == 0 ? null : account!.address;
-    final bidId = database.newDocId(
-        path: FirestorePath
-            .meetings()); // new bid id comes from meetings to avoid collision
+    final bidId =
+        database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
     Map<String, String> txns = {};
     if (speed.num != 0) {
-      final note =
-          bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
+      final note = bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
         txns = await algorand
             .lockCoins(account: account!, net: net, amount: amount, note: note)
@@ -84,15 +84,13 @@ class AddBidPageViewModel {
         if (cause is dio.DioError) {
           final message = cause.response?.data['message'];
           if (context != null) {
-            CustomAlertWidget.showErrorDialog(
-                context, Keys.errorWhileAddBid.tr(context),
-                errorStacktrace: '$message');
+            CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: '$message');
           }
           log('AlgorandException ' + message);
         }
         return;
       } catch (e) {
-        print('AlgorandException catch $e');
+        log('AlgorandException catch $e');
       }
     }
 
@@ -127,6 +125,14 @@ class AddBidPageViewModel {
     );
 
     BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
-    return database.addBid(bidOut, bidIn);
+    await database.addBid(bidOut, bidIn);
+
+    TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
+
+    if (bUserTokenModel is TokenModel) {
+      Map jsonDataCurrentUser = {"title": "2i2i", "body": 'Someone wants to talk with you'};
+      await FirebaseNotifications()
+          .sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
+    }
   }
 }

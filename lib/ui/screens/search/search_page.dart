@@ -19,6 +19,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(searchFilterProvider.state).state = <String>[];
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -29,7 +37,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
+            child: TextFormField(
               style: TextStyle(color: AppTheme().cardDarkColor),
               autofocus: false,
               controller: _searchController,
@@ -40,8 +48,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         onPressed: () {
                           _searchController.text = '';
                           _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state =
-                              <String>[];
+                          ref.watch(searchFilterProvider.state).state = <String>[];
                         },
                         iconSize: 20,
                         icon: Icon(
@@ -50,15 +57,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       )
                     : IconButton(icon: Container(), onPressed: null),
                 filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
                 // suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim().toLowerCase();
-                ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -115,7 +120,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       behavior: MyBehavior(),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-          // physics: ClampingScrollPhysics(),
+        // physics: ClampingScrollPhysics(),
         itemCount: userList.length,
         itemBuilder: (_, index) => UserInfoTile(
           user: userList[index]!,

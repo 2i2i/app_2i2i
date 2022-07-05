@@ -23,36 +23,47 @@ class CustomAlertWidget {
     );
   }
 
-  static Future showErrorDialog(BuildContext context,String errorMessage,{String? title, String? errorStacktrace}) async{
-    Widget messageWidget = Text(errorMessage,textAlign: TextAlign.justify,);
-    if(errorStacktrace?.isNotEmpty??false){
+  static Future showErrorDialog(BuildContext context, String errorMessage,
+      {String? title, String? errorStacktrace}) async {
+    Widget messageWidget = Text(
+      errorMessage,
+      textAlign: TextAlign.justify,
+    );
+    if (errorStacktrace?.isNotEmpty ?? false) {
       messageWidget = Column(
         children: [
           SizedBox(height: 8),
-          Text(errorMessage,textAlign: TextAlign.justify,),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.red.shade200,
-              borderRadius: BorderRadius.circular(12)
-            ),
-            margin: EdgeInsets.only(top: 8),
-            padding: EdgeInsets.all(8),
-              child: Text(errorStacktrace!,textAlign: TextAlign.justify,maxLines: 2,)
+          Text(
+            errorMessage,
+            textAlign: TextAlign.justify,
           ),
+          Container(
+              decoration: BoxDecoration(
+                  color: Colors.red.shade200,
+                  borderRadius: BorderRadius.circular(12)),
+              margin: EdgeInsets.only(top: 8),
+              padding: EdgeInsets.all(8),
+              child: Text(
+                errorStacktrace!,
+                textAlign: TextAlign.justify,
+                maxLines: 2,
+              )),
           SizedBox(height: 8),
         ],
       );
     }
     var dialog = CupertinoAlertDialog(
-      title: Text(title??Keys.error.tr(context),style: TextStyle(
-        color: Theme.of(context).errorColor,
-      ),),
+      title: Text(
+        title ?? Keys.error.tr(context),
+        style: TextStyle(
+          color: Theme.of(context).errorColor,
+        ),
+      ),
       content: messageWidget,
       actions: [
         TextButton(
           style: TextButton.styleFrom(
-              primary: Theme.of(context).colorScheme.secondary
-          ),
+              primary: Theme.of(context).colorScheme.secondary),
           onPressed: () {
             Navigator.of(context).maybePop();
           },
@@ -60,6 +71,33 @@ class CustomAlertWidget {
         ),
       ],
     );
-    return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context)=>dialog));
+    return Future.delayed(Duration.zero).then((value) =>
+        showCupertinoDialog(context: context, builder: (context) => dialog));
+  }
+
+  static confirmDialog(BuildContext context,
+      {required String title,
+      required String description,
+      required VoidCallback onPressed}) {
+    return CupertinoAlertDialog(
+      title: Text(title),
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(description),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          child: Text('No'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).maybePop();
+            onPressed();
+          },
+          child: Text('Yes'),
+        ),
+      ],
+    );
   }
 }

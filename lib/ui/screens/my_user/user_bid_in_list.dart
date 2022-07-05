@@ -2,7 +2,7 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,8 +30,7 @@ class UserBidInsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers =
-        ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
 
     // store for notification
@@ -44,31 +43,16 @@ class UserBidInsList extends ConsumerWidget {
           onTap: () async {
             bool camera = true;
             bool microphone = true;
+
             if (!kIsWeb) {
               camera = await Permission.camera.request().isGranted;
               microphone = await Permission.microphone.request().isGranted;
             }
 
-            if (camera && microphone) {
-              for (BidIn bidIn in bidIns) {
-                UserModel? user = bidIn.user;
-                if (user == null) {
-                  return;
-                }
-                String? token;
-                bool isIos = false;
-                try {
-                  final database = ref.watch(databaseProvider);
-                  Map map = await database.getTokenFromId(bidIn.user!.id) ?? {};
-                  token = map['token'];
-                  isIos = map['isIos'] ?? false;
-                } catch (e) {
-                  print(e);
-                }
-
-                final acceptedBid = await myHangoutPageViewModel
-                    .acceptBid(bidIn, token: token, isIos: isIos);
-                if (acceptedBid) break;
+            if (camera && microphone && bidIns.isNotEmpty) {
+              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
+              if (!hostStatus) {
+                CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
             }
           },
@@ -82,9 +66,7 @@ class UserBidInsList extends ConsumerWidget {
                 BoxShadow(
                     offset: Offset(2, 2),
                     blurRadius: 8,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary // changes position of shadow
+                    color: Theme.of(context).colorScheme.secondary // changes position of shadow
                     ),
               ],
             ),

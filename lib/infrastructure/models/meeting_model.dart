@@ -42,13 +42,14 @@ extension ParseToString on MeetingStatus {
 @immutable
 class MeetingStatusWithTS {
   const MeetingStatusWithTS({required this.value, required this.ts});
+
   final MeetingStatus value;
   final DateTime ts;
 
   Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
-      'ts': ts,
+      'ts': ts.toString(),
     };
   }
 
@@ -95,8 +96,7 @@ class TopMeeting extends Equatable {
     final speed = Quantity.fromMap(data['speed']);
     final DateTime ts = data['ts'].toDate();
 
-    return TopMeeting(
-        id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
+    return TopMeeting(id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
 }
 
@@ -120,8 +120,7 @@ class MeetingChanger {
   }
 
   Future normalAdvanceMeeting(String meetingId, MeetingStatus status) async {
-    log(F +
-        'normalAdvanceMeeting - meetingId=$meetingId - status=${status.toStringEnum()}');
+    log(F + 'normalAdvanceMeeting - meetingId=$meetingId - status=${status.toStringEnum()}');
     final now = DateTime.now().toUtc();
     final statusString = status.toStringEnum();
     final Map<String, dynamic> data = {
@@ -133,8 +132,7 @@ class MeetingChanger {
     return database.updateMeeting(meetingId, data);
   }
 
-  Future acceptMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED_A);
+  Future acceptMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.ACCEPTED_A);
 
   Future roomCreatedMeeting(String meetingId, String room) {
     final now = DateTime.now().toUtc();
@@ -149,14 +147,11 @@ class MeetingChanger {
     return database.updateMeeting(meetingId, data);
   }
 
-  Future remoteReceivedByAMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
+  Future remoteReceivedByAMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_A);
 
-  Future remoteReceivedByBMeeting(String meetingId) =>
-      normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
+  Future remoteReceivedByBMeeting(String meetingId) => normalAdvanceMeeting(meetingId, MeetingStatus.RECEIVED_REMOTE_B);
 
-  Future muteVideo(String meetingId,
-      {required bool amA, required bool videoStatus}) async {
+  Future muteVideo(String meetingId, {required bool amA, required bool videoStatus}) async {
     Map<String, dynamic> data = {};
     if (amA) {
       data = {
@@ -170,8 +165,7 @@ class MeetingChanger {
     return database.updateMeetingStatus(meetingId, data);
   }
 
-  Future muteAudio(String meetingId,
-      {required bool amA, required bool audioStatus}) async {
+  Future muteAudio(String meetingId, {required bool amA, required bool audioStatus}) async {
     Map<String, dynamic> data = {};
     if (amA) {
       data = {
@@ -210,6 +204,10 @@ class Meeting extends Equatable {
     required this.coinFlowsA,
     required this.coinFlowsB,
     required this.lounge,
+    this.mutedAudioA = false,
+    this.mutedVideoA = false,
+    this.mutedAudioB = false,
+    this.mutedVideoB = false,
   });
 
   final String id;
@@ -244,6 +242,11 @@ class Meeting extends Equatable {
 
   final Rule rule;
 
+  final bool mutedAudioA;
+  final bool mutedVideoA;
+  final bool mutedAudioB;
+  final bool mutedVideoB;
+
   @override
   List<Object> get props => [id];
 
@@ -251,7 +254,9 @@ class Meeting extends Equatable {
   bool get stringify => true;
 
   bool amA(String uid) => uid == A;
+
   bool amB(String uid) => uid == B;
+
   String peerId(String uid) => uid == A ? B : A;
 
   int maxDuration() {
@@ -266,8 +271,13 @@ class Meeting extends Equatable {
       throw StateError('missing data for id: $documentId');
     }
 
-    final bool active = data['active'] as bool;
-    final bool settled = data['settled'] as bool;
+    final bool active = data['active'] ?? false;
+    final bool settled = data['settled'] ?? false;
+
+    final bool mutedAudioA = data['mutedAudioA'] ?? false;
+    final bool mutedVideoA = data['mutedVideoA'] ?? false;
+    final bool mutedAudioB = data['mutedAudioB'] ?? false;
+    final bool mutedVideoB = data['mutedVideoB'] ?? false;
 
     final String A = data['A'];
     final String B = data['B'];
@@ -288,53 +298,60 @@ class Meeting extends Equatable {
       txns[k] = data['txns'][k] as String;
     }
 
-    final MeetingStatus status = MeetingStatus.values
-        .firstWhere((e) => e.toStringEnum() == data['status']);
-    final List<MeetingStatusWithTS> statusHistory =
-        List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
-      final value = MeetingStatus.values
-          .firstWhere((e) => e.toStringEnum() == item['value']);
-      final DateTime ts = item['ts'].toDate();
+    final MeetingStatus status = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final List<MeetingStatusWithTS> statusHistory = List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
+      final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
+      var timeFromMap = item['ts'];
+      DateTime ts;
+      if(timeFromMap is Timestamp){
+        ts = timeFromMap.toDate();
+      }else {
+        var strTime = item['ts']?.toString()??'';
+        ts = DateTime.tryParse(strTime)?.toLocal() ?? DateTime.now();
+      }
       return MeetingStatusWithTS(value: value, ts: ts);
     }));
 
-    final AlgorandNet net =
-        AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
+    final AlgorandNet net = AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
     final Quantity speed = Quantity.fromMap(data['speed']);
     final String? room = data['room'];
 
-    final List<Quantity> coinFlowsA = List<Quantity>.from(
-        data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
-    final List<Quantity> coinFlowsB = List<Quantity>.from(
-        data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
+    final List<Quantity> coinFlowsA =
+        List<Quantity>.from(data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
+    final List<Quantity> coinFlowsB =
+        List<Quantity>.from(data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
-    final Lounge lounge =
-        Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
+    final Lounge lounge = Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
 
     final Rule rule = Rule.fromMap(data['rule']);
 
     return Meeting(
       id: documentId,
-        lounge: lounge,
-        active: active,
-        settled: settled,
-        A: A,
-        B: B,
-        addrA: addrA,
-        addrB: addrB,
-        energy: energy,
-        start: start,
-        end: end,
-        duration: duration,
-        txns: txns,
-        status: status,
-        statusHistory: statusHistory,
-        net: net,
-        speed: speed,
-        room: room,
-        coinFlowsA: coinFlowsA,
-        coinFlowsB: coinFlowsB,
-        rule: rule,);
+      lounge: lounge,
+      active: active,
+      settled: settled,
+      A: A,
+      B: B,
+      addrA: addrA,
+      addrB: addrB,
+      energy: energy,
+      start: start,
+      end: end,
+      duration: duration,
+      txns: txns,
+      status: status,
+      statusHistory: statusHistory,
+      net: net,
+      speed: speed,
+      room: room,
+      coinFlowsA: coinFlowsA,
+      coinFlowsB: coinFlowsB,
+      rule: rule,
+      mutedAudioA: mutedAudioA,
+      mutedVideoA: mutedVideoA,
+      mutedAudioB: mutedAudioB,
+      mutedVideoB: mutedVideoB,
+    );
   }
 
   // used by acceptBid, as B
@@ -346,9 +363,7 @@ class Meeting extends Equatable {
   }) {
     return Meeting(
       id: id,
-      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed
-          ? Lounge.chrony
-          : Lounge.highroller,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed ? Lounge.chrony : Lounge.highroller,
       active: true,
       settled: false,
       A: bidIn.private!.A,
@@ -365,11 +380,12 @@ class Meeting extends Equatable {
       end: null,
       duration: null,
       txns: {},
+      mutedAudioA: false,
+      mutedVideoA: false,
+      mutedAudioB: false,
+      mutedVideoB: false,
       status: MeetingStatus.ACCEPTED_B,
-      statusHistory: [
-        MeetingStatusWithTS(
-            value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())
-      ],
+      statusHistory: [MeetingStatusWithTS(value: MeetingStatus.ACCEPTED_B, ts: DateTime.now().toUtc())],
       net: bidIn.public.net,
       speed: bidIn.public.speed,
       room: null,
@@ -398,10 +414,14 @@ class Meeting extends Equatable {
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'room': room,
-      'coinFlowsA': coinFlowsA,
-      'coinFlowsB': coinFlowsB,
+      'coinFlowsA': coinFlowsA.map((s) => s.toMap()).toList(),
+      'coinFlowsB': coinFlowsB.map((s) => s.toMap()).toList(),
       'lounge': lounge.toStringEnum(),
       'rule': rule.toMap(),
+      'mutedAudioA': mutedAudioA,
+      'mutedVideoA': mutedVideoA,
+      'mutedAudioB': mutedAudioB,
+      'mutedVideoB': mutedVideoB,
     };
   }
 }

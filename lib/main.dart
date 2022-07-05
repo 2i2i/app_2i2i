@@ -1,3 +1,7 @@
+// change version in build.gradle and pubspec.yaml
+// flutter build appbundle --flavor main -t lib/main.dart ->
+// flutter build ipa --flavor main -t lib/main.dart -> open archive in xcode and distribute
+
 // A -> B
 // main actions:
 // createBid - A
@@ -9,10 +13,12 @@
 import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -29,6 +35,7 @@ import 'common_main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown,DeviceOrientation.portraitUp]);
   await dotenv.load(fileName: ".env");
   // await Firebase.initializeApp(
   //     options: kIsWeb
@@ -51,6 +58,9 @@ Future<void> main() async {
               messagingSenderId: "347734179578",
               appId: "1:347734179578:web:f9c11616c64e12c643d343")
           : null);
+
+  await FirebaseAppCheck.instance.activate(
+      webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 

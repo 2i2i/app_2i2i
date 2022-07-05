@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
+import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
@@ -46,12 +47,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     String shortBio = widget.user.bio;
-
-    final socialLinks = widget.user.socialLinks
-        .map((e) => "\n${e.accountType}: ${e.userName}")
-        .toList()
-        .join(",");
-    var statusColor = AppTheme().green;
+     var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     } else if (widget.user.status == Status.IDLE) {
@@ -172,7 +168,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                 color: Colors.amber,
                               ),
                               onRatingUpdate: (rating) {
-                                print(rating);
+                                log("$rating");
                               },
                             ),
                           ),
@@ -200,7 +196,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   widget.user.socialLinks.map((e) {
                                 if ((e.userName ?? "").isNotEmpty) {
                                   return TextSpan(
-                                    text: "\n${e.accountType}: ",
+                                    text: "\n${e.accountName}: ",
                                     children: [
                                       TextSpan(
                                         text: e.userName,
@@ -284,7 +280,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           user: widget.user,
           onTapRules: widget.onTapRules,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -327,7 +323,7 @@ class UserRulesWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${(user.rule.minSpeed / 1000000)} A/sec',
+                    '${(user.rule.minSpeed / MILLION)} A/sec',
                     style: Theme.of(context).textTheme.subtitle2?.copyWith(
                         color: Theme.of(context).colorScheme.secondary),
                   ),

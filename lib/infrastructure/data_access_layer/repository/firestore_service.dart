@@ -19,7 +19,6 @@ class FirestoreService {
     bool merge = false,
   }) async {
     final reference = firestore.collection(path).doc();
-    // print('$path: $data');
     await reference.set(data);
   }
 
@@ -34,13 +33,11 @@ class FirestoreService {
 
   Future<DocumentSnapshot> getData({required String path}) async {
     final reference = firestore.doc(path);
-    // print('$path: $data');
     return await reference.get(GetOptions(source: Source.serverAndCache));
   }
 
   Future<void> deleteData({required String path}) async {
     final reference = firestore.doc(path);
-    // print('delete: $path');
     await reference.delete();
   }
 
@@ -99,10 +96,8 @@ class FirestoreService {
     required String path,
     required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) {
-    final DocumentReference<Map<String, dynamic>> reference =
-        firestore.doc(path);
-    final Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
-        reference.snapshots();
+    final DocumentReference<Map<String, dynamic>> reference = firestore.doc(path);
+    final Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots = reference.snapshots();
     return snapshots.map((snapshot) => builder(snapshot.data(), snapshot.id));
   }
 

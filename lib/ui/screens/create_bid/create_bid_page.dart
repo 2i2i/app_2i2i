@@ -13,6 +13,7 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -26,12 +27,7 @@ import 'top_card_widget.dart';
 
 class CreateBidPageRouterObject {
   CreateBidPageRouterObject(
-      {required this.bidIns,
-      required this.B,
-      this.sliderHeight,
-      this.min,
-      this.max,
-      this.fullWidth});
+      {required this.bidIns, required this.B, this.sliderHeight, this.min, this.max, this.fullWidth});
 
   final String B;
   final List<BidInPublic> bidIns;
@@ -70,8 +66,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   _CreateBidPageState createState() => _CreateBidPageState();
 }
 
-class _CreateBidPageState extends ConsumerState<CreateBidPage>
-    with SingleTickerProviderStateMixin {
+class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTickerProviderStateMixin {
   AbstractAccount? account;
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
@@ -94,9 +89,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   void initState() {
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
-        var val = int.tryParse(speedController.text) ?? 0;
+        var val = getSpeedFromText(speedController.text);
         if (val < speed.num) {
-          speedController.text = speed.num.toString();
+          speedController.text = (speed.num / MILLION).toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
@@ -111,9 +106,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
 
-    if (haveToWait(myAccountPageViewModel) ||
-        haveToWait(userPageBViewModel) ||
-        userPageBViewModel == null) {
+    if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null) {
       return WaitPage(
         isCupertino: true,
         height: MediaQuery.of(context).size.height / 2,
@@ -122,12 +115,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
 
     userB = userPageBViewModel.user;
 
-    final addBidPageViewModel = ref
-        .watch(addBidPageViewModelProvider(userPageBViewModel.user).state)
-        .state;
+    final addBidPageViewModel = ref.watch(addBidPageViewModelProvider(userPageBViewModel.user).state).state;
 
-    if (addBidPageViewModel == null || (addBidPageViewModel.submitting))
-      return WaitPage(isCupertino: true);
+    if (addBidPageViewModel == null || (addBidPageViewModel.submitting)) return WaitPage(isCupertino: true);
 
     updateAccountBalance(myAccountPageViewModel);
 
@@ -158,8 +148,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                       SizedBox(height: 4),
                       Container(
                         decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.20),
+                            color: Theme.of(context).shadowColor.withOpacity(0.20),
                             borderRadius: BorderRadius.circular(10)),
                         padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
@@ -171,14 +160,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                             ),
                             Expanded(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: SliderTheme(
                                   data: SliderTheme.of(context).copyWith(
-                                    activeTrackColor:
-                                        Theme.of(context).cardColor,
-                                    inactiveTrackColor:
-                                        Theme.of(context).disabledColor,
+                                    activeTrackColor: Theme.of(context).cardColor,
+                                    inactiveTrackColor: Theme.of(context).disabledColor,
                                     thumbShape: CustomSliderThumbRect(
                                       mainContext: context,
                                       thumbRadius: 15,
@@ -193,13 +179,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     max: maxMaxDuration.toDouble(),
                                     divisions: maxMaxDuration == minMaxDuration
                                         ? null
-                                        : min(100,
-                                            maxMaxDuration - minMaxDuration),
+                                        : min(100, maxMaxDuration - minMaxDuration),
                                     value: maxDuration.toDouble(),
                                     onChanged: (value) {
                                       maxDuration = value.round();
-                                      updateAccountBalance(
-                                          myAccountPageViewModel);
+                                      updateAccountBalance(myAccountPageViewModel);
                                     },
                                   ),
                                 ),
@@ -227,34 +211,29 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                     ),
                   ),
                   Container(
-                    constraints:
-                        (myAccountPageViewModel.accounts?.length ?? 0) > 0
-                            ? BoxConstraints(
-                                minHeight: 150,
-                                maxHeight: 200,
-                              )
-                            : null,
+                    constraints: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                        ? BoxConstraints(
+                            minHeight: 150,
+                            maxHeight: 200,
+                          )
+                        : null,
                     child: Builder(
                       builder: (BuildContext context) {
-                        if (myAccountPageViewModel.accounts?.isNotEmpty ??
-                            false) {
-                          List<AbstractAccount> accountsList =
-                              myAccountPageViewModel.accounts ?? [];
+                        if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
+                          List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
                           return PageView.builder(
                             controller: controller,
                             scrollDirection: Axis.horizontal,
                             itemCount: accountsList.length,
                             itemBuilder: (_, index) {
-                              AbstractAccount? abstractAccount =
-                                  accountsList[index];
+                              AbstractAccount? abstractAccount = accountsList[index];
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: AccountInfo(
                                   false,
                                   key: ObjectKey(abstractAccount.address),
                                   account: abstractAccount,
-                                  afterRefresh: () => updateAccountBalance(
-                                      myAccountPageViewModel),
+                                  afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                 ),
                               );
                             },
@@ -263,8 +242,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               if (account == newAccount) return;
                               account = newAccount;
                               if (mounted) {
-                                updateAccountBalance(myAccountPageViewModel,
-                                    accountIndex: val);
+                                updateAccountBalance(myAccountPageViewModel, accountIndex: val);
                               }
                             },
                           );
@@ -273,8 +251,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                           padding: EdgeInsets.all(12),
                           margin: EdgeInsets.only(top: 12),
                           decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.2),
+                            color: Theme.of(context).shadowColor.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -289,16 +266,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                               ),
                               SizedBox(height: 8),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                 child: IconButton(
-                                  onPressed: () =>
-                                      showBidAlert(myAccountPageViewModel),
+                                  onPressed: () => showBidAlert(myAccountPageViewModel),
                                   iconSize: 30,
                                   icon: Icon(
                                     Icons.add_circle_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).colorScheme.secondary,
                                   ),
                                 ) /*ElevatedButton(
                                       child: Text(Strings().addAccount),
@@ -312,8 +286,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                     ),
                   ),
                   Visibility(
-                    visible:
-                        (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    visible: (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -327,8 +300,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                           ),
                         ),
                         TextButton(
-                          style: TextButton.styleFrom(
-                              primary: Theme.of(context).colorScheme.secondary),
+                          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
                           onPressed: () => showBidAlert(myAccountPageViewModel),
                           child: Text(
                             Keys.addAccount.tr(context),
@@ -342,14 +314,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                     builder: (BuildContext context, bool value, Widget? child) {
                       if (value) {
                         return Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, left: 10, right: 10),
+                          padding: const EdgeInsets.only(top: 8, left: 10, right: 10),
                           child: CustomTextField(
                             focusNode: focusNode,
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
                             title: Keys.speed.tr(context),
                             hintText: "0",
+                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                            keyboardType: TextInputType.numberWithOptions(decimal: true),
                             suffixIcon: GestureDetector(
                               onTap: () {
                                 isAddSupportVisible.value = false;
@@ -361,14 +334,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                 children: [
                                   Center(
                                     child: Text(
-                                      '${Keys.algoSec.tr(context)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2
-                                          ?.copyWith(
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
+                                      '${Keys.algoPerSec.tr(context)}',
+                                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                                            color: Theme.of(context).iconTheme.color,
                                             fontWeight: FontWeight.normal,
                                           ),
                                     ),
@@ -376,8 +344,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                   SizedBox(width: 8),
                                   ValueListenableBuilder(
                                     valueListenable: isAddSupportVisible,
-                                    builder: (BuildContext context, bool value,
-                                        Widget? child) {
+                                    builder: (BuildContext context, bool value, Widget? child) {
                                       if (value) {
                                         return child!;
                                       }
@@ -385,29 +352,23 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
                                     },
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 8.0),
-                                      child: Icon(Icons.remove_circle,
-                                          color: Theme.of(context)
-                                              .iconTheme
-                                              .color),
+                                      child: Icon(Icons.remove_circle, color: Theme.of(context).iconTheme.color),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             onChanged: (String value) {
-                              final num = int.tryParse(value) ?? 0;
-                              print(
-                                  'num $num = ${(num >= (userB?.rule.minSpeed ?? 0))}');
+                              final num = getSpeedFromText(value);
                               if (num >= (userB?.rule.minSpeed ?? 0)) {
-                                speed =
-                                    Quantity(num: num, assetId: speed.assetId);
+                                speed = Quantity(num: num, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
                             },
                             validator: (value) {
-                              int num = int.tryParse(value ?? '') ?? 0;
+                              int num = getSpeedFromText(value??'');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / MILLION}';
                               }
                               return null;
                             },
@@ -431,15 +392,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
               child: ElevatedButton(
                 onPressed: isInsufficient() ? null : () => onAddBid(),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(isInsufficient()
-                      ? Theme.of(context).errorColor
-                      : Theme.of(context).colorScheme.secondary),
+                  backgroundColor: MaterialStateProperty.all(
+                      isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
                     style: TextStyle(
-                        color: isInsufficient()
-                            ? Theme.of(context).primaryColorDark
-                            : Theme.of(context).primaryColor)),
+                        color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -490,27 +448,23 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
             int index = x?.indexOf(address) ?? lastIndex;
             log(X + 'showBidAlert + lastIndex=$lastIndex index=$index');
             controller.jumpToPage(index > 0 ? index : 0);
-            controller.animateToPage(index,
-                curve: Curves.decelerate,
-                duration: Duration(milliseconds: 300));
+            controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
           }
         },
       ),
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel,
-      {int? accountIndex}) {
-    var val = int.tryParse(speedController.text) ?? 0;
-    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) ||
-        val < (userB?.rule.minSpeed ?? 0);
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) {
+    var val = getSpeedFromText(speedController.text);
+    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) {
       speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
     } else {
       speed = Quantity(num: val, assetId: 0);
     }
     if (!focusNode.hasFocus) {
-      speedController.text = speed.num.toString();
+      speedController.text = (speed.num / MILLION).toString();
     }
     if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
       if (accountIndex != null) {
@@ -528,23 +482,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     final availableBalance = _accountBalance - _minAccountBalance;
     maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
     if (val != 0) {
-      final availableMaxDuration = max(
-          0,
-          ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num)
-              .floor());
+      final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
     }
     maxDuration = min(maxDuration, maxMaxDuration);
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
-    var amountStr = '${(amount.num / 1000000).toString()} A';
-    print('ammount $amountStr');
     setState(() {});
   }
 
+  int getSpeedFromText(String value) => ((num.tryParse(value)??0) * MILLION).round();
+
   String calcWaitTime() {
-    if (amount.assetId != speed.assetId)
-      throw Exception('amount.assetId != speed.assetId');
+    if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
 
     final now = DateTime.now().toUtc();
     final tmpBidIn = BidInPublic(
@@ -556,16 +506,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
         energy: amount.num,
         rule: userB!.rule);
 
-    final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn],
-        userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
+    final sortedBidIns =
+        combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
 
     int waitTime = 0;
     for (final bidIn in sortedBidIns) {
       if (bidIn.id == tmpBidIn.id) break;
       int bidDuration = userB?.rule.maxMeetingDuration ?? 0;
-      if (bidIn.speed.num != 0)
-        bidDuration =
-            min((bidIn.energy / bidIn.speed.num).round(), bidDuration);
+      if (bidIn.speed.num != 0) bidDuration = min((bidIn.energy / bidIn.speed.num).round(), bidDuration);
       waitTime += bidDuration;
     }
 
@@ -577,8 +525,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
     if (isInsufficient() && userB == null) {
       return;
     }
-    final addBidPageViewModel =
-        ref.read(addBidPageViewModelProvider(userB!).state).state;
+    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(userB!).state).state;
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await addBid(addBidPageViewModel: addBidPageViewModel);
@@ -596,11 +543,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / 1000000).toString()} A';
+    var amountStr = '${(amount.num / MILLION).toString()} A';
     if (isInsufficient()) {
-      var val = int.tryParse(speedController.text) ?? 0;
-      bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) ||
-          val < (userB?.rule.minSpeed ?? 0);
+      var val = getSpeedFromText(speedController.text);
+      bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
       if (isLessVal) {
         return Keys.addBid.tr(context) + ' : ' + amountStr;
       } else {
@@ -611,17 +557,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   }
 
   bool isInsufficient() {
-    var val = int.tryParse(speedController.text) ?? 0;
-    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) ||
-        val < (userB?.rule.minSpeed ?? 0);
-    print('isLessVal $isLessVal');
+    var val = getSpeedFromText(speedController.text);
+    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) return true;
     if (speed.num == 0) return false;
     if (account == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
-    final minAccountBalanceNeeded =
-        _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
+    final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
     if (_accountBalance < minAccountBalanceNeeded) return true;
 
     return false;
@@ -630,8 +573,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage>
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     if (account is WalletConnectAccount) {
       CustomDialogs.loader(true, context,
-          title: Keys.weAreWaiting.tr(context),
-          message: Keys.confirmInWallet.tr(context));
+          title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }

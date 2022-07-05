@@ -1,13 +1,6 @@
-// A -> B
-// main actions:
-// createBid - A
-// acceptBid - B
-// acceptMeeting - A
-// createRoom - A
-// import 'package:http/http.dart' as html;
-// import 'dart:html' as html;
 import 'dart:async';
 
+import 'dart:convert';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
@@ -29,6 +22,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
 
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
+import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
@@ -42,11 +36,10 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
     await Firebase.initializeApp();
-    await FirebaseAppCheck.instance.activate(
-        webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
+    await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
     String? token = await FirebaseAppCheck.instance.getToken(true);
-    print(token);
+    log("$token");
   } else {
     await Firebase.initializeApp(
         options: FirebaseOptions(
@@ -66,8 +59,7 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn =
-      'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {
@@ -96,8 +88,7 @@ class MainWidget extends ConsumerStatefulWidget {
   final String themeMode;
   final String local;
 
-  const MainWidget(this.local, {required this.themeMode, Key? key})
-      : super(key: key);
+  const MainWidget(this.local, {required this.themeMode, Key? key}) : super(key: key);
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -120,8 +111,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       window.addEventListener('blur', onBlur);
     }
 
-    WidgetsBinding.instance?.addObserver(this);
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
       ref.watch(appSettingProvider).getTheme(widget.themeMode);
       ref.watch(appSettingProvider).getLocal(widget.local);
@@ -140,12 +131,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
 
       // TODO the following is not working yet
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
+        log('Got a message whilst in the foreground!');
+        log('Message data: ${message.data}');
 
         if (message.notification != null) {
-          print(
-              'Message also contained a notification: ${message.notification}');
+          log('Message also contained a notification: ${message.notification}');
         }
 
         if (message.data['action'] == 'update') {
@@ -166,6 +156,32 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //     }
       //   });
       //}
+
+      platform.setMethodCallHandler((MethodCall methodCall) async {
+        Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
+        try {
+          if (notificationData.isNotEmpty) {
+            Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
+            final meetingChanger = ref.watch(meetingChangerProvider);
+            switch (methodCall.method) {
+              case 'CUT':
+                meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
+                break;
+              case 'ANSWER':
+                await meetingChanger.acceptMeeting(meetingModel.id);
+                ref.watch(lockedUserViewModelProvider);
+                break;
+              case 'MUTE':
+                break;
+              default:
+                throw MissingPluginException('notImplemented');
+            }
+          }
+        } catch (e) {
+          log("$e");
+        }
+      });
+
       await Custom.deepLinks(context, mounted);
     });
   }
@@ -221,7 +237,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   void dispose() {
     // html.document.removeEventListener('visibilitychange', (event) => null);
     _connectivitySubscription.cancel();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

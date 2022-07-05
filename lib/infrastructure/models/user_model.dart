@@ -63,7 +63,6 @@ class UserModelChanger {
 @immutable
 class Rule extends Equatable {
   static const defaultImportance = {
-    // set also in cloud function userCreated
     Lounge.chrony: 1,
     Lounge.highroller: 4,
     Lounge.eccentric: 0,
@@ -84,8 +83,8 @@ class Rule extends Equatable {
   factory Rule.fromMap(Map<String, dynamic> data) {
     final int maxMeetingDuration = data['maxMeetingDuration'];
     final int minSpeed = data['minSpeed'];
-
     final Map<Lounge, int> importance = {};
+
     final Map<String, dynamic> x = data['importance'];
     for (final k in x.keys) {
       final lounge = Lounge.values.firstWhere((l) => l.toStringEnum() == k);
@@ -120,7 +119,6 @@ class UserModel extends Equatable {
   static const int MAX_SHOWN_NAME_LENGTH = 10;
 
   UserModel({
-    // set also in cloud function userCreated
     required this.id,
     this.status = Status.ONLINE,
     this.socialLinks = const <SocialLinksModel>[],
@@ -130,6 +128,7 @@ class UserModel extends Equatable {
     this.rating = 1,
     this.numRatings = 0,
     this.heartbeatBackground,
+    this.tags = const <String>[],
     this.imageUrl,
     this.heartbeatForeground,
     this.rule = const Rule(),
@@ -153,10 +152,10 @@ class UserModel extends Equatable {
   String name;
   String? imageUrl;
   String bio;
-  late List<String> _tags;
+  List<String> tags;
 
   void setTags() {
-    _tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+    tags = [/*name.toLowerCase(),*/ ...keysFromName(name), ...tagsFromBio(bio)];
   }
 
   // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
@@ -170,6 +169,20 @@ class UserModel extends Equatable {
       tags.add(t);
     }
     return tags;
+  }
+
+  static List<String> keysFromName(String name) {
+    List<String> keysList = [];
+    String keyWord = "";
+    for (var i = 0; i < name.length; i++) {
+      if (name[i] == " ") {
+        keyWord = "";
+      } else {
+        keyWord = keyWord + name[i];
+        keysList.add(keyWord.toLowerCase());
+      }
+    }
+    return keysList;
   }
 
   void setNameOrBio({String? name, String? bio}) {
@@ -226,7 +239,7 @@ class UserModel extends Equatable {
         data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
-    // log('UserModel.fromMap - loungeHistory=$loungeHistory');
+    // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
     final List<String> friends = List.castFrom(data['friends'] as List);
@@ -256,7 +269,7 @@ class UserModel extends Equatable {
       'meeting': meeting,
       'bio': bio,
       'name': name,
-      'tags': _tags,
+      'tags': tags,
       'imageUrl': imageUrl,
       'rating': rating,
       'numRatings': numRatings,
@@ -267,13 +280,14 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'socialLinks': socialLinks.map((e) => e.toJson()).toList(),
+      'socialLinks':
+          FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }
 
   @override
   String toString() {
-    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $_tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
+    return 'UserModel{id: $id, status: $status, meeting: $meeting, bio: $bio, name: $name, _tags: $tags, rating: $rating, numRatings: $numRatings, heartbeatBackground: $heartbeatBackground, heartbeatForeground: $heartbeatForeground}';
   }
 
   bool isInMeeting() => meeting != null;

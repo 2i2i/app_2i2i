@@ -15,23 +15,6 @@ String ordinalIndicator(int x) {
   return 'th';
 }
 
-String microALGOToLargerUnit(int microALGO, {int maxDigits = 2, String unitALGO = 'ALGO'}) {
-  final N = microALGO.toString().length;
-  if (N <= maxDigits) return '$microALGO μ$unitALGO';
-  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} m$unitALGO';
-  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} c$unitALGO';
-  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} d$unitALGO';
-  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} $unitALGO';
-  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} deca$unitALGO';
-  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hecto$unitALGO';
-  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} k$unitALGO';
-  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} M$unitALGO';
-  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} G$unitALGO';
-  if (N <= maxDigits + 12)
-    return '~${(microALGO / 1000000000000).round()} MALGO';
-  throw Exception(
-      'microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
-}
 
 int epochSecsNow() {
   DateTime n = DateTime.now().toUtc();
@@ -178,6 +161,8 @@ bool haveToWait(var provider) {
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;
 }
+
+const int MILLION = 1000000;
 class MyBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) => ClampingScrollPhysics();

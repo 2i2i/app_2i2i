@@ -1,5 +1,7 @@
 // TODO break up file into multiple files
 
+import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -15,12 +17,9 @@ import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
-import '../data_access_layer/services/logging.dart';
 import '../models/meeting_history_model.dart';
-import '../models/meeting_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
-import 'faq_cv_provider/cv_provider.dart';
 import 'faq_cv_provider/faq_provider.dart';
 import 'locked_user_provider/locked_user_view_model.dart';
 import 'my_account_provider/my_account_page_view_model.dart';
@@ -58,7 +57,6 @@ final userProvider = StreamProvider.family<UserModel, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.userStream(uid: uid);
 });
-
 final userPageViewModelProvider =
     Provider.family<UserPageViewModel?, String>((ref, uid) {
   // log('userPageViewModelProvider');
@@ -78,12 +76,6 @@ final searchUsersStreamProvider =
   // log('usersStreamProvider - database=$database');
   final filter = ref.watch(searchFilterProvider.state).state;
   return database.usersStream(tags: filter);
-});
-
-final meetingStatusProvider =
-    StreamProvider.family<MeetingStatusModel?, String>((ref, meetingId) {
-  final database = ref.watch(databaseProvider);
-  return database.getMeetingStatus(meetingId: meetingId);
 });
 
 final setupUserViewModelProvider =
@@ -140,10 +132,6 @@ final faqProvider = ChangeNotifierProvider<FAQProviderModel>((ref) {
   return FAQProviderModel();
 });
 
-final cvProvider = ChangeNotifierProvider<CVProviderModel>((ref) {
-  return CVProviderModel();
-});
-
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
 final myUserPageViewModelProvider = Provider((ref) {
@@ -196,11 +184,11 @@ final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   return database.topDurationsStream();
 });
 
-final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
+final meetingHistory =
+    ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
   final database = ref.watch(databaseProvider);
   return MeetingHistoryModel(database: database);
 });
-
 
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
   final uid = ref.watch(myUIDProvider)!;
@@ -233,7 +221,7 @@ final bidInAndUserProvider = Provider.family<BidIn?, BidIn>((ref, bidIn) {
   if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) {
     return null;
   }
-  final user = userAsyncValue.asData!.value;
+  final user = userAsyncValue.value;
   return BidIn(public: bidIn.public, private: bidIn.private, user: user);
 });
 
@@ -242,25 +230,43 @@ final bidOutsProvider = StreamProvider.family<List<BidOut>, String>((ref, uid) {
   return database.bidOutsStream(uid: uid);
 });
 final bidInsPublicProvider =
-    StreamProvider.family<List<BidInPublic>, String>((ref, uid) {
+    StreamProvider.autoDispose.family<List<BidInPublic>?, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.bidInsPublicStream(uid: uid);
 });
 final bidInsPrivateProvider =
-    StreamProvider.family<List<BidInPrivate>, String>((ref, uid) {
+    StreamProvider.autoDispose.family<List<BidInPrivate>, String>((ref, uid) {
+  StreamSubscription? streamController;
+  ref.onDispose(() {
+    streamController?.cancel();
+  });
   final database = ref.watch(databaseProvider);
-  return database.bidInsPrivateStream(uid: uid);
+  var stream = database.bidInsPrivateStream(uid: uid);
+  streamController = stream.listen((event) {});
+  return stream;
 });
 
 final bidInsWithUsersProvider =
     Provider.autoDispose.family<List<BidIn>?, String>((ref, uid) {
   final bidIns = ref.watch(bidInsProvider(uid));
-  if (bidIns == null) return null;
+  if (bidIns == null) {
+    return null;
+  }
 
-  final bidInsWithUsersTrial =
-      bidIns.map((bid) => ref.watch(bidInAndUserProvider(bid))).toList();
-  if (bidInsWithUsersTrial.any((element) => element == null)) return null;
+  final bidInsWithUsersTrial = bidIns.map((bid) {
+    final bidInAndUser = ref.watch(bidInAndUserProvider(bid));
+    if (bidInAndUser == null) {
+      return null;
+    }
+    return bidInAndUser;
+  }).toList();
+
+  if (bidInsWithUsersTrial.any((element) => element == null)) {
+    return null;
+  }
+
   final bidInsWithUsers = bidInsWithUsersTrial.map((e) => e!).toList();
+
   return bidInsWithUsers;
 });
 
@@ -287,12 +293,16 @@ final bidInsProvider =
       combineQueues(bidInsPublic, user.loungeHistory, user.loungeHistoryIndex);
 
   // private bid ins
-  final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
-  if (haveToWait(bidInsPrivateAsyncValue) ||
-      bidInsPrivateAsyncValue.value == null) {
-    return null;
+  List<BidInPrivate> bidInsPrivate = [];
+  var userId = ref.watch(myUIDProvider);
+  if (userId == uid) {
+    final bidInsPrivateAsyncValue = ref.watch(bidInsPrivateProvider(uid));
+    if (haveToWait(bidInsPrivateAsyncValue) ||
+        bidInsPrivateAsyncValue.value == null) {
+      return null;
+    }
+    bidInsPrivate = bidInsPrivateAsyncValue.value!;
   }
-  List<BidInPrivate> bidInsPrivate = bidInsPrivateAsyncValue.value!;
 
   // create bid ins
   final bidIns = BidIn.createList(bidInsPublicSorted, bidInsPrivate);
@@ -306,14 +316,13 @@ final lockedUserViewModelProvider = Provider<LockedUserViewModel?>(
       return null;
     }
     final user = ref.watch(userProvider(uid));
-    log('lockedUserViewModelProvider - user=$user');
     if (user is AsyncLoading || user is AsyncError) return null;
 
-    if (user.asData!.value.meeting == null) {
+    if (user.value!.meeting == null) {
       isUserLocked.value = false;
       return null;
     }
-    final String userMeeting = user.asData!.value.meeting!;
+    final String userMeeting = user.value!.meeting!;
     final meeting = ref.watch(meetingProvider(userMeeting));
     if (meeting is AsyncLoading || meeting is AsyncError) {
       isUserLocked.value = false;
@@ -345,8 +354,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   // log('ringingPageViewModelProvider - user.asData!.value=${user.asData!.value}');
   // log('ringingPageViewModelProvider - user.asData!.value.meeting=${user.asData!.value.meeting}');
   if (user.asData!.value.meeting == null) return null;
-  final String userMeeting = user.asData!.value.meeting!;
-  // log('ringingPageViewModelProvider - userMeeting=$userMeeting');
+  final String userMeeting = user.value!.meeting!;
   final meeting = ref.watch(meetingProvider(userMeeting));
   // log('ringingPageViewModelProvider - meeting=$meeting');
 
@@ -398,7 +406,7 @@ final addBidPageViewModelProvider =
       database: database,
       functions: functions,
       algorand: algorand,
-      accounts: accounts.asData!.value,
+      accounts: accounts.value!,
       accountService: accountService,
       B: B);
 });

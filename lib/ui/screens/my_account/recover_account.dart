@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../app/wait_page.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 
 class RecoverAccountPage extends ConsumerStatefulWidget {
   const RecoverAccountPage({Key? key}) : super(key: key);
@@ -19,8 +20,7 @@ class RecoverAccountPage extends ConsumerStatefulWidget {
 
 class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
   int currentIndex = 0;
-  List<TextEditingController> listOfString =
-      List.generate(25, (index) => TextEditingController());
+  List<TextEditingController> listOfString = List.generate(25, (index) => TextEditingController());
   final formGlobalKey = GlobalKey<FormState>();
   bool isInValid = true;
 
@@ -64,11 +64,9 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        var clipData =
-                            await Clipboard.getData(Clipboard.kTextPlain);
+                        var clipData = await Clipboard.getData(Clipboard.kTextPlain);
                         if (clipData is ClipboardData) {
-                          List<String> lst =
-                              clipData.text.toString().split(' ');
+                          List<String> lst = clipData.text.toString().split(' ');
                           for (int i = 0; i < lst.length; i++) {
                             listOfString.elementAt(i).text = lst[i];
                           }
@@ -107,46 +105,28 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                           child: Row(
                             children: [
                               Expanded(
-                                  child: Text(
-                                      '${index < 9 ? 0 : ""}${(index + 1)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium)),
+                                  child: Text('${index < 9 ? 0 : ""}${(index + 1)}',
+                                      style: Theme.of(context).textTheme.bodyMedium)),
                               SizedBox(width: 10),
                               Expanded(
                                 flex: 6,
                                 child: TextFormField(
                                   textInputAction:
-                                      (listOfString.length - 1 == index)
-                                          ? TextInputAction.done
-                                          : TextInputAction.next,
+                                      (listOfString.length - 1 == index) ? TextInputAction.done : TextInputAction.next,
                                   controller: listOfString[index],
                                   onChanged: (value) => checkIsInValid(),
                                   // onEditingComplete: () => checkIsInValid(),
-                                  cursorColor:
-                                      Theme.of(context).primaryColorDark,
+                                  cursorColor: Theme.of(context).primaryColorDark,
                                   decoration: new InputDecoration(
                                       focusedBorder: UnderlineInputBorder(
-                                          borderSide: new BorderSide(
-                                              color: Theme.of(context)
-                                                  .iconTheme
-                                                  .color!)),
+                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
                                       border: UnderlineInputBorder(
-                                          borderSide: new BorderSide(
-                                              color: Theme.of(context)
-                                                  .iconTheme
-                                                  .color!)),
+                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
                                       errorBorder: UnderlineInputBorder(
-                                          borderSide: new BorderSide(
-                                              color: Theme.of(context)
-                                                  .iconTheme
-                                                  .color!)),
+                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
                                       isDense: true,
                                       enabledBorder: new UnderlineInputBorder(
-                                          borderSide: new BorderSide(
-                                              color: Theme.of(context)
-                                                  .iconTheme
-                                                  .color!))),
+                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!))),
                                 ),
                               )
                             ],
@@ -196,16 +176,14 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
       await account.setMainAccount();
       context.pop();
     } catch (e) {
-      CustomDialogs.showToastMessage(context,"We cant find account from this keys");
-      print(e.toString());
-
+      CustomDialogs.showToastMessage(context, "We cant find account from this keys");
+      log(e.toString());
     }
     CustomDialogs.loader(false, context);
   }
 
   void checkIsInValid() {
-    var list =
-        listOfString.map((e) => e.text.trim().isNotEmpty).toSet().toList();
+    var list = listOfString.map((e) => e.text.trim().isNotEmpty).toSet().toList();
     isInValid = list.contains(false);
     setState(() {});
   }

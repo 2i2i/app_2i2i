@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
-
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -35,8 +39,6 @@ class _AddAccountOptionsWidgetsState
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
-  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS ||
-      defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
 
   @override
@@ -166,17 +168,18 @@ class _AddAccountOptionsWidgetsState
     );
     // Create a new session
     if (!account.connector.connected) {
-      SessionStatus sessionStatus = await account.connector.createSession(
+      SessionStatus sessionStatus = await account.connector.connect(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
 
       isDialogOpen.value = false;
       CustomDialogs.loader(true, context, rootNavigator: true);
-      print(sessionStatus);
+      log("$sessionStatus");
       await account.save();
-      await myAccountPageViewModel.updateDBWithNewAccount(
-          account.address, type: 'WC');
+      if (account.address.isNotEmpty)
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address,
+            type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
@@ -188,15 +191,13 @@ class _AddAccountOptionsWidgetsState
     }
   }
 
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
+  Future _changeDisplayUri(String url) async {
+    bool isAvailable = false;
+    _displayUri = url;
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunch('algorand://');
-    if (isMobile && isAvailable) {
-      await launch(uri);
-    } else {
+    if (kIsWeb) {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
@@ -211,6 +212,47 @@ class _AddAccountOptionsWidgetsState
         ),
         barrierDismissible: true,
       );
+    } else {
+      var launchUri;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        launchUri = Uri(
+          scheme: 'algorand-wc',
+          host: 'wc',
+          queryParameters: {
+            'uri': _displayUri,
+            'bridge': "https://wallet-connect-d.perawallet.app"
+          },
+        );
+      } else {
+        launchUri = Uri.parse(_displayUri);
+      }
+      try {
+        isAvailable = await canLaunchUrl(launchUri);
+      } on PlatformException catch (err) {
+        print(err);
+      }
+      if (isAvailable) {
+        Future.delayed(Duration.zero).then(
+          (value) => showCupertinoDialog(
+            context: context,
+            builder: (context) => CustomAlertWidget.confirmDialog(
+              context,
+              description:
+                  "Are you sure to do the transaction from your wallet?",
+              title: "Please Confirm",
+              onPressed: () async {
+                isAvailable = await launchUrl(launchUri);
+              },
+            ),
+          ),
+        );
+      } else {
+        await launchUrl(
+            Uri.parse(Platform.isAndroid
+                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+            mode: LaunchMode.externalApplication);
+      }
     }
   }
 }

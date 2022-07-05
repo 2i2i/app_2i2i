@@ -23,14 +23,11 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
-
   @override
   void initState() {
     userIdNav.addListener(() {
-      if(userIdNav.value.isNotEmpty){
-        context.pushNamed(Routes.user.nameFromPath(),params: {
-          'uid':userIdNav.value
-        });
+      if (userIdNav.value.isNotEmpty) {
+        context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
         userIdNav.value = '';
       }
     });
@@ -55,7 +52,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
-                  if (firebaseUser != null){
+                  if (firebaseUser != null) {
                     signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
@@ -82,21 +79,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
-                              Text(
-                                  Keys.loginMsg2.tr(context),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.caption),
+                              Text(Keys.loginMsg2.tr(context),
+                                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
                               Text(Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .overline
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontWeight: FontWeight.bold)),
+                                  style: Theme.of(context).textTheme.overline?.copyWith(
+                                      color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -109,13 +98,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               await signUpViewModel.signInWithGoogle(context);
                             },
                             dense: true,
-                            leading: Image.asset('assets/google.png',
-                                height: 25, width: 25),
+                            leading: Image.asset('assets/google.png', height: 25, width: 25),
                             title: Text(Keys.signInWithGoogle.tr(context),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .subtitle1
-                                    ?.copyWith(fontWeight: FontWeight.w500)),
+                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
                           ),
                         ),
                         Visibility(
@@ -132,14 +117,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               },
                               dense: true,
                               leading: Image.asset('assets/apple.png',
-                                  height: 30, width: 30 ,color: Theme.of(context).cardColor),
+                                  height: 30, width: 30, color: Theme.of(context).cardColor),
                               title: Text(Keys.signInWithApple.tr(context),
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
-                                      ?.copyWith(
-                                    color: Theme.of(context).cardColor,
-                                          fontWeight: FontWeight.w500)),
+                                      ?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
@@ -152,18 +135,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                             child: ListTile(
                                 onTap: () async {
-                                  await signUpViewModel
-                                      .signInWithTwitter(context);
+                                  await signUpViewModel.signInWithTwitter(context);
                                 },
                                 dense: true,
-                                leading: Image.asset('assets/twitter.png',
-                                    height: 30, width: 30),
+                                leading: Image.asset('assets/twitter.png', height: 30, width: 30),
                                 title: Text(
                                   Keys.signInWithTwitter.tr(context),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      ?.copyWith(fontWeight: FontWeight.w500),
+                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500),
                                 )),
                           ),
                         ),
@@ -178,13 +156,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 await signUpViewModel.signInAnonymously();
                               },
                               dense: true,
-                              leading: Icon(Icons.account_circle_rounded,
-                                  color: Theme.of(context).cardColor),
-                              title: Text(Keys.signInAnonymously.tr(context),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .subtitle1
-                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),
+                              title: Text(
+                                Keys.signInAnonymously.tr(context),
+                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500),
                               )),
                         ),
                         SizedBox(height: kToolbarHeight * 1.25),
@@ -198,14 +173,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: '2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launch(
-                                            'https://about.2i2i.app/'))
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/')))
                                           throw 'Could not launch https://about.2i2i.app/';
                                       },
                                     style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
+                                        color: Theme.of(context).colorScheme.secondary,
                                         decoration: TextDecoration.underline)),
                               ],
                             ),
@@ -219,8 +191,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 }, error: (_, __) {
                   return Scaffold(
                     body: Center(
-                      child: Text(Keys.error.tr(context),
-                          style: Theme.of(context).textTheme.subtitle1),
+                      child: Text(Keys.error.tr(context), style: Theme.of(context).textTheme.subtitle1),
                     ),
                   );
                 });
