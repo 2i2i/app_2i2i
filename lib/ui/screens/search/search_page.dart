@@ -20,7 +20,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(searchFilterProvider.state).state = <String>[];
     });
     super.initState();

@@ -21,6 +21,7 @@ class ProfileWidget extends StatefulWidget {
   final bool showBorder;
   final bool showEdit;
   final ImageType imageType;
+  final double? borderRadius;
 
   const ProfileWidget(
       {Key? key,
@@ -30,6 +31,7 @@ class ProfileWidget extends StatefulWidget {
       this.onTap,
       this.imageType = ImageType.NAME_IMAGE,
       this.style,
+      this.borderRadius,
       this.hideShadow = false,
       this.isRating = false,
       this.showBorder = false,
@@ -46,14 +48,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.stringPath.contains('http') || widget.stringPath.contains('https')) {
       imageType = ImageType.NETWORK_IMAGE;
-    }else{
+    } else {
       imageType = widget.imageType;
     }
     return InkWell(
@@ -70,10 +71,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               elevation: 6,
               //shadowColor: Theme.of(context).inputDecorationTheme.fillColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(widget.borderRadius ?? 20.0),
               ),
               child: Center(
-                child: imageView(context),
+                child: imageView(context, borderRadius: widget.borderRadius),
               ),
             ),
             if (widget.statusColor != null)
@@ -85,8 +86,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   height: 18,
                   child: Material(
                     color: widget.statusColor,
-                    shape: CircleBorder(
-                        side: BorderSide(color: Colors.white, width: 3)),
+                    shape: CircleBorder(side: BorderSide(color: Colors.white, width: 3)),
                     // child: Icon(Icons.check, color: Colors.white,),
                   ),
                 ),
@@ -98,13 +98,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 child: Card(
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        25.0), // half of height and width of Image
+                    borderRadius: BorderRadius.circular(25.0), // half of height and width of Image
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
-                    child: RotatedBox(
-                        quarterTurns: 3, child: Icon(Icons.edit, size: 14)),
+                    child: RotatedBox(quarterTurns: 3, child: Icon(Icons.edit, size: 14)),
                   ),
                 ),
               )
@@ -114,17 +112,16 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget imageView(BuildContext context) {
+  Widget imageView(BuildContext context, {double? borderRadius}) {
     switch (imageType) {
       case ImageType.ASSENT_IMAGE:
         return ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.file(File(widget.stringPath),
-              fit: BoxFit.cover, width: widget.radius, height: widget.radius),
+          borderRadius: BorderRadius.circular(borderRadius ?? 20),
+          child: Image.file(File(widget.stringPath), fit: BoxFit.cover, width: widget.radius, height: widget.radius),
         );
       case ImageType.NETWORK_IMAGE:
         return ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(borderRadius ?? 20),
           child: CachedNetworkImage(
             imageUrl: widget.stringPath,
             width: widget.radius,
@@ -139,9 +136,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         return Text(
           widget.isRating
               ? "${widget.stringPath.toString().isNotEmpty ? widget.stringPath : "0"}"
-              : "${widget.stringPath.toString().isNotEmpty ? widget.stringPath : "X"}"
-                  .substring(0, 1)
-                  .toUpperCase(),
+              : "${widget.stringPath.toString().isNotEmpty ? widget.stringPath : "X"}".substring(0, 1).toUpperCase(),
           style: widget.style ?? Theme.of(context).textTheme.headline5,
         );
     }
@@ -154,9 +149,7 @@ class RectangleBox extends StatelessWidget {
   final double curveRadius;
   final GestureTapCallback? onTap;
 
-  const RectangleBox(
-      {Key? key, required this.icon, required this.radius, this.onTap, this.curveRadius = 18})
-      : super(key: key);
+  const RectangleBox({Key? key, required this.icon, required this.radius, this.onTap, this.curveRadius = 18}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -171,11 +164,7 @@ class RectangleBox extends StatelessWidget {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(curveRadius),
           boxShadow: [
-            BoxShadow(
-                offset: Offset(2, 4),
-                blurRadius: 18,
-                color: Color.fromRGBO(0, 0, 0, 0.12)
-            ),
+            BoxShadow(offset: Offset(2, 4), blurRadius: 18, color: Color.fromRGBO(0, 0, 0, 0.12)),
           ],
         ),
       ),
