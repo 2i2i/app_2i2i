@@ -274,8 +274,6 @@ class FirestoreDatabase {
       );
 
   Stream<UserModel> userStream({required String uid}) {
-    log(uid);
-    // try {
     return _service
         .documentStream(
       path: FirestorePath.user(uid),
@@ -289,9 +287,6 @@ class FirestoreDatabase {
         .handleError((e) {
       print(e);
     });
-    // } catch (e) {
-    //   print(e);
-    // }
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {

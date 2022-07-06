@@ -10,14 +10,13 @@ import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../commons/custom_profile_image_view.dart';
 
 class BidOutTile extends ConsumerWidget {
   final BidOut bidOut;
   final void Function(BidOut bidOut) onCancelClick;
 
-  const BidOutTile(
-      {Key? key, required this.bidOut, required this.onCancelClick})
-      : super(key: key);
+  const BidOutTile({Key? key, required this.bidOut, required this.onCancelClick}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +28,7 @@ class BidOutTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
-    UserModel user = userAsyncValue.asData!.value;
+    UserModel user = userAsyncValue.value!;
     bidSpeed = (bidOut.speed.num / MILLION).toString();
 
     if (user.status == Status.OFFLINE) {
@@ -57,56 +56,15 @@ class BidOutTile extends ConsumerWidget {
             Row(
               children: [
                 SizedBox(width: 4),
-                InkResponse(
+                ProfileWidget(
                   onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': user.id,
                   }),
-                  child: SizedBox(
-                    height: 55,
-                    width: 55,
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 0.3,
-                                  color: Theme.of(context).disabledColor),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
-                                  blurRadius: 20,
-                                  spreadRadius: 0.5,
-                                )
-                              ]),
-                          alignment: Alignment.center,
-                          child: Text(
-                            firstNameChar,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(
-                                    fontWeight: FontWeight.w600, fontSize: 20),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                color: statusColor,
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                    Border.all(color: Colors.white, width: 2)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  stringPath: (user.imageUrl ?? "").isNotEmpty ? user.imageUrl! : user.name,
+                  imageType: (user.imageUrl ?? "").isNotEmpty ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
+                  statusColor: statusColor,
+                  radius: 55,
+                  borderRadius: 10,
                 ),
                 SizedBox(width: 8),
                 Expanded(
@@ -144,20 +102,12 @@ class BidOutTile extends ConsumerWidget {
                         text: ' ALGO/sec',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headline6
-                                  ?.color
-                                  ?.withOpacity(0.7),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                             ),
                       )
                     ],
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
+                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                         ),
                   ),
                 ),
@@ -175,21 +125,14 @@ class BidOutTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  IconButton(
-                      onPressed: () => onCancelClick(bidOut),
-                      icon: Icon(Icons.cancel)),
+                  IconButton(onPressed: () => onCancelClick(bidOut), icon: Icon(Icons.cancel)),
                   Spacer(),
                   Expanded(
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
                         text: '${Keys.speed.tr(context)} :',
-                        children: [
-                          TextSpan(
-                              text: ' ${bidOut.energy / MILLION} ALGO',
-                              children: [],
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' ${bidOut.energy / MILLION} ALGO', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
