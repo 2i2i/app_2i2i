@@ -31,7 +31,7 @@ dependencies:
 
   walletconnect_dart: ^0.0.11
   algorand_dart: ^1.0.3
-
+  image_picker: ^0.8.5+3
   flutter_webrtc: ^0.8.5
   just_audio: ^0.9.20
   flutter_riverpod: ^1.0.3
@@ -47,7 +47,6 @@ dependencies:
 
   flutter_animator: ^3.2.1
   animate_countdown_text: ^1.1.3
-  image_picker: ^0.8.5
   flutter_svg: ^1.0.3
   go_router: ^3.0.7
   intl: ^0.17.0

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
+
 import './utils/device_info.dart' if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart' if (dart.library.js) './utils/websocket_web.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 
 enum SignalingState {
   ConnectionOpen,
@@ -104,9 +106,9 @@ class SignalingWebSockets {
     'optional': [],
   };
 
-  Future close() async {
+  Future<void> close() async {
     await _cleanSessions();
-    _socket?.close();
+    await _socket?.closeSocket();
   }
 
   void switchCamera() {
@@ -282,7 +284,7 @@ class SignalingWebSockets {
 
     _socket?.onMessage = (message) {
       log('Received data: ' + message);
-      onMessage(_decoder.convert(message));
+      onMessage.call(_decoder.convert(message));
     };
 
     _socket?.onClose = (int code, String reason) {
