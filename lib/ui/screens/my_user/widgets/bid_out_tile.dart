@@ -1,9 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -53,74 +51,52 @@ class BidOutTile extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           children: [
-            Row(
-              children: [
-                SizedBox(width: 4),
-                ProfileWidget(
-                  onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
-                    'uid': user.id,
-                  }),
-                  stringPath: (user.imageUrl ?? "").isNotEmpty ? user.imageUrl! : user.name,
-                  imageType: (user.imageUrl ?? "").isNotEmpty ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
-                  statusColor: statusColor,
-                  radius: 55,
-                  borderRadius: 10,
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        user.name,
-                        maxLines: 2,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        user.bio,
-                        maxLines: 2,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                              fontWeight: FontWeight.w400,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                RichText(
+            ListTile(
+              leading: ProfileWidget(
+                stringPath: (user.imageUrl ?? "").isEmpty ? user.name : user.imageUrl!,
+                imageType: (user.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
+                radius: 60,
+                borderRadius: 10,
+                hideShadow: true,
+                showBorder: false,
+                statusColor: statusColor,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              title: Text(
+                user.name,
+                maxLines: 2,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: RichText(
                   text: TextSpan(
                     text: bidSpeed,
                     children: [
                       TextSpan(
                         text: ' ALGO/sec',
                         children: [],
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                             ),
                       )
                     ],
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                         ),
                   ),
                 ),
-                SizedBox(width: 8),
-                Image.asset(
-                  'assets/algo_logo.png',
-                  height: 34,
-                  width: 34,
-                ),
-                SizedBox(width: 4),
-              ],
+              ),
+              trailing: Image.asset(
+                'assets/algo_logo.png',
+                height: 34,
+                width: 34,
+              ),
             ),
-            SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
