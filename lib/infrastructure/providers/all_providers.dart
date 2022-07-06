@@ -28,6 +28,12 @@ import 'ringing_provider/ringing_page_view_model.dart';
 import 'setup_user_provider/setup_user_view_model.dart';
 import 'user_bid_provider/user_page_view_model.dart';
 
+final loadingProvider = StateProvider<bool>((ref) => false);
+
+final loadingViewProvider = Provider<bool>((ref) {
+  return ref.watch(loadingProvider) != false;
+});
+
 final firebaseAuthProvider =
     Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 

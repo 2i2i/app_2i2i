@@ -56,7 +56,8 @@ class MyUserPageViewModel {
       final account = await accountService.getMainAccount();
       addressOfUserB = account.address;
     }
-    final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
+    final meeting = Meeting.newMeeting(
+        id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
     await database.acceptBid(meeting);
 
     if ((firstUserTokenModel is TokenModel)) {
@@ -68,23 +69,32 @@ class MyUserPageViewModel {
         "meetingId": bidIn.public.id,
         "meetingData": meeting.toMap(),
       };
-      await FirebaseNotifications()
-          .sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
+      await FirebaseNotifications().sendNotification(
+          (firstUserTokenModel.token ?? ""),
+          jsonDataCurrentUser,
+          firstUserTokenModel.isIos ?? false);
 
       if (secondUserTokenModel is TokenModel) {
-        Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
+        Map jsonDataNextUser = {
+          "title": 'Hey ${secondUser?.name ?? ""} don\'t wait',
+          "body": 'You are next in line'
+        };
         await FirebaseNotifications().sendNotification(
-            (secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
+            (secondUserTokenModel.token ?? ""),
+            jsonDataNextUser,
+            secondUserTokenModel.isIos ?? false);
       }
     }
     return true;
   }
 
   Future cancelNoShow({required BidIn bidIn}) async {
-    return database.cancelBid(A: bidIn.private!.A, B: user.id, bidId: bidIn.public.id);
+    return database.cancelBid(
+        A: bidIn.private!.A, B: user.id, bidId: bidIn.public.id);
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
+    await Future.delayed(Duration(seconds: 5));
     if (!bidOut.active) return;
 
     if (bidOut.speed.num == 0) {
