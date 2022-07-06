@@ -108,10 +108,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
           title: "Confirm",
           description: "Are you sure want to leave video call?",
           onPressed: () async {
-            if (_session != null) {
-              _signaling?.bye(_session!.sid);
-            }
-            await outInit();
+            _hangUp(amA ? MeetingStatus.END_A : MeetingStatus.END_B);
           },
         );
         return false;
@@ -533,10 +530,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       log(K + '_signaling?.onCallStateChange - state=$state');
       switch (state) {
         case CallState.CallStateNew:
-          setState(() {
-            _session = session;
-            // _inCalling = true;
-          });
+          _session = session;
+          setState(() {});
 
           log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
@@ -544,7 +539,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          outInit();
+          _hangUp(MeetingStatus.END_TIMER_CALL_PAGE);
+          // outInit();
           break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
@@ -555,10 +551,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     _signaling?.onPeersUpdate = ((event) {
       log(K + '_signaling?.onPeersUpdate - event[self]=${event['self']}');
       log(K + '_signaling?.onPeersUpdate - event[peers]=${event['peers']}');
-      setState(() {
-        _selfId = event['self'];
-        // _peers = event['peers'];
-      });
+      _selfId = event['self'];
+      // _peers = event['peers'];
+      setState(() {});
 
       if (amA) _invitePeer(remoteId, false);
     });

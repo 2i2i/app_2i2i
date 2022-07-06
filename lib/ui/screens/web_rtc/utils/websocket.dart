@@ -31,8 +31,8 @@ class SimpleWebSocket {
   }
 
   send(data) {
-    if (_socket != null && ((_socket?.closeCode ?? 0) != closeSocketCode)) {
-      _socket?.add(data);
+    if (_socket != null && (_socket!.closeCode ?? 0) != closeSocketCode) {
+      _socket!.add(data);
       log('send: $data');
     }
   }
