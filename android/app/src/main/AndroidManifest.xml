@@ -20,6 +20,13 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.app.i2i2.MyApplication"
         android:icon="@mipmap/ic_launcher"
@@ -75,8 +82,8 @@
                     android:scheme="https" />
             </intent-filter>
 
-
         </activity>
+
         <provider
             android:name="com.pichillilorenzo.flutter_inappwebview.InAppWebViewFileProvider"
             android:authorities="${applicationId}.flutter_inappwebview.fileprovider"

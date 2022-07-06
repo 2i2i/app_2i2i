@@ -11,10 +11,7 @@ enum Lounge { chrony, highroller, eccentric, lurker }
 
 extension ParseToStringLounge on Lounge {
   String toStringEnum() {
-    return this
-        .toString()
-        .split('.')
-        .last;
+    return this.toString().split('.').last;
   }
 
   String name() {
@@ -27,10 +24,7 @@ enum Status { ONLINE, IDLE, OFFLINE }
 
 extension ParseToStringStatus on Status {
   String toStringEnum() {
-    return this
-        .toString()
-        .split('.')
-        .last;
+    return this.toString().split('.').last;
   }
 }
 
@@ -109,7 +103,7 @@ class Rule extends Equatable {
       'maxMeetingDuration': maxMeetingDuration,
       'minSpeed': minSpeed,
       'importance':
-      importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
 
@@ -159,8 +153,9 @@ class UserModel extends Equatable {
   String? imageUrl;
   String bio;
   List<String> tags;
+
   void setTags() {
-    tags = [name.toLowerCase(), ...tagsFromBio(bio)];
+    tags = [/*name.toLowerCase(),*/ ...keysFromName(name), ...tagsFromBio(bio)];
   }
 
   // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
@@ -176,6 +171,20 @@ class UserModel extends Equatable {
     return tags;
   }
 
+  static List<String> keysFromName(String name) {
+    List<String> keysList = [];
+    String keyWord = "";
+    for (var i = 0; i < name.length; i++) {
+      if (name[i] == " ") {
+        keyWord = "";
+      } else {
+        keyWord = keyWord + name[i];
+        keysList.add(keyWord.toLowerCase());
+      }
+    }
+    return keysList;
+  }
+
   void setNameOrBio({String? name, String? bio}) {
     if (name is String) this.name = name.trim();
     if (bio is String) this.bio = bio.trim();
@@ -186,7 +195,7 @@ class UserModel extends Equatable {
   final int numRatings;
 
   final List<Lounge>
-  loungeHistory; // actually circular array containing recent 100 lounges
+      loungeHistory; // actually circular array containing recent 100 lounges
   final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
 
   final List<String> blocked;
@@ -210,7 +219,7 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
     final Status status =
-    Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final List<SocialLinksModel> socialLinksList = data
                 .containsKey('socialLinks') &&
             data['socialLinks'] != null
@@ -227,7 +236,7 @@ class UserModel extends Equatable {
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule =
-    data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
     final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
         .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
@@ -271,7 +280,8 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
+      'socialLinks':
+          FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }
 
