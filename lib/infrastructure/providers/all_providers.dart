@@ -95,7 +95,7 @@ final setupUserViewModelProvider =
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
-
+  final functions = ref.watch(firebaseFunctionsProvider);
   final GoogleSignIn googleSignIn = GoogleSignIn();
   // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
   // log('setupUserViewModelProvider - database=$database');
@@ -104,6 +104,7 @@ final setupUserViewModelProvider =
       database: database,
       algorandLib: algorandLib,
       algorand: algorand,
+      functions: functions,
       storage: storage,
       googleSignIn: googleSignIn,
       accountService: accountService);
@@ -146,32 +147,31 @@ final myUserPageViewModelProvider = Provider((ref) {
   // log('myUserPageViewModelProvider - functions=$functions');
   final database = ref.watch(databaseProvider);
   // log('myUserPageViewModelProvider - database=$database');
-  final uid = ref.watch(myUIDProvider)!;
+  final uid = ref.watch(myUIDProvider);
   // log('myUserPageViewModelProvider - uid=$uid');
-  final user = ref.watch(userProvider(uid));
-  if (user is AsyncError || user is AsyncLoading) {
-    return null;
+  if (uid?.isNotEmpty ?? false) {
+    final user = ref.watch(userProvider(uid!));
+    if (user is AsyncError || user is AsyncLoading) {
+      return null;
+    }
+    // log('myUserPageViewModelProvider - user=$user');
+    final userChanger = ref.watch(userChangerProvider);
+    if (userChanger == null) return null;
+
+    if (userChanger is AsyncError || userChanger is AsyncLoading) {
+      return null;
+    }
+
+    final accountService = ref.watch(accountServiceProvider);
+
+    return MyUserPageViewModel(
+      database: database,
+      functions: functions,
+      user: user.asData!.value,
+      accountService: accountService,
+      userChanger: userChanger,
+    );
   }
-
-  // log('myUserPageViewModelProvider - user=$user');
-  final userChanger = ref.watch(userChangerProvider);
-  if (userChanger == null) return null;
-
-  if (userChanger is AsyncError || userChanger is AsyncLoading) {
-    return null;
-  }
-
-  final accountService = ref.watch(accountServiceProvider);
-
-  // log('myUserPageViewModelProvider - 2');
-
-  return MyUserPageViewModel(
-    database: database,
-    functions: functions,
-    user: user.asData!.value,
-    accountService: accountService,
-    userChanger: userChanger,
-  );
 });
 
 final isUserLocked = IsUserLocked(false);

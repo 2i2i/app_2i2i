@@ -78,7 +78,7 @@ class CustomAlertWidget {
   static confirmDialog(BuildContext context,
       {required String title,
       required String description,
-      required VoidCallback onPressed}) {
+      required VoidCallback onPressed,TextStyle? yesButtonTextStyle,TextStyle? noButtonTextStyle}) {
     return CupertinoAlertDialog(
       title: Text(title),
       content: Padding(
@@ -88,14 +88,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No'),
+          child: Text('No',style: noButtonTextStyle),
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).maybePop();
+            Navigator.of(context).pop();
             onPressed();
           },
-          child: Text('Yes'),
+          child: Text('Yes',style: yesButtonTextStyle),
         ),
       ],
     );

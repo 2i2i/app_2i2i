@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -30,11 +33,13 @@ class SetupUserViewModel with ChangeNotifier {
       required this.accountService,
       required this.googleSignIn,
       required this.algorand,
+      required this.functions,
       required this.storage});
 
   final FirebaseAuth auth;
   final FirestoreDatabase database;
   final SecureStorage storage;
+  final FirebaseFunctions functions;
   final AccountService accountService;
   final AlgorandLib algorandLib;
   final GoogleSignIn googleSignIn;
@@ -121,7 +126,7 @@ class SetupUserViewModel with ChangeNotifier {
         existingUser = FirebaseAuth.instance.currentUser;
       }
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-      if(googleSignInAccount != null){
+      if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
@@ -188,11 +193,7 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
 
-      socialLinksModel = SocialLinksModel(
-          userName: credential.email,
-          userEmail: credential.email,
-          accountName: 'Apple',
-          userId: credential.userIdentifier);
+      socialLinksModel = SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
@@ -224,20 +225,20 @@ class SetupUserViewModel with ChangeNotifier {
         );
 
         authResult = await twitterLogin.login();
-        if(authResult.authToken is String && authResult.authTokenSecret is String) {
+        if (authResult.authToken is String && authResult.authTokenSecret is String) {
           twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
         }
       }
       if (linkWithCredential && existingUser != null) {
         if (kIsWeb) {
           firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
-        } else if(twitterAuthCredential != null){
+        } else if (twitterAuthCredential != null) {
           firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
         }
       } else {
         if (kIsWeb) {
           firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
-        } else if(twitterAuthCredential != null){
+        } else if (twitterAuthCredential != null) {
           firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
         }
       }
@@ -260,6 +261,43 @@ class SetupUserViewModel with ChangeNotifier {
     await auth.signOut();
   }
 
+  Future<void> deleteUser({required BuildContext mainContext, required String title, required String description}) async {
+    Future.delayed(Duration.zero).then(
+      (value) => showCupertinoDialog(
+        context: mainContext,
+        builder: (context) => CustomAlertWidget.confirmDialog(
+          context,
+          title: title,
+          description: description,
+          onPressed: () async {
+            try {
+              CustomDialogs.loader(true, mainContext);
+              final HttpsCallable deleteUser = functions.httpsCallable('deleteMe');
+              HttpsCallableResult result = await deleteUser.call();
+              if (result.data is List) {
+                List dataList = result.data;
+                int mapIndex = dataList.indexWhere((element) => element.containsKey('successCount'));
+                if (mapIndex > -1) {
+                  Map dataMap = dataList[mapIndex];
+                  if ((dataMap['successCount'] ?? 0) > 0) {
+                    await Future.delayed(Duration(milliseconds: 300));
+                    await signOutFromAuth();
+                    CustomDialogs.loader(false, mainContext);
+                  }
+                }
+              }
+            } catch (e) {
+              CustomDialogs.loader(false, mainContext);
+              print(e);
+            }
+          },
+          yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+          noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+        ),
+      ),
+    );
+  }
+
   Future updateDeviceInfo(String uid) async {
     if (!kIsWeb) {
       // TODO no device info for web?
@@ -278,8 +316,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future setupAlgorandAccount(String uid) async {
     notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
-    final LocalAccount account =
-        await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
+    final LocalAccount account = await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
     await database.addAlgorandAccount(uid, account.address, 'LOCAL');
     await accountService.setMainAcccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
