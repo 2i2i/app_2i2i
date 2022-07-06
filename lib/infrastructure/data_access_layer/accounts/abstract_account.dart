@@ -177,6 +177,9 @@ abstract class AbstractAccount {
   }
 
   int minBalance() {
+
+    
+
     int asaCount = 0;
     for (final b in balances) {
       if (b.assetHolding.assetId != 0) asaCount++;
