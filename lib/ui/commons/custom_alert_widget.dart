@@ -71,7 +71,7 @@ class CustomAlertWidget {
     return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
   }
 
-  static Future<void> confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed}) async {
+  static Future<void> confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed,TextStyle? yesButtonTextStyle,TextStyle? noButtonTextStyle}) async {
     var cupertinoDialog = CupertinoAlertDialog(
       title: Text(title),
       content: Padding(
@@ -81,14 +81,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No'),
+          child: Text('No',style: noButtonTextStyle),
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).maybePop();
+            Navigator.of(context).pop();
             onPressed();
           },
-          child: Text('Yes'),
+          child: Text('Yes',style: yesButtonTextStyle),
         ),
       ],
     );
