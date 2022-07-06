@@ -177,7 +177,8 @@ class ar {
       Keys.signInWithTwitter: "تسجيل الدخول باستخدام Twitter",
       Keys.signInAnonymously: 'الدخول بتخفي',
       Keys.searchFaq: 'كلمات البحث',
-      Keys.loading:'جار التحميل...'
+      Keys.loading:'جار التحميل...',
+      Keys.noKeyFound: "لا يمكننا العثور على حساب من هذه المفاتيح",
     };
   }
 }

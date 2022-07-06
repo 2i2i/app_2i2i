@@ -192,6 +192,7 @@ class Keys {
 
   static const String searchFaq ='searchFaq';
   static const String loading ='loading';
+  static const String noKeyFound ='noKeyFound';
 
 }
 

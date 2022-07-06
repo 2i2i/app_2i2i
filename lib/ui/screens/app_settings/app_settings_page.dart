@@ -279,7 +279,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
-                        ? Text('Update Available', style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                        ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
@@ -307,7 +307,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             Visibility(
               visible: !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
               child: Text(
-                'Connect account with',
+                Keys.connectAccount.tr(context),
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ),

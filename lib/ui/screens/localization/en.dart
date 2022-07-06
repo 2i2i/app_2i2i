@@ -9,8 +9,7 @@ class en {
       Keys.automatic: 'Automatic',
       Keys.shareQr: 'Share yourself',
       Keys.error: 'Error',
-      Keys.errorWhileAddBid:
-          'Error while adding bid, Try another account or reduce the max duration or reduce the speed',
+      Keys.errorWhileAddBid: 'Error while adding bid, Try another account or reduce the max duration or reduce the speed',
       Keys.less: 'less',
       Keys.importance: 'Importance',
       Keys.chrony: 'Chrony',
@@ -134,19 +133,15 @@ class en {
       Keys.confirmInWallet: 'Please confirm in your wallet',
       Keys.noHostsFound: 'No Hosts found',
       Keys.pleaseReadCarefully: 'Please read carefully',
-      Keys.writeDownRecovery:
-          'Write down your recovery passphrase(1-25 words). This is the',
+      Keys.writeDownRecovery: 'Write down your recovery passphrase(1-25 words). This is the',
       Keys.recoverAccount: 'only way to recover your account in future.',
       Keys.warning: 'Warning',
-      Keys.doNotShare:
-          'Do not share these words with anyone, as it grants full access to your account',
+      Keys.doNotShare: 'Do not share these words with anyone, as it grants full access to your account',
       Keys.createLocalAccount: 'Create Local Account',
-      Keys.createLocalAccountWarning:
-          'Do not share these words with anyone, as it grants full access to your account.',
+      Keys.createLocalAccountWarning: 'Do not share these words with anyone, as it grants full access to your account.',
       Keys.recoverAccounts: 'Recover account',
       Keys.recover: 'Recover',
-      Keys.recoverAccountWarning:
-          'Fill all 25 valid keys of your account that you want to recover',
+      Keys.recoverAccountWarning: 'Fill all 25 valid keys of your account that you want to recover',
       Keys.verifyRecovery: 'Verify recovery passphrase backup',
       Keys.selectWord: 'Select word',
       Keys.complete: 'Complete',
@@ -165,13 +160,11 @@ class en {
       Keys.topSpeeds: 'Top Speeds',
       Keys.topDurations: 'Top Durations',
       Keys.language: 'App Language',
-      Keys.inviteFriend:
-          'Share your profile link with\nyour followers to meet them here',
+      Keys.inviteFriend: 'Share your profile link with\nyour followers to meet them here',
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Please join some Hosts',
       Keys.beFirstJoin: 'Be the first to join this Host',
       Keys.appVersion: 'Version',
-
       Keys.logOut: 'LOGOUT',
       Keys.connectAccount: 'Connect account with',
       Keys.updateAvailable: 'Update Available',
@@ -180,11 +173,11 @@ class en {
       Keys.loginMsg3: '>501 MEETINGS SINCE LAUNCH',
       Keys.signInWithGoogle: 'Sign in with Google',
       Keys.signInWithApple: 'Sign in with Apple',
-      Keys.signInWithTwitter:  'Sign in with Twitter',
+      Keys.signInWithTwitter: 'Sign in with Twitter',
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.searchFaq: 'Search keywords',
-      Keys.loading:'Loading...'
-
+      Keys.loading: 'Loading...',
+      Keys.noKeyFound: "We can't find account from this keys",
     };
   }
 }
