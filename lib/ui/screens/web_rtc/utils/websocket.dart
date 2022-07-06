@@ -37,9 +37,10 @@ class SimpleWebSocket {
     }
   }
 
-  close() {
+  closeSocket() async {
+    log('code ==> : ${(_socket?.closeCode ?? 0)}');
     if (_socket != null && ((_socket?.closeCode ?? 0) != closeSocketCode)) {
-      _socket?.close(closeSocketCode);
+      await _socket?.close(closeSocketCode);
     }
   }
 

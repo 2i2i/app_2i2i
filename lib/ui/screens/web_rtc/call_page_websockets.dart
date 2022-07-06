@@ -10,9 +10,11 @@ import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/providers/app_settings_provider/app_setting_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -88,254 +90,226 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     final userLocal = ref.watch(userProvider(localId));
     final userRemote = ref.watch(userProvider(remoteId));
 
-    if (haveToWait(userLocal) && haveToWait(userRemote) ||
-        lockedUserViewModel == null) {
+    if (haveToWait(userLocal) && haveToWait(userRemote) || lockedUserViewModel == null) {
       return Center(child: CircularProgressIndicator());
     }
     localUser = userLocal.value;
     remoteUser = userRemote.value;
     // callStatusModel = callStatus.value;
 
-    final List<MeetingStatusWithTS> meetingStatus =
-        lockedUserViewModel.meeting.statusHistory;
-    bool isActive = meetingStatus.any(
-            (element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) &&
-        meetingStatus
-            .any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
+    final List<MeetingStatusWithTS> meetingStatus = lockedUserViewModel.meeting.statusHistory;
+    bool isActive = meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_A) &&
+        meetingStatus.any((element) => element.value == MeetingStatus.RECEIVED_REMOTE_B);
 
-    return Scaffold(
-      key: _scaffoldKey,
-      body: OrientationBuilder(builder: (context, orientation) {
-        return Container(
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              VideoView(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                fullView: true,
-                isVideoMuted: checkIfAmA(
-                    (appSettingModel?.swapVideo ?? false) ? localId : remoteId,
-                    forVideo: true),
-                isAudioMuted: checkIfAmA(
-                    (appSettingModel?.swapVideo ?? false) ? localId : remoteId,
-                    forAudio: true),
-                userModel: (appSettingModel?.swapVideo ?? false)
-                    ? localUser
-                    : remoteUser,
-                renderer: (appSettingModel?.swapVideo ?? false)
-                    ? _localRenderer
-                    : _remoteRenderer,
-              ),
-              Positioned(
-                top: 40,
-                left: 40,
-                child: InkResponse(
-                  onTap: () => _swapVideo(),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: VideoView(
-                      height: MediaQuery.of(context).size.height * 0.19,
-                      isVideoMuted: checkIfAmA(
-                          (appSettingModel?.swapVideo ?? false)
-                              ? remoteId
-                              : localId,
-                          forVideo: true),
-                      isAudioMuted: checkIfAmA(
-                          (appSettingModel?.swapVideo ?? false)
-                              ? remoteId
-                              : localId,
-                          forAudio: true),
-                      width: MediaQuery.of(context).size.height * 0.16,
-                      userModel: (appSettingModel?.swapVideo ?? false)
-                          ? remoteUser
-                          : localUser,
-                      renderer: (appSettingModel?.swapVideo ?? false)
-                          ? _remoteRenderer
-                          : _localRenderer,
+    return WillPopScope(
+      onWillPop: () async {
+        await CustomAlertWidget.confirmDialog(
+          context,
+          title: "Confirm",
+          description: "Are you sure want to leave video call?",
+          onPressed: () async {
+            if (_session != null) {
+              _signaling?.bye(_session!.sid);
+            }
+            await outInit();
+          },
+        );
+        return false;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: OrientationBuilder(builder: (context, orientation) {
+          return Container(
+            child: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                VideoView(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  fullView: true,
+                  isVideoMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? localId : remoteId, forVideo: true),
+                  isAudioMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? localId : remoteId, forAudio: true),
+                  userModel: (appSettingModel?.swapVideo ?? false) ? localUser : remoteUser,
+                  renderer: (appSettingModel?.swapVideo ?? false) ? _localRenderer : _remoteRenderer,
+                ),
+                Positioned(
+                  top: 40,
+                  left: 40,
+                  child: InkResponse(
+                    onTap: () => _swapVideo(),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: VideoView(
+                        height: MediaQuery.of(context).size.height * 0.19,
+                        isVideoMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? remoteId : localId, forVideo: true),
+                        isAudioMuted: checkIfAmA((appSettingModel?.swapVideo ?? false) ? remoteId : localId, forAudio: true),
+                        width: MediaQuery.of(context).size.height * 0.16,
+                        userModel: (appSettingModel?.swapVideo ?? false) ? remoteUser : localUser,
+                        renderer: (appSettingModel?.swapVideo ?? false) ? _remoteRenderer : _localRenderer,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: (widget.meeting.speed.num) != 0,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: ValueListenableBuilder(
-                    valueListenable: progress,
-                    builder:
-                        (BuildContext context, double value, Widget? child) {
-                      var val = value;
-                      if (amA && value > 0) {
-                        val = 100 - value;
-                      }
+                Visibility(
+                  visible: (widget.meeting.speed.num) != 0,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: ValueListenableBuilder(
+                      valueListenable: progress,
+                      builder: (BuildContext context, double value, Widget? child) {
+                        var val = value;
+                        if (amA && value > 0) {
+                          val = 100 - value;
+                        }
 
-                      double width = MediaQuery.of(context).size.height / 3;
-                      double height = (val * width) / 100;
-                      return Container(
-                        height: width,
-                        width: 28,
-                        margin: const EdgeInsets.only(right: 30, left: 30),
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white24,
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  shadowColor: Colors.black,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  type: MaterialType.card,
-                                  child: SizedBox(
-                                    height: width,
-                                    width: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Material(
+                        double width = MediaQuery.of(context).size.height / 3;
+                        double height = (val * width) / 100;
+                        return Container(
+                          height: width,
+                          width: 28,
+                          margin: const EdgeInsets.only(right: 30, left: 30),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(20),
-                                  shadowColor: Colors.black12,
-                                  type: MaterialType.card,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: ProgressBar(
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    shadowColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    type: MaterialType.card,
+                                    child: SizedBox(
                                       height: width,
-                                      radius: 0,
+                                      width: 20,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Material(
-                                  color: Colors.grey,
-                                  shadowColor: Colors.black,
-                                  type: MaterialType.card,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    topLeft: Radius.circular(20),
-                                  ),
-                                  child: Container(
-                                    height: height,
-                                    width: 20,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white24,
-                                        border: Border(bottom: BorderSide())),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    borderRadius: BorderRadius.circular(20),
+                                    shadowColor: Colors.black12,
+                                    type: MaterialType.card,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: ProgressBar(
+                                        height: width,
+                                        radius: 0,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Material(
+                                    color: Colors.grey,
+                                    shadowColor: Colors.black,
+                                    type: MaterialType.card,
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      topLeft: Radius.circular(20),
+                                    ),
+                                    child: Container(
+                                      height: height,
+                                      width: 20,
+                                      decoration: BoxDecoration(color: Colors.white24, border: Border(bottom: BorderSide())),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Visibility(
-                  visible: countDownTimerDate is DateTime,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 100.0),
-                    child: SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: Center(
-                        child: AnimateCountdownText(
-                          dateTime:
-                              countDownTimerDate ?? DateTime.now().toUtc(),
-                          format: _formatHMS,
-                          animationType: AnimationType.scaleIn,
-                          characterTextStyle: Theme.of(context)
-                              .textTheme
-                              .headline3!
-                              .copyWith(color: Colors.white),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Visibility(
+                    visible: countDownTimerDate is DateTime,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 100.0),
+                      child: SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: Center(
+                          child: AnimateCountdownText(
+                            dateTime: countDownTimerDate ?? DateTime.now().toUtc(),
+                            format: _formatHMS,
+                            animationType: AnimationType.scaleIn,
+                            characterTextStyle: Theme.of(context).textTheme.headline3!.copyWith(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: !isActive,
-                child: Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  color: Colors.transparent,
-                  child: Center(
-                    child: Text('Connecting...',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5
-                            ?.copyWith(color: Colors.white)),
+                Visibility(
+                  visible: !isActive,
+                  child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Text('Connecting...', style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleButton(
-                            icon: Icons.call_end,
-                            iconColor: Colors.white,
-                            backgroundColor: AppTheme().red,
-                            onTap: () => _hangUp(amA
-                                ? MeetingStatus.END_A
-                                : MeetingStatus.END_B)),
-                        CircleButton(
-                          icon: (appSettingModel?.isAudioEnabled ?? false)
-                              ? Icons.mic_rounded
-                              : Icons.mic_off_rounded,
-                          onTap: _muteAudio,
-                        ),
-                        CircleButton(
-                          icon: (appSettingModel?.isVideoEnabled ?? false)
-                              ? Icons.videocam_rounded
-                              : Icons.videocam_off_rounded,
-                          onTap: _muteVideo,
-                        ),
-                        CircleButton(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: EdgeInsets.all(8),
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(color: Colors.white38, shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(20)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleButton(
+                              icon: Icons.call_end,
+                              iconColor: Colors.white,
+                              backgroundColor: AppTheme().red,
+                              onTap: () => _hangUp(amA ? MeetingStatus.END_A : MeetingStatus.END_B)),
+                          CircleButton(
+                            icon: (appSettingModel?.isAudioEnabled ?? false) ? Icons.mic_rounded : Icons.mic_off_rounded,
+                            onTap: _muteAudio,
+                          ),
+                          CircleButton(
+                            icon: (appSettingModel?.isVideoEnabled ?? false) ? Icons.videocam_rounded : Icons.videocam_off_rounded,
+                            onTap: _muteVideo,
+                          ),
+                          CircleButton(
                             icon: Icons.cameraswitch_rounded,
                             onTap: _switchCamera,
                             // () => callScreenModel!.cameraSwitch(
                             //     context: context, signaling: signaling!)),
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
 
     // return Scaffold(
@@ -456,24 +430,17 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                 )
-              : RTCVideoView(renderer,
-                  mirror: mirror,
-                  objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+              : RTCVideoView(renderer, mirror: mirror, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
           decoration: BoxDecoration(color: Colors.black54),
         ),
         Positioned(
           child: Row(
             children: [
-              Icon(isAudioMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
-                  size: 16, color: Colors.white),
+              Icon(isAudioMuted ? Icons.mic_off_rounded : Icons.mic_rounded, size: 16, color: Colors.white),
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted",
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption
-                        ?.copyWith(color: Theme.of(context).primaryColor)),
+                child: Text("Muted", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -522,15 +489,14 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     // if (mounted) setState(() {});
 
-    _signaling?.close();
+    await _signaling?.close();
     budgetTimer?.cancel();
     progressTimer?.cancel();
 
     // _inCalling = false;
     _session = null;
 
-    if (endReason is MeetingStatus)
-      await widget.meetingChanger.endMeeting(widget.meeting, endReason);
+    if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
     widget.onHangPhone(remoteId, widget.meeting.id);
 
@@ -572,11 +538,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
             // _inCalling = true;
           });
 
-          log(K +
-              '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
+          log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
-            return widget.meetingChanger.roomCreatedMeeting(
-                widget.meeting.id, _session!.sid + '-' + _session!.pid);
+            return widget.meetingChanger.roomCreatedMeeting(widget.meeting.id, _session!.sid + '-' + _session!.pid);
 
           break;
         case CallState.CallStateBye:
@@ -605,16 +569,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     });
 
     _signaling?.onAddRemoteStream = ((_, stream) {
-      log(K +
-          '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
+      log(K + '_signaling?.onAddRemoteStream - stream=$stream - amA=$amA - widget.meeting.status=${widget.meeting.status}');
       _remoteRenderer.srcObject = stream;
 
       if (amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_A)
-        return widget.meetingChanger
-            .remoteReceivedByAMeeting(widget.meeting.id);
-      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B)
-        return widget.meetingChanger
-            .remoteReceivedByBMeeting(widget.meeting.id);
+        return widget.meetingChanger.remoteReceivedByAMeeting(widget.meeting.id);
+      else if (!amA && widget.meeting.status != MeetingStatus.RECEIVED_REMOTE_B) return widget.meetingChanger.remoteReceivedByBMeeting(widget.meeting.id);
     });
 
     _signaling?.onRemoveRemoteStream = ((_, stream) {
@@ -635,15 +595,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   void _muteAudio() async {
     bool value = _signaling?.muteAudio() ?? false;
-    await widget.meetingChanger
-        .muteAudio(widget.meeting.id, amA: amA, audioStatus: !value);
+    await widget.meetingChanger.muteAudio(widget.meeting.id, amA: amA, audioStatus: !value);
     appSettingModel?.setAudioStatus(value);
   }
 
   void _muteVideo() async {
     bool value = _signaling?.muteVideo() ?? false;
-    await widget.meetingChanger
-        .muteVideo(widget.meeting.id, amA: amA, videoStatus: !value);
+    await widget.meetingChanger.muteVideo(widget.meeting.id, amA: amA, videoStatus: !value);
     appSettingModel?.setVideoStatus(value);
   }
 
@@ -709,8 +667,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   }
 
   int getDurationLeft(int maxDuration) {
-    final DateTime maxEndTime =
-        widget.meeting.start!.add(Duration(seconds: maxDuration));
+    final DateTime maxEndTime = widget.meeting.start!.add(Duration(seconds: maxDuration));
     final durationObj = maxEndTime.difference(DateTime.now().toUtc());
     return durationObj.inSeconds;
   }
@@ -723,8 +680,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     final duration = getDurationLeft(maxDuration);
     log(' ====== $duration');
     if (duration <= 100) {
-      countDownTimerDate =
-          DateTime.now().toUtc().add(Duration(seconds: duration));
+      countDownTimerDate = DateTime.now().toUtc().add(Duration(seconds: duration));
       if (mounted) {
         setState(() {});
       }

@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -232,19 +233,13 @@ class _AddAccountOptionsWidgetsState
         print(err);
       }
       if (isAvailable) {
-        Future.delayed(Duration.zero).then(
-          (value) => showCupertinoDialog(
-            context: context,
-            builder: (context) => CustomAlertWidget.confirmDialog(
-              context,
-              description:
-                  "Are you sure to do the transaction from your wallet?",
-              title: "Please Confirm",
-              onPressed: () async {
-                isAvailable = await launchUrl(launchUri);
-              },
-            ),
-          ),
+        CustomAlertWidget.confirmDialog(
+          context,
+          description: "Are you sure to do the transaction from your wallet?",
+          title: "Please Confirm",
+          onPressed: () async {
+            isAvailable = await launchUrl(launchUri);
+          },
         );
       } else {
         await launchUrl(

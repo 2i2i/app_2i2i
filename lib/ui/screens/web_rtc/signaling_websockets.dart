@@ -106,9 +106,9 @@ class SignalingWebSockets {
     'optional': [],
   };
 
-  Future close() async {
+  Future<void> close() async {
     await _cleanSessions();
-    _socket?.close();
+    await _socket?.closeSocket();
   }
 
   void switchCamera() {
