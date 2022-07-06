@@ -284,7 +284,7 @@ class SignalingWebSockets {
 
     _socket?.onMessage = (message) {
       log('Received data: ' + message);
-      onMessage(_decoder.convert(message));
+      onMessage.call(_decoder.convert(message));
     };
 
     _socket?.onClose = (int code, String reason) {

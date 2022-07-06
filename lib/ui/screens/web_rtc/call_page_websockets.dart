@@ -450,13 +450,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   @override
   void dispose() {
-    outInit();
+    // outInit();
     super.dispose();
   }
 
   @override
   deactivate() {
-    outInit();
+    // outInit();
     super.deactivate();
   }
 
@@ -531,7 +531,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
       switch (state) {
         case CallState.CallStateNew:
           _session = session;
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
 
           log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
@@ -539,8 +541,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
           break;
         case CallState.CallStateBye:
-          _hangUp(MeetingStatus.END_TIMER_CALL_PAGE);
-          // outInit();
+          _hangUp(MeetingStatus.END_DISCONNECT);
+          outInit();
           break;
         case CallState.CallStateInvite:
         case CallState.CallStateConnected:
@@ -551,9 +553,13 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     _signaling?.onPeersUpdate = ((event) {
       log(K + '_signaling?.onPeersUpdate - event[self]=${event['self']}');
       log(K + '_signaling?.onPeersUpdate - event[peers]=${event['peers']}');
-      _selfId = event['self'];
-      // _peers = event['peers'];
-      setState(() {});
+      if (event is Map) {
+        _selfId = event['self'];
+        // _peers = event['peers'];
+        if (mounted) {
+          setState(() {});
+        }
+      }
 
       if (amA) _invitePeer(remoteId, false);
     });
