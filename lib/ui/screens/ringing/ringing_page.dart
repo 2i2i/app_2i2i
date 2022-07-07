@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:perfect_volume_control/perfect_volume_control.dart';
 
 import '../../../common_main.dart';
 import '../../../infrastructure/commons/keys.dart';
@@ -32,58 +34,65 @@ class RingingPageState extends ConsumerState<RingingPage> {
   RingingPageState({Key? key});
 
   RingingPageViewModel? ringingPageViewModel;
-
   Timer? timer;
   final player = AudioPlayer();
+  StreamSubscription<double>? _subscription;
+
+  ValueNotifier<bool> volumeState = ValueNotifier(true);
 
   @override
   void initState() {
-    start();
+    _subscription = PerfectVolumeControl.stream.listen((value) {
+      volumeState.value = false;
+      stopRingAudio();
+    });
+    startRingAudio();
     platform.invokeMethod('ANSWER', "ANSWER");
     super.initState();
   }
 
   @override
   Future<void> dispose() async {
-    finish();
+    _subscription?.cancel();
+    await finishTimer();
     super.dispose();
   }
 
   void setTimer(RingingPageViewModel model) {
-    log('setTimer ==> ==> ==> ==> ${model.meeting.status}');
     if (timer != null) return;
-    log('timer == null ==> ==> ==> ==> ${model.meeting.status}');
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
-    log('MeetingStatus.ACCEPTED_B ==> ==> ==> ==> ${model.meeting.status}');
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
       log('${timer?.tick ?? -1} ==> ==> ==> ==> ${model.meeting.status}');
       if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
-        log('==== HANG UP ++++ /n/n/n/n/n/n//nn//n//n/n/n/n//n/n');
-        final finishFuture = finish();
+        final finishFuture = finishTimer();
         final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
         await Future.wait([finishFuture, endMeetingFuture]);
       }
     });
   }
 
-  Future<void> start() async {
+  Future<void> startRingAudio() async {
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
     if (!player.playing) {
+      volumeState.value = true;
       await player.play();
     }
   }
 
-  Future<void> finish() async {
+  Future<void> stopRingAudio() async {
+    if (player.playing) {
+      await player.stop();
+    }
+  }
+
+  Future<void> finishTimer() async {
     if (timer?.isActive ?? false) {
       timer?.cancel();
     }
     timer = null;
 
-    if (player.playing) {
-      await player.stop();
-    }
-    await player.dispose();
+    await stopRingAudio();
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
@@ -156,101 +165,132 @@ class RingingPageState extends ConsumerState<RingingPage> {
           children: [
             Expanded(
               flex: 2,
-              child: Container(
-                width: MediaQuery.of(context).size.width / 1.5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ProfileWidget(
-                      stringPath: callerName,
-                      radius: 84,
-                      showBorder: false,
-                      hideShadow: true,
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      callerName,
-                      style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
-                    ),
-                    SizedBox(height: 14),
-                    Text(
-                      callerBio,
-                      maxLines: 2,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
-                    ),
-                    SizedBox(height: 14),
-                    Visibility(
-                      visible: !amA && bidComment.isNotEmpty,
-                      child: Text(
-                        '${Keys.Note.tr(context)}: $bidComment',
-                        maxLines: 2,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
-                      ),
-                    ),
-                    SizedBox(height: 14),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${(callerRating * 5.0).toStringAsFixed(1)}',
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber),
+              child: Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ProfileWidget(
+                          stringPath: callerName,
+                          radius: 84,
+                          showBorder: false,
+                          hideShadow: true,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          callerName,
+                          style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
+                        ),
+                        SizedBox(height: 14),
+                        Text(
+                          callerBio,
+                          maxLines: 2,
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        ),
+                        SizedBox(height: 14),
+                        Visibility(
+                          visible: !amA && bidComment.isNotEmpty,
+                          child: Text(
+                            '${Keys.Note.tr(context)}: $bidComment',
+                            maxLines: 2,
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                           ),
-                          SizedBox(width: 4),
-                          IgnorePointer(
-                            ignoring: true,
-                            child: RatingBar.builder(
-                              initialRating: callerRating * 5.0,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              tapOnlyMode: true,
-                              updateOnDrag: false,
-                              itemCount: 5,
-                              itemSize: 16,
-                              allowHalfRating: true,
-                              glowColor: Colors.white,
-                              ignoreGestures: false,
-                              unratedColor: Colors.grey.shade300,
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star_rounded,
-                                color: Colors.amber,
+                        ),
+                        SizedBox(height: 14),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${(callerRating * 5.0).toStringAsFixed(1)}',
+                                style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber),
                               ),
-                              onRatingUpdate: (double value) {},
-                            ),
-                          )
-                        ],
-                      ),
-                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
+                              SizedBox(width: 4),
+                              IgnorePointer(
+                                ignoring: true,
+                                child: RatingBar.builder(
+                                  initialRating: callerRating * 5.0,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  tapOnlyMode: true,
+                                  updateOnDrag: false,
+                                  itemCount: 5,
+                                  itemSize: 16,
+                                  allowHalfRating: true,
+                                  glowColor: Colors.white,
+                                  ignoreGestures: false,
+                                  unratedColor: Colors.grey.shade300,
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star_rounded,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (double value) {},
+                                ),
+                              )
+                            ],
+                          ),
+                          decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
+                        ),
+                        Container(
+                          width: kTextTabBarHeight,
+                          margin: EdgeInsets.only(top: 2),
+                          child: Divider(
+                            thickness: 2,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        if (maxDuration != double.infinity)
+                          Text(
+                            '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
+                            maxLines: 2,
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                          ),
+                      ],
                     ),
-                    Container(
-                      width: kTextTabBarHeight,
-                      margin: EdgeInsets.only(top: 2),
-                      child: Divider(
-                        thickness: 2,
-                      ),
+                  ),
+                  Positioned(
+                    right: 1,
+                    top: 10,
+                    child: ValueListenableBuilder(
+                      valueListenable: volumeState,
+                      builder: (BuildContext context, bool value, Widget? child) {
+                        return MaterialButton(
+                          elevation: 5,
+                          color: Colors.white,
+                          shape: CircleBorder(side: BorderSide(color: Colors.white)),
+                          onPressed: () async {
+                            volumeState.value = !volumeState.value;
+                            if (volumeState.value) {
+                              await startRingAudio();
+                            } else {
+                              await stopRingAudio();
+                            }
+                          },
+                          child: Icon(
+                            value ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                            size: 18,
+                            color: AppTheme().black,
+                          ),
+                        );
+                      },
                     ),
-                    SizedBox(height: 4),
-                    if (maxDuration != double.infinity)
-                      Text(
-                        '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
-                        maxLines: 2,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
-                      ),
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
             Expanded(
@@ -268,7 +308,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                 if (mounted) {
                                   setState(() {});
                                 }
-                                final finishFuture = finish();
+                                final finishFuture = finishTimer();
                                 final acceptMeetingFuture = ringingPageViewModel!.acceptMeeting();
                                 await Future.wait([finishFuture, acceptMeetingFuture]);
                               },
