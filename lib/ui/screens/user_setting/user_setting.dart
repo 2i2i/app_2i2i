@@ -406,7 +406,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 },
                 child: Text(Keys.save.tr(context)),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -424,10 +424,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               style: ButtonStyle(
                 elevation: MaterialStateProperty.all(0),
                 padding: MaterialStateProperty.all(
-                  EdgeInsets.symmetric(horizontal: 12,vertical: 0),
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 ),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))),
                 backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
               ),
               onPressed: () async {

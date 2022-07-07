@@ -169,8 +169,7 @@ class ar {
       Keys.connectAccount: "ربط الحساب بـ",
       Keys.updateAvailable: 'التحديث متاح',
       Keys.loginMsg: "أوبر الحديث",
-      Keys.loginMsg2:
-          "يوفر 2i2i مساحة آمنة وخاصة للضيوف والمضيفين للالتقاء في شكل مكالمات فيديو",
+      Keys.loginMsg2: "يوفر 2i2i مساحة آمنة وخاصة للضيوف والمضيفين للالتقاء في شكل مكالمات فيديو",
       Keys.loginMsg3: "> 501 اجتماعات منذ الإطلاق",
       Keys.signInWithGoogle: 'الدخول مع جوجل',
       Keys.signInWithApple: "تسجيل الدخول باستخدام Apple",
@@ -179,6 +178,11 @@ class ar {
       Keys.searchFaq: 'كلمات البحث',
       Keys.loading:'جار التحميل...',
       Keys.noKeyFound: "لا يمكننا العثور على حساب من هذه المفاتيح",
+      Keys.transactionConfirmMsg:'هل أنت متأكد من إجراء المعاملة من محفظتك؟',
+      Keys.no:'رقم',
+      Keys.yes:'نعم',
+      Keys.pleaseConfirm:'يرجى تأكيد',
+      Keys.okay:'حسنا',
     };
   }
 }

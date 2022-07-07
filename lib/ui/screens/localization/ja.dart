@@ -176,7 +176,13 @@ class ja {
       Keys.signInWithTwitter: 'Twitterでログイン',
       Keys.signInAnonymously: '匿名でサインイン',
       Keys.searchFaq: 'キーワードを検索',
-      Keys.loading:'読み込んでいます...'
+      Keys.loading:'読み込んでいます...',
+      Keys.noKeyFound:'このキーからアカウントを見つけることができません',
+      Keys.no:'番号',
+      Keys.yes:'はい',
+      Keys.transactionConfirmMsg:'ウォレットから取引を行ってもよろしいですか？',
+      Keys.pleaseConfirm:'確認してください',
+      Keys.okay:'わかった',
     };
   }
 }

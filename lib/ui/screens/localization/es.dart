@@ -178,7 +178,13 @@ class es {
       Keys.signInWithTwitter: 'Registrate con Twitter',
       Keys.signInAnonymously: 'Iniciar sesión en forma anónima',
       Keys.searchFaq: 'Buscar palabras clave',
-      Keys.loading:'Cargando...'
+      Keys.loading:'Cargando...',
+      Keys.noKeyFound:'No podemos encontrar la cuenta de estas claves',
+      Keys.no:'no',
+      Keys.yes:'sí',
+      Keys.transactionConfirmMsg:'¿Estás segura de hacer la transacción desde tu billetera?',
+      Keys.pleaseConfirm:'Por favor confirmar',
+      Keys.okay:'okey',
     };
   }
 }

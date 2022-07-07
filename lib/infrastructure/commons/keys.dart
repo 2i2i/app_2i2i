@@ -193,6 +193,11 @@ class Keys {
   static const String searchFaq ='searchFaq';
   static const String loading ='loading';
   static const String noKeyFound ='noKeyFound';
+  static const String no ='no';
+  static const String yes ='Yes';
+  static const String transactionConfirmMsg ='Are you sure to do the transaction from your wallet?';
+  static const String pleaseConfirm ='Please Confirm';
+  static const String okay ='Okay';
 
 }
 

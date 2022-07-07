@@ -45,7 +45,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         final UserModel user = myUserAsyncValue.value!;
         if (user.name.trim().isEmpty) {
           return BottomSheet(
-            enableDrag: true,
+            enableDrag: false,
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -53,7 +53,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 topRight: Radius.circular(16),
               ),
             ),
-            elevation: 12,
+            elevation: 30,
             builder: (BuildContext context) {
               return WillPopScope(
                 onWillPop: () {

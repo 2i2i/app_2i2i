@@ -274,10 +274,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     Icons.add_circle_rounded,
                                     color: Theme.of(context).colorScheme.secondary,
                                   ),
-                                ) /*ElevatedButton(
+                                )
+                                /*ElevatedButton(
                                       child: Text(Strings().addAccount),
                                     )*/
-                                ,
+
                               )
                             ],
                           ),

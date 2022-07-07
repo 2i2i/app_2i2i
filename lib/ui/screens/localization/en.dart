@@ -178,6 +178,12 @@ class en {
       Keys.searchFaq: 'Search keywords',
       Keys.loading: 'Loading...',
       Keys.noKeyFound: "We can't find account from this keys",
+      Keys.no: 'No',
+      Keys.yes:'yes',
+      Keys.transactionConfirmMsg: 'Are you sure to do the transaction from your wallet?',
+      Keys.pleaseConfirm: 'Please Confirm',
+      Keys.okay: 'Okay',
+
     };
   }
 }
