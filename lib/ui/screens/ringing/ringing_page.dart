@@ -8,12 +8,13 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../common_main.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
-import '../../../common_main.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../app/wait_page.dart';
 import 'ripples_animation.dart';
@@ -49,12 +50,19 @@ class RingingPageState extends ConsumerState<RingingPage> {
   }
 
   void setTimer(RingingPageViewModel model) {
+    log('setTimer ==> ==> ==> ==> ${model.meeting.status}');
     if (timer != null) return;
+    log('timer == null ==> ==> ==> ==> ${model.meeting.status}');
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
+    log('MeetingStatus.ACCEPTED_B ==> ==> ==> ==> ${model.meeting.status}');
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      final finishFuture = finish();
-      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
-      await Future.wait([finishFuture, endMeetingFuture]);
+      log('${timer?.tick ?? -1} ==> ==> ==> ==> ${model.meeting.status}');
+      if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
+        log('==== HANG UP ++++ /n/n/n/n/n/n//nn//n//n/n/n/n//n/n');
+        final finishFuture = finish();
+        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
+        await Future.wait([finishFuture, endMeetingFuture]);
+      }
     });
   }
 
@@ -92,6 +100,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
 
     ringingPageViewModel = _ringingPageViewModel;
+    log('_ringingPageViewModel ¸ ${_ringingPageViewModel}');
     if (ringingPageViewModel is RingingPageViewModel) {
       setTimer(ringingPageViewModel!);
     }
@@ -162,10 +171,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     SizedBox(height: 12),
                     Text(
                       callerName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
+                      style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
                     ),
                     SizedBox(height: 14),
                     Text(
@@ -185,8 +191,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                     ),
                     SizedBox(height: 14),
@@ -225,8 +230,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           )
                         ],
                       ),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
+                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
                     ),
                     Container(
                       width: kTextTabBarHeight,
@@ -243,8 +247,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                   ],
                 ),
@@ -256,9 +259,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    (!isClicked &&
-                            ringingPageViewModel!.amA() &&
-                            ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
+                    (!isClicked && ringingPageViewModel!.amA() && ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
                         ? Ripples(
                             color: Colors.white.withOpacity(0.3),
                             child: InkWell(
@@ -275,23 +276,20 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   radius: kToolbarHeight,
                                   child: Text(
                                     '${Keys.Start.tr(context)}',
-                                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                        fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1
+                                        ?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
                                   )),
                             ),
                           )
                         : Container(
-                            alignment: Alignment.center,
+                      alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 22),
                             padding: EdgeInsets.symmetric(vertical: 14, horizontal: 22),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
-                            child: Text(
-                                amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(color: Theme.of(context).primaryColorDark)),
+                            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
+                            child: Text(amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
+                                style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark)),
                           ),
                   ],
                 )),

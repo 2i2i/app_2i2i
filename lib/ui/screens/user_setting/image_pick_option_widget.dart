@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../commons/custom_profile_image_view.dart';
+
 class ImagePickOptionWidget extends StatelessWidget {
   final Function(ImageType imageType, String imagePath) imageCallBack;
 
@@ -16,17 +17,15 @@ class ImagePickOptionWidget extends StatelessWidget {
           children: [
             Divider(height: 1),
             ListTile(
-              onTap: () => _openGallery(context),
+              onTap: _openGallery,
               title: Text("Gallery"),
-              leading: Icon(Icons.image,
-                  color: Theme.of(context).colorScheme.secondary),
+              leading: Icon(Icons.image, color: Theme.of(context).colorScheme.secondary),
             ),
             Divider(height: 1),
             ListTile(
-              onTap: () => _openCamera(context),
+              onTap: _openCamera,
               title: Text("Camera"),
-              leading: Icon(Icons.camera,
-                  color: Theme.of(context).colorScheme.secondary),
+              leading: Icon(Icons.camera, color: Theme.of(context).colorScheme.secondary),
             ),
           ],
         ),
@@ -34,15 +33,13 @@ class ImagePickOptionWidget extends StatelessWidget {
     );
   }
 
-  void _openGallery(BuildContext context) async {
-    XFile? pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  void _openGallery() async {
+    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     imageCallBack.call(ImageType.ASSENT_IMAGE, (pickedFile?.path ?? ""));
   }
 
-  void _openCamera(BuildContext context) async {
-    XFile? pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+  void _openCamera() async {
+    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
     imageCallBack.call(ImageType.ASSENT_IMAGE, (pickedFile?.path ?? ""));
   }
 }
