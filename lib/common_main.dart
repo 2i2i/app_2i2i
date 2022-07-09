@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
+import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -249,6 +250,12 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         Locale("ja", ''),
         Locale('ko', ''),
       ],
+      builder: (context, child) {
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: child!,
+        );
+      },
       locale: appSettingModel.locale,
       localizationsDelegates: [
         ApplicationLocalizationsDelegate(),
