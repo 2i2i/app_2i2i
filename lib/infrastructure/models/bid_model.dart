@@ -9,13 +9,16 @@ import '../data_access_layer/services/logging.dart';
 @immutable
 class Quantity {
   const Quantity({required this.num, required this.assetId});
+
   final int num;
   final int assetId;
+
   factory Quantity.fromMap(Map<String, dynamic> data) {
     final int num = data['num'];
     final int assetId = data['assetId'];
     return Quantity(num: num, assetId: assetId);
   }
+
   Map<String, dynamic> toMap() {
     return {
       'num': num,
@@ -47,6 +50,7 @@ class BidOut extends Equatable {
   final bool active;
   final int energy;
   final String? comment;
+  bool isLoading = false;
 
   @override
   List<Object> get props => [id];

@@ -1,4 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 
 import '../../infrastructure/commons/keys.dart';
@@ -68,8 +71,28 @@ class CustomAlertWidget {
     return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
   }
 
-  static confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed}) {
-    return CupertinoAlertDialog(
+  static Future<void> confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed,TextStyle? yesButtonTextStyle,TextStyle? noButtonTextStyle}) async {
+    var cupertinoDialog = CupertinoAlertDialog(
+      title: Text(title),
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(description),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          child: Text('No',style: noButtonTextStyle),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            onPressed();
+          },
+          child: Text('Yes',style: yesButtonTextStyle),
+        ),
+      ],
+    );
+    var materialDialog = AlertDialog(
       title: Text(title),
       content: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -89,5 +112,16 @@ class CustomAlertWidget {
         ),
       ],
     );
+    if (Platform.isIOS) {
+      await showCupertinoDialog(
+        context: context,
+        builder: (context) => cupertinoDialog,
+      );
+    } else {
+      await showDialog(
+        context: context,
+        builder: (context) => materialDialog,
+      );
+    }
   }
 }

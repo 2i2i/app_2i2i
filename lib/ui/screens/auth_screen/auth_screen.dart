@@ -1,4 +1,3 @@
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +5,7 @@ import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/named_routes.dart';
+import '../home/wait_page.dart';
 import '../rating/add_rating_page.dart';
 import '../user_setting/user_setting.dart';
 

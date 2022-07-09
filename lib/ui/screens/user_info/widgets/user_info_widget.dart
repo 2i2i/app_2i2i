@@ -47,7 +47,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   @override
   Widget build(BuildContext context) {
     String shortBio = widget.user.bio;
-     var statusColor = AppTheme().green;
+    var statusColor = AppTheme().green;
     if (widget.user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     } else if (widget.user.status == Status.IDLE) {
@@ -93,10 +93,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               child: Tooltip(
                                 triggerMode: TooltipTriggerMode.tap,
                                 message: 'Connected with social account',
-                                child: SvgPicture.asset(
-                                    'assets/icons/done_tick.svg',
-                                    width: 14,
-                                    height: 14),
+                                child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
                               ),
                             ),
                           )
@@ -106,8 +103,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                         child: Icon(Icons.chat_outlined, size: 25),
                       ),
                     ),
@@ -116,8 +112,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: InkResponse(
                         onTap: widget.onTapWallet,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                           child: Icon(Icons.attach_money, size: 25),
                         ),
                       ),
@@ -130,14 +125,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       InkResponse(
                         onTap: widget.onTapFav,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
-                          child: Icon(
-                              widget.isFav
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                              color: widget.isFav ? Colors.red : Colors.grey,
-                              size: 25),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Icon(widget.isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              color: widget.isFav ? Colors.red : Colors.grey, size: 25),
                         ),
                       ),
                   ],
@@ -148,9 +138,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   children: [
                     SizedBox(height: 2),
                     InkWell(
-                      onTap: () => context.pushNamed(
-                          Routes.ratings.nameFromPath(),
-                          params: {'uid': widget.user.id}),
+                      onTap: () => context.pushNamed(Routes.ratings.nameFromPath(), params: {'uid': widget.user.id}),
                       child: Row(
                         children: [
                           IgnorePointer(
@@ -184,8 +172,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       ),
                     ),
                     Container(
-                      constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height / 6),
+                      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 6),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: CupertinoScrollbar(
                         controller: _scrollController,
@@ -193,24 +180,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           controller: _scrollController,
                           child: ValueListenableBuilder(
                             valueListenable: seeMore,
-                            builder: (BuildContext context, bool value,
-                                Widget? child) {
-                              var socialLinks =
-                                  widget.user.socialLinks.map((e) {
+                            builder: (BuildContext context, bool value, Widget? child) {
+                              var socialLinks = widget.user.socialLinks.map((e) {
                                 if ((e.userName ?? "").isNotEmpty) {
                                   return TextSpan(
                                     text: "\n${e.accountName}: ",
                                     children: [
                                       TextSpan(
                                         text: e.userName,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .caption
-                                            ?.copyWith(
-                                                height: 1.2,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary),
+                                        style: Theme.of(context).textTheme.caption?.copyWith(height: 1.2, color: Theme.of(context).colorScheme.secondary),
                                       ),
                                     ],
                                     style: Theme.of(context).textTheme.caption,
@@ -226,8 +204,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   children: [
                                     TextSpan(
                                       text: shortBio.toString().trim() + "\n\n",
-                                      style:
-                                          Theme.of(context).textTheme.caption,
+                                      style: Theme.of(context).textTheme.caption,
                                     )
                                   ]..addAll(socialLinks),
                                 ),
@@ -243,12 +220,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       },
                       child: ValueListenableBuilder(
                         valueListenable: seeMore,
-                        builder:
-                            (BuildContext context, bool value, Widget? child) {
+                        builder: (BuildContext context, bool value, Widget? child) {
                           return Text(
-                            value
-                                ? Keys.less.tr(context)
-                                : Keys.seeMore.tr(context),
+                            value ? Keys.less.tr(context) : Keys.seeMore.tr(context),
                             style: Theme.of(context).textTheme.caption,
                           );
                         },
@@ -298,8 +272,7 @@ class UserRulesWidget extends StatelessWidget {
 
   final GestureTapCallback? onTapRules;
 
-  const UserRulesWidget({Key? key, required this.user, this.onTapRules})
-      : super(key: key);
+  const UserRulesWidget({Key? key, required this.user, this.onTapRules}) : super(key: key);
 
   String importanceString() {
     final c = user.rule.importance[Lounge.chrony]!;
