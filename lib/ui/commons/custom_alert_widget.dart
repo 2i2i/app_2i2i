@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import '../../infrastructure/commons/keys.dart';
 
 class CustomAlertWidget {
-  static showBidAlert(BuildContext context, Widget child, {bool isDismissible = true, Color? backgroundColor}) {
+  static showBidAlert(BuildContext context, Widget child,
+      {bool isDismissible = true, Color? backgroundColor}) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -24,7 +25,8 @@ class CustomAlertWidget {
     );
   }
 
-  static Future showErrorDialog(BuildContext context, String errorMessage, {String? title, String? errorStacktrace}) async {
+  static Future showErrorDialog(BuildContext context, String errorMessage,
+      {String? title, String? errorStacktrace}) async {
     Widget messageWidget = Text(
       errorMessage,
       textAlign: TextAlign.justify,
@@ -38,7 +40,9 @@ class CustomAlertWidget {
             textAlign: TextAlign.justify,
           ),
           Container(
-              decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: Colors.red.shade200,
+                  borderRadius: BorderRadius.circular(12)),
               margin: EdgeInsets.only(top: 8),
               padding: EdgeInsets.all(8),
               child: Text(
@@ -60,7 +64,8 @@ class CustomAlertWidget {
       content: messageWidget,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+          style: TextButton.styleFrom(
+              primary: Theme.of(context).colorScheme.secondary),
           onPressed: () {
             Navigator.of(context).maybePop();
           },
@@ -68,7 +73,8 @@ class CustomAlertWidget {
         ),
       ],
     );
-    return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
+    return Future.delayed(Duration.zero).then((value) =>
+        showCupertinoDialog(context: context, builder: (context) => dialog));
   }
 
   static Future<void> confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed,TextStyle? yesButtonTextStyle,TextStyle? noButtonTextStyle}) async {
@@ -81,14 +87,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No',style: noButtonTextStyle),
+          child: Text(Keys.no.tr(context),style: noButtonTextStyle),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
             onPressed();
           },
-          child: Text('Yes',style: yesButtonTextStyle),
+          child: Text(Keys.yes.tr(context),style: yesButtonTextStyle),
         ),
       ],
     );
