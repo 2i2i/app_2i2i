@@ -9,7 +9,7 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom.dart';
 import '../../commons/qr_image.dart';
-import '../home/wait_page.dart';
+import 'wait_page.dart';
 
 class NoBidPage extends ConsumerWidget {
   final String noBidsText;

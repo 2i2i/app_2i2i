@@ -178,6 +178,8 @@ class es {
       Keys.signInWithTwitter: 'Registrate con Twitter',
       Keys.signInAnonymously: 'Iniciar sesión en forma anónima',
       Keys.searchFaq: 'Buscar palabras clave',
+      Keys.noInternetTitle: 'Sin conexión a Internet',
+      Keys.noInternetMessage: 'No estás conectado a Internet. Asegúrate de que el WI-FI esté encendido. El modo avión está desactivado e inténtalo de nuevo',
       Keys.loading:'Cargando...',
       Keys.noKeyFound:'No podemos encontrar la cuenta de estas claves',
       Keys.no:'no',

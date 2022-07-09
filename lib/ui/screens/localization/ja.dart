@@ -176,6 +176,8 @@ class ja {
       Keys.signInWithTwitter: 'Twitterでログイン',
       Keys.signInAnonymously: '匿名でサインイン',
       Keys.searchFaq: 'キーワードを検索',
+      Keys.noInternetTitle: 'インターネット接続なし',
+      Keys.noInternetMessage: 'インターネットに接続していません。 WI-FIがオンになっていることを確認してください。 機内モードがオフになっているので、もう一度お試しください',
       Keys.loading:'読み込んでいます...',
       Keys.noKeyFound:'このキーからアカウントを見つけることができません',
       Keys.no:'番号',

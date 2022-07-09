@@ -176,6 +176,9 @@ class en {
       Keys.signInWithTwitter: 'Sign in with Twitter',
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.searchFaq: 'Search keywords',
+      Keys.noInternetTitle: 'No Internet Connection',
+      Keys.noInternetMessage: 'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
+
       Keys.loading: 'Loading...',
       Keys.noKeyFound: "We can't find account from this keys",
       Keys.no: 'No',

@@ -176,6 +176,8 @@ class zh {
       Keys.signInWithTwitter: '用 Twitter 登錄',
       Keys.signInAnonymously: '匿名登錄',
       Keys.searchFaq: '搜索关键字',
+      Keys.noInternetTitle: '没有网络连接',
+      Keys.noInternetMessage: '您没有连接到互联网。 确保 WI-FI 已打开。 飞行模式已关闭，然后重试',
       Keys.loading:'正在加载...',
       Keys.noKeyFound:'我们无法通过此密钥找到帐户',
       Keys.no:'不',

@@ -191,6 +191,8 @@ class Keys {
   static const String signInAnonymously ='signInAnonymously';
 
   static const String searchFaq ='searchFaq';
+  static const String noInternetTitle ='noInternetTitle';
+  static const String noInternetMessage ='noInternetMessage';
   static const String loading ='loading';
   static const String noKeyFound ='noKeyFound';
   static const String no ='no';

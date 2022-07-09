@@ -176,6 +176,8 @@ class de {
       Keys.signInWithTwitter:   'Mit Twitter anmelden',
       Keys.signInAnonymously: 'Anonym anmelden',
       Keys.searchFaq: 'Suche Schlüsselwörter',
+      Keys.noInternetTitle: 'Keine Internetverbindung',
+      Keys.noInternetMessage: 'Sie sind nicht mit dem Internet verbunden. Stellen Sie sicher, dass WLAN eingeschaltet ist. Der Flugmodus ist aus und versuchen Sie es erneut',
       Keys.loading:'Wird geladen...',
       Keys.noKeyFound:'Wir können das Konto von diesen Schlüsseln nicht finden',
       Keys.transactionConfirmMsg:'Sind Sie sicher, dass Sie die Transaktion von Ihrem Wallet aus durchführen werden?',

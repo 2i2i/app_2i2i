@@ -14,7 +14,7 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'chat_widget.dart';
 import 'user_bid_in_list.dart';

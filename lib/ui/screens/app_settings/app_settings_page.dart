@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -9,7 +9,7 @@ import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
-import 'package:app_2i2i/ui/screens/home/error_page.dart';
+import 'package:app_2i2i/ui/screens/app/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
