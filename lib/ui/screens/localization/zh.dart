@@ -176,7 +176,13 @@ class zh {
       Keys.signInWithTwitter: '用 Twitter 登錄',
       Keys.signInAnonymously: '匿名登錄',
       Keys.searchFaq: '搜索关键字',
-      Keys.loading:'正在加载...'
+      Keys.loading:'正在加载...',
+      Keys.noKeyFound:'我们无法通过此密钥找到帐户',
+      Keys.no:'不',
+      Keys.yes:'是的',
+      Keys.transactionConfirmMsg:'你确定用你的钱包进行交易吗？',
+      Keys.pleaseConfirm:'请确认',
+      Keys.okay:'好的',
     };
   }
 }

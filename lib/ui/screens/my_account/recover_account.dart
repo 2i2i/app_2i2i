@@ -175,7 +175,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
       await account.setMainAccount();
       context.pop();
     } catch (e) {
-      CustomDialogs.showToastMessage(context, "We cant find account from this keys");
+      CustomDialogs.showToastMessage(context, Keys.noKeyFound.tr(context));
       log(e.toString());
     }
     CustomDialogs.loader(false, context);

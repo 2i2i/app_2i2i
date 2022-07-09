@@ -13,6 +13,7 @@ import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
+import '../home/bottom_nav_bar.dart';
 import '../home/wait_page.dart';
 import '../user_info/widgets/user_info_widget.dart';
 import 'chat_widget.dart';
@@ -82,6 +83,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   user: user,
                   onTapRules: () {
                     context.pushNamed(Routes.userSetting.nameFromPath());
+                    currentIndex.value = 1;
                   },
                   onTapQr: () {
                     showDialog(

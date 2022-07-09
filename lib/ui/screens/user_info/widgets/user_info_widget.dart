@@ -65,8 +65,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileWidget(
-              stringPath: (widget.user.imageUrl ?? "").isNotEmpty ? widget.user.imageUrl! : widget.user.name,
-              imageType: (widget.user.imageUrl ?? "").isNotEmpty ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
+              stringPath: (widget.user.imageUrl?.isNotEmpty ?? false) ? widget.user.imageUrl! : widget.user.name,
+              imageType: (widget.user.imageUrl?.isNotEmpty ?? false)
+                  ? ImageType.NETWORK_IMAGE
+                  : ImageType.NAME_IMAGE,
               statusColor: statusColor,
               radius: 80,
             ),
@@ -285,114 +287,118 @@ class UserRulesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: InkWell(
-        onTap: () => onTapRules?.call(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '${(user.rule.minSpeed / MILLION)} A/sec',
-                    style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.bolt,
-                        size: 17,
-                        color: Theme.of(context).textTheme.caption?.color,
-                      ),
-                      SizedBox(width: 2),
-                      Text(
+    return InkWell(
+      onTap: () => onTapRules?.call(),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${(user.rule.minSpeed / MILLION)} A/sec',
+                  style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                ),
+                SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bolt,
+                      size: 17,
+                      color: Theme.of(context).textTheme.caption?.color,
+                    ),
+                    Flexible(
+                      child: Text(
                         Keys.minSpeed.tr(context),
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.caption,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            Container(
-              height: 25,
-              width: 1,
-              margin: EdgeInsets.symmetric(horizontal: 3),
-              color: Theme.of(context).dividerColor,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    secondsToSensibleTimePeriod(user.rule.maxMeetingDuration),
-                    style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.timer,
-                        size: 17,
-                        color: Theme.of(context).textTheme.caption?.color,
-                      ),
-                      SizedBox(width: 2),
-                      Text(
+          ),
+          Container(
+            height: 25,
+            width: 1,
+            margin: EdgeInsets.symmetric(horizontal: 3),
+            color: Theme.of(context).dividerColor,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  secondsToSensibleTimePeriod(user.rule.maxMeetingDuration),
+                  style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                ),
+                SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.timer,
+                      size: 17,
+                      color: Theme.of(context).textTheme.caption?.color,
+                    ),
+                    Flexible(
+                      child: Text(
                         Keys.maxDuration.tr(context),
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.caption,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            Container(
-              height: 25,
-              width: 1,
-              margin: EdgeInsets.symmetric(horizontal: 3),
-              color: Theme.of(context).dividerColor,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '${importanceString()}',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.arrow_upward,
-                        size: 17,
-                        color: Theme.of(context).textTheme.caption?.color,
-                      ),
-                      SizedBox(width: 2),
-                      Text(
+          ),
+          Container(
+            height: 25,
+            width: 1,
+            margin: EdgeInsets.symmetric(horizontal: 3),
+            color: Theme.of(context).dividerColor,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${importanceString()}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                ),
+                SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.arrow_upward,
+                      size: 17,
+                      color: Theme.of(context).textTheme.caption?.color,
+                    ),
+                    Flexible(
+                      child: Text(
                         Keys.importance.tr(context),
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.caption,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

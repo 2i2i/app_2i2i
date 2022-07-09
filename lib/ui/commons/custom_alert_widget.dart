@@ -64,7 +64,7 @@ class CustomAlertWidget {
           onPressed: () {
             Navigator.of(context).maybePop();
           },
-          child: Text('Okay'),
+          child: Text(Keys.okay.tr(context)),
         ),
       ],
     );
@@ -101,14 +101,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No'),
+          child: Text(Keys.no.tr(context)),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).maybePop();
             onPressed();
           },
-          child: Text('Yes'),
+          child: Text(Keys.yes.tr(context)),
         ),
       ],
     );

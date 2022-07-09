@@ -72,8 +72,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                        context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,8 +99,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                     ),
                   ),
                   ListTile(
-                    onTap: () =>
-                        context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                        context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Text(
                       Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -290,7 +294,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
-                        ? Text('Update Available',
+                        ? Text(Keys.updateAvailable.tr(context),
                             style: Theme.of(context)
                                 .textTheme
                                 .caption
@@ -332,7 +336,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
               visible: !signUpViewModel.authList.contains('google.com') &&
                   !signUpViewModel.authList.contains('apple.com'),
               child: Text(
-                'Connect account with',
+                Keys.connectAccount.tr(context),
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ),
