@@ -70,7 +70,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
 
   store_redirect: ^2.0.1
-  connectivity_plus: ^2.2.1
+  connectivity_plus: ^2.3.5
 
   share_plus: ^4.0.4
   flutter_inappwebview: ^5.4.2

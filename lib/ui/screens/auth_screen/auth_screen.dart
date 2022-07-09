@@ -5,7 +5,7 @@ import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/named_routes.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import '../rating/add_rating_page.dart';
 import '../user_setting/user_setting.dart';
 

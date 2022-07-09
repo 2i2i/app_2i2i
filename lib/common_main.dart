@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'dart:convert';
+
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
