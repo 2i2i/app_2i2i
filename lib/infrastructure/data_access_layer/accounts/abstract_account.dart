@@ -35,6 +35,11 @@ class AccountService {
     return foundAccount;
   }
 
+  Future<int> getMinBalance({required String address, required AlgorandNet net}) async {
+    final account = await algorandLib.client[net]!.getAccountByAddress(address);
+    return account.minimumBalance as int;
+  }
+
   Future<AssetHolding> getALGOBalance({required String address, required AlgorandNet net}) async {
     int balance = 0;
     try {
@@ -176,16 +181,7 @@ abstract class AbstractAccount {
     throw Exception('balanceALGO - b.assetHolding.assetId == 0 not found');
   }
 
-  int minBalance() {
-
-    
-
-    int asaCount = 0;
-    for (final b in balances) {
-      if (b.assetHolding.assetId != 0) asaCount++;
-    }
-    return 100000 * (1 + asaCount);
-  }
+  Future<int> minBalance({required AlgorandNet net}) => accountService.getMinBalance(address: address, net: net);
 
   Future<void> updateBalances({required AlgorandNet net}) async {
     log('updateBalances');
