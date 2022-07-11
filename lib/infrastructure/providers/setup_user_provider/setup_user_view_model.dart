@@ -7,7 +7,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -49,13 +48,10 @@ class SetupUserViewModel with ChangeNotifier {
 
   UserModel? userInfoModel;
 
-  SocialLinksModel? socialLinksModel;
-
   List<String> authList = [];
 
   Future<UserModel?> getUserInfoModel(String uid) async {
     userInfoModel = await database.getUser(uid);
-    notifyListeners();
     return userInfoModel;
   }
 
@@ -84,15 +80,15 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
-    await getUserInfoModel(uid);
+    userInfoModel = await getUserInfoModel(uid);
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
-      notifyListeners();
       if ((userInfoModel?.name ?? "").isNotEmpty) {
         await database.updateUser(userInfoModel!);
       }
+    } else {
+      userInfoModel?.socialLinks = [];
     }
-
     final f2 = updateFirebaseMessagingToken(uid);
     final f3 = startAlgoRand(uid);
     final f4 = updateDeviceInfo(uid);
@@ -102,7 +98,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> signInAnonymously() async {
     UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
     String? uid = firebaseUser.user?.uid;
-    if (uid is String) await signInProcess(uid);
+    if (uid is String) await signInProcess(uid, socialLinkModel: null);
   }
 
   Future<void> getAuthList() async {
@@ -140,7 +136,7 @@ class SetupUserViewModel with ChangeNotifier {
           firebaseUser = await auth.signInWithCredential(credential);
         }
 
-        socialLinksModel =
+        SocialLinksModel socialLinksModel =
             SocialLinksModel(userName: googleSignInAccount.email, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
 
         String? uid = firebaseUser.user?.uid;
@@ -193,12 +189,13 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
 
-      socialLinksModel = SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
+      SocialLinksModel socialLinksModel =
+          SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
-        socialLinksModel!.userName = firebaseUser.user?.displayName ?? '';
-        socialLinksModel!.userEmail = firebaseUser.user?.email ?? '';
+        socialLinksModel.userName = firebaseUser.user?.displayName ?? '';
+        socialLinksModel.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
@@ -209,6 +206,7 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
     try {
+      SocialLinksModel? socialLinksModel;
       User? existingUser;
       UserCredential? firebaseUser;
       AuthCredential? twitterAuthCredential;
@@ -242,6 +240,7 @@ class SetupUserViewModel with ChangeNotifier {
           firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
         }
       }
+
       if (authResult?.user != null) {
         socialLinksModel = SocialLinksModel(userName: authResult?.user?.name ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
       }

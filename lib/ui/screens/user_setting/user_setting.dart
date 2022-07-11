@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -173,7 +172,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     controller: speedEditController,
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                    ],
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
@@ -522,7 +523,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return '$minSpeedPerHourinALGO ALGO/hour';
   }
 
-  int getSpeedFromText() => (num.parse(speedEditController.text) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -557,12 +558,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
-    if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      SocialLinksModel? socialLinksModel = setupUserViewModel?.socialLinksModel;
-      user!.socialLinks = [socialLinksModel!];
+    if (setupUserViewModel?.userInfoModel?.socialLinks.isNotEmpty ?? false) {
+      user!.socialLinks = setupUserViewModel?.userInfoModel?.socialLinks ?? [];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
@@ -576,10 +575,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final importances = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-            minSpeed: getSpeedFromText(),
-            maxMeetingDuration: seconds, importance: {
-              Lounge.chrony: importances[Lounge.chrony]!,
-              Lounge.highroller: importances[Lounge.highroller]!,
+          minSpeed: getSpeedFromText(),
+          maxMeetingDuration: seconds,
+          importance: {
+            Lounge.chrony: importances[Lounge.chrony]!,
+            Lounge.highroller: importances[Lounge.highroller]!,
           },
         );
         user.rule = rule;

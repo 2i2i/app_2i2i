@@ -102,8 +102,7 @@ class Rule extends Equatable {
     return {
       'maxMeetingDuration': maxMeetingDuration,
       'minSpeed': minSpeed,
-      'importance':
-          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+      'importance': importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
 
@@ -144,7 +143,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
-  List<SocialLinksModel> socialLinks = [];
+  List<SocialLinksModel> socialLinks;
 
   final String? meeting;
   Rule rule;
@@ -194,8 +193,7 @@ class UserModel extends Equatable {
   final double rating;
   final int numRatings;
 
-  final List<Lounge>
-      loungeHistory; // actually circular array containing recent 100 lounges
+  final List<Lounge> loungeHistory; // actually circular array containing recent 100 lounges
   final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
 
   final List<String> blocked;
@@ -218,13 +216,9 @@ class UserModel extends Equatable {
     // log('user.fromMap - data=${data['bidsIn']}');
     // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
 
-    final Status status =
-        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
-    final List<SocialLinksModel> socialLinksList = data
-                .containsKey('socialLinks') &&
-            data['socialLinks'] != null
-        ? List<SocialLinksModel>.from(
-            data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
+    final Status status = Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
+        ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
@@ -235,10 +229,8 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule =
-        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final Rule rule = data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
     final List<String> blocked = List.castFrom(data['blocked'] as List);
@@ -280,8 +272,7 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'socialLinks':
-          FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
+      'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }
 
