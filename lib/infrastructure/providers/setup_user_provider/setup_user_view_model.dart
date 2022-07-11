@@ -10,11 +10,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/entity/auth_result.dart';
 import 'package:twitter_login/twitter_login.dart';
 
+import '../../../ui/screens/home/bottom_nav_bar.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -23,6 +25,7 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
+import '../../routes/app_routes.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -283,6 +286,8 @@ class SetupUserViewModel with ChangeNotifier {
               if ((dataMap['successCount'] ?? 0) > 0) {
                 await Future.delayed(Duration(milliseconds: 300));
                 await signOutFromAuth();
+                currentIndex.value = 1;
+                mainContext.go(Routes.myUser);
                 CustomDialogs.loader(false, mainContext);
               }
             }
@@ -317,7 +322,7 @@ class SetupUserViewModel with ChangeNotifier {
     if (0 < await accountService.getNumAccounts()) return;
     final LocalAccount account = await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
     await database.addAlgorandAccount(uid, account.address, 'LOCAL');
-    await accountService.setMainAcccount(account.address);
+    await accountService.setMainAccount(account.address);
     log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
 
     // TODO uncomment try

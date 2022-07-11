@@ -215,6 +215,8 @@ class UserModel extends Equatable {
     final List<Lounge> loungeHistory = data.containsKey('loungeHistory') && data['loungeHistory'] != null
         ? List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)))
         : [];
+    final List<String> blocked = data.containsKey('blocked') && data['blocked'] != null ? List.castFrom(data['blocked']) : [];
+    final List<String> friends = data.containsKey('friends') && data['friends'] != null ? List.castFrom(data['friends']) : [];
 
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
@@ -226,8 +228,6 @@ class UserModel extends Equatable {
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
     final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
         id: documentId,

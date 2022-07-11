@@ -437,9 +437,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void showBidAlert(MyAccountPageViewModel myAccountPageViewModel) {
-    CustomAlertWidget.showBidAlert(
+    CustomAlertWidget.showBottomSheet(
       context,
-      AddAccountOptionsWidgets(
+      child: AddAccountOptionsWidgets(
         accountAddListener: (String? address) {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {

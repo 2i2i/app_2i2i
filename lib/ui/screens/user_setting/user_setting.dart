@@ -74,7 +74,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               widget.fromBottomSheet ?? false ? Keys.setUpAccount.tr(context) : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
@@ -84,18 +84,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileWidget(
-                    onTap: () {
-                      CustomAlertWidget.showBidAlert(context, ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ));
-                    },
+                    onTap: () => CustomAlertWidget.showBottomSheet(
+                          context,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -393,14 +394,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(true, context);
-                }
+                CustomDialogs.loader(true, context);
                 await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(false, context);
-                }
-                // await Navigator.of(context).maybePop();
+                CustomDialogs.loader(false, context);
+                Navigator.of(context).pop();
               },
               child: Text(Keys.save.tr(context)),
             )
@@ -588,14 +585,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-        final importances = findImportances(_importanceRatioValue!, lounge);
+        final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
           minSpeed: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
-            Lounge.chrony: importances[Lounge.chrony]!,
-            Lounge.highroller: importances[Lounge.highroller]!,
+            Lounge.chrony: importance[Lounge.chrony]!,
+            Lounge.highroller: importance[Lounge.highroller]!,
           },
         );
         user.rule = rule;
