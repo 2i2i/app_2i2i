@@ -386,49 +386,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                       );
                     },
                   ),
-                  // const SizedBox(height: 30),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Visibility(
-              visible: false,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (!(widget.fromBottomSheet ?? false)) {
-                    CustomDialogs.loader(true, context);
-                  }
-                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                  if (!(widget.fromBottomSheet ?? false)) {
-                    CustomDialogs.loader(false, context);
-                  }
-                  // await Navigator.of(context).maybePop();
-                },
-                child: Text(Keys.save.tr(context)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (widget.fromBottomSheet ?? false) {
-      return body;
-    }
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all(0),
-                padding: MaterialStateProperty.all(
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                ),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0))),
-                backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-              ),
+            // const SizedBox(height: 20),
+            ElevatedButton(
               onPressed: () async {
                 if (!(widget.fromBottomSheet ?? false)) {
                   CustomDialogs.loader(true, context);
@@ -440,11 +403,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 // await Navigator.of(context).maybePop();
               },
               child: Text(Keys.save.tr(context)),
-            ),
-          ),
-          SizedBox(width: 8)
-        ],
+            )
+          ],
+        ),
       ),
+    );
+    if (widget.fromBottomSheet ?? false) {
+      return body;
+    }
+    return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent),
       body: body,
     );
   }

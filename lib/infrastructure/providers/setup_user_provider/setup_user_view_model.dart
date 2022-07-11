@@ -7,7 +7,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -224,9 +223,14 @@ class SetupUserViewModel with ChangeNotifier {
           redirectURI: "test://twoitwoi.com",
         );
 
-        authResult = await twitterLogin.login();
-        if (authResult.authToken is String && authResult.authTokenSecret is String) {
-          twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+        try {
+          authResult = await twitterLogin.login();
+          print(authResult.status);
+          if (authResult.authToken is String && authResult.authTokenSecret is String) {
+            twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+          }
+        } catch (e) {
+          print(e);
         }
       }
       if (linkWithCredential && existingUser != null) {

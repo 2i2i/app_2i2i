@@ -28,7 +28,7 @@ class AppSettingModel extends ChangeNotifier {
   bool isVideoEnabled = true;
   bool swapVideo = false;
 
-  bool isInternetAvailable = false;
+  bool isInternetAvailable = true;
 
   void setInternetStatus(bool value) {
     isInternetAvailable = value;

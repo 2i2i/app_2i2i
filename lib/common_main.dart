@@ -20,8 +20,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
-import 'infrastructure/commons/utils.dart';
 
+import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -191,7 +191,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     late ConnectivityResult result;
     try {
       result = await _connectivity.checkConnectivity();
-      print(result);
     } on PlatformException {
       return;
     }

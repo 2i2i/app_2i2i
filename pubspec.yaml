@@ -62,7 +62,7 @@ dependencies:
 
   google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
-  twitter_login: ^4.2.2
+  twitter_login: ^4.2.3
 
   device_info_plus: ^3.2.3
   rich_text_controller: ^1.4.0
