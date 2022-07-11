@@ -456,7 +456,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) {
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
     var val = getSpeedFromText(speedController.text);
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) {
@@ -476,7 +476,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
 
     if (account != null) {
-      _minAccountBalance = account!.minBalance();
+      _minAccountBalance = await account!.minBalance(net: AppConfig().ALGORAND_NET);
       _accountBalance = account!.balanceALGO();
     }
 
