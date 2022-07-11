@@ -111,7 +111,7 @@ class CustomAlertWidget {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).maybePop();
+            Navigator.of(context).pop();
             onPressed();
           },
           child: Text(Keys.yes.tr(context)),

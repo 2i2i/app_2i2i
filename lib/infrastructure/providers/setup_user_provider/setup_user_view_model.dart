@@ -266,7 +266,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future<void> deleteUser({required BuildContext mainContext, required String title, required String description}) async {
-    CustomAlertWidget.confirmDialog(
+    await CustomAlertWidget.confirmDialog(
       mainContext,
       title: title,
       description: description,
