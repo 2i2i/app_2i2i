@@ -1,4 +1,4 @@
-// change version in build.gradle and pubspec.yaml
+// change version in build.gradle and pubspec.yaml and app_setting_model
 // flutter build appbundle --flavor main -t lib/main.dart ->
 // flutter build ipa --flavor main -t lib/main.dart -> open archive in xcode and distribute
 
