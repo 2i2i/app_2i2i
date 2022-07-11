@@ -38,12 +38,12 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
       body: favList.isEmpty
           ? Center(
               child: Text(
-              Keys.noHostsFound.tr(context),
-              style: Theme.of(context).textTheme.subtitle2,
-            ))
+                Keys.noHostsFound.tr(context),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
+              ),
+            )
           : Padding(
-              padding: EdgeInsets.only(
-                  right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
+        padding: EdgeInsets.only(right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
               child: ListView.separated(
                 itemCount: favList.length,
                 shrinkWrap: true,

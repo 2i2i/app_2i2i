@@ -43,10 +43,7 @@ class UserBidOut extends ConsumerWidget {
           : Center(
               child: Text(Keys.joinOtherRoom.tr(context),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle1
-                      ?.copyWith(color: Theme.of(context).disabledColor)),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor)),
             ),
     );
   }

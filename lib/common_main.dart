@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/layout/responsive_layout_builder.dart';
+import 'package:app_2i2i/ui/layout/scale_factors.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
+
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -240,6 +244,34 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
       debugShowCheckedModeBanner: false,
+      builder: (context, widget) {
+        return ResponsiveLayoutBuilder(
+          small: (BuildContext, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
+              child: widget ?? Container(),
+            );
+          },
+          large: (BuildContext, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
+              child: widget ?? Container(),
+            );
+          },
+          xLarge: (BuildContext, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
+              child: widget ?? Container(),
+            );
+          },
+          medium: (BuildContext, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
+              child: widget ?? Container(),
+            );
+          },
+        );
+      },
       supportedLocales: const [
         Locale('en', ''),
         Locale('zh', ''),
