@@ -47,6 +47,7 @@ class SetupUserViewModel with ChangeNotifier {
   bool signUpInProcess = false;
 
   UserModel? userInfoModel;
+  SocialLinksModel? socialLinksModel;
 
   List<String> authList = [];
 
@@ -136,7 +137,7 @@ class SetupUserViewModel with ChangeNotifier {
           firebaseUser = await auth.signInWithCredential(credential);
         }
 
-        SocialLinksModel socialLinksModel =
+        socialLinksModel =
             SocialLinksModel(userName: googleSignInAccount.email, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
 
         String? uid = firebaseUser.user?.uid;
@@ -189,13 +190,12 @@ class SetupUserViewModel with ChangeNotifier {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
 
-      SocialLinksModel socialLinksModel =
-          SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
+      socialLinksModel = SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
-        socialLinksModel.userName = firebaseUser.user?.displayName ?? '';
-        socialLinksModel.userEmail = firebaseUser.user?.email ?? '';
+        socialLinksModel?.userName = firebaseUser.user?.displayName ?? '';
+        socialLinksModel?.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
@@ -206,7 +206,6 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
     try {
-      SocialLinksModel? socialLinksModel;
       User? existingUser;
       UserCredential? firebaseUser;
       AuthCredential? twitterAuthCredential;
@@ -256,6 +255,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future<void> signOutFromAuth() async {
+    socialLinksModel = null;
     await googleSignIn.signOut();
     await auth.signOut();
   }

@@ -14,6 +14,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -560,8 +561,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     FocusScope.of(context).requestFocus(FocusNode());
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
-    if (setupUserViewModel?.userInfoModel?.socialLinks.isNotEmpty ?? false) {
-      user!.socialLinks = setupUserViewModel?.userInfoModel?.socialLinks ?? [];
+    if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
+      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
