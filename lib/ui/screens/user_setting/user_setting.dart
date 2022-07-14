@@ -131,6 +131,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           value ??= '';
                           if (value.trim().isEmpty) {
                             return Keys.required.tr(context);
+                          } else if (value.trim().length < 3) {
+                            return 'Required min 3 characters';
                           }
                           if (value.trim().length < 3) {
                             return "name must be 3 characters long";
@@ -392,14 +394,20 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               ),
             ),
             // const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                CustomDialogs.loader(true, context);
-                await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                CustomDialogs.loader(false, context);
-                Navigator.of(context).pop();
-              },
-              child: Text(Keys.save.tr(context)),
+            Visibility(
+              visible: (widget.fromBottomSheet ?? false),
+              child: ElevatedButton(
+                onPressed: () async {
+
+                    CustomDialogs.loader(true, context);
+
+                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+
+                    CustomDialogs.loader(false, context);
+                  Navigator.of(context).pop();
+                },
+                child: Text(Keys.save.tr(context)),
+              ),
             )
           ],
         ),
@@ -409,7 +417,44 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          Visibility(
+            visible: !(widget.fromBottomSheet ?? false),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomDialogs.loader(true, context);
+                    }
+                    await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomDialogs.loader(false, context);
+                    }
+                    // await Navigator.of(context).maybePop();
+                  },
+                  child: Text(
+                    'Save',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
       body: body,
     );
   }
