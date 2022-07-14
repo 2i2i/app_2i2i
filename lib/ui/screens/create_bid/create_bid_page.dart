@@ -488,7 +488,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
     maxDuration = min(maxDuration, maxMaxDuration);
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   int getSpeedFromText(String value) => ((num.tryParse(value)??0) * MILLION).round();
