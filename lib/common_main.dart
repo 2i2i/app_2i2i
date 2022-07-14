@@ -102,12 +102,12 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   RingingPageViewModel? ringingPageViewModel;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   final Connectivity _connectivity = Connectivity();
+
   @override
   void initState() {
     super.initState();
     initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
       window.addEventListener('focus', onFocus);
@@ -161,11 +161,13 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //}
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
+        log("methodCall.method=============> setMethodCallHandler");
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
             Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.watch(meetingChangerProvider);
+            log("methodCall.method=============> ${methodCall.method}");
             switch (methodCall.method) {
               case 'CUT':
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
@@ -270,31 +272,34 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       builder: (context, widget) {
-        return ResponsiveLayoutBuilder(
-          small: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          large: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          xLarge: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          medium: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: ResponsiveLayoutBuilder(
+            small: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            large: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            xLarge: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            medium: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+          ),
         );
       },
       supportedLocales: const [
@@ -306,12 +311,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         Locale("ja", ''),
         Locale('ko', ''),
       ],
-      builder: (context, child) {
-        return ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: child!,
-        );
-      },
       locale: appSettingModel.locale,
       localizationsDelegates: [
         ApplicationLocalizationsDelegate(),

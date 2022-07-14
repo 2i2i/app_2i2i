@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
@@ -13,7 +14,6 @@ import 'package:perfect_volume_control/perfect_volume_control.dart';
 import '../../../common_main.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -33,7 +33,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   RingingPageState({Key? key});
 
-  RingingPageViewModel? ringingPageViewModel;
   Timer? timer;
   final player = AudioPlayer();
   StreamSubscription<double>? _subscription;
@@ -53,8 +52,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Future<void> dispose() async {
-    _subscription?.cancel();
-    await finishTimer();
+    Future.delayed(Duration.zero, () async {
+      _subscription?.cancel();
+      await finishTimer();
+    });
     super.dispose();
   }
 
@@ -62,7 +63,6 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (timer != null) return;
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      log('${timer?.tick ?? -1} ==> ==> ==> ==> ${model.meeting.status}');
       if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
         final finishFuture = finishTimer();
         final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
@@ -93,6 +93,10 @@ class RingingPageState extends ConsumerState<RingingPage> {
     timer = null;
 
     await stopRingAudio();
+
+    if (Platform.isIOS) {
+      await platform.invokeMethod('CUT_CALL');
+    }
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
@@ -103,16 +107,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
-    if (haveToWait(_ringingPageViewModel)) {
+    final ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
+    if (haveToWait(ringingPageViewModel)) {
       return WaitPage();
     }
 
-    ringingPageViewModel = _ringingPageViewModel;
-    log('_ringingPageViewModel ¸ ${_ringingPageViewModel}');
     if (ringingPageViewModel is RingingPageViewModel) {
-      setTimer(ringingPageViewModel!);
+      setTimer(ringingPageViewModel);
     }
+
     String callerName = '';
     String callerBio = '';
     String bidComment = '';
@@ -121,14 +124,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
     bool amA = ringingPageViewModel!.amA();
 
-    final meetingId = ringingPageViewModel?.meeting.id;
-    if (amA && meetingId != null) {
+    final meetingId = ringingPageViewModel.meeting.id;
+    if (amA) {
       final bidOutAsyncValue = ref.watch(bidOutProvider(meetingId));
       if (!haveToWait(bidOutAsyncValue)) {
         final bidOut = bidOutAsyncValue.value!;
         bidComment = bidOut.comment ?? '';
       }
-    } else if (meetingId != null) {
+    } else {
       final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(meetingId));
       if (!haveToWait(bidInPrivateAsyncValue)) {
         final bidInPrivate = bidInPrivateAsyncValue.value!;
@@ -136,17 +139,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
       }
     }
 
-    String otherUserId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    String otherUserId = amA ? ringingPageViewModel.meeting.B : ringingPageViewModel.meeting.A;
     final otherUserAsyncValue = ref.read(userProvider(otherUserId));
     if (!haveToWait(otherUserAsyncValue)) {
-      callerName = otherUserAsyncValue.asData!.value.name;
-      callerBio = otherUserAsyncValue.asData!.value.bio;
-      callerRating = otherUserAsyncValue.asData!.value.rating;
+      callerName = otherUserAsyncValue.value!.name;
+      callerBio = otherUserAsyncValue.value!.bio;
+      callerRating = otherUserAsyncValue.value!.rating;
     }
 
-    if (ringingPageViewModel?.meeting is Meeting) {
-      maxDuration = ringingPageViewModel!.meeting.maxDuration();
-    }
+    maxDuration = ringingPageViewModel.meeting.maxDuration();
 
     return Scaffold(
       body: Container(
@@ -253,7 +254,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         SizedBox(height: 4),
                         if (maxDuration != double.infinity)
                           Text(
-                            '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
+                            '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel.meeting.speed.num} μAlgo/s)',
                             maxLines: 2,
                             softWrap: true,
                             textAlign: TextAlign.center,
@@ -299,7 +300,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    (!isClicked && ringingPageViewModel!.amA() && ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
+                    (!isClicked && ringingPageViewModel.amA() && ringingPageViewModel.meeting.status == MeetingStatus.ACCEPTED_B)
                         ? Ripples(
                             color: Colors.white.withOpacity(0.3),
                             child: InkWell(
@@ -309,7 +310,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   setState(() {});
                                 }
                                 final finishFuture = finishTimer();
-                                final acceptMeetingFuture = ringingPageViewModel!.acceptMeeting();
+                                final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
                                 await Future.wait([finishFuture, acceptMeetingFuture]);
                               },
                               child: CircleAvatar(

@@ -419,7 +419,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               ? FittedBox(
                   fit: BoxFit.scaleDown,
                   child: ProfileWidget(
-                    stringPath: userModel?.name ?? "",
+                    stringPath: (userModel?.imageUrl ?? "").isEmpty ? (userModel?.name ?? '') : userModel!.imageUrl!,
+                    imageType: (userModel?.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
                     radius: kToolbarHeight * (fullView ? 1.35 : 1.15),
                     showBorder: false,
                     hideShadow: true,
