@@ -137,7 +137,7 @@ class UserModel extends Equatable {
   final DateTime? heartbeatBackground;
   final DateTime? heartbeatForeground;
   final Status status;
-  List<SocialLinksModel> socialLinks = [];
+  List<SocialLinksModel> socialLinks;
 
   final String? meeting;
   Rule rule;
@@ -205,8 +205,9 @@ class UserModel extends Equatable {
       throw StateError('missing data for uid: $documentId');
     }
 
-    final Status status =
-        data.containsKey('status') && data['status'] !=null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+
+
+    final Status status =data.containsKey('status') && data['status'] !=null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
@@ -225,7 +226,7 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
+    final Rule rule =data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
     return UserModel(

@@ -77,20 +77,15 @@ final searchUsersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((
   return database.usersStream(tags: filter);
 });
 
-final setupUserViewModelProvider = ChangeNotifierProvider<SetupUserViewModel>((ref) {
-  // log('setupUserViewModelProvider');
+final setupUserViewModelProvider = ChangeNotifierProvider.autoDispose<SetupUserViewModel>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
-  // log('setupUserViewModelProvider - auth=$auth');
   final database = ref.watch(databaseProvider);
-  // log('setupUserViewModelProvider - database=$database');
   final algorandLib = ref.watch(algorandLibProvider);
   final storage = ref.watch(storageProvider);
   final accountService = ref.watch(accountServiceProvider);
   final algorand = ref.watch(algorandProvider);
   final functions = ref.watch(firebaseFunctionsProvider);
   final GoogleSignIn googleSignIn = GoogleSignIn();
-  // final firebaseMessagingService  = ref.watch(fireBaseMessagingProvider);
-  // log('setupUserViewModelProvider - database=$database');
   return SetupUserViewModel(
       auth: auth,
       database: database,

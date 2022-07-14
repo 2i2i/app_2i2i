@@ -50,14 +50,12 @@ class SetupUserViewModel with ChangeNotifier {
   bool signUpInProcess = false;
 
   UserModel? userInfoModel;
-
   SocialLinksModel? socialLinksModel;
 
   List<String> authList = [];
 
   Future<UserModel?> getUserInfoModel(String uid) async {
     userInfoModel = await database.getUser(uid);
-    notifyListeners();
     return userInfoModel;
   }
 
@@ -86,15 +84,15 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
-    await getUserInfoModel(uid);
+    userInfoModel = await getUserInfoModel(uid);
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
-      notifyListeners();
       if ((userInfoModel?.name ?? "").isNotEmpty) {
         await database.updateUser(userInfoModel!);
       }
+    } else {
+      userInfoModel?.socialLinks = [];
     }
-
     final f2 = updateFirebaseMessagingToken(uid);
     final f3 = startAlgoRand(uid);
     final f4 = updateDeviceInfo(uid);
@@ -104,7 +102,7 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> signInAnonymously() async {
     UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
     String? uid = firebaseUser.user?.uid;
-    if (uid is String) await signInProcess(uid);
+    if (uid is String) await signInProcess(uid, socialLinkModel: null);
   }
 
   Future<void> getAuthList() async {
@@ -199,8 +197,8 @@ class SetupUserViewModel with ChangeNotifier {
 
       String? uid = firebaseUser.user?.uid;
       if (uid is String) {
-        socialLinksModel!.userName = firebaseUser.user?.displayName ?? '';
-        socialLinksModel!.userEmail = firebaseUser.user?.email ?? '';
+        socialLinksModel?.userName = firebaseUser.user?.displayName ?? '';
+        socialLinksModel?.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
@@ -249,6 +247,7 @@ class SetupUserViewModel with ChangeNotifier {
           firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
         }
       }
+
       if (authResult?.user != null) {
         socialLinksModel = SocialLinksModel(userName: authResult?.user?.name ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
       }
@@ -264,6 +263,7 @@ class SetupUserViewModel with ChangeNotifier {
   }
 
   Future<void> signOutFromAuth() async {
+    socialLinksModel = null;
     await googleSignIn.signOut();
     await auth.signOut();
   }

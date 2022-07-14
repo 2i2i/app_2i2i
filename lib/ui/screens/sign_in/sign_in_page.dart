@@ -37,7 +37,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final signUpViewModel = ref.read(setupUserViewModelProvider);
+    final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if(!appSettingModel.isInternetAvailable){

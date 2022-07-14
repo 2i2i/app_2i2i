@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -15,6 +14,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -534,7 +534,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return '$minSpeedPerHourinALGO ALGO/hour';
   }
 
-  int getSpeedFromText() => (num.parse(speedEditController.text) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -569,12 +569,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      SocialLinksModel? socialLinksModel = setupUserViewModel?.socialLinksModel;
-      user!.socialLinks = [socialLinksModel!];
+      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
