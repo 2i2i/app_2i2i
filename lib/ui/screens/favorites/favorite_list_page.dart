@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,12 +38,12 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
       body: favList.isEmpty
           ? Center(
               child: Text(
-              Keys.noHostsFound.tr(context),
-              style: Theme.of(context).textTheme.subtitle2,
-            ))
+                Keys.noHostsFound.tr(context),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
+              ),
+            )
           : Padding(
-              padding: EdgeInsets.only(
-                  right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
+        padding: EdgeInsets.only(right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
               child: ListView.separated(
                 itemCount: favList.length,
                 shrinkWrap: true,

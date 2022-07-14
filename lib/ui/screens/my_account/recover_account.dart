@@ -1,13 +1,14 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../app/wait_page.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 
 class RecoverAccountPage extends ConsumerStatefulWidget {
@@ -175,7 +176,7 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
       await account.setMainAccount();
       context.pop();
     } catch (e) {
-      CustomDialogs.showToastMessage(context, "We cant find account from this keys");
+      CustomDialogs.showToastMessage(context, Keys.noKeyFound.tr(context));
       log(e.toString());
     }
     CustomDialogs.loader(false, context);
