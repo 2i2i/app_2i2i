@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -151,11 +152,13 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //}
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
+        log("methodCall.method=============> setMethodCallHandler");
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
             Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.watch(meetingChangerProvider);
+            log("methodCall.method=============> ${methodCall.method}");
             switch (methodCall.method) {
               case 'CUT':
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);

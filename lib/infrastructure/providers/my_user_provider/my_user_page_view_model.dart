@@ -1,7 +1,8 @@
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
@@ -64,7 +65,7 @@ class MyUserPageViewModel {
       Map jsonDataCurrentUser = {
         'route': Routes.lock,
         'type': 'CALL',
-        "title": firstUser.name,
+        "title": user.name,
         "body": 'Incoming video call',
         "meetingId": bidIn.public.id,
         "meetingData": meeting.toMap(),

@@ -235,14 +235,13 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule =
-        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final Rule rule = data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
+    // final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
+    //     .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
     // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
+    // final List<String> blocked = List.castFrom(data['blocked'] as List);
+    // final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
         id: documentId,
@@ -256,10 +255,10 @@ class UserModel extends Equatable {
         heartbeatBackground: heartbeatBackground,
         heartbeatForeground: heartbeatForeground,
         rule: rule,
-        loungeHistory: loungeHistory,
+        loungeHistory: [],
         loungeHistoryIndex: loungeHistoryIndex,
-        blocked: blocked,
-        friends: friends,
+        blocked: [],
+        friends: [],
         socialLinks: socialLinksList);
   }
 

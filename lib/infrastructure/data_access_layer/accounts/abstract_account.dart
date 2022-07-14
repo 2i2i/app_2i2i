@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+
 import 'package:algorand_dart/algorand_dart.dart';
+
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import '../services/logging.dart';
@@ -37,7 +39,7 @@ class AccountService {
 
   Future<int> getMinBalance({required String address, required AlgorandNet net}) async {
     final account = await algorandLib.client[net]!.getAccountByAddress(address);
-    return account.minimumBalance as int;
+    return account.minimumBalance?.toInt() as int;
   }
 
   Future<AssetHolding> getALGOBalance({required String address, required AlgorandNet net}) async {
