@@ -178,7 +178,15 @@ class ko {
       Keys.signInWithTwitter: '트위터로 로그인',
       Keys.signInAnonymously: '익명 로그인',
       Keys.searchFaq: '키워드 검색',
-      Keys.loading:'로드 중...'
+      Keys.noInternetTitle: '인터넷에 연결되지 않음',
+      Keys.noInternetMessage: '인터넷에 연결되어 있지 않습니다. WI-FI가 켜져 있는지 확인하십시오. 비행기 모드가 꺼져 있고 다시 시도하십시오',
+      Keys.loading:'로드 중...',
+      Keys.noKeyFound :'이 키에서 계정을 찾을 수 없습니다',
+      Keys.no:'아니요',
+      Keys.yes:'예',
+      Keys.transactionConfirmMsg:'지갑에서 거래를 하시겠습니까?',
+      Keys.pleaseConfirm:'확인 해주세요',
+      Keys.okay:'좋아요',
     };
   }
 }

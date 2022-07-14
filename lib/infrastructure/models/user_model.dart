@@ -148,7 +148,7 @@ class UserModel extends Equatable {
   List<String> tags;
 
   void setTags() {
-    tags = [/*name.toLowerCase(),*/ ...keysFromName(name), ...tagsFromBio(bio)];
+    tags = [...keysFromName(name), ...tagsFromBio(bio)];
   }
 
   // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
@@ -200,34 +200,33 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
-    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('user.fromMap - data=$data');
-    // log('user.fromMap - data=${data['bidsIn']}');
-    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
-
-    final Status status = Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
+    final Status status =
+        data.containsKey('status') && data['status'] !=null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
+
+    final List<Lounge> loungeHistory = data.containsKey('loungeHistory') && data['loungeHistory'] != null
+        ? List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)))
+        : [];
+    final List<String> blocked = data.containsKey('blocked') && data['blocked'] != null ? List.castFrom(data['blocked']) : [];
+    final List<String> friends = data.containsKey('friends') && data['friends'] != null ? List.castFrom(data['friends']) : [];
+
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final String? imageUrl = data['imageUrl'];
-    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule = data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)));
+    final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
         id: documentId,

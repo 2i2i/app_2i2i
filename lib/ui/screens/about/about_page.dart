@@ -52,11 +52,11 @@ class AboutPage extends StatelessWidget {
           ]),
           paragraph(context, 'Target audience', [
             '• Anyone with an internet connection can earn coins by talking.',
-            '• Examples include: tutors, people with fans, somone with an ear to listen, etc.'
+            '• Examples include: tutors, people with fans, someone with an ear to listen, etc.'
           ]),
           paragraph(context, 'Zero credit risk', [
             '• 2i2i never gets your coins.',
-            '• The coins are transfered from one user to another via a smart contract.'
+            '• The coins are transferred from one user to another via a smart contract.'
           ]),
           paragraph(context, 'Full privacy', [
             '• The live video calls are end-to-end encrypted and peer-to-peer.',
