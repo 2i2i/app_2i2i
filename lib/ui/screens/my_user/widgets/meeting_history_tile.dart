@@ -182,8 +182,8 @@ class MeetingHistoryTile extends ConsumerWidget {
 }
 
 extension DateTimeExtension on DateTime {
-  DateTime toLocalDateTime({String format = "yyyy-MM-dd HH:mm:ss"}) {
-    var dateTime = DateFormat(format).parse(this.toString(), true);
+  DateTime toLocalDateTime({String format = "yyyy-MM-dd hh:mm:ss"}) {
+    var dateTime = DateFormat(format).parse(this.toString(), false);
     return dateTime.toLocal();
   }
 }

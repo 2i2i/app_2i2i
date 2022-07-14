@@ -27,13 +27,10 @@ class MeetingHistoryModel extends ChangeNotifier {
         if (docList.isNotEmpty) lastDocument = docList[docList.length - 1];
       }
       if (meetingDataModel.lastDocument != null) {
-        if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null &&
-            modelData['meetingList'].isNotEmpty) meetingHistoryList.addAll(modelData['meetingList']);
+        if (modelData.containsKey('meetingList') && modelData['meetingList'] != null && modelData['meetingList'].isNotEmpty)
+          meetingHistoryList.addAll(modelData['meetingList']);
       } else {
-        if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null &&
-            modelData['meetingList'].isNotEmpty) {
+        if (modelData.containsKey('meetingList') && modelData['meetingList'] != null && modelData['meetingList'].isNotEmpty) {
           meetingHistoryList.clear();
           meetingDataModel.lastDocument = null;
           meetingHistoryList = modelData['meetingList'];
@@ -43,6 +40,10 @@ class MeetingHistoryModel extends ChangeNotifier {
     }
     isRequesting = false;
     notifyListeners();
+  }
+
+  onDisposeList() {
+    meetingHistoryList.clear();
   }
 }
 
