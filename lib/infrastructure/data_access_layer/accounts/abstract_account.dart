@@ -21,7 +21,7 @@ class AccountService {
   final AlgorandLib algorandLib;
   final SecureStorage storage;
 
-  Future setMainAcccount(String address) => storage.write('main_account', address);
+  Future setMainAccount(String address) => storage.write('main_account', address);
 
   Future<AbstractAccount> getMainAccount() async {
     final mainAccountAddress = await storage.read('main_account');
@@ -168,7 +168,7 @@ abstract class AbstractAccount {
   String address = '';
   List<Balance> balances = [];
 
-  Future setMainAccount() => accountService.setMainAcccount(address);
+  Future setMainAccount() => accountService.setMainAccount(address);
 
   Future<String> optInToDapp({required int dappId, required AlgorandNet net, bool waitForConfirmation = false});
 

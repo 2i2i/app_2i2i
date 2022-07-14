@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/models/meeting_history_model.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
-import '../../home/wait_page.dart';
+import '../../app/wait_page.dart';
 import '../../my_user/widgets/meeting_history_tile.dart';
 
 class BidOutMeetings extends ConsumerStatefulWidget {

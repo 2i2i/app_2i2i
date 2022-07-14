@@ -18,7 +18,7 @@ import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import '../../commons/custom_profile_image_view.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import 'ripples_animation.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
