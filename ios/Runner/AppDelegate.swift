@@ -31,10 +31,11 @@ import Firebase
             }else if(call.method == "CUT_CALL"){
                 self.provider?.reportCall(with: self.uuid, endedAt: Date(), reason: .remoteEnded)
             }else if(call.method == "ANSWER"){
-                notificationChannel.invokeMethod("ANSWER", arguments:   self.args)
+                if(self.args!=nil){
+                    self.notificationChannel?.invokeMethod("ANSWER", arguments: self.args)
+        
+                }
             }
-            
-            
         })
         
         GeneratedPluginRegistrant.register(with: self)
