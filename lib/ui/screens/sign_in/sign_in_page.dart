@@ -60,7 +60,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
