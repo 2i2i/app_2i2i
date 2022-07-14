@@ -27,44 +27,44 @@ dependencies:
     sdk: flutter
 
   universal_html: ^2.0.8
-  sentry_flutter: ^6.5.1
+  sentry_flutter: ^6.6.3
 
   walletconnect_dart: ^0.0.11
   algorand_dart: ^1.0.3
   image_picker: ^0.8.5+3
-  flutter_webrtc: ^0.8.5
-  just_audio: ^0.9.20
-  flutter_riverpod: ^1.0.3
+  flutter_webrtc: ^0.8.11
+  just_audio: ^0.9.27
+  flutter_riverpod: ^1.0.4
 
 
   flutter_secure_storage: ^5.0.2
-  url_launcher: ^6.0.20
+  url_launcher: ^6.1.5
   uni_links: ^0.5.1
   expansion_tile_card: ^2.0.0
   qr_flutter: ^4.0.0
-  flutter_styled_toast: ^2.0.0
-  flutter_rating_bar: ^4.0.0
+  flutter_styled_toast: ^2.1.3
+  flutter_rating_bar: ^4.0.1
 
-  flutter_animator: ^3.2.1
+  flutter_animator: ^3.2.2
   animate_countdown_text: ^1.1.3
-  flutter_svg: ^1.0.3
-  go_router: ^3.0.7
+  flutter_svg: ^1.1.1+1
+  go_router: ^4.1.0
   intl: ^0.17.0
-  cached_network_image: ^3.2.0
+  cached_network_image: ^3.2.1
 
-  firebase_messaging: ^11.2.14
-  cloud_firestore: ^3.1.13
-  firebase_app_check: ^0.0.6+14
-  firebase_core: ^1.15.0
-  cloud_functions: ^3.2.13
-  firebase_storage: ^10.2.13
-  firebase_auth: ^3.3.15
+  firebase_messaging: ^12.0.0
+  cloud_firestore: ^3.3.0
+  firebase_app_check: ^0.0.6+17
+  firebase_core: ^1.19.2
+  cloud_functions: ^3.3.2
+  firebase_storage: ^10.3.2
+  firebase_auth: ^3.4.2
 
-  google_sign_in: ^5.3.0
-  sign_in_with_apple: ^3.3.0
+  google_sign_in: ^5.4.0
+  sign_in_with_apple: ^4.0.0
   twitter_login: ^4.2.3
 
-  device_info_plus: ^3.2.3
+  device_info_plus: ^4.0.0
   rich_text_controller: ^1.4.0
   permission_handler: ^9.2.0
   flutter_dotenv: ^5.0.2
@@ -72,7 +72,7 @@ dependencies:
   store_redirect: ^2.0.1
   connectivity_plus: ^2.3.5
 
-  share_plus: ^4.0.4
+  share_plus: ^4.0.10
   flutter_inappwebview: ^5.4.2
   flutter_native_splash: ^2.1.6
   perfect_volume_control: ^1.0.5
