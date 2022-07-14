@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
@@ -15,6 +14,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -74,28 +74,29 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               widget.fromBottomSheet ?? false ? Keys.setUpAccount.tr(context) : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileWidget(
-                    onTap: () {
-                      CustomAlertWidget.showBidAlert(context, ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ));
-                    },
+                    onTap: () => CustomAlertWidget.showBottomSheet(
+                          context,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -106,14 +107,21 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 1),
                       TextFormField(
+                        //maxLength: 30,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(30),
+                          // FilteringTextInputFormatter.deny(' ',),
+                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
+                        ],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: userNameEditController,
                         textInputAction: TextInputAction.next,
@@ -123,6 +131,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           value ??= '';
                           if (value.trim().isEmpty) {
                             return Keys.required.tr(context);
+                          } else if (value.trim().length < 3) {
+                            return 'Required min 3 characters';
+                          }
+                          if (value.trim().length < 3) {
+                            return "name must be 3 characters long";
                           }
                           return null;
                         },
@@ -143,6 +156,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(200),
+              ],
               controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -173,7 +189,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     controller: speedEditController,
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                    ],
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
@@ -376,18 +394,20 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               ),
             ),
             // const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(true, context);
-                }
-                await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(false, context);
-                }
-                // await Navigator.of(context).maybePop();
-              },
-              child: Text(Keys.save.tr(context)),
+            Visibility(
+              visible: (widget.fromBottomSheet ?? false),
+              child: ElevatedButton(
+                onPressed: () async {
+
+                    CustomDialogs.loader(true, context);
+
+                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+
+                    CustomDialogs.loader(false, context);
+                  Navigator.of(context).pop();
+                },
+                child: Text(Keys.save.tr(context)),
+              ),
             )
           ],
         ),
@@ -397,7 +417,44 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          Visibility(
+            visible: !(widget.fromBottomSheet ?? false),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomDialogs.loader(true, context);
+                    }
+                    await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomDialogs.loader(false, context);
+                    }
+                    // await Navigator.of(context).maybePop();
+                  },
+                  child: Text(
+                    'Save',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
       body: body,
     );
   }
@@ -522,7 +579,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return '$minSpeedPerHourinALGO ALGO/hour';
   }
 
-  int getSpeedFromText() => (num.parse(speedEditController.text) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -557,12 +614,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   Future<void> onClickSave(
       {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      SocialLinksModel? socialLinksModel = setupUserViewModel?.socialLinksModel;
-      user!.socialLinks = [socialLinksModel!];
+      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
@@ -573,13 +628,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-        final importances = findImportances(_importanceRatioValue!, lounge);
+        final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-            minSpeed: getSpeedFromText(),
-            maxMeetingDuration: seconds, importance: {
-              Lounge.chrony: importances[Lounge.chrony]!,
-              Lounge.highroller: importances[Lounge.highroller]!,
+          minSpeed: getSpeedFromText(),
+          maxMeetingDuration: seconds,
+          importance: {
+            Lounge.chrony: importance[Lounge.chrony]!,
+            Lounge.highroller: importance[Lounge.highroller]!,
           },
         );
         user.rule = rule;
