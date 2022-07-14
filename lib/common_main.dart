@@ -322,6 +322,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       themeMode: appSettingModel.currentThemeMode,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
+      routeInformationProvider: NamedRoutes.router.routeInformationProvider,
       routeInformationParser: NamedRoutes.router.routeInformationParser,
       routerDelegate: NamedRoutes.router.routerDelegate,
     );

@@ -38,8 +38,13 @@ class AccountService {
   }
 
   Future<int> getMinBalance({required String address, required AlgorandNet net}) async {
-    final account = await algorandLib.client[net]!.getAccountByAddress(address);
-    return account.minimumBalance as int;
+    try {
+      final account = await algorandLib.client[net]!.getAccountByAddress(address);
+      return account.minimumBalance?.toInt() ?? 0;
+    } catch (e) {
+      print(e);
+    }
+    return 0;
   }
 
   Future<AssetHolding> getALGOBalance({required String address, required AlgorandNet net}) async {
