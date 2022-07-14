@@ -163,7 +163,16 @@ bool haveToWait(var provider) {
 }
 
 const int MILLION = 1000000;
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+/*
 class MyBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) => ClampingScrollPhysics();
-}
+}*/
