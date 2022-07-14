@@ -6,7 +6,6 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/layout/responsive_layout_builder.dart';
 import 'package:app_2i2i/ui/layout/scale_factors.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -103,12 +102,12 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   RingingPageViewModel? ringingPageViewModel;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   final Connectivity _connectivity = Connectivity();
+
   @override
   void initState() {
     super.initState();
     initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
       window.addEventListener('focus', onFocus);
@@ -273,31 +272,34 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       builder: (context, widget) {
-        return ResponsiveLayoutBuilder(
-          small: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          large: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          xLarge: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
-          medium: (BuildContext, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
-              child: widget ?? Container(),
-            );
-          },
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: ResponsiveLayoutBuilder(
+            small: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            large: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            xLarge: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            medium: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+          ),
         );
       },
       supportedLocales: const [
@@ -309,12 +311,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         Locale("ja", ''),
         Locale('ko', ''),
       ],
-      builder: (context, child) {
-        return ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: child!,
-        );
-      },
       locale: appSettingModel.locale,
       localizationsDelegates: [
         ApplicationLocalizationsDelegate(),
