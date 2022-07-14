@@ -234,8 +234,8 @@ class _AddAccountOptionsWidgetsState
       if (isAvailable) {
         CustomAlertWidget.confirmDialog(
           context,
-          description: "Are you sure to do the transaction from your wallet?",
-          title: "Please Confirm",
+          description: Keys.transactionConfirmMsg.tr(context),
+          title: Keys.pleaseConfirm.tr(context),
           onPressed: () async {
             isAvailable = await launchUrl(launchUri);
           },

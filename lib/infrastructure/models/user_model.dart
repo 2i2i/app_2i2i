@@ -34,16 +34,13 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeatBackground({bool setStatus = false}) =>
-      database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
 
-  Future updateHeartbeatForeground({bool setStatus = false}) =>
-      database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+  Future updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
 
   Future updateSettings(UserModel user) => database.updateUser(user);
 
-  Future addComment(String targetUid, ChatModel chat) =>
-      database.addChat(targetUid, chat);
+  Future addComment(String targetUid, ChatModel chat) => database.addChat(targetUid, chat);
 
   // TODO before calling addBlocked or addFriend, need to check whether targetUid already in array
   // do this by getting UserModelPrivate
@@ -53,11 +50,9 @@ class UserModelChanger {
 
   Future addFriend(String targetUid) => database.addFriend(uid, targetUid);
 
-  Future removeBlocked(String targetUid) =>
-      database.removeBlocked(uid, targetUid);
+  Future removeBlocked(String targetUid) => database.removeBlocked(uid, targetUid);
 
-  Future removeFriend(String targetUid) =>
-      database.removeFriend(uid, targetUid);
+  Future removeFriend(String targetUid) => database.removeFriend(uid, targetUid);
 }
 
 @immutable
@@ -102,13 +97,11 @@ class Rule extends Equatable {
     return {
       'maxMeetingDuration': maxMeetingDuration,
       'minSpeed': minSpeed,
-      'importance':
-          importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
+      'importance': importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
 
-  int importanceSize() =>
-      importance.values.reduce((value, element) => value + element);
+  int importanceSize() => importance.values.reduce((value, element) => value + element);
 
   @override
   List<Object> get props => [maxMeetingDuration, minSpeed, importance];
@@ -155,7 +148,7 @@ class UserModel extends Equatable {
   List<String> tags;
 
   void setTags() {
-    tags = [/*name.toLowerCase(),*/ ...keysFromName(name), ...tagsFromBio(bio)];
+    tags = [...keysFromName(name), ...tagsFromBio(bio)];
   }
 
   // https://stackoverflow.com/questions/51568821/works-in-chrome-but-breaks-in-safari-invalid-regular-expression-invalid-group
@@ -194,8 +187,7 @@ class UserModel extends Equatable {
   final double rating;
   final int numRatings;
 
-  final List<Lounge>
-      loungeHistory; // actually circular array containing recent 100 lounges
+  final List<Lounge> loungeHistory; // actually circular array containing recent 100 lounges
   final int loungeHistoryIndex; // index where 0 is; goes anti-clockwise
 
   final List<String> blocked;
@@ -208,41 +200,34 @@ class UserModel extends Equatable {
   bool get stringify => true;
 
   factory UserModel.fromMap(Map<String, dynamic>? data, String documentId) {
-    // log('UserModel.fromMap - data=$data documentId=$documentId');
     if (data == null) {
       log('user.fromMap - data == null');
       throw StateError('missing data for uid: $documentId');
     }
 
-    // log('user.fromMap - data=$data');
-    // log('user.fromMap - data=${data['bidsIn']}');
-    // log('user.fromMap - data=${data['bidsIn'].runtimeType}');
-
     final Status status =
-        Status.values.firstWhere((e) => e.toStringEnum() == data['status']);
-    final List<SocialLinksModel> socialLinksList = data
-                .containsKey('socialLinks') &&
-            data['socialLinks'] != null
-        ? List<SocialLinksModel>.from(
-            data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
+        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+
+    final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
+        ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
+
+    final List<Lounge> loungeHistory = data.containsKey('loungeHistory') && data['loungeHistory'] != null
+        ? List<Lounge>.from(data['loungeHistory'].map((item) => Lounge.values.firstWhere((e) => e.index == item)))
+        : [];
+    final List<String> blocked = data.containsKey('blocked') && data['blocked'] != null ? List.castFrom(data['blocked']) : [];
+    final List<String> friends = data.containsKey('friends') && data['friends'] != null ? List.castFrom(data['friends']) : [];
+
     final String? meeting = data['meeting'];
     final String name = data['name'] ?? '';
     final String bio = data['bio'] ?? '';
     final String? imageUrl = data['imageUrl'];
-    // log('UserModel.fromMap - imageUrl=$imageUrl');
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule =
-        data['rule'] == null ? Rule() : Rule.fromMap(data['rule']);
-    final List<Lounge> loungeHistory = List<Lounge>.from(data['loungeHistory']
-        .map((item) => Lounge.values.firstWhere((e) => e.index == item)));
-    // log('UserModel.fromMap - l0oungeHistory=$loungeHistory');
+    final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
-    final List<String> blocked = List.castFrom(data['blocked'] as List);
-    final List<String> friends = List.castFrom(data['friends'] as List);
 
     return UserModel(
         id: documentId,
@@ -280,8 +265,7 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'socialLinks':
-          FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
+      'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }
 

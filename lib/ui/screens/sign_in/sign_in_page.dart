@@ -1,16 +1,18 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
-import '../home/wait_page.dart';
+import '../app/no_internet_screen.dart';
+import '../app/wait_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -37,6 +39,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   Widget build(BuildContext context) {
     final signUpViewModel = ref.read(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
+    if(!appSettingModel.isInternetAvailable){
+      return NoInternetScreen();
+    }
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -74,13 +80,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
-                              Text(Keys.loginMsg2.tr(context),
-                                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
+                              Text(Keys.loginMsg2.tr(context), textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
                               Text(Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.overline?.copyWith(
-                                      color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .overline
+                                      ?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -94,8 +101,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             },
                             dense: true,
                             leading: Image.asset('assets/google.png', height: 25, width: 25),
-                            title: Text(Keys.signInWithGoogle.tr(context),
-                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
+                            title: Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
                           ),
                         ),
                         Visibility(
@@ -111,13 +117,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 await signUpViewModel.signInWithApple(context);
                               },
                               dense: true,
-                              leading: Image.asset('assets/apple.png',
-                                  height: 30, width: 30, color: Theme.of(context).cardColor),
+                              leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
                               title: Text(Keys.signInWithApple.tr(context),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      ?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
+                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
@@ -165,15 +167,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               style: Theme.of(context).textTheme.caption,
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: '2i2i',
+                                    text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/')))
-                                          throw 'Could not launch https://about.2i2i.app/';
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'))) throw 'Could not launch https://about.2i2i.app/';
                                       },
-                                    style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                        decoration: TextDecoration.underline)),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],
                             ),
                           ),
