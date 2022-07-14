@@ -146,14 +146,19 @@ final myUserPageViewModelProvider = Provider((ref) {
 
     final accountService = ref.watch(accountServiceProvider);
 
+    if (accountService is AsyncError || accountService is AsyncLoading) {
+      return null;
+    }
+
     return MyUserPageViewModel(
       database: database,
       functions: functions,
-      user: user.asData!.value,
+      user: user.value!,
       accountService: accountService,
       userChanger: userChanger,
     );
   }
+  return null;
 });
 
 final isUserLocked = IsUserLocked(false);

@@ -1,7 +1,6 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/ui/screens/app/error_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
@@ -9,7 +8,6 @@ import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
 import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
-import 'package:app_2i2i/ui/screens/home/error_page.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
 import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
@@ -332,26 +330,7 @@ class NamedRoutes {
 
   static Widget getView(Widget page) {
     Widget widget = SignInPage(
-      homePageBuilder: (context) => Scaffold(
-        appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
-            ? null
-            : AppBar(
-                leading: Container(),
-                toolbarHeight: 20,
-                title: Text(AlgorandNet.testnet.name +
-                    ' - v41' +
-                    (updateAvailable ? ' - update: reload page' : '')),
-                titleTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodyText2
-                    ?.copyWith(color: Theme.of(context).cardColor),
-                centerTitle: true,
-                backgroundColor: Colors.green,
-              ),
-        body: SafeArea(child: page),
-        bottomSheet: AuthScreen(),
-        bottomNavigationBar: BottomNavBar(),
-      ),
+      homePageBuilder: (context) => AuthScreen(pageChild: page, updateAvailable: updateAvailable),
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {

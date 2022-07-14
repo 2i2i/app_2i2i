@@ -74,28 +74,29 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               widget.fromBottomSheet ?? false ? Keys.setUpAccount.tr(context) : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileWidget(
-                    onTap: () {
-                      CustomAlertWidget.showBidAlert(context, ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ));
-                    },
+                    onTap: () => CustomAlertWidget.showBottomSheet(
+                          context,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -106,14 +107,21 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 1),
                       TextFormField(
+                        //maxLength: 30,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(30),
+                          // FilteringTextInputFormatter.deny(' ',),
+                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
+                        ],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: userNameEditController,
                         textInputAction: TextInputAction.next,
@@ -123,6 +131,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           value ??= '';
                           if (value.trim().isEmpty) {
                             return Keys.required.tr(context);
+                          }
+                          if (value.trim().length < 3) {
+                            return "name must be 3 characters long";
                           }
                           return null;
                         },
@@ -143,6 +154,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(200),
+              ],
               controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -380,14 +394,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             // const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(true, context);
-                }
+                CustomDialogs.loader(true, context);
                 await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(false, context);
-                }
-                // await Navigator.of(context).maybePop();
+                CustomDialogs.loader(false, context);
+                Navigator.of(context).pop();
               },
               child: Text(Keys.save.tr(context)),
             )
@@ -573,14 +583,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-        final importances = findImportances(_importanceRatioValue!, lounge);
+        final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
           minSpeed: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
-            Lounge.chrony: importances[Lounge.chrony]!,
-            Lounge.highroller: importances[Lounge.highroller]!,
+            Lounge.chrony: importance[Lounge.chrony]!,
+            Lounge.highroller: importance[Lounge.highroller]!,
           },
         );
         user.rule = rule;

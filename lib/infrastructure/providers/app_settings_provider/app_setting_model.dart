@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../commons/keys.dart';
@@ -25,6 +27,22 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
+
+  bool isInternetAvailable = true;
+
+  void setInternetStatus(bool value) {
+    isInternetAvailable = value;
+    notifyListeners();
+  }
+
+  Future<bool> checkConnectivity() async {
+    try {
+      ConnectivityResult result = await Connectivity().checkConnectivity();
+      return result != ConnectivityResult.none;
+    } on PlatformException {
+      return false;
+    }
+  }
 
   void appInit() {
     isVideoEnabled = true;

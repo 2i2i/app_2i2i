@@ -1,7 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -116,6 +116,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     userList.removeWhere((element) => element == null);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
+    if (userList.isEmpty) {
+      return Center(
+          child: Text(
+        Keys.noHostsFound.tr(context),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
+      ));
+    }
     return ScrollConfiguration(
       behavior: MyBehavior(),
       child: ListView.builder(
