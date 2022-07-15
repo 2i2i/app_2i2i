@@ -32,34 +32,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           final database = ref.read(databaseProvider);
           await database.createUser(uid);
           CustomAlertWidget.showBottomSheet(context,
-              child: WillPopScope(
-                onWillPop: () {
-                  return Future.value(true);
-                },
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: UserSetting(
-                      fromBottomSheet: true,
-                    ),
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: UserSetting(
+                  fromBottomSheet: true,
                 ),
               ),
               enableDrag: false,
               isDismissible: false);
         } else if (userModel.name.isEmpty) {
           CustomAlertWidget.showBottomSheet(context,
-              child: WillPopScope(
-                onWillPop: () {
-                  return Future.value(true);
-                },
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: UserSetting(
-                      fromBottomSheet: true,
-                    ),
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: UserSetting(
+                  fromBottomSheet: true,
                 ),
               ),
               enableDrag: false,
@@ -72,9 +58,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (NamedRoutes.showRating.value['show'] ?? false) {
-      return AddRatingPage(showRating: NamedRoutes.showRating);
-    }
     return Scaffold(
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
           ? null
@@ -87,6 +70,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       body: SafeArea(child: widget.pageChild),
+      bottomSheet: (NamedRoutes.showRating.value['show'] ?? false) ? AddRatingPage(showRating: NamedRoutes.showRating) : null,
       bottomNavigationBar: BottomNavBar(),
     );
   }
