@@ -33,7 +33,7 @@ import Firebase
             }else if(call.method == "ANSWER"){
                 if(self.args != nil){
                     self.notificationChannel?.invokeMethod("ANSWER", arguments: self.args)
-        
+
                 }
             }
         })

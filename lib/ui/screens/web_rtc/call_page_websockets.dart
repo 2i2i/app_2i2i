@@ -518,12 +518,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     _signaling ??= SignalingWebSockets(widget.host, localId)..connect();
     _signaling?.onSignalingStateChange = (SignalingState state) {
       log(K + '_signaling?.onSignalingStateChange - state=$state');
-      switch (state) {
-        case SignalingState.ConnectionClosed:
-        case SignalingState.ConnectionError:
-        case SignalingState.ConnectionOpen:
-          break;
-      }
     };
 
     _signaling?.onCallStateChange = (Session session, CallState state) {

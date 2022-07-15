@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
 
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -26,7 +27,7 @@ class RingingPageViewModel {
 
   bool amA() {
     final x = meeting.A == user.id;
-    log('RingingPageViewModel - amA - x=$x');
+    //log('RingingPageViewModel - amA - x=$x');
     return x;
   }
 
