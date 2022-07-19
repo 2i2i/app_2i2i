@@ -28,8 +28,7 @@ class _BidOutMeetingsState extends ConsumerState<BidOutMeetings> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(meetingHistory).getMeetingHistoryList(
-          MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'B'));
+      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'B'));
     });
     controller.addListener(_scrollListener);
     super.initState();
@@ -41,7 +40,7 @@ class _BidOutMeetingsState extends ConsumerState<BidOutMeetings> {
     if (haveToWait(meetingHistoryModel)) {
       return Center(child: WaitPage());
     }
-    List<Meeting?> meetingListB = meetingHistoryModel?.meetingHistoryList ?? [];
+    List<Meeting?> meetingListB = meetingHistoryModel?.bMeetingHistoryList ?? [];
 
     if (meetingListB.isEmpty && !(meetingHistoryModel?.isRequesting ?? false)) {
       return Center(
@@ -71,10 +70,9 @@ class _BidOutMeetingsState extends ConsumerState<BidOutMeetings> {
             return MeetingHistoryTile(
               currentUid: widget.uid,
               meetingModel: meetingModel,
-              onTap: () =>
-                  context.pushNamed(Routes.user.nameFromPath(), params: {
-                    'uid': amA ? meetingModel.B : meetingModel.A,
-                  }),
+              onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                'uid': amA ? meetingModel.B : meetingModel.A,
+              }),
             );
           },
         ),
@@ -103,11 +101,9 @@ class _BidOutMeetingsState extends ConsumerState<BidOutMeetings> {
     double currentScroll = controller.position.pixels;
     double delta = MediaQuery.of(context).size.height * 0.20;
     if (maxScroll - currentScroll <= delta && !(meetingHistoryModel?.isRequesting ?? false)) {
-      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(
-          uId: widget.uid,
-          page: 10,
-          userAorB: 'B',
-          lastDocument: meetingHistoryModel?.lastDocument));
+      ref
+          .read(meetingHistory)
+          .getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'B', lastDocument: meetingHistoryModel?.lastDocument));
     }
   }
 }
