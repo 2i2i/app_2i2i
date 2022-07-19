@@ -20,7 +20,11 @@ class CustomAlertWidget {
       enableDrag: enableDrag,
       isScrollControlled: true,
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,
-      builder: (BuildContext context) => SafeArea(child: Padding(padding: MediaQuery.of(context).viewInsets, child: child)),
+      builder: (BuildContext context) => WillPopScope(
+          onWillPop: () {
+            return Future.value(false);
+          },
+          child: SafeArea(child: Padding(padding: MediaQuery.of(context).viewInsets, child: child))),
       isDismissible: isDismissible,
     );
   }

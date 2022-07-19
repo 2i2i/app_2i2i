@@ -81,7 +81,7 @@ extension name on String {
       case Routes.verifyPerhaps:
         return 'verify_perhaps';
       case Routes.webView:
-        return 'webView';
+        return 'web_view';
       default:
         return this;
     }
