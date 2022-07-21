@@ -37,7 +37,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final signUpViewModel = ref.watch(setupUserViewModelProvider);
+    // final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if(!appSettingModel.isInternetAvailable){
@@ -54,7 +54,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
                   if (firebaseUser != null) {
-                    signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+                    // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
                   return Padding(
@@ -97,7 +97,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                           child: ListTile(
                             onTap: () async {
-                              await signUpViewModel.signInWithGoogle(context);
+                              await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
                             },
                             dense: true,
                             leading: Image.asset('assets/google.png', height: 25, width: 25),
@@ -114,7 +114,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             color: Theme.of(context).iconTheme.color,
                             child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInWithApple(context);
+                                await ref.read(setupUserViewModelProvider).signInWithApple(context);
                               },
                               dense: true,
                               leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
@@ -132,7 +132,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                             child: ListTile(
                                 onTap: () async {
-                                  await signUpViewModel.signInWithTwitter(context);
+                                  await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
                                 },
                                 dense: true,
                                 leading: Image.asset('assets/twitter.png', height: 30, width: 30),
@@ -150,7 +150,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           color: Theme.of(context).colorScheme.secondary,
                           child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInAnonymously();
+                                await ref.read(setupUserViewModelProvider).signInAnonymously();
                               },
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),
