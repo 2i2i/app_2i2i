@@ -53,7 +53,9 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
-              CustomDialogs.loader(true, _scaffoldKey.currentContext!);
+              if (_scaffoldKey.currentContext != null) {
+                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
+              }
               bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
@@ -86,8 +88,8 @@ class UserBidInsList extends ConsumerWidget {
                 SizedBox(height: 2),
                 Text(Keys.talk.tr(context),
                     style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                      color: Theme.of(context).cardColor,
-                    ))
+                          color: Theme.of(context).cardColor,
+                        ))
               ],
             ),
           ),
@@ -95,15 +97,15 @@ class UserBidInsList extends ConsumerWidget {
       ),
       body: bidInsWithUsers.isNotEmpty
           ? ListView.builder(
-        itemCount: bidInsWithUsers.length,
-        padding: const EdgeInsets.only(top: 10, bottom: 80),
-        itemBuilder: (_, ix) {
-          return BidInTile(
-            bidInList: bidInsWithUsers,
-            index: ix,
-          );
-        },
-      )
+              itemCount: bidInsWithUsers.length,
+              padding: const EdgeInsets.only(top: 10, bottom: 80),
+              itemBuilder: (_, ix) {
+                return BidInTile(
+                  bidInList: bidInsWithUsers,
+                  index: ix,
+                );
+              },
+            )
           : NoBidPage(noBidsText: Keys.roomIsEmpty.tr(context)),
     );
   }

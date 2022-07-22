@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
@@ -26,6 +30,19 @@ class SignInPage extends ConsumerStatefulWidget {
 class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+      if (uid.isNotEmpty) {
+        return await FirebaseMessaging.instance
+            .getToken(
+          vapidKey: dotenv.env['TOKEN_KEY'].toString(),
+        )
+            .then((String? token) {
+          if (token is String) return FirestoreDatabase().updateToken(uid, token);
+        });
+      }
+    });
+
     userIdNav.addListener(() {
       if (userIdNav.value.isNotEmpty) {
         context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
@@ -37,10 +54,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final signUpViewModel = ref.watch(setupUserViewModelProvider);
+    // final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
-    if(!appSettingModel.isInternetAvailable){
+    if (!appSettingModel.isInternetAvailable) {
       return NoInternetScreen();
     }
     return Container(
@@ -54,7 +71,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
                   if (firebaseUser != null) {
-                    signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+                    // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
                   return Padding(
@@ -97,7 +114,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                           child: ListTile(
                             onTap: () async {
-                              await signUpViewModel.signInWithGoogle(context);
+                              await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
                             },
                             dense: true,
                             leading: Image.asset('assets/google.png', height: 25, width: 25),
@@ -114,7 +131,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             color: Theme.of(context).iconTheme.color,
                             child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInWithApple(context);
+                                await ref.read(setupUserViewModelProvider).signInWithApple(context);
                               },
                               dense: true,
                               leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
@@ -132,7 +149,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                             child: ListTile(
                                 onTap: () async {
-                                  await signUpViewModel.signInWithTwitter(context);
+                                  await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
                                 },
                                 dense: true,
                                 leading: Image.asset('assets/twitter.png', height: 30, width: 30),
@@ -150,7 +167,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           color: Theme.of(context).colorScheme.secondary,
                           child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInAnonymously();
+                                await ref.read(setupUserViewModelProvider).signInAnonymously();
                               },
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),
@@ -170,7 +187,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'))) throw 'Could not launch https://about.2i2i.app/';
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication))
+                                          throw 'Could not launch https://about.2i2i.app/';
                                       },
                                     style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],

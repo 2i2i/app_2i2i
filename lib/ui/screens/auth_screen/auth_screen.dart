@@ -70,7 +70,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       body: SafeArea(child: widget.pageChild),
-      bottomSheet: (NamedRoutes.showRating.value['show'] ?? false) ? AddRatingPage(showRating: NamedRoutes.showRating) : null,
+      bottomSheet: Visibility(
+        visible: (NamedRoutes.showRating.value['show'] ?? false),
+        child: AddRatingPage(showRating: NamedRoutes.showRating),
+      ),
       bottomNavigationBar: BottomNavBar(),
     );
   }
