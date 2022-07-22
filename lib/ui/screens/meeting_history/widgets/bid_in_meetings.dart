@@ -41,7 +41,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     if (haveToWait(meetingHistoryModel)) {
       return Center(child: WaitPage());
     }
-    List<Meeting> meetingListA = meetingHistoryModel?.meetingHistoryList ?? [];
+    List<Meeting> meetingListA = meetingHistoryModel?.aMeetingHistoryList ?? [];
 
     if (meetingListA.isEmpty && !(meetingHistoryModel?.isRequesting ?? false)) {
       return Center(
