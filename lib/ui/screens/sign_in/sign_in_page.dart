@@ -187,7 +187,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'))) throw 'Could not launch https://about.2i2i.app/';
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication))
+                                          throw 'Could not launch https://about.2i2i.app/';
                                       },
                                     style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],

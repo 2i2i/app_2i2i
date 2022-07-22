@@ -42,9 +42,7 @@
             android:theme="@style/Theme.AppCompat"
             android:turnScreenOn="true"
             android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="flutter_deeplinking_enabled"
-                android:value="true" />
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -58,38 +56,23 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="about.2i2i.app"
-                    android:pathPrefix="/"
-                    android:scheme="https" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="twoitwoi.com"
-                    android:scheme="test" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="test" />
+
+                <data android:host="test.2i2i.app" />
+                <data android:host="twoitwoi.com" />
             </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="test.2i2i.app"
-                    android:scheme="https" />
-            </intent-filter>
-
 
         </activity>
 
