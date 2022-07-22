@@ -112,8 +112,8 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                         var meetingId = widget.showRating.value['meetingId'];
 
                         if (otherUid is String && meetingId is String) {
-                          final database = ref.watch(databaseProvider);
-                          database.addRating(
+                          final database = ref.read(databaseProvider);
+                          await database.addRating(
                             otherUid,
                             meetingId,
                             RatingModel(
@@ -122,7 +122,9 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                             ),
                           );
                         }
-                        widget.showRating.value = {'show': false};
+                        Future.delayed(Duration(milliseconds: 500)).then((value) {
+                          widget.showRating.value = {'show': false};
+                        });
                       },
                       child: Text(
                         Keys.appRatingSubmitButton.tr(context),

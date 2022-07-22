@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
@@ -26,6 +30,19 @@ class SignInPage extends ConsumerStatefulWidget {
 class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+      if (uid.isNotEmpty) {
+        return await FirebaseMessaging.instance
+            .getToken(
+          vapidKey: dotenv.env['TOKEN_KEY'].toString(),
+        )
+            .then((String? token) {
+          if (token is String) return FirestoreDatabase().updateToken(uid, token);
+        });
+      }
+    });
+
     userIdNav.addListener(() {
       if (userIdNav.value.isNotEmpty) {
         context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
@@ -40,7 +57,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     // final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
-    if(!appSettingModel.isInternetAvailable){
+    if (!appSettingModel.isInternetAvailable) {
       return NoInternetScreen();
     }
     return Container(
