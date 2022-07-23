@@ -122,9 +122,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                             ),
                           );
                         }
-                        Future.delayed(Duration(milliseconds: 500)).then((value) {
-                          widget.showRating.value = {'show': false};
-                        });
+                        widget.showRating.value = {'show': false};
                       },
                       child: Text(
                         Keys.appRatingSubmitButton.tr(context),
