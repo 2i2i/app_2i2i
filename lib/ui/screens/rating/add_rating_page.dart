@@ -120,7 +120,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                             ),
                           );
                         }
-                        widget.showRating.value = {'show': false};
+                        NamedRoutes.showRating.value = {'show': false};
                       },
                       child: Text(
                         Keys.appRatingSubmitButton.tr(context),
