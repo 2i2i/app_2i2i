@@ -110,6 +110,8 @@ class MainActivity : FlutterActivity() {
             } catch (e: Exception) {
                 Log.e("notification", "onNewIntent Exception: ", e);
             }
+        } else {
+            super.onNewIntent(intent);
         }
     }
 }
