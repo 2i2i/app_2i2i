@@ -27,12 +27,12 @@ dependencies:
     sdk: flutter
 
   universal_html: ^2.0.8
-  sentry_flutter: ^6.6.3
+  sentry_flutter: ^6.7.0
 
   walletconnect_dart: ^0.0.11
   algorand_dart: ^1.0.3
   image_picker: ^0.8.5+3
-  flutter_webrtc: ^0.8.11
+  flutter_webrtc: ^0.8.12
   just_audio: ^0.9.27
   flutter_riverpod: ^1.0.4
 

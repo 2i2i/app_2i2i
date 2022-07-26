@@ -76,12 +76,33 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                         child: ListTile(
                           dense: true,
                           contentPadding: EdgeInsets.zero,
-                          leading: ProfileWidget(
-                              stringPath: chat.writerName,
-                              imageType: ImageType.NAME_IMAGE,
-                              radius: 44,
-                              hideShadow: true,
-                              style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800)),
+                          leading: StreamBuilder<UserModel>(
+                              stream: FirestoreDatabase().userStream(uid: chat.writerUid),
+                              builder: (context, snapshot) {
+                                if (snapshot.data is UserModel) {
+                                  UserModel user = snapshot.data!;
+                                  return ProfileWidget(
+                                      stringPath: (user.imageUrl ?? "").isEmpty ? user.name : user.imageUrl!,
+                                      imageType: (user.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
+                                      radius: 44,
+                                      borderRadius: 10,
+                                      hideShadow: true,
+                                      showBorder: false,
+                                      style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800));
+                                  /*  return ProfileWidget(
+                                stringPath: chat.writerName,
+                                imageType: ImageType.NAME_IMAGE,
+                                radius: 44,
+                                hideShadow: true,
+                                style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800));*/
+                                }
+                                return ProfileWidget(
+                                    stringPath: chat.writerName,
+                                    imageType: ImageType.NAME_IMAGE,
+                                    radius: 44,
+                                    hideShadow: true,
+                                    style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800));
+                              }),
                           title: Row(
                             children: [
                               Text(chat.writerName, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColorLight)),

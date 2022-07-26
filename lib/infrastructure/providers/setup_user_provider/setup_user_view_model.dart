@@ -47,7 +47,6 @@ class SetupUserViewModel with ChangeNotifier {
   final GoogleSignIn googleSignIn;
   final AlgorandService algorand;
 
-  bool signUpInProcess = false;
 
   UserModel? userInfoModel;
   SocialLinksModel? socialLinksModel;
@@ -57,17 +56,6 @@ class SetupUserViewModel with ChangeNotifier {
   Future<UserModel?> getUserInfoModel(String uid) async {
     userInfoModel = await database.getUser(uid);
     return userInfoModel;
-  }
-
-  Future startAlgoRand(String uid) async {
-    if (signUpInProcess) return;
-    signUpInProcess = true;
-    notifyListeners();
-
-    await setupAlgorandAccount(uid);
-    signUpInProcess = false;
-
-    notifyListeners();
   }
 
   Future updateFirebaseMessagingToken(String uid) async {
@@ -94,7 +82,7 @@ class SetupUserViewModel with ChangeNotifier {
       userInfoModel?.socialLinks = [];
     }
     final f2 = updateFirebaseMessagingToken(uid);
-    final f3 = startAlgoRand(uid);
+    final f3 = setupAlgorandAccount(uid);
     final f4 = updateDeviceInfo(uid);
     return Future.wait([f2, f3, f4]);
   }
@@ -318,7 +306,6 @@ class SetupUserViewModel with ChangeNotifier {
 
   // KEEP my_account_provider in local scope
   Future setupAlgorandAccount(String uid) async {
-    notifyListeners();
     if (0 < await accountService.getNumAccounts()) return;
     final LocalAccount account = await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
     await database.addAlgorandAccount(uid, account.address, 'LOCAL');
@@ -327,13 +314,13 @@ class SetupUserViewModel with ChangeNotifier {
 
     // TODO uncomment try
     // DEBUG - off for faster debugging
-    notifyListeners();
     // final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
 
     if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
       // await giftALGO({'account': account.address});
       return account.updateBalances(net: AlgorandNet.testnet);
     }
+
     // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
     // final optInToASAFuture = my_account_provider.optInToASA(
     //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,

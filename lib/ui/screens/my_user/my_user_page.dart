@@ -102,7 +102,8 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
-                  onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent),
+                  onTapChat: () =>
+                      CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent, isDismissible: true),
                   isFav: true,
                 ),
               ],

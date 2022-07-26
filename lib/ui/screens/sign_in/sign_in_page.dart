@@ -108,17 +108,23 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ],
                           ),
                         ),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          child: ListTile(
-                            onTap: () async {
-                              await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
-                            },
-                            dense: true,
-                            leading: Image.asset('assets/google.png', height: 25, width: 25),
-                            title: Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
+                        NotificationListener(
+                          onNotification: (notification) {
+                            return true;
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: ListTile(
+                              onTap: () async {
+                                await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
+                              },
+                              dense: true,
+                              leading: Image.asset('assets/google.png', height: 25, width: 25),
+                              title:
+                                  Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
+                            ),
                           ),
                         ),
                         Visibility(

@@ -22,7 +22,7 @@ class CustomAlertWidget {
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,
       builder: (BuildContext context) => WillPopScope(
           onWillPop: () {
-            return Future.value(false);
+            return Future.value(isDismissible);
           },
           child: SafeArea(child: Padding(padding: MediaQuery.of(context).viewInsets, child: child))),
       isDismissible: isDismissible,
