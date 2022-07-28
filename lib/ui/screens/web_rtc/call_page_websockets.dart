@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../common_main.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../commons/custom_profile_image_view.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
@@ -262,7 +263,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     alignment: Alignment.center,
                     color: Colors.transparent,
                     child: Center(
-                      child: Text('Connecting...', style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
+                      child: Text(Keys.connecting.tr(context), style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -437,7 +438,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
+                child: Text(Keys.muted.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
               )
             ],
           ),

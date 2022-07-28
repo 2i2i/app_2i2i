@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/models/user_model.dart';
@@ -149,7 +150,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                   style: TextStyle(color: AppTheme().cardDarkColor),
                   maxLines: 1,
                   decoration: InputDecoration(
-                    hintText: 'Write a comment...',
+                    hintText: Keys.writeComment.tr(context),
                     filled: true,
                     fillColor: Theme.of(context).primaryColorLight,
                     contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),

@@ -92,7 +92,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               padding: const EdgeInsets.only(left: 4.0),
                               child: Tooltip(
                                 triggerMode: TooltipTriggerMode.tap,
-                                message: 'Connected with social account',
+                                message: Keys.connectedSocialAccount.tr(context),
                                 child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
                               ),
                             ),
@@ -246,7 +246,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   ),
                   SizedBox(width: 2),
                   Text(
-                    '${Keys.estWaitTime.tr(context)} ${secondsToSensibleTimePeriod(widget.estWaitTime!)}',
+                    '${Keys.estWaitTime.tr(context)} ${secondsToSensibleTimePeriod(widget.estWaitTime!, context)}',
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ],
@@ -335,7 +335,7 @@ class UserRulesWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  secondsToSensibleTimePeriod(user.rule.maxMeetingDuration),
+                  secondsToSensibleTimePeriod(user.rule.maxMeetingDuration, context),
                   style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
                 ),
                 SizedBox(height: 5),

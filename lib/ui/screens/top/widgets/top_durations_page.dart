@@ -52,11 +52,9 @@ class _TopDurationsPageState extends ConsumerState<TopDurationsPage> {
                       ],
                     ),
                   ),
-                  Text(secondsToSensibleTimePeriod(meeting.duration),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle2,
+                  Text(
+                    secondsToSensibleTimePeriod(meeting.duration, context),
+                    style: Theme.of(context).textTheme.subtitle2,
                   ),
                 ],
               ),

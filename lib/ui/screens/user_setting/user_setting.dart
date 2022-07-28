@@ -180,7 +180,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '${Keys.minSpeed.tr(context)}: ${minSpeedString()}',
+                    '${Keys.minSpeed.tr(context)}: ${minSpeedString(context)}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
@@ -446,7 +446,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     // await Navigator.of(context).maybePop();
                   },
                   child: Text(
-                    'Save',
+                    Keys.save.tr(context),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ),
@@ -570,13 +570,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
-  String minSpeedString() {
+  String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
     final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
     // final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$minSpeedPerHourinALGO ALGO/hour';
+    return '$minSpeedPerHourinALGO ${Keys.algoPerSec.tr(context)}';
   }
 
   int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
