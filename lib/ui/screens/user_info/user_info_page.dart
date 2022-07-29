@@ -3,18 +3,18 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import '../my_user/chat_widget.dart';
 import 'other_bid_list.dart';
 import 'widgets/user_info_widget.dart';
@@ -159,21 +159,13 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               user: userB,
               isFav: isFriend,
               estWaitTime: estWaitTime,
-              onTapQr: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Container(
-                      height: 400,
-                      width: 350,
-                      decoration: Custom.getBoxDecoration(context, color: Colors.white),
-                      child: QrCodeWidget(message: 'https://$domain/user/${userB.id}'),
-                    ),
-                  ),
-                );
-              },
-              onTapChat: () => CustomAlertWidget.showBidAlert(context, ChatWidget(user: userB), backgroundColor: Colors.transparent),
+              onTapQr: () => CustomAlertWidget.showBottomSheet(
+                context,
+                child: QrCodeWidget(
+                  message: 'https://$domain/user/${userB.id}',
+                ),
+              ),
+              onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: userB), backgroundColor: Colors.transparent),
               onTapFav: () {
                 if (userModelChanger != null) {
                   if (!isFriend) {

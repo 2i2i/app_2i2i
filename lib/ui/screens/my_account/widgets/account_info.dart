@@ -14,14 +14,16 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
+import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_dialogs.dart';
 import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
+  final int index;
 
-  AccountInfo(this.shrinkwrap, {Key? key, required this.account, this.afterRefresh}) : super(key: key);
+  AccountInfo(this.shrinkwrap, {Key? key, required this.account, this.afterRefresh, required this.index}) : super(key: key);
 
   final AbstractAccount account;
   final void Function()? afterRefresh;
@@ -40,6 +42,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
 
   @override
   Widget build(BuildContext context) {
+    var appSettingModel = ref.watch(appSettingProvider);
     Balance balanceModel = widget.account.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount / MILLION;
@@ -85,8 +88,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     Flexible(
                       child: Text(
                         assetName,
-                        style:
-                            Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -109,10 +111,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             children: [
               widget.account is WalletConnectAccount
                   ? Image.asset(
-                      'assets/wc_logo.png',
-                      height: 20,
-                      fit: BoxFit.fill,
-                    )
+                'assets/wc_logo.png',
+                height: 20,
+                fit: BoxFit.fill,
+              )
                   : Container(),
               SizedBox(height: 8),
               Text(
@@ -145,8 +147,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         microphone = await Permission.microphone.request().isGranted;
                       }
                       if (camera && microphone) {
-                        context.pushNamed(Routes.webView.nameFromPath(),
-                            params: {'walletAddress': widget.account.address});
+                        context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.account.address});
                       }
                     },
                   ),
@@ -200,18 +201,33 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     child: Container(
                       height: 40,
                       width: 40,
-                      child: IconButton(
-                          iconSize: 18,
-                          icon: SvgPicture.asset(
-                            'assets/icons/key.svg',
-                            color: iconColor(context),
-                          ),
-                          onPressed: () => CustomDialogs.infoDialog(
+                      child: Stack(
+                        children: [
+                          IconButton(
+                            iconSize: 18,
+                            icon: SvgPicture.asset(
+                              'assets/icons/key.svg',
+                              color: iconColor(context),
+                            ),
+                            onPressed: () async {
+                              CustomDialogs.infoDialog(
                                 context: context,
                                 child: KeysWidget(account: widget.account as LocalAccount),
-                              )
-                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                              );
+                              await appSettingModel.setTappedOnKey("1");
+                            },
+                            // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
                           ),
+                          Visibility(
+                            visible: widget.index == 0 && !(appSettingModel.isTappedOnKey),
+                            child: Positioned(
+                              top: 0.0,
+                              right: 0.0,
+                              child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     visible: widget.account is LocalAccount),
               ],
@@ -222,8 +238,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     );
   }
 
-  Color? iconColor(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
+  Color? iconColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
 
   Widget balancesList(List<Balance> balances) {
     return ListView.builder(

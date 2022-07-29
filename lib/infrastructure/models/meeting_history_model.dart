@@ -10,7 +10,8 @@ class MeetingHistoryModel extends ChangeNotifier {
 
   MeetingHistoryModel({required this.database});
 
-  List<Meeting> meetingHistoryList = [];
+  List<Meeting> aMeetingHistoryList = [];
+  List<Meeting> bMeetingHistoryList = [];
   DocumentSnapshot? lastDocument;
 
   bool? isRequesting;
@@ -27,22 +28,37 @@ class MeetingHistoryModel extends ChangeNotifier {
         if (docList.isNotEmpty) lastDocument = docList[docList.length - 1];
       }
       if (meetingDataModel.lastDocument != null) {
-        if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null &&
-            modelData['meetingList'].isNotEmpty) meetingHistoryList.addAll(modelData['meetingList']);
+        if (modelData.containsKey('meetingList') && modelData['meetingList'] != null && modelData['meetingList'].isNotEmpty) {
+          if (meetingDataModel.userAorB == "A") {
+            aMeetingHistoryList.addAll(modelData['meetingList']);
+          } else {
+            bMeetingHistoryList.addAll(modelData['meetingList']);
+          }
+        }
       } else {
-        if (modelData.containsKey('meetingList') &&
-            modelData['meetingList'] != null &&
-            modelData['meetingList'].isNotEmpty) {
-          meetingHistoryList.clear();
+        if (modelData.containsKey('meetingList') && modelData['meetingList'] != null && modelData['meetingList'].isNotEmpty) {
+          if (meetingDataModel.userAorB == "A") {
+            aMeetingHistoryList.clear();
+          } else {
+            bMeetingHistoryList.clear();
+          }
           meetingDataModel.lastDocument = null;
-          meetingHistoryList = modelData['meetingList'];
+          if (meetingDataModel.userAorB == "A") {
+            aMeetingHistoryList = modelData['meetingList'];
+          } else {
+            bMeetingHistoryList = modelData['meetingList'];
+          }
         }
       }
       await Future.delayed(Duration(seconds: 1));
     }
     isRequesting = false;
     notifyListeners();
+  }
+
+  onDisposeList() {
+    aMeetingHistoryList.clear();
+    bMeetingHistoryList.clear();
   }
 }
 

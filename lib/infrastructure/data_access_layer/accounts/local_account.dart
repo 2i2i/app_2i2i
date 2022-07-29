@@ -15,7 +15,7 @@ class LocalAccount extends AbstractAccount {
   final SecureStorage storage;
   final AlgorandLib algorandLib;
 
-  LocalAccount._create({required this.algorandLib, required this.storage, required accountService, this.account}) : super(accountService: accountService);
+  LocalAccount._create({required this.algorandLib, required this.storage, required accountService}) : super(accountService: accountService);
 
   static Future<LocalAccount> create({
     required AlgorandLib algorandLib,

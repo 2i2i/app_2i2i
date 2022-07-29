@@ -35,11 +35,8 @@ class TopCard extends StatelessWidget {
               ),
               SizedBox(width: 2),
               Text(
-                'Est. Wait Time is $minWait',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme.of(context).errorColor),
+                '${Keys.estWaitTime.tr(context)} $minWait',
+                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
               ),
             ],
           ),

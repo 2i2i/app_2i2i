@@ -1,16 +1,22 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
-import '../home/wait_page.dart';
+import '../app/no_internet_screen.dart';
+import '../app/wait_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -24,6 +30,19 @@ class SignInPage extends ConsumerStatefulWidget {
 class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+      if (uid.isNotEmpty) {
+        return await FirebaseMessaging.instance
+            .getToken(
+          vapidKey: dotenv.env['TOKEN_KEY'].toString(),
+        )
+            .then((String? token) {
+          if (token is String) return FirestoreDatabase().updateToken(uid, token);
+        });
+      }
+    });
+
     userIdNav.addListener(() {
       if (userIdNav.value.isNotEmpty) {
         context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
@@ -35,8 +54,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final signUpViewModel = ref.read(setupUserViewModelProvider);
+    // final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
+    var appSettingModel = ref.watch(appSettingProvider);
+    if (!appSettingModel.isInternetAvailable) {
+      return NoInternetScreen();
+    }
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -48,13 +71,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
                   if (firebaseUser != null) {
-                    signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+                    // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
@@ -74,28 +97,34 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
-                              Text(Keys.loginMsg2.tr(context),
-                                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
+                              Text(Keys.loginMsg2.tr(context), textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
                               Text(Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.overline?.copyWith(
-                                      color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .overline
+                                      ?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          child: ListTile(
-                            onTap: () async {
-                              await signUpViewModel.signInWithGoogle(context);
-                            },
-                            dense: true,
-                            leading: Image.asset('assets/google.png', height: 25, width: 25),
-                            title: Text(Keys.signInWithGoogle.tr(context),
-                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
+                        NotificationListener(
+                          onNotification: (notification) {
+                            return true;
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: ListTile(
+                              onTap: () async {
+                                await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
+                              },
+                              dense: true,
+                              leading: Image.asset('assets/google.png', height: 25, width: 25),
+                              title:
+                                  Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
+                            ),
                           ),
                         ),
                         Visibility(
@@ -108,16 +137,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             color: Theme.of(context).iconTheme.color,
                             child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInWithApple(context);
+                                await ref.read(setupUserViewModelProvider).signInWithApple(context);
                               },
                               dense: true,
-                              leading: Image.asset('assets/apple.png',
-                                  height: 30, width: 30, color: Theme.of(context).cardColor),
+                              leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
                               title: Text(Keys.signInWithApple.tr(context),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      ?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
+                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ),
@@ -130,7 +155,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                             child: ListTile(
                                 onTap: () async {
-                                  await signUpViewModel.signInWithTwitter(context);
+                                  await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
                                 },
                                 dense: true,
                                 leading: Image.asset('assets/twitter.png', height: 30, width: 30),
@@ -148,7 +173,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           color: Theme.of(context).colorScheme.secondary,
                           child: ListTile(
                               onTap: () async {
-                                await signUpViewModel.signInAnonymously();
+                                await ref.read(setupUserViewModelProvider).signInAnonymously();
                               },
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),
@@ -165,15 +190,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               style: Theme.of(context).textTheme.caption,
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: '2i2i',
+                                    text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/')))
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication))
                                           throw 'Could not launch https://about.2i2i.app/';
                                       },
-                                    style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                        decoration: TextDecoration.underline)),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],
                             ),
                           ),

@@ -13,7 +13,7 @@ import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import '../app/no_bid_page.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerWidget {
@@ -28,6 +28,8 @@ class UserBidInsList extends ConsumerWidget {
 
   final void Function(BidIn bidIn) onTap;
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
@@ -37,6 +39,7 @@ class UserBidInsList extends ConsumerWidget {
     markAsRead(bidInsWithUsers);
     List<BidIn> bidIns = bidInsWithUsers.toList();
     return Scaffold(
+      key: _scaffoldKey,
       floatingActionButton: Visibility(
         visible: bidInsWithUsers.isNotEmpty,
         child: InkResponse(
@@ -50,9 +53,15 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
+              if (_scaffoldKey.currentContext != null) {
+                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
+              }
               bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
+              }
+              if (_scaffoldKey.currentContext != null) {
+                CustomDialogs.loader(false, _scaffoldKey.currentContext!);
               }
             }
           },
@@ -63,10 +72,7 @@ class UserBidInsList extends ConsumerWidget {
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
-                BoxShadow(
-                    offset: Offset(2, 2),
-                    blurRadius: 8,
-                    color: Theme.of(context).colorScheme.secondary // changes position of shadow
+                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary // changes position of shadow
                     ),
               ],
             ),

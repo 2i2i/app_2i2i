@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/ui/layout/responsive_layout_builder.dart';
+import 'package:app_2i2i/ui/layout/scale_factors.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,6 +22,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart';
+
+import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
@@ -94,10 +100,14 @@ class MainWidget extends ConsumerStatefulWidget {
 class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObserver {
   Timer? timer;
   RingingPageViewModel? ringingPageViewModel;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  final Connectivity _connectivity = Connectivity();
 
   @override
   void initState() {
     super.initState();
+    initConnectivity();
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
       window.addEventListener('focus', onFocus);
@@ -107,9 +117,9 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
-      ref.watch(appSettingProvider).getTheme(widget.themeMode);
-      ref.watch(appSettingProvider).getLocal(widget.local);
-      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
+      ref.read(appSettingProvider).getTheme(widget.themeMode);
+      ref.read(appSettingProvider).getLocal(widget.local);
+      await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       messaging.requestPermission(
@@ -151,11 +161,13 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //}
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
+        log("methodCall.method=============> setMethodCallHandler");
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
             Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.watch(meetingChangerProvider);
+            log("methodCall.method=============> ${methodCall.method}");
             switch (methodCall.method) {
               case 'CUT':
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
@@ -177,6 +189,24 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
 
       await Custom.deepLinks(context, mounted);
     });
+  }
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException {
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    ref.read(appSettingProvider).setInternetStatus(result != ConnectivityResult.none);
   }
 
   void onFocus(Event e) {
@@ -210,6 +240,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   @override
   void dispose() {
     // html.document.removeEventListener('visibilitychange', (event) => null);
+    _connectivitySubscription.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -240,6 +271,37 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
       debugShowCheckedModeBanner: false,
+      builder: (context, widget) {
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: ResponsiveLayoutBuilder(
+            small: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            large: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            xLarge: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+            medium: (BuildContext, Widget? child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
+                child: widget ?? Container(),
+              );
+            },
+          ),
+        );
+      },
       supportedLocales: const [
         Locale('en', ''),
         Locale('zh', ''),
@@ -259,6 +321,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       themeMode: appSettingModel.currentThemeMode,
       theme: AppTheme().mainTheme(context),
       darkTheme: AppTheme().darkTheme(context),
+      routeInformationProvider: NamedRoutes.router.routeInformationProvider,
       routeInformationParser: NamedRoutes.router.routeInformationParser,
       routerDelegate: NamedRoutes.router.routerDelegate,
     );

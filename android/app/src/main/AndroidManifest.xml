@@ -42,9 +42,7 @@
             android:theme="@style/Theme.AppCompat"
             android:turnScreenOn="true"
             android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="flutter_deeplinking_enabled"
-                android:value="true" />
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -58,28 +56,22 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="twoitwoi.com"
-                    android:scheme="test" />
-            </intent-filter>
-
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
 
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with https://YOUR_HOST -->
-                <data
-                    android:host="about.2i2i.app"
-                    android:pathPrefix="/"
-                    android:scheme="https" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="test" />
+
+                <data android:host="test.2i2i.app" />
+                <data android:host="twoitwoi.com" />
             </intent-filter>
 
         </activity>
@@ -117,7 +109,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/alert_color" />
 
-        <service android:name="com.app.i2i2.HeadsUpNotificationService"/>
+        <service android:name="com.app.i2i2.HeadsUpNotificationService" />
 
 
     </application>

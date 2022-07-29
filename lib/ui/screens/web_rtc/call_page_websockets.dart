@@ -14,12 +14,12 @@ import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../common_main.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../commons/custom_profile_image_view.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
@@ -263,7 +263,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     alignment: Alignment.center,
                     color: Colors.transparent,
                     child: Center(
-                      child: Text('Connecting...', style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
+                      child: Text(Keys.connecting.tr(context), style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -420,7 +420,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               ? FittedBox(
                   fit: BoxFit.scaleDown,
                   child: ProfileWidget(
-                    stringPath: userModel?.name ?? "",
+                    stringPath: (userModel?.imageUrl ?? "").isEmpty ? (userModel?.name ?? '') : userModel!.imageUrl!,
+                    imageType: (userModel?.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
                     radius: kToolbarHeight * (fullView ? 1.35 : 1.15),
                     showBorder: false,
                     hideShadow: true,
@@ -437,7 +438,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
+                child: Text(Keys.muted.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -450,7 +451,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   @override
   void dispose() {
-    // outInit();
+    outInit();
     super.dispose();
   }
 

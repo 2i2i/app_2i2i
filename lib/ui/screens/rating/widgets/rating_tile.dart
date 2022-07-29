@@ -19,14 +19,11 @@ class RatingTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ProfileWidget(
-              stringPath: (ratingModel.rating * 5).toStringAsFixed(0),
+              stringPath: (ratingModel.rating * 5).toStringAsFixed(1).replaceAll(RegExp(r'([.]*0)(?!.*\d)'), '').toString(),
               isRating: true,
               showBorder: true,
               radius: 65,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline5!
-                  .copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: 10),

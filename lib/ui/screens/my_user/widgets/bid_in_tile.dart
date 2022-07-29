@@ -1,12 +1,15 @@
 import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
+import '../../../commons/custom_profile_image_view.dart';
 
 class BidInTile extends StatelessWidget {
   final List<BidIn> bidInList;
@@ -64,56 +67,18 @@ class BidInTile extends StatelessWidget {
             Row(
               children: [
                 SizedBox(width: 4),
-                InkResponse(
+                ProfileWidget(
+                  stringPath: (user.imageUrl ?? "").isEmpty ? user.name : user.imageUrl!,
+                  imageType: (user.imageUrl ?? "").isEmpty ? ImageType.NAME_IMAGE : ImageType.NETWORK_IMAGE,
+                  radius: 60,
+                  borderRadius: 10,
+                  hideShadow: true,
+                  showBorder: false,
+                  statusColor: statusColor,
+                  style: Theme.of(context).textTheme.headline5,
                   onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
                     'uid': user.id,
                   }),
-                  child: SizedBox(
-                    height: 55,
-                    width: 55,
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 0.3,
-                                  color: Theme.of(context).disabledColor),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
-                                  blurRadius: 20,
-                                  spreadRadius: 0.5,
-                                )
-                              ]),
-                          alignment: Alignment.center,
-                          child: Text(
-                            firstNameChar,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6!
-                                .copyWith(
-                                fontWeight: FontWeight.w600, fontSize: 20),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                color: statusColor,
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                Border.all(color: Colors.white, width: 2)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
                 SizedBox(width: 8),
                 Expanded(
@@ -208,9 +173,7 @@ class BidInTile extends StatelessWidget {
                         text: '${Keys.startsIn.tr(context)} ',
                         children: [
                           TextSpan(
-                              text:
-                              ' ${secondsToSensibleTimePeriod(totalDuration)}',
-                              style: Theme.of(context).textTheme.bodyText2)
+                              text: ' ${secondsToSensibleTimePeriod(totalDuration, context)}', style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),

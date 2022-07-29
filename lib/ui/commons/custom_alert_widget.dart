@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import '../../infrastructure/commons/keys.dart';
 
 class CustomAlertWidget {
-  static showBidAlert(BuildContext context, Widget child, {bool isDismissible = true, Color? backgroundColor}) {
+  static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -17,9 +17,14 @@ class CustomAlertWidget {
       ),
       context: context,
       useRootNavigator: false,
+      enableDrag: enableDrag,
       isScrollControlled: true,
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,
-      builder: (BuildContext context) => child,
+      builder: (BuildContext context) => WillPopScope(
+          onWillPop: () {
+            return Future.value(isDismissible);
+          },
+          child: SafeArea(child: Padding(padding: MediaQuery.of(context).viewInsets, child: child))),
       isDismissible: isDismissible,
     );
   }
@@ -64,14 +69,19 @@ class CustomAlertWidget {
           onPressed: () {
             Navigator.of(context).maybePop();
           },
-          child: Text('Okay'),
+          child: Text(Keys.okay.tr(context)),
         ),
       ],
     );
     return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
   }
 
-  static Future<void> confirmDialog(BuildContext context, {required String title, required String description, required VoidCallback onPressed,TextStyle? yesButtonTextStyle,TextStyle? noButtonTextStyle}) async {
+  static Future<void> confirmDialog(BuildContext context,
+      {required String title,
+      required String description,
+      required VoidCallback onPressed,
+      TextStyle? yesButtonTextStyle,
+      TextStyle? noButtonTextStyle}) async {
     var cupertinoDialog = CupertinoAlertDialog(
       title: Text(title),
       content: Padding(
@@ -81,14 +91,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No',style: noButtonTextStyle),
+          child: Text(Keys.no.tr(context), style: noButtonTextStyle),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
             onPressed();
           },
-          child: Text('Yes',style: yesButtonTextStyle),
+          child: Text(Keys.yes.tr(context), style: yesButtonTextStyle),
         ),
       ],
     );
@@ -101,14 +111,14 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).maybePop(),
-          child: Text('No'),
+          child: Text(Keys.no.tr(context)),
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).maybePop();
+            Navigator.of(context).pop();
             onPressed();
           },
-          child: Text('Yes'),
+          child: Text(Keys.yes.tr(context)),
         ),
       ],
     );

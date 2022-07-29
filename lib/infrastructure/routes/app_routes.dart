@@ -39,9 +39,9 @@ extension name on String {
       case Routes.search:
         return 'search';
       case Routes.myUser:
-        return 'myUser';
+        return 'my_user';
       case Routes.bidOut:
-        return 'bidOut';
+        return 'bid_out';
       case Routes.login:
         return 'login';
       case Routes.lock:
@@ -55,17 +55,17 @@ extension name on String {
       case Routes.setting:
         return 'setting';
       case Routes.userSetting:
-        return 'userSetting';
+        return 'user_setting';
       case Routes.recover:
         return 'recover';
       case Routes.user:
         return 'user';
       case Routes.createBid:
-        return 'addBid';
+        return 'add_bid';
       case Routes.ratings:
         return 'rating';
       case Routes.createLocalAccount:
-        return 'createLocalAccount';
+        return 'create_local_account';
       case Routes.account:
         return 'account';
       case Routes.faq:
@@ -77,9 +77,11 @@ extension name on String {
       case Routes.language:
         return 'language';
       case Routes.meetingHistory:
-        return 'meetingHistory';
+        return 'meeting_history';
+      case Routes.verifyPerhaps:
+        return 'verify_perhaps';
       case Routes.webView:
-        return 'webView';
+        return 'web_view';
       default:
         return this;
     }

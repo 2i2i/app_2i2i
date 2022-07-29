@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,17 +24,13 @@ class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
   final ValueChanged<String?>? accountAddListener;
 
-  const AddAccountOptionsWidgets(
-      {Key? key, this.showBottom, this.accountAddListener})
-      : super(key: key);
+  const AddAccountOptionsWidgets({Key? key, this.showBottom, this.accountAddListener}) : super(key: key);
 
   @override
-  _AddAccountOptionsWidgetsState createState() =>
-      _AddAccountOptionsWidgetsState();
+  _AddAccountOptionsWidgetsState createState() => _AddAccountOptionsWidgetsState();
 }
 
-class _AddAccountOptionsWidgetsState
-    extends ConsumerState<AddAccountOptionsWidgets> {
+class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidgets> {
   String _displayUri = '';
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
@@ -52,10 +47,8 @@ class _AddAccountOptionsWidgetsState
         children: [
           ListTile(
             onTap: () async {
-              final myAccountPageViewModel =
-                  ref.read(myAccountPageViewModelProvider);
-              final address = await _createSession(myAccountPageViewModel,
-                  myAccountPageViewModel.accountService!);
+              final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+              final address = await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
               if (widget.accountAddListener != null) {
                 widget.accountAddListener!.call(address);
               }
@@ -64,17 +57,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -99,17 +89,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -134,17 +121,14 @@ class _AddAccountOptionsWidgetsState
             leading: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  spreadRadius: 0.5,
+                )
+              ]),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/wallet.svg',
@@ -162,8 +146,7 @@ class _AddAccountOptionsWidgetsState
     );
   }
 
-  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel,
-      AccountService accountService) async {
+  Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
     );
@@ -178,9 +161,7 @@ class _AddAccountOptionsWidgetsState
       CustomDialogs.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
       await account.save();
-      if (account.address.isNotEmpty)
-        await myAccountPageViewModel.updateDBWithNewAccount(account.address,
-            type: 'WC');
+      if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
@@ -219,35 +200,30 @@ class _AddAccountOptionsWidgetsState
         launchUri = Uri(
           scheme: 'algorand-wc',
           host: 'wc',
-          queryParameters: {
-            'uri': _displayUri,
-            'bridge': "https://wallet-connect-d.perawallet.app"
-          },
+          queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
         );
       } else {
         launchUri = Uri.parse(_displayUri);
       }
-      try {
-        isAvailable = await canLaunchUrl(launchUri);
-      } on PlatformException catch (err) {
-        print(err);
-      }
-      if (isAvailable) {
-        CustomAlertWidget.confirmDialog(
-          context,
-          description: "Are you sure to do the transaction from your wallet?",
-          title: "Please Confirm",
-          onPressed: () async {
+      CustomAlertWidget.confirmDialog(
+        context,
+        description: Keys.transactionConfirmMsg.tr(context),
+        title: Keys.pleaseConfirm.tr(context),
+        onPressed: () async {
+          try {
             isAvailable = await launchUrl(launchUri);
-          },
-        );
-      } else {
-        await launchUrl(
-            Uri.parse(Platform.isAndroid
-                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
-                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
-            mode: LaunchMode.externalApplication);
-      }
+          } on PlatformException catch (err) {
+            print(err);
+          }
+          if (!isAvailable) {
+            await launchUrl(
+                Uri.parse(Platform.isAndroid
+                    ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                    : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+                mode: LaunchMode.externalApplication);
+          }
+        },
+      );
     }
   }
 }

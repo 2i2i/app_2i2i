@@ -110,7 +110,7 @@ class Keys {
   static const String recoverPassPhaseMsg = 'recoverPassPhaseMsg';
   static const String addLocalAccount = 'addLocalAccount';
   static const String addLocalAccountMsg = 'addLocalAccountMsg';
-  static const String estMaxDuration = 'Max Duration';
+  static const String estMaxDuration = 'estMaxDuration';
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
   static const String addBid = 'addBid';
@@ -191,8 +191,34 @@ class Keys {
   static const String signInAnonymously ='signInAnonymously';
 
   static const String searchFaq ='searchFaq';
-  static const String loading ='loading';
+  static const String noInternetTitle = 'noInternetTitle';
+  static const String noInternetMessage = 'noInternetMessage';
+  static const String loading = 'loading';
+  static const String noKeyFound = 'noKeyFound';
+  static const String no = 'no';
+  static const String yes = 'Yes';
+  static const String transactionConfirmMsg = 'Are you sure to do the transaction from your wallet?';
+  static const String pleaseConfirm = 'Please Confirm';
+  static const String okay = 'Okay';
 
+  static const String connectedSocialAccount = 'connectedSocialAccount';
+
+  static const String zero = 'zero';
+  static const String minutes = 'minutes';
+  static const String hours = 'hours';
+  static const String days = 'days';
+  static const String weeks = 'weeks';
+  static const String months = 'months';
+  static const String years = 'years';
+
+  static const String thisIsYou = 'thisIsYou';
+
+  static const String deleteAccount = 'deleteAccount';
+  static const String deleteAccountMessage = 'deleteAccountMessage';
+  static const String waitTimeMsg = 'waitTimeMsg';
+  static const String writeComment = 'writeComment';
+  static const String connecting = 'connecting';
+  static const String muted = 'muted';
 }
 
 extension CustomTranslation on String {
