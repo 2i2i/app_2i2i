@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/routes/named_routes.dart';
+
 class AddRatingPage extends ConsumerStatefulWidget {
-  final ValueNotifier<Map> showRating;
-
-  const AddRatingPage({Key? key, required this.showRating}) : super(key: key);
-
   @override
   _AddRatingPageState createState() => _AddRatingPageState();
 }
@@ -21,7 +19,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: widget.showRating,
+      valueListenable: NamedRoutes.showRating,
       builder: (BuildContext context, Map<dynamic, dynamic> value, Widget? child) {
         child ??= Container();
         return Visibility(
@@ -99,7 +97,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                   children: [
                     TextButton(
                       onPressed: () => {
-                        widget.showRating.value = {'show': false}
+                        NamedRoutes.showRating.value = {'show': false}
                       },
                       child: Text(
                         Keys.cancel.tr(context),
@@ -108,8 +106,8 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                     SizedBox(width: 10),
                     TextButton(
                       onPressed: () async {
-                        var otherUid = widget.showRating.value['otherUid'];
-                        var meetingId = widget.showRating.value['meetingId'];
+                        var otherUid = NamedRoutes.showRating.value['otherUid'];
+                        var meetingId = NamedRoutes.showRating.value['meetingId'];
 
                         if (otherUid is String && meetingId is String) {
                           final database = ref.read(databaseProvider);
@@ -122,7 +120,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                             ),
                           );
                         }
-                        widget.showRating.value = {'show': false};
+                        NamedRoutes.showRating.value = {'show': false};
                       },
                       child: Text(
                         Keys.appRatingSubmitButton.tr(context),

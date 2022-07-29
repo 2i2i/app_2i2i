@@ -5,7 +5,6 @@ import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/routes/named_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 import '../rating/add_rating_page.dart';
@@ -70,10 +69,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       body: SafeArea(child: widget.pageChild),
-      bottomSheet: Visibility(
-        visible: (NamedRoutes.showRating.value['show'] ?? false),
-        child: AddRatingPage(showRating: NamedRoutes.showRating),
-      ),
+      bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBar(),
     );
   }
