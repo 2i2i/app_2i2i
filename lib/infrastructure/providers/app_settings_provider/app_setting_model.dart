@@ -27,7 +27,9 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
-  bool isTappedOnKey = false;
+
+  // bool isTappedOnKey = false;
+  bool isTappedOnKey = true;
 
   bool isInternetAvailable = true;
 
@@ -68,13 +70,15 @@ class AppSettingModel extends ChangeNotifier {
 
   Future<void> setTappedOnKey(String value) async {
     await storage.write('tappedOnKey', value);
-    isTappedOnKey = value == "1";
+    isTappedOnKey = true;
+    // isTappedOnKey = value == "1";
     notifyListeners();
   }
 
   Future<void> getTappedOnKey() async {
     String? value = await storage.read('tappedOnKey');
-    isTappedOnKey = (value == "1");
+    isTappedOnKey = true;
+    // isTappedOnKey = (value == "1");
     notifyListeners();
   }
 

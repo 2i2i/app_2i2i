@@ -77,69 +77,67 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             subtitle: Text(Keys.walletAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
-          ),
-          ListTile(
-            onTap: () {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.recover.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  spreadRadius: 0.5,
-                )
-              ]),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/recover.svg',
-                height: 15,
-                width: 15,
-                color: Theme.of(context).colorScheme.secondary,
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.recover.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ]),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  'assets/icons/recover.svg',
+                  height: 15,
+                  width: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
+              title: Text(Keys.recoverPassphrase.tr(context)),
+              subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
+              trailing: Icon(Icons.navigate_next),
             ),
-            title: Text(Keys.recoverPassphrase.tr(context)),
-            subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
-            trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
-          ),
-          ListTile(
-            onTap: () async {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.createLocalAccount.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  spreadRadius: 0.5,
-                )
-              ]),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/wallet.svg',
-                height: 15,
-                width: 15,
-                color: Theme.of(context).colorScheme.secondary,
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () async {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.createLocalAccount.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ]),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  'assets/icons/wallet.svg',
+                  height: 15,
+                  width: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
+              title: Text(Keys.addLocalAccount.tr(context)),
+              subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
+              trailing: Icon(Icons.navigate_next),
             ),
-            title: Text(Keys.addLocalAccount.tr(context)),
-            subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
-            trailing: Icon(Icons.navigate_next),
           ),
         ],
       ),

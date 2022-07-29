@@ -82,9 +82,9 @@ class SetupUserViewModel with ChangeNotifier {
       userInfoModel?.socialLinks = [];
     }
     final f2 = updateFirebaseMessagingToken(uid);
-    final f3 = setupAlgorandAccount(uid);
+    // final f3 = setupAlgorandAccount(uid);
     final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, f3, f4]);
+    return Future.wait([f2, /*f3,*/ f4]);
   }
 
   Future<void> signInAnonymously() async {
