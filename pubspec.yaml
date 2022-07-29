@@ -27,13 +27,13 @@ dependencies:
     sdk: flutter
 
   universal_html: ^2.0.8
-  sentry_flutter: ^6.7.0
+  sentry_flutter: ^6.9.0
 
   walletconnect_dart: ^0.0.11
   algorand_dart: ^1.0.3
   image_picker: ^0.8.5+3
-  flutter_webrtc: ^0.8.12
-  just_audio: ^0.9.27
+  flutter_webrtc: ^0.9.0
+  just_audio: ^0.9.28
   flutter_riverpod: ^1.0.4
 
 
@@ -52,16 +52,16 @@ dependencies:
   intl: ^0.17.0
   cached_network_image: ^3.2.1
 
-  firebase_messaging: ^12.0.0
-  cloud_firestore: ^3.3.0
-  firebase_app_check: ^0.0.6+17
-  firebase_core: ^1.19.2
-  cloud_functions: ^3.3.2
-  firebase_storage: ^10.3.2
-  firebase_auth: ^3.4.2
+  firebase_messaging: ^12.0.1
+  cloud_firestore: ^3.4.2
+  firebase_app_check: ^0.0.6+18
+  firebase_core: ^1.20.0
+  cloud_functions: ^3.3.3
+  firebase_storage: ^10.3.4
+  firebase_auth: ^3.6.1
 
   google_sign_in: ^5.4.0
-  sign_in_with_apple: ^4.0.0
+  sign_in_with_apple: ^4.1.0
   twitter_login: ^4.2.3
 
   device_info_plus: ^4.0.0
@@ -70,11 +70,11 @@ dependencies:
   flutter_dotenv: ^5.0.2
 
   store_redirect: ^2.0.1
-  connectivity_plus: ^2.3.5
+  connectivity_plus: ^2.3.6
 
   share_plus: ^4.0.10
-  flutter_inappwebview: ^5.4.2
-  flutter_native_splash: ^2.1.6
+  flutter_inappwebview: ^5.4.3+7
+  flutter_native_splash: ^2.2.6
   perfect_volume_control: ^1.0.5
   image_picker_ios: ^0.8.5+6
 
