@@ -24,6 +24,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref.read(appSettingProvider).getTappedOnKey();
       final uid = ref.read(myUIDProvider);
       if (uid is String) {
         UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);

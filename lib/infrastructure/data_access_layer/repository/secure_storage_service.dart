@@ -8,6 +8,7 @@ class SecureStorage {
   factory SecureStorage() {
     return _singleton;
   }
+
   SecureStorage._internal();
 
   final _storage = FlutterSecureStorage();
@@ -17,6 +18,8 @@ class SecureStorage {
   Future<String?> read(String key) => _storage.read(key: key);
 
   Future<void> remove(String key) => _storage.delete(key: key);
+
+  Future<void> clearStorage() async => await _storage.deleteAll();
 
   Future<List<String>> keys() async {
     log('SecureStorage - _storage=$_storage');
