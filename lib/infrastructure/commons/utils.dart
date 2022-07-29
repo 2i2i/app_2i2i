@@ -2,9 +2,10 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'keys.dart';
+
 String shortString(String string, {int maxLength = 10}) {
-  if (maxLength < string.length)
-    return string.substring(0, maxLength - 3) + '...';
+  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
   return string;
 }
 
@@ -15,18 +16,17 @@ String ordinalIndicator(int x) {
   return 'th';
 }
 
-
 int epochSecsNow() {
   DateTime n = DateTime.now().toUtc();
   var s = n.millisecondsSinceEpoch / 1000;
   return s.round();
 }
 
-String secondsToSensibleTimePeriod(num secs) {
-  if (secs == 0) return 'zero';
-  if (secs == double.infinity) return 'foreever';
+String secondsToSensibleTimePeriod(num secs, BuildContext context) {
+  if (secs == 0) return Keys.zero.tr(context);
+  if (secs == double.infinity) return Keys.forever.tr(context);
 
-  String currentBestTimePeriod = 'secs';
+  String currentBestTimePeriod = Keys.secs.tr(context);
   double currentBestNum = secs.toDouble();
   // int currentBestNumDigits = mainPartLength(currentBestNum);
 
@@ -36,7 +36,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'minutes';
+  currentBestTimePeriod = Keys.minutes.tr(context);
   currentBestNum = minutesNum;
   // final minutesLength = mainPartLength(minutesNum);
 
@@ -46,7 +46,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'hours';
+  currentBestTimePeriod = Keys.hours.tr(context);
   currentBestNum = hoursNum;
 
   // days
@@ -55,7 +55,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'days';
+  currentBestTimePeriod = Keys.days.tr(context);
   currentBestNum = daysNum;
 
   // weeks
@@ -64,7 +64,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'weeks';
+  currentBestTimePeriod = Keys.weeks.tr(context);
   currentBestNum = weeksNum;
 
   // months
@@ -73,7 +73,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'months';
+  currentBestTimePeriod = Keys.months.tr(context);
   currentBestNum = monthsNum;
 
   // years
@@ -82,7 +82,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'years';
+  currentBestTimePeriod = Keys.years.tr(context);
   currentBestNum = yearsNum;
 
   // decades
@@ -104,6 +104,7 @@ num getMaxDuration({required num budget, required num speed}) {
   }
   return (budget / speed).floor();
 }
+
 extension NoRoundingDecimal on double {
   String toDecimalAsFixed(int toDecimal) {
     var right;
@@ -118,6 +119,7 @@ extension NoRoundingDecimal on double {
     return number.toStringAsFixed(toDecimal);
   }
 }
+
 String getDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
@@ -142,8 +144,7 @@ String prettyDuration(Duration duration) {
   }
 
   var seconds = duration.inSeconds % 60;
-  var centiseconds =
-      (duration.inMilliseconds % 1000) ~/ 10;
+  var centiseconds = (duration.inMilliseconds % 1000) ~/ 10;
   if (components.isEmpty || seconds != 0 || centiseconds != 0) {
     components.add('$seconds');
     if (centiseconds != 0) {
@@ -166,8 +167,7 @@ const int MILLION = 1000000;
 
 class MyBehavior extends ScrollBehavior {
   @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
 }

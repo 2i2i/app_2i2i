@@ -173,9 +173,7 @@ class BidInTile extends StatelessWidget {
                         text: '${Keys.startsIn.tr(context)} ',
                         children: [
                           TextSpan(
-                              text:
-                              ' ${secondsToSensibleTimePeriod(totalDuration)}',
-                              style: Theme.of(context).textTheme.bodyText2)
+                              text: ' ${secondsToSensibleTimePeriod(totalDuration, context)}', style: Theme.of(context).textTheme.bodyText2)
                         ],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),

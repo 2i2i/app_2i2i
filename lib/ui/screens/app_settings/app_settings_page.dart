@@ -318,6 +318,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
                   ListTile(
                     onTap: () async {
                       await signUpViewModel.signOutFromAuth();
+                      await ref.read(storageProvider).clearStorage();
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
                     },
@@ -409,17 +410,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage>
             TextButton(
                 onPressed: () async {
                   await signUpViewModel.deleteUser(
-                      title: "Delete account!",
-                      description:
-                          "Are you sure want to delete your account permanently from 2i2i?",
-                      mainContext: context);
+                      title: "${Keys.deleteAccount.tr(context)}!", description: Keys.deleteAccountMessage.tr(context), mainContext: context);
+                  await ref.read(storageProvider).clearStorage();
                 },
                 child: Text(
-                  'Delete Account',
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption
-                      ?.copyWith(color: Theme.of(context).errorColor),
+                  Keys.deleteAccount.tr(context),
+                  style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
                 ))
           ],
         ),

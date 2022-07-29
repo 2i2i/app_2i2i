@@ -254,7 +254,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         SizedBox(height: 4),
                         if (maxDuration != double.infinity)
                           Text(
-                            '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel.meeting.speed.num} μAlgo/s)',
+                            '${secondsToSensibleTimePeriod(maxDuration.toInt(), context)} (${ringingPageViewModel.meeting.speed.num} μAlgo/s)',
                             maxLines: 2,
                             softWrap: true,
                             textAlign: TextAlign.center,

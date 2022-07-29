@@ -206,7 +206,9 @@ class SignalingWebSockets {
 
         if (session != null) {
           if (session.pc != null) {
-            await session.pc?.addCandidate(candidate);
+            await session.pc?.addCandidate(candidate).catchError((onError) {
+              print("Your error ========>$onError");
+            });
           } else {
             session.remoteCandidates.add(candidate);
           }
