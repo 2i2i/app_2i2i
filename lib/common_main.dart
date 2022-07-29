@@ -117,9 +117,9 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
-      ref.watch(appSettingProvider).getTheme(widget.themeMode);
-      ref.watch(appSettingProvider).getLocal(widget.local);
-      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
+      ref.read(appSettingProvider).getTheme(widget.themeMode);
+      ref.read(appSettingProvider).getLocal(widget.local);
+      await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       messaging.requestPermission(

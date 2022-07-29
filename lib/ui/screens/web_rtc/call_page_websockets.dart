@@ -451,7 +451,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   @override
   void dispose() {
-    // outInit();
+    outInit();
     super.dispose();
   }
 

@@ -222,6 +222,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                   key: ObjectKey(abstractAccount.address),
                                   account: abstractAccount,
                                   afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
+                                  index: index,
                                 ),
                               );
                             },
@@ -254,20 +255,20 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               ),
                               SizedBox(height: 8),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                child: IconButton(
-                                  onPressed: () => showBidAlert(myAccountPageViewModel),
-                                  iconSize: 30,
-                                  icon: Icon(
-                                    Icons.add_circle_rounded,
-                                    color: Theme.of(context).colorScheme.secondary,
-                                  ),
-                                )
-                                /*ElevatedButton(
+                                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                  child: IconButton(
+                                    onPressed: () => showBidAlert(myAccountPageViewModel),
+                                    iconSize: 30,
+                                    icon: Icon(
+                                      Icons.add_circle_rounded,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
+                                  )
+                                  /*ElevatedButton(
                                       child: Text(Strings().addAccount),
                                     )*/
 
-                              )
+                                  )
                             ],
                           ),
                         );

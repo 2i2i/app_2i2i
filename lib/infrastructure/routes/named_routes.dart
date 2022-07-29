@@ -44,7 +44,7 @@ class NamedRoutes {
       }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
-      bool validForPrevious = !goingToLocked && state.location != Routes.root && state.location != previousRouteLocation;
+      bool validForPrevious = !goingToLocked /*&& state.location != Routes.root*/ && state.location != previousRouteLocation;
       if (validForPrevious) {
         previousRouteLocation = state.location;
       }
