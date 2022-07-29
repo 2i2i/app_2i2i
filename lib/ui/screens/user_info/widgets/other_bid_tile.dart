@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/commons/utils.dart';
@@ -69,9 +70,7 @@ class OtherBidTile extends ConsumerWidget {
                   text: '${Keys.duration.tr(context)}:',
                   children: [
                     TextSpan(
-                        text: ' ${secondsToSensibleTimePeriod(duration)}',
-                        children: [],
-                        style: Theme.of(context).textTheme.bodyText2)
+                        text: ' ${secondsToSensibleTimePeriod(duration, context)}', children: [], style: Theme.of(context).textTheme.bodyText2)
                   ],
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
@@ -108,10 +107,8 @@ class OtherBidTile extends ConsumerWidget {
                 //   textAlign: TextAlign.end,
                 // ),
                 Text(
-                  'This is you',
-                  style: Theme.of(context).textTheme.caption?.copyWith(
-                      fontStyle: FontStyle.italic,
-                      color: Theme.of(context).cardColor),
+                  Keys.thisIsYou.tr(context),
+                  style: Theme.of(context).textTheme.caption?.copyWith(fontStyle: FontStyle.italic, color: Theme.of(context).cardColor),
                   textAlign: TextAlign.end,
                 ),
               ],

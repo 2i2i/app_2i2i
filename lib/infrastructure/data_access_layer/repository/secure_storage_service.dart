@@ -3,8 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/logging.dart';
 
 class SecureStorage {
-
   static final SecureStorage _singleton = SecureStorage._internal();
+
   factory SecureStorage() {
     return _singleton;
   }
