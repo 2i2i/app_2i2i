@@ -84,7 +84,7 @@ class NamedRoutes {
         path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          // child: getView(TestScreen1()),
+          // child: getView(TestScreen()),
           child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
