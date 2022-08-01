@@ -1,6 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +46,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
     }
 
     UserModel user = myHangoutPageViewModel!.user;
-    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       body: Column(
@@ -87,7 +84,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapQr: () => CustomAlertWidget.showBottomSheet(
                     context,
                     child: QrCodeWidget(
-                      message: 'https://$domain/user/${user.id}',
+                      uid: user.id,
                     ),
                   ),
                   onTapWallet: () {

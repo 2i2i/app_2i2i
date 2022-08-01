@@ -1,48 +1,72 @@
 {
   "project_info": {
-    "project_number": "347734179578",
-    "project_id": "app-2i2i",
-    "storage_bucket": "app-2i2i.appspot.com"
+    "project_number": "453884442411",
+    "project_id": "i2i-test",
+    "storage_bucket": "i2i-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:347734179578:android:221a08f307315a3543d343",
+        "mobilesdk_app_id": "1:453884442411:android:9a4a826f15c2bf8498776e",
         "android_client_info": {
           "package_name": "app.i2i2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "347734179578-pack539ulqgoo7nbhhi4k2gnnr3s1qjg.apps.googleusercontent.com",
+          "client_id": "453884442411-178g3u7lhokqejuqf3fab67o0bqdpq0q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "app.i2i2",
-            "certificate_hash": "e4d8cbe9576354a8967d0009dfbd30fee09310df"
+            "certificate_hash": "34f3455e33a4b13c02cad8ab7b720cecf07112f2"
           }
         },
         {
-          "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
+          "client_id": "453884442411-niq24kq0t4qh2316bmhtuc5n4l426hfq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "1b38139aad77753e2fdbc4693225ae712754764b"
+          }
+        },
+        {
+          "client_id": "453884442411-tlfj230kjss152c096sq1jueoid5g56e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "7b523c3d63211cec0c8531bbde5541e08112cdc1"
+          }
+        },
+        {
+          "client_id": "453884442411-uk529efqj6jhqf9kavot944h38m6lq4u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "63967995ccf7824b304dcd414c5911e603e5e154"
+          }
+        },
+        {
+          "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCb3Bd0me1N5-aMqoR4Y-ALbq9oA3h8p7A"
+          "current_key": "AIzaSyDyAd3hJCebhhyFhD012dI4oMIDKf4FWhg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
+              "client_id": "453884442411-2257cd7m12v8bcg9dp6218fstfdrev35.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff.apps.googleusercontent.com",
+              "client_id": "453884442411-3t14hd6fn9bodfledaip71e439cfn351.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "app.2i2i"
+                "bundle_id": "app.i2i2.test"
               }
             }
           ]
