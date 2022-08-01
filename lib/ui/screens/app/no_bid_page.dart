@@ -18,7 +18,7 @@ class NoBidPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
-    final message = 'https://i2i2.page.link/user/$uid';
+    final message = 'https://i2i2.page.link/share?uid=$uid';
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height / 1.3,

@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/app/error_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
@@ -39,6 +40,15 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
+      print('state.name ${state.location}');
+      // getInitialUri().then((value) => print('getInitialUri $value'));
+      if (previousRouteLocation != Routes.user && userIdNav.value.isNotEmpty) {
+        previousRouteLocation = Routes.user;
+        return '/user/${userIdNav.value}';
+      } else if (previousRouteLocation != '/user' && state.location == '/user') {
+        previousRouteLocation = '/user';
+        return Routes.myUser;
+      }
       if (state.location.contains(Routes.user.nameFromPath())) {
         currentIndex.value = 0;
       }
@@ -147,6 +157,10 @@ class NamedRoutes {
         path: Routes.user,
         pageBuilder: (context, state) {
           String userId = '';
+          if (userIdNav.value.isNotEmpty) {
+            userId = userIdNav.value;
+            userIdNav.value = '';
+          }
           if (state.extra is Map) {
             userId = (state.extra as Map)['uid'] ?? '';
           }

@@ -55,11 +55,11 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
             decoration: BoxDecoration(
               // color: Color(0xffF3F3F7),
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(width: 0.5, color: Theme.of(context).iconTheme.color ?? Colors.transparent),
+              // border: Border.all(width: 0.5, color: Theme.of(context).iconTheme.color ?? Colors.transparent),
             ),
             alignment: Alignment.center,
             child: Text(
-              userURL ?? "",
+              userURL,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1?.copyWith(decoration: TextDecoration.underline, color: Colors.black),
             ),

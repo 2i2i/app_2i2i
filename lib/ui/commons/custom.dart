@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
 
 import '../../infrastructure/data_access_layer/services/logging.dart';
+import '../../infrastructure/providers/all_providers.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
 
@@ -31,17 +34,30 @@ class Custom {
           _initialUriIsHandled = true;
           String userId = '';
           Uri? uri = await getInitialUri();
+          print('uri init ${uri?.pathSegments}');
           if (uri?.queryParameters['uid'] is String) {
             userId = uri!.queryParameters['uid'] as String;
             userIdNav.value = userId;
+            isUserLocked.notifyListeners();
+          } else if (uri?.pathSegments.contains('share') ?? false) {
+            String userId = uri!.pathSegments.last;
+            print(userId);
+            userIdNav.value = userId;
+            isUserLocked.notifyListeners();
           }
         }
         uriLinkStream.listen((Uri? uri) {
+          print('uri $uri');
           if (!mounted || uri == null) return;
           String userId = '';
           if (uri.queryParameters['uid'] is String) {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
+            isUserLocked.notifyListeners();
+          } else if (uri.pathSegments.contains('share') ?? false) {
+            String userId = uri.pathSegments.last;
+            userIdNav.value = userId;
+            isUserLocked.notifyListeners();
           }
         });
       } catch (e) {

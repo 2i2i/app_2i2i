@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/routes/app_routes.dart';
-import '../../commons/custom.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 import '../rating/add_rating_page.dart';
@@ -55,13 +52,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               isDismissible: false);
         }
       }
-
-      userIdNav.addListener(() {
-        if (userIdNav.value.isNotEmpty) {
-          context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
-          userIdNav.value = '';
-        }
-      });
     });
     super.initState();
   }
