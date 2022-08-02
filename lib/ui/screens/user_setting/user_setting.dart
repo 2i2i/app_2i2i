@@ -401,12 +401,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
                 onPressed: () async {
-
-                    CustomDialogs.loader(true, context);
+                  CustomDialogs.loader(true, context);
 
                   await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
 
-                    CustomDialogs.loader(false, context);
+                  CustomDialogs.loader(false, context);
                   Navigator.of(context).pop();
                 },
                 child: Text(Keys.save.tr(context)),
@@ -665,18 +664,22 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
       final DynamicLinkParameters parameters = DynamicLinkParameters(
-          uriPrefix: link,
-          link: Uri.parse('$link/user/$uid'),
-          androidParameters: AndroidParameters(
-            packageName: 'app.i2i2',
-            fallbackUrl: Uri.parse('https://about.2i2i.app'),
-          ),
-          iosParameters: IOSParameters(
-            bundleId: 'app.i2i2',
-            fallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadBundleId: 'app.i2i2',
-          ));
+        uriPrefix: link,
+        link: Uri.parse('$link/user/$uid'),
+        androidParameters: AndroidParameters(
+          packageName: 'app.i2i2',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+        ),
+        iosParameters: IOSParameters(
+          bundleId: 'app.2i2i',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+          ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+          ipadBundleId: 'app.2i2i',
+        ),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
       final Uri linkGenerated = await dynamicLinks.buildLink(parameters);
       final shortUri = await dynamicLinks.buildShortLink(parameters);
       if (shortUri.shortUrl.toString().isNotEmpty) {
