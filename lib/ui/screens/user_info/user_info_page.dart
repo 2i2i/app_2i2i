@@ -162,7 +162,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               onTapQr: () => CustomAlertWidget.showBottomSheet(
                 context,
                 child: QrCodeWidget(
-                  uid: userB.id,
+                  user: userB,
                 ),
               ),
               onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: userB), backgroundColor: Colors.transparent),

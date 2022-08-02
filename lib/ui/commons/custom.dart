@@ -34,16 +34,18 @@ class Custom {
           _initialUriIsHandled = true;
           String userId = '';
           Uri? uri = await getInitialUri();
-          print('uri init ${uri?.pathSegments}');
-          if (uri?.queryParameters['uid'] is String) {
-            userId = uri!.queryParameters['uid'] as String;
-            userIdNav.value = userId;
-            isUserLocked.notifyListeners();
-          } else if (uri?.pathSegments.contains('share') ?? false) {
-            String userId = uri!.pathSegments.last;
-            print(userId);
-            userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+          if (uri != null) {
+            print('uri init ${uri.pathSegments}');
+            if (uri.queryParameters['uid'] is String) {
+              userId = uri.queryParameters['uid'] as String;
+              userIdNav.value = userId;
+              isUserLocked.notifyListeners();
+            } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
+              String userId = uri.pathSegments.last;
+              print(userId);
+              userIdNav.value = userId;
+              isUserLocked.notifyListeners();
+            }
           }
         }
         uriLinkStream.listen((Uri? uri) {
@@ -54,7 +56,7 @@ class Custom {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
             isUserLocked.notifyListeners();
-          } else if (uri.pathSegments.contains('share') ?? false) {
+          } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
             String userId = uri.pathSegments.last;
             userIdNav.value = userId;
             isUserLocked.notifyListeners();

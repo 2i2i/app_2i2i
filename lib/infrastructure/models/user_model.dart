@@ -113,6 +113,7 @@ class UserModel extends Equatable {
 
   UserModel({
     required this.id,
+    this.url = '',
     this.status = Status.ONLINE,
     this.socialLinks = const <SocialLinksModel>[],
     this.meeting,
@@ -138,9 +139,10 @@ class UserModel extends Equatable {
   final DateTime? heartbeatForeground;
   final Status status;
   List<SocialLinksModel> socialLinks;
-
   final String? meeting;
+
   Rule rule;
+  String url;
 
   String name;
   String? imageUrl;
@@ -205,9 +207,8 @@ class UserModel extends Equatable {
       throw StateError('missing data for uid: $documentId');
     }
 
-
-
-    final Status status =data.containsKey('status') && data['status'] !=null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+    final Status status =
+        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
@@ -226,11 +227,12 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule =data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
+    final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
     return UserModel(
         id: documentId,
+        url: data['url']?.toString() ?? '',
         status: status,
         meeting: meeting,
         name: name,
@@ -250,6 +252,7 @@ class UserModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
+      'url': url,
       'status': status.toStringEnum(),
       'meeting': meeting,
       'bio': bio,

@@ -1,5 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -18,7 +20,10 @@ class NoBidPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
-    final message = 'https://i2i2.page.link/share?uid=$uid';
+    var message = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/$uid';
+    if (FirebaseAuth.instance.currentUser?.photoURL?.isNotEmpty ?? false) {
+      message = FirebaseAuth.instance.currentUser!.photoURL!;
+    }
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height / 1.3,

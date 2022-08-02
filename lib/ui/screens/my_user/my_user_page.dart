@@ -84,7 +84,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapQr: () => CustomAlertWidget.showBottomSheet(
                     context,
                     child: QrCodeWidget(
-                      uid: user.id,
+                      user: user,
                     ),
                   ),
                   onTapWallet: () {

@@ -4,9 +4,12 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
@@ -648,8 +651,42 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           user.imageUrl = firebaseImageUrl;
         }
       }
+      try {
+        user.url = await createDeepLinkUrl(user.id);
+      } catch (e) {
+        debugPrint(e.toString());
+      }
       await myUserPageViewModel?.updateHangout(user);
     }
+  }
+
+  Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+          uriPrefix: link,
+          link: Uri.parse('$link/user/$uid'),
+          androidParameters: AndroidParameters(
+            packageName: 'app.i2i2',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+          ),
+          iosParameters: IOSParameters(
+            bundleId: 'app.i2i2',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadBundleId: 'app.i2i2',
+          ));
+      final Uri linkGenerated = await dynamicLinks.buildLink(parameters);
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
   }
 
   Future<String?> uploadImage() async {
