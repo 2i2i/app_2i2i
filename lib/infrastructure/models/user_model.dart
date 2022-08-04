@@ -142,7 +142,7 @@ class UserModel extends Equatable {
   final String? meeting;
 
   Rule rule;
-  String url;
+  String? url;
 
   String name;
   String? imageUrl;
@@ -232,7 +232,7 @@ class UserModel extends Equatable {
 
     return UserModel(
         id: documentId,
-        url: data['url']?.toString() ?? '',
+        url: data['url']?.toString(),
         status: status,
         meeting: meeting,
         name: name,

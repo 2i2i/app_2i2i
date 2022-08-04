@@ -21,8 +21,8 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
   @override
   Widget build(BuildContext context) {
     var userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.url}';
-    if (widget.user.url.isNotEmpty) {
-      userURL = widget.user.url;
+    if (widget.user.url?.isNotEmpty ?? false) {
+      userURL = widget.user.url!;
     }
     return Padding(
       padding: EdgeInsets.only(top: kToolbarHeight, right: kToolbarHeight, left: kToolbarHeight, bottom: 10),
