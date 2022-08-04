@@ -208,35 +208,39 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
-                          List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
+                          // List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
+
                           return PageView.builder(
                             controller: controller,
                             scrollDirection: Axis.horizontal,
-                            itemCount: accountsList.length,
+                            itemCount: myAccountPageViewModel.walletConnectAccounts?.length ?? 0,
                             itemBuilder: (_, index) {
-                              AbstractAccount? abstractAccount = accountsList[index];
+                              // AbstractAccount? abstractAccount = accountsList[index];
+                              String address = myAccountPageViewModel.walletConnectAccounts!.elementAt(index);
                               return Column(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: AccountInfo(
                                       false,
-                                      key: ObjectKey(abstractAccount.address),
-                                      account: abstractAccount,
+                                      key: ObjectKey(address),
+                                      // account: abstractAccount,
                                       afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                       index: index,
+                                      address: address,
+                                      balances: myAccountPageViewModel.accountBalancesMap[address]!,
                                     ),
                                   ),
                                 ],
                               );
                             },
                             onPageChanged: (int val) {
-                              final newAccount = accountsList.elementAt(val);
-                              if (account == newAccount) return;
-                              account = newAccount;
-                              if (mounted) {
-                                updateAccountBalance(myAccountPageViewModel, accountIndex: val);
-                              }
+                              // final newAccount = accountsList.elementAt(val);
+                              // if (account == newAccount) return;
+                              // account = newAccount;
+                              // if (mounted) {
+                              //   updateAccountBalance(myAccountPageViewModel, accountIndex: val);
+                              // }
                             },
                           );
                         }

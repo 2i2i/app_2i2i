@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
+import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
 import '../repository/algorand_service.dart';
 import 'abstract_account.dart';
@@ -10,9 +11,26 @@ import 'abstract_account.dart';
 class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> cache = [];
 
-  static WalletConnect newConnector() {
+  /*static WalletConnect newConnector() {
     return WalletConnect(
       bridge: 'https://bridge.walletconnect.org',
+      clientMeta: const PeerMeta(
+        name: '2i2i',
+        description: 'earn coins by talking',
+        url: 'https://2i2i.app',
+        icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
+      ),
+    );
+  }*/
+
+  static Future<WalletConnect> newConnector([String key = '0']) async {
+    final sessionStorage = WalletConnectSecureStorage(storageKey: key);
+    final session = await sessionStorage.getSession();
+
+    return WalletConnect(
+      bridge: 'https://bridge.walletconnect.org',
+      session: session,
+      sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
         name: '2i2i',
         description: 'earn coins by talking',
@@ -27,8 +45,8 @@ class WalletConnectAccount extends AbstractAccount {
 
   WalletConnectAccount({required AccountService accountService, required this.connector, required this.provider}) : super(accountService: accountService);
 
-  factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
-    final connector = newConnector();
+  factory WalletConnectAccount.fromNewConnector({required AccountService accountService, required WalletConnect connector}) {
+    // final connector = await newConnector();
     final provider = AlgorandWalletConnectProvider(connector);
     return WalletConnectAccount(accountService: accountService, connector: connector, provider: provider);
   }
@@ -46,7 +64,6 @@ class WalletConnectAccount extends AbstractAccount {
       address = connector.session.accounts[0];
       await updateBalances(net: AppConfig().ALGORAND_NET);
       // futures.add(updateBalances());
-
       int alreadyExistIndex = cache.indexWhere((element) => element.address == address);
       if (alreadyExistIndex < 0) {
         cache.add(this);
@@ -57,6 +74,8 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;
+
+  static List<String> getAllAccountAddresses(WalletConnect connector) => connector.session.accounts;
 
   @override
   Future<String> optInToASA({required int assetId, required AlgorandNet net, waitForConfirmation = true}) {

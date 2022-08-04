@@ -1,7 +1,5 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,19 +11,20 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
-import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_dialogs.dart';
-import 'keys_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final int index;
 
-  AccountInfo(this.shrinkwrap, {Key? key, required this.account, this.afterRefresh, required this.index}) : super(key: key);
+  AccountInfo(this.shrinkwrap, {Key? key, /*required this.account,*/ this.afterRefresh, required this.index, required this.address, required this.balances})
+      : super(key: key);
 
-  final AbstractAccount account;
+  // final AbstractAccount account;
+  String address;
+  List<Balance> balances;
   final void Function()? afterRefresh;
 
   @override
@@ -43,7 +42,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
-    Balance balanceModel = widget.account.balances.first;
+    Balance balanceModel = widget.balances.first;
     final assetId = balanceModel.assetHolding.assetId;
     final amount = balanceModel.assetHolding.amount / MILLION;
     String assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
@@ -104,16 +103,17 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              widget.account is WalletConnectAccount
-                  ? Image.asset(
-                      'assets/wc_logo.png',
-                      height: 20,
-                      fit: BoxFit.fill,
-                    )
-                  : Container(),
+              Visibility(
+                visible: true, //widget.account is WalletConnectAccount
+                child: Image.asset(
+                  'assets/wc_logo.png',
+                  height: 20,
+                  fit: BoxFit.fill,
+                ),
+              ),
               SizedBox(height: 8),
               Text(
-                widget.account.address,
+                widget.address,
                 maxLines: 4,
                 style: Theme.of(context).textTheme.caption,
                 softWrap: false,
@@ -142,7 +142,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         microphone = await Permission.microphone.request().isGranted;
                       }
                       if (camera && microphone) {
-                        context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.account.address});
+                        context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
                       }
                     },
                   ),
@@ -159,7 +159,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ),
                     onPressed: () async {
                       CustomDialogs.loader(true, context);
-                      await widget.account.updateBalances(net: AppConfig().ALGORAND_NET);
+                      // await widget.account.updateBalances(net: AppConfig().ALGORAND_NET); //todo chandresh
                       if (widget.afterRefresh != null) widget.afterRefresh!();
                       CustomDialogs.loader(false, context);
                       setState(() {});
@@ -177,7 +177,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       color: iconColor(context),
                     ),
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.account.address));
+                      Clipboard.setData(ClipboardData(text: widget.address));
                       showToast(Keys.copyMessage.tr(context),
                           context: context,
                           animation: StyledToastAnimation.slideFromTop,
@@ -192,7 +192,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-                if (widget.account is LocalAccount)
+                /*if (widget.account is LocalAccount)
                   Container(
                     height: 40,
                     width: 40,
@@ -223,7 +223,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                         )
                       ],
                     ),
-                  ),
+                  ),*/
               ],
             ),
           )

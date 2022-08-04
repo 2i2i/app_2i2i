@@ -145,9 +145,14 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    var numAccount = await accountService.getNumWalletConnectAccounts();
+    String id = '${numAccount + 1}';
+    final connector = await WalletConnectAccount.newConnector(id);
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
+      connector: connector,
     );
+
     // Create a new session
     if (!account.connector.connected) {
       SessionStatus sessionStatus = await account.connector.connect(

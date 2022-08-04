@@ -85,8 +85,10 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    final connector = await WalletConnectAccount.newConnector();
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
+      connector: connector,
     );
     // Create a new session
     if (!account.connector.connected) {
