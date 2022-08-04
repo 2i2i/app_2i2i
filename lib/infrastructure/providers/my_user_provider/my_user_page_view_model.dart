@@ -2,9 +2,11 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 import '../../../ui/commons/custom_alert_widget.dart';
+import '../../../ui/screens/my_user/widgets/wallet_connect_dialog.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
@@ -60,7 +62,7 @@ class MyUserPageViewModel {
       if (account is AbstractAccount) {
         addressOfUserB = account.address;
       } else {
-        CustomAlertWidget.showErrorDialog(context, "Sorry you don't have any address account in your wallet");
+        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
         return true;
       }
     }
