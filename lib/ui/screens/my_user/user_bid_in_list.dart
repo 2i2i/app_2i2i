@@ -53,16 +53,13 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
-              }
-              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
+              CustomDialogs.loader(true, context);
+
+              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns, context);
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(false, _scaffoldKey.currentContext!);
-              }
+              CustomDialogs.loader(false, context);
             }
           },
           child: Container(

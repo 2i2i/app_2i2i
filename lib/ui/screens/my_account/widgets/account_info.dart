@@ -49,11 +49,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     String assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
 
     return Container(
-      constraints: widget.shrinkwrap == true
-          ? null
-          : BoxConstraints(
-              minHeight: 200,
-            ),
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
       decoration: BoxDecoration(
@@ -111,10 +106,10 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
             children: [
               widget.account is WalletConnectAccount
                   ? Image.asset(
-                'assets/wc_logo.png',
-                height: 20,
-                fit: BoxFit.fill,
-              )
+                      'assets/wc_logo.png',
+                      height: 20,
+                      fit: BoxFit.fill,
+                    )
                   : Container(),
               SizedBox(height: 8),
               Text(
@@ -197,39 +192,38 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-                Visibility(
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      child: Stack(
-                        children: [
-                          IconButton(
-                            iconSize: 18,
-                            icon: SvgPicture.asset(
-                              'assets/icons/key.svg',
-                              color: iconColor(context),
-                            ),
-                            onPressed: () async {
-                              CustomDialogs.infoDialog(
-                                context: context,
-                                child: KeysWidget(account: widget.account as LocalAccount),
-                              );
-                              await appSettingModel.setTappedOnKey("1");
-                            },
-                            // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                if (widget.account is LocalAccount)
+                  Container(
+                    height: 40,
+                    width: 40,
+                    child: Stack(
+                      children: [
+                        IconButton(
+                          iconSize: 18,
+                          icon: SvgPicture.asset(
+                            'assets/icons/key.svg',
+                            color: iconColor(context),
                           ),
-                          Visibility(
-                            visible: widget.index == 0 && !(appSettingModel.isTappedOnKey),
-                            child: Positioned(
-                              top: 0.0,
-                              right: 0.0,
-                              child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
-                            ),
-                          )
-                        ],
-                      ),
+                          onPressed: () async {
+                            CustomDialogs.infoDialog(
+                              context: context,
+                              child: KeysWidget(account: widget.account as LocalAccount),
+                            );
+                            await appSettingModel.setTappedOnKey("1");
+                          },
+                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
+                        ),
+                        Visibility(
+                          visible: widget.index == 0 && !(appSettingModel.isTappedOnKey),
+                          child: Positioned(
+                            top: 0.0,
+                            right: 0.0,
+                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+                          ),
+                        )
+                      ],
                     ),
-                    visible: widget.account is LocalAccount),
+                  ),
               ],
             ),
           )

@@ -25,6 +25,7 @@ class en {
       Keys.numberHint: 'Enter real number like 12',
       Keys.numberZeroHint: '0',
       Keys.algoPerSec: 'ALGO/sec',
+      Keys.algoPerHr: 'ALGO/hour',
       Keys.ALGO: 'ALGO',
       Keys.hh: 'hh',
       Keys.mm: 'mm',

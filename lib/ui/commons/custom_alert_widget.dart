@@ -32,7 +32,6 @@ class CustomAlertWidget {
   static Future showErrorDialog(BuildContext context, String errorMessage, {String? title, String? errorStacktrace}) async {
     Widget messageWidget = Text(
       errorMessage,
-      textAlign: TextAlign.justify,
     );
     if (errorStacktrace?.isNotEmpty ?? false) {
       messageWidget = Column(
@@ -40,7 +39,6 @@ class CustomAlertWidget {
           SizedBox(height: 8),
           Text(
             errorMessage,
-            textAlign: TextAlign.justify,
           ),
           Container(
               decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
@@ -55,7 +53,7 @@ class CustomAlertWidget {
         ],
       );
     }
-    var dialog = CupertinoAlertDialog(
+    var cupertinoDialog = CupertinoAlertDialog(
       title: Text(
         title ?? Keys.error.tr(context),
         style: TextStyle(
@@ -73,7 +71,37 @@ class CustomAlertWidget {
         ),
       ],
     );
-    return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
+    var materialDialog = AlertDialog(
+      title: Text(
+        title ?? Keys.error.tr(context),
+        style: TextStyle(
+          color: Theme.of(context).errorColor,
+        ),
+      ),
+      content: messageWidget,
+      actions: [
+        TextButton(
+          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+          onPressed: () {
+            Navigator.of(context).maybePop();
+          },
+          child: Text(Keys.okay.tr(context)),
+        ),
+      ],
+    );
+    return Future.delayed(Duration.zero).then((value) async {
+      if (Platform.isIOS) {
+        await showCupertinoDialog(
+          context: context,
+          builder: (context) => cupertinoDialog,
+        );
+      } else {
+        await showDialog(
+          context: context,
+          builder: (context) => materialDialog,
+        );
+      }
+    });
   }
 
   static Future<void> confirmDialog(BuildContext context,

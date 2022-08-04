@@ -43,6 +43,7 @@ class Keys {
   static const String numberZeroHint = 'numberZeroHint';
   static const String noRatingsFound = 'noRatingsFound';
   static const String algoPerSec = 'algoPerSec';
+  static const String algoPerHr = 'algoPerHr';
   static const String hh = 'hh';
   static const String mm = 'mm';
   static const String ss = 'ss';

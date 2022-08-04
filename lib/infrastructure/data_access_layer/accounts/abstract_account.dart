@@ -23,18 +23,20 @@ class AccountService {
 
   Future setMainAccount(String address) => storage.write('main_account', address);
 
-  Future<AbstractAccount> getMainAccount() async {
+  Future<AbstractAccount?> getMainAccount() async {
     final mainAccountAddress = await storage.read('main_account');
-    if (mainAccountAddress == null) {
-      final allAccounts = await getAllAccounts();
-      return allAccounts.first;
+    final allAccounts = await getAllAccounts();
+    if (allAccounts.isNotEmpty) {
+      if (mainAccountAddress == null) {
+        return allAccounts.first;
+      }
+      final foundAccount = await findAccount(mainAccountAddress);
+      if (foundAccount == null) {
+        return allAccounts.first;
+      }
+      return foundAccount;
     }
-    final foundAccount = await findAccount(mainAccountAddress);
-    if (foundAccount == null) {
-      final allAccounts = await getAllAccounts();
-      return allAccounts.first;
-    }
-    return foundAccount;
+    return null;
   }
 
   Future<int> getMinBalance({required String address, required AlgorandNet net}) async {

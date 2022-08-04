@@ -202,7 +202,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     constraints: (myAccountPageViewModel.accounts?.length ?? 0) > 0
                         ? BoxConstraints(
                             minHeight: 150,
-                            maxHeight: 200,
+                            maxHeight: MediaQuery.of(context).size.width / 1.6,
                           )
                         : null,
                     child: Builder(
@@ -215,15 +215,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             itemCount: accountsList.length,
                             itemBuilder: (_, index) {
                               AbstractAccount? abstractAccount = accountsList[index];
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: AccountInfo(
-                                  false,
-                                  key: ObjectKey(abstractAccount.address),
-                                  account: abstractAccount,
-                                  afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
-                                  index: index,
-                                ),
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: AccountInfo(
+                                      false,
+                                      key: ObjectKey(abstractAccount.address),
+                                      account: abstractAccount,
+                                      afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
+                                      index: index,
+                                    ),
+                                  ),
+                                ],
                               );
                             },
                             onPageChanged: (int val) {

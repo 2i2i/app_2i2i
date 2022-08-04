@@ -109,7 +109,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             ),
           ),
           Visibility(
-            visible: false,
+            visible: true,
             child: ListTile(
               onTap: () async {
                 widget.showBottom?.value = false;

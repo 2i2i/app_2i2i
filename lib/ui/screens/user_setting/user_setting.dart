@@ -576,7 +576,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final minSpeedPerHour = minSpeedPerSec * 3600;
     final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
     // final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$minSpeedPerHourinALGO ${Keys.algoPerSec.tr(context)}';
+    return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
   int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
