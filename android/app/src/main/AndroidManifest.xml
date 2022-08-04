@@ -66,7 +66,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="test" />
                 <data android:host="twoitwoi.com" />
             </intent-filter>
 
@@ -75,11 +74,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="test.2i2i.app"
-                    android:pathPrefix="/user"
-                    android:scheme="https" />
 
                 <data
                     android:host="2i2i.page.link"
