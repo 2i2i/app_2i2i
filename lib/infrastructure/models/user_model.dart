@@ -113,7 +113,7 @@ class UserModel extends Equatable {
 
   UserModel({
     required this.id,
-    this.url = '',
+    this.url,
     this.status = Status.ONLINE,
     this.socialLinks = const <SocialLinksModel>[],
     this.meeting,
