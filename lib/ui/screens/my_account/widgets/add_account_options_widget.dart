@@ -145,8 +145,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
-    var numAccount = await accountService.getNumWalletConnectAccounts();
-    String id = '${numAccount + 1}';
+    String id = DateTime.now().toString();
     final connector = await WalletConnectAccount.newConnector(id);
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
@@ -163,7 +162,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       isDialogOpen.value = false;
       CustomDialogs.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
-      await account.save();
+      await account.save(id);
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();

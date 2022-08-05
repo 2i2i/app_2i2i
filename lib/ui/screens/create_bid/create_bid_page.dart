@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
@@ -60,7 +59,9 @@ class CreateBidPage extends ConsumerStatefulWidget {
 }
 
 class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTickerProviderStateMixin {
-  AbstractAccount? account;
+  // AbstractAccount? account;
+  String? address;
+  String? sessionId;
   Quantity amount = Quantity(num: 0, assetId: 0);
   Quantity speed = Quantity(num: 0, assetId: 0);
   String? comment;
@@ -199,7 +200,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints: (myAccountPageViewModel.accounts?.length ?? 0) > 0
+                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
                         ? BoxConstraints(
                             minHeight: 150,
                             maxHeight: MediaQuery.of(context).size.width / 1.6,
@@ -207,16 +208,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                         : null,
                     child: Builder(
                       builder: (BuildContext context) {
-                        if (myAccountPageViewModel.accounts?.isNotEmpty ?? false) {
+                        if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
                           // List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
 
                           return PageView.builder(
                             controller: controller,
                             scrollDirection: Axis.horizontal,
-                            itemCount: myAccountPageViewModel.walletConnectAccounts?.length ?? 0,
+                            itemCount: myAccountPageViewModel.addresses.length,
                             itemBuilder: (_, index) {
                               // AbstractAccount? abstractAccount = accountsList[index];
-                              String address = myAccountPageViewModel.walletConnectAccounts!.elementAt(index);
+                              String address = myAccountPageViewModel.addresses.elementAt(index);
                               return Column(
                                 children: [
                                   Padding(
@@ -228,7 +229,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                       afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                       index: index,
                                       address: address,
-                                      balances: myAccountPageViewModel.accountBalancesMap[address]!,
+                                      // balances: myAccountPageViewModel.accountBalancesMap[address]!,
                                     ),
                                   ),
                                 ],
@@ -284,7 +285,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Visibility(
-                    visible: (myAccountPageViewModel.accounts?.isNotEmpty ?? false),
+                    visible: (myAccountPageViewModel.walletConnectAccounts.isNotEmpty),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -440,10 +441,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
         accountAddListener: (String? address) {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x = myAccountPageViewModel.accounts?.map((a) => a.address).toList();
+            final x = myAccountPageViewModel.addresses;
             log(X + 'showBidAlert + address=$address x=$x');
-            int lastIndex = (myAccountPageViewModel.accounts?.length ?? 0) - 1;
-            int index = x?.indexOf(address) ?? lastIndex;
+            int lastIndex = myAccountPageViewModel.addresses.length - 1;
+            int index = x.indexOf(address);
             log(X + 'showBidAlert + lastIndex=$lastIndex index=$index');
             controller.jumpToPage(index > 0 ? index : 0);
             controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
@@ -464,17 +465,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (!focusNode.hasFocus) {
       speedController.text = (speed.num / MILLION).toString();
     }
-    if (account == null && (myAccountPageViewModel.accounts?.length ?? 0) > 0) {
+    if (address == null && myAccountPageViewModel.addresses.length > 0) {
       if (accountIndex != null) {
-        account = myAccountPageViewModel.accounts![accountIndex];
+        address = myAccountPageViewModel.addresses[accountIndex];
+        sessionId = myAccountPageViewModel.getSessionId(address!);
       } else {
-        account = myAccountPageViewModel.accounts!.first;
+        address = myAccountPageViewModel.addresses.first;
+        sessionId = myAccountPageViewModel.getSessionId(address!);
       }
     }
 
-    if (account != null) {
-      _minAccountBalance = await account!.minBalance(net: AppConfig().ALGORAND_NET);
-      _accountBalance = account!.balanceALGO();
+    if (address != null) {
+      _minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
+      _accountBalance = await myAccountPageViewModel.getAlgoBalance(address: address!);
     }
 
     final availableBalance = _accountBalance - _minAccountBalance;
@@ -552,7 +555,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) return true;
     if (speed.num == 0) return false;
-    if (account == null) return true;
+    if (address == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
     final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
@@ -562,13 +565,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
-    if (account is WalletConnectAccount) {
+    if (address is WalletConnectAccount) {
       CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
     } else {
       CustomDialogs.loader(true, context);
     }
     await addBidPageViewModel.addBid(
-      account: account,
+      sessionId: sessionId,
+      address: address,
       amount: amount,
       speed: speed,
       bidComment: comment,

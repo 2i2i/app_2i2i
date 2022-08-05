@@ -52,17 +52,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 }
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: myAccountPageViewModel.walletConnectAccounts?.length ?? 0,
+                  itemCount: myAccountPageViewModel.walletConnectAccounts.length,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   itemBuilder: (BuildContext context, int index) {
-                    String address = myAccountPageViewModel.walletConnectAccounts![index];
+                    String address = myAccountPageViewModel.addresses[index];
                     return AccountInfo(
                       true,
                       index: index,
-                      key: ObjectKey(myAccountPageViewModel.walletConnectAccounts![index]),
-                      address: myAccountPageViewModel.walletConnectAccounts![index],
-                      balances: myAccountPageViewModel.accountBalancesMap[address]!,
-                      // account: myAccountPageViewModel.accounts![index],
+                      key: ObjectKey(myAccountPageViewModel.addresses[index]),
+                      address: address,
                     );
                   },
                 );

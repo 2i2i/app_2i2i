@@ -19,12 +19,18 @@ class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final int index;
 
-  AccountInfo(this.shrinkwrap, {Key? key, /*required this.account,*/ this.afterRefresh, required this.index, required this.address, required this.balances})
-      : super(key: key);
+  AccountInfo(
+    this.shrinkwrap, {
+    Key? key,
+    this.afterRefresh,
+    required this.index,
+    required this.address,
+  }) : super(key: key);
 
   // final AbstractAccount account;
-  String address;
-  List<Balance> balances;
+  final String address;
+
+  // List<Balance> balances;
   final void Function()? afterRefresh;
 
   @override
@@ -33,19 +39,31 @@ class AccountInfo extends ConsumerStatefulWidget {
 
 class _AccountInfoState extends ConsumerState<AccountInfo> {
   List<String> keyList = [];
+  List<Balance> balances = [];
 
   @override
   void initState() {
+    var myAccount = ref.read(myAccountPageViewModelProvider);
+    myAccount.getBalanceFromAddress(widget.address).then((value) {
+      balances = value;
+      if (mounted) {
+        setState(() {});
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var appSettingModel = ref.watch(appSettingProvider);
-    Balance balanceModel = widget.balances.first;
-    final assetId = balanceModel.assetHolding.assetId;
-    final amount = balanceModel.assetHolding.amount / MILLION;
-    String assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
+    String assetName = Keys.ALGO.tr(context);
+    String amount = '0';
+
+    if (balances.isNotEmpty) {
+      Balance balanceModel = balances.first;
+      final assetId = balanceModel.assetHolding.assetId;
+      amount = (balanceModel.assetHolding.amount / MILLION).toString();
+      assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
+    }
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -233,64 +251,4 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
   }
 
   Color? iconColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.secondary : Color(0XFF2D4E6C);
-
-  Widget balancesList(List<Balance> balances) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: balances.length,
-      itemBuilder: (_, ix) {
-        final assetId = balances[ix].assetHolding.assetId;
-        final assetName = assetId == 0 ? 'μALGO' : balances[ix].assetHolding.assetId.toString();
-        final assetAmount = balances[ix].assetHolding.amount;
-        final net = balances[ix].net;
-        return Container(
-          // margin: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-          // color: Color.fromRGBO(197, 234, 197, 1),
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          child: ListTile(
-            title: Text('$assetName - $assetAmount - $net'),
-          ),
-        );
-      },
-    );
-  }
-
-// Future<int?> _optInToASA(BuildContext context) async {
-//   final TextEditingController asaId = TextEditingController(text: '');
-//   return showDialog<int>(
-//       context: context,
-//       builder: (BuildContext context) => SimpleDialog(
-//             title: const Text('Enter ASA ID'),
-//             children: <Widget>[
-//               Container(
-//                   padding: const EdgeInsets.only(
-//                       top: 5, left: 20, right: 20, bottom: 10),
-//                   child: TextField(
-//                     decoration: InputDecoration(
-//                       hintText: 'ASA ID',
-//                       border: OutlineInputBorder(),
-//                       label: Text('ASA ID'),
-//                     ),
-//                     minLines: 1,
-//                     maxLines: 1,
-//                     controller: asaId,
-//                     keyboardType: TextInputType.number,
-//                     inputFormatters: <TextInputFormatter>[
-//                       FilteringTextInputFormatter.digitsOnly
-//                     ], // Only numbers can be entered
-//                   )),
-//               Container(
-//                   padding: const EdgeInsets.only(
-//                       top: 10, left: 50, right: 50, bottom: 10),
-//                   child: ElevatedButton(
-//                       // style: ElevatedButton.styleFrom(primary: Color.fromRGBO(237, 124, 135, 1)),
-//                       child: Text('Opt In'),
-//                       onPressed: () => Navigator.pop(
-//                           context,
-//                           asaId.text.isEmpty
-//                               ? null
-//                               : int.parse(asaId.text)))),
-//             ],
-//           ));
-// }
 }

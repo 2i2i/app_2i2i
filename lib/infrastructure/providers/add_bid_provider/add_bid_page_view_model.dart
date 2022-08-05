@@ -25,7 +25,7 @@ class AddBidPageViewModel {
     required this.functions,
     required this.algorand,
     required this.B,
-    required this.accounts,
+    // required this.accounts,
     required this.accountService,
   });
 
@@ -34,12 +34,13 @@ class AddBidPageViewModel {
   final UserModel B;
   final AlgorandService algorand;
   final AccountService accountService;
-  final List<AbstractAccount> accounts;
+
+  // final List<AbstractAccount> accounts;
   final FirestoreDatabase database;
 
   bool submitting = false;
 
- /* String duration(AbstractAccount account, Quantity speed, Quantity balance) {
+  /* String duration(AbstractAccount account, Quantity speed, Quantity balance) {
     if (speed.num == 0) return 'forever';
     final seconds = balance.num / speed.num;
     return secondsToSensibleTimePeriod(seconds.round());
@@ -47,7 +48,8 @@ class AddBidPageViewModel {
 
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
-    required AbstractAccount? account,
+    required String? sessionId,
+    required String? address,
     required Quantity amount,
     required Quantity speed,
     String? bidComment,
@@ -62,18 +64,17 @@ class AddBidPageViewModel {
     if (B.blocked.contains(A)) return;
 
     final net = AppConfig().ALGORAND_NET;
-    final String? addrA = speed.num == 0 ? null : account!.address;
-    final bidId =
-        database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
+    final String? addrA = speed.num == 0 ? null : address;
+    final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
 
     // lock coins
     Map<String, String> txns = {};
     if (speed.num != 0) {
       final note = bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        txns = await algorand
-            .lockCoins(account: account!, net: net, amount: amount, note: note)
-            .timeout(Duration(seconds: 60));
+        if (sessionId != null && address != null) {
+          txns = await algorand.lockCoins(sessionId: sessionId, address: address, net: net, amount: amount, note: note).timeout(Duration(seconds: 60));
+        }
       } on TimeoutException catch (e) {
         log('AlgorandException  ${e.message}');
         timeout?.call();
@@ -130,8 +131,7 @@ class AddBidPageViewModel {
 
     if (bUserTokenModel is TokenModel) {
       Map jsonDataCurrentUser = {"title": "2i2i", "body": 'Someone wants to talk with you'};
-      await FirebaseNotifications()
-          .sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
+      await FirebaseNotifications().sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
     }
   }
 }

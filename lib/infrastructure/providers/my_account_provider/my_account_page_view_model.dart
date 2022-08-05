@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
-import '../../data_access_layer/accounts/walletconnect_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../all_providers.dart';
@@ -19,9 +18,9 @@ class MyAccountPageViewModel extends ChangeNotifier {
   SecureStorage? storage;
   AccountService? accountService;
   bool isLoading = true;
-  List<AbstractAccount>? accounts;
-  List<String> walletConnectAccounts = [];
-  Map<String, List<Balance>> accountBalancesMap = {};
+
+  // List<AbstractAccount>? accounts;
+  Map<String, List<String>> walletConnectAccounts = {};
 
   String? uid;
   FirestoreDatabase database;
@@ -37,16 +36,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
       log('MyAccountPageViewModel initMethod 3');
       accountService = await ref!.watch(accountServiceProvider);
       log('MyAccountPageViewModel initMethod 4');
-      accounts = await accountService!.getAllAccounts();
-      int length = await accountService!.getNumAccounts();
-      for (int i = 1; i <= length; i++) {
-        final connector = await WalletConnectAccount.newConnector('$i');
-        walletConnectAccounts.addAll(WalletConnectAccount.getAllAccountAddresses(connector));
-        for (String address in walletConnectAccounts) {
-          List list = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
-          accountBalancesMap[address] = list.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
-        }
-      }
+      // accounts = await accountService!.getAllAccounts();
+      walletConnectAccounts = await accountService!.getAllWalletAddress();
       log('MyAccountPageViewModel initMethod 5');
       isLoading = false;
     } catch (e) {
@@ -55,10 +46,56 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Balance>?> getBalanceFromAddress(String address) async {
-    final assetHoldings = await accountService?.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
-    var balances = assetHoldings?.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
-    return balances;
+  Future<List<Balance>> getBalanceFromAddress(String address) async {
+    if (accountService != null) {
+      final assetHoldings = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
+      var balances = assetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
+      return balances;
+    }
+    return [];
+  }
+
+  Future<int> getMinBalance({required String address}) async {
+    try {
+      if (algorandLib != null) {
+        final account = await algorandLib!.client[AppConfig().ALGORAND_NET]?.getAccountByAddress(address);
+        return account?.minimumBalance?.toInt() ?? 0;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return 0;
+  }
+
+  Future<int> getAlgoBalance({required String address}) async {
+    try {
+      List list = await getBalanceFromAddress(address);
+      for (final b in list) {
+        if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return 0;
+  }
+
+  List<String> get addresses {
+    List<String> values = [];
+    for (List<String> val in walletConnectAccounts.values) {
+      values.addAll(val);
+    }
+    return values;
+  }
+
+  String getSessionId(String address) {
+    var list = walletConnectAccounts.entries.toList();
+    for (MapEntry<String, List<String>> val in list) {
+      if (val.value.contains(address)) {
+        return val.key;
+      }
+      break;
+    }
+    return '';
   }
 
   Future<void> addLocalAccount() async {
@@ -96,9 +133,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<void> updateAccounts() async {
-    accounts = await accountService!.getAllAccounts();
     var numAccount = await accountService?.getNumAccounts() ?? 0;
-    storage?.write('session_length', '${numAccount + 1}');
     notifyListeners();
   }
 }

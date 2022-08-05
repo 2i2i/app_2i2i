@@ -58,13 +58,24 @@ class MyUserPageViewModel {
 
     String? addressOfUserB;
     if (bidIn.public.speed.num != 0) {
-      final account = await accountService.getMainAccount();
+      Map sessionWithAddress = await accountService.getAllWalletAddress();
+      List<String> addresses = [];
+      for (List<String> val in sessionWithAddress.values) {
+        addresses.addAll(val);
+      }
+      if (addresses.isNotEmpty) {
+        addressOfUserB = addresses.first;
+      } else {
+        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        return true;
+      }
+      /*final account = await accountService.getMainAccount();
       if (account is AbstractAccount) {
         addressOfUserB = account.address;
       } else {
         CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
         return true;
-      }
+      }*/
     }
     final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
     await database.acceptBid(meeting);

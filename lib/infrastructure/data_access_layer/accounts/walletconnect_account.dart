@@ -6,22 +6,11 @@ import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
 import '../repository/algorand_service.dart';
+import '../repository/secure_storage_service.dart';
 import 'abstract_account.dart';
 
 class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> cache = [];
-
-  /*static WalletConnect newConnector() {
-    return WalletConnect(
-      bridge: 'https://bridge.walletconnect.org',
-      clientMeta: const PeerMeta(
-        name: '2i2i',
-        description: 'earn coins by talking',
-        url: 'https://2i2i.app',
-        icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
-      ),
-    );
-  }*/
 
   static Future<WalletConnect> newConnector([String key = '0']) async {
     final sessionStorage = WalletConnectSecureStorage(storageKey: key);
@@ -40,6 +29,8 @@ class WalletConnectAccount extends AbstractAccount {
     );
   }
 
+  final SecureStorage storage = SecureStorage();
+
   late WalletConnect connector;
   late AlgorandWalletConnectProvider provider;
 
@@ -52,13 +43,17 @@ class WalletConnectAccount extends AbstractAccount {
   }
 
   // TODO cache management
-  Future<void> save() async {
+  Future<void> save(String sessionId) async {
     // final List<Future<void>> futures = [];
     // for (int i = 0; i < connector.session.accounts.length; i++) {
     // final account = WalletConnectAccount(
     //     accountService: accountService,
     //     connector: connector,
     // );
+
+    List<String> accounts = await accountService.getAllWalletConnectAccounts();
+    accounts.add(sessionId);
+    storage.write('wallet_connect_accounts', accounts.join(','));
 
     if (connector.session.accounts.isNotEmpty) {
       address = connector.session.accounts[0];

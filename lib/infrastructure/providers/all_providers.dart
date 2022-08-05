@@ -371,8 +371,8 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
   final algorand = ref.watch(algorandProvider);
   // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
 
-  final accounts = ref.watch(accountsProvider);
-  if (accounts is AsyncLoading) return null;
+  // final accounts = ref.watch(accountsProvider);
+  // if (accounts is AsyncLoading) return null;
 
   final accountService = ref.watch(accountServiceProvider);
 
@@ -382,13 +382,19 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
   if (myUid == null) return null;
 
   return AddBidPageViewModel(
-      A: myUid, database: database, functions: functions, algorand: algorand, accounts: accounts.value!, accountService: accountService, B: B);
+      A: myUid,
+      database: database,
+      functions: functions,
+      algorand: algorand,
+      /*accounts: accounts.value!,*/
+      accountService: accountService,
+      B: B);
 });
 
-final accountsProvider = FutureProvider((ref) {
-  final accountService = ref.watch(accountServiceProvider);
-  return accountService.getAllAccounts();
-});
+// final accountsProvider = FutureProvider((ref) {
+//   final accountService = ref.watch(accountServiceProvider);
+//   return accountService.getAllAccounts();
+// });
 
 final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
   final database = ref.watch(databaseProvider);

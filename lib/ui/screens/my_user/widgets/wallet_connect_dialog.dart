@@ -85,11 +85,13 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
-    final connector = await WalletConnectAccount.newConnector();
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
       connector: connector,
     );
+
     // Create a new session
     if (!account.connector.connected) {
       SessionStatus sessionStatus = await account.connector.connect(
@@ -97,9 +99,10 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
 
+      isDialogOpen.value = false;
       CustomDialogs.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
-      await account.save();
+      await account.save(id);
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
