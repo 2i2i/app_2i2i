@@ -59,6 +59,7 @@ class UserBidInsList extends ConsumerWidget {
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
+
               CustomDialogs.loader(false, context);
             }
           },

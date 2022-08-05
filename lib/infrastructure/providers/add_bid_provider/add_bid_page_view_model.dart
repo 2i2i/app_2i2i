@@ -72,8 +72,8 @@ class AddBidPageViewModel {
     if (speed.num != 0) {
       final note = bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
       try {
-        if (sessionId != null && address != null) {
-          txns = await algorand.lockCoins(sessionId: sessionId, address: address, net: net, amount: amount, note: note).timeout(Duration(seconds: 60));
+        if ((sessionId?.isNotEmpty ?? false) && (address?.isNotEmpty ?? false)) {
+          txns = await algorand.lockCoins(sessionId: sessionId!, address: address!, net: net, amount: amount, note: note).timeout(Duration(seconds: 60));
         }
       } on TimeoutException catch (e) {
         log('AlgorandException  ${e.message}');

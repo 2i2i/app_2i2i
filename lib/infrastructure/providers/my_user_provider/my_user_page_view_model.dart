@@ -66,7 +66,7 @@ class MyUserPageViewModel {
       if (addresses.isNotEmpty) {
         addressOfUserB = addresses.first;
       } else {
-        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
         return true;
       }
       /*final account = await accountService.getMainAccount();

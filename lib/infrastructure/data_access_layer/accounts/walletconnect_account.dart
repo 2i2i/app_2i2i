@@ -37,7 +37,6 @@ class WalletConnectAccount extends AbstractAccount {
   WalletConnectAccount({required AccountService accountService, required this.connector, required this.provider}) : super(accountService: accountService);
 
   factory WalletConnectAccount.fromNewConnector({required AccountService accountService, required WalletConnect connector}) {
-    // final connector = await newConnector();
     final provider = AlgorandWalletConnectProvider(connector);
     return WalletConnectAccount(accountService: accountService, connector: connector, provider: provider);
   }

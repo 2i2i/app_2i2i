@@ -43,14 +43,18 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
 
   @override
   void initState() {
-    var myAccount = ref.read(myAccountPageViewModelProvider);
-    myAccount.getBalanceFromAddress(widget.address).then((value) {
+    getBalance().then((value) {
       balances = value;
       if (mounted) {
         setState(() {});
       }
     });
     super.initState();
+  }
+
+  Future<List<Balance>> getBalance() {
+    var myAccount = ref.read(myAccountPageViewModelProvider);
+    return myAccount.getBalanceFromAddress(widget.address);
   }
 
   @override
@@ -61,7 +65,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     if (balances.isNotEmpty) {
       Balance balanceModel = balances.first;
       final assetId = balanceModel.assetHolding.assetId;
-      amount = (balanceModel.assetHolding.amount / MILLION).toString();
+      var a = (balanceModel.assetHolding.amount / MILLION);
+      amount = doubleWithoutDecimalToInt(a).toString();
       assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
     }
 
@@ -177,7 +182,8 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ),
                     onPressed: () async {
                       CustomDialogs.loader(true, context);
-                      // await widget.account.updateBalances(net: AppConfig().ALGORAND_NET); //todo chandresh
+                      var val = await getBalance();
+                      balances = val;
                       if (widget.afterRefresh != null) widget.afterRefresh!();
                       CustomDialogs.loader(false, context);
                       setState(() {});

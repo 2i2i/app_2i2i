@@ -93,7 +93,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
       if (val.value.contains(address)) {
         return val.key;
       }
-      break;
     }
     return '';
   }

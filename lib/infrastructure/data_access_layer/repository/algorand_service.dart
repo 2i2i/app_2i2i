@@ -117,11 +117,11 @@ class AlgorandService {
     var account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
 
     final signedTxnsBytes = await account.sign(txns);
-    log('lockALGO - signed');
+    log('lockALGO - signed $signedTxnsBytes');
 
     try {
       final groupTxId = await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-
+      log('lockALGO - groupTxId $groupTxId');
       return {
         'group': groupTxId,
         'pay': lockTxn.id,
