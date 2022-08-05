@@ -186,9 +186,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
           log("$e");
         }
       });
-
-      await Custom.deepLinks(context, mounted);
     });
+    Custom.deepLinks(context, mounted);
   }
 
   Future<void> initConnectivity() async {
