@@ -8,7 +8,7 @@ import '../../infrastructure/commons/keys.dart';
 
 class CustomAlertWidget {
   static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
-    showModalBottomSheet(
+    return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),

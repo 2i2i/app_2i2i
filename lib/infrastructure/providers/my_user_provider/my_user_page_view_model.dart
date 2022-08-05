@@ -62,8 +62,10 @@ class MyUserPageViewModel {
       if (account is AbstractAccount) {
         addressOfUserB = account.address;
       } else {
-        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        return true;
+        final String? result = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        if (result?.isEmpty ?? false) {
+          return true;
+        }
       }
     }
     final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);

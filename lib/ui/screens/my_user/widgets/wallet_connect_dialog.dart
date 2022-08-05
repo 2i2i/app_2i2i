@@ -72,7 +72,7 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
                     // Share.share('${Keys.comeAndHangOut.tr(context)}:\n$message');
                     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
                     final address = await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(address);
                   },
                   child: Text('Connect'),
                 ),
