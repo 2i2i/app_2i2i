@@ -104,7 +104,6 @@ class MyUserPageViewModel {
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
-    await Future.delayed(Duration(seconds: 5));
     if (!bidOut.active) return;
 
     if (bidOut.speed.num == 0) {
@@ -112,7 +111,7 @@ class MyUserPageViewModel {
     }
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid({'bidId': bidOut.id});
+    final HttpsCallableResult result = await cancelBid.call({'bidId': bidOut.id});
   }
 
   Future updateHangout(UserModel user) => userChanger.updateSettings(user);

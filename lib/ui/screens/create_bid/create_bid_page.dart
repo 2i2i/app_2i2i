@@ -107,10 +107,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     userB = userPageBViewModel.user;
 
-    final addBidPageViewModel = ref.watch(addBidPageViewModelProvider(userPageBViewModel.user).state).state;
-
-    if (addBidPageViewModel == null || (addBidPageViewModel.submitting)) return WaitPage(isCupertino: true);
-
     updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
@@ -521,7 +517,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (isInsufficient() && userB == null) {
       return;
     }
-    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(userB!).state).state;
+    final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.B));
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await addBid(addBidPageViewModel: addBidPageViewModel);
@@ -567,16 +563,17 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
-    CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+    String? sessionId;
+    if (speed.num != 0) {
+      CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+    } else {
+      CustomDialogs.loader(true, context);
+    }
     var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-    var sessionId = myAccountPageViewModel.getSessionId(address!);
-    await addBidPageViewModel.addBid(
-      sessionId: sessionId,
-      address: address,
-      amount: amount,
-      speed: speed,
-      bidComment: comment,
-    );
+    if (address is String) {
+      sessionId = myAccountPageViewModel.getSessionId(address!);
+    }
+    await addBidPageViewModel.addBid(sessionId: sessionId, address: address, amount: amount, speed: speed, bidComment: comment, context: context);
     CustomDialogs.loader(false, context);
   }
 }

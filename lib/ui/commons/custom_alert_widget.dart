@@ -46,7 +46,6 @@ class CustomAlertWidget {
               padding: EdgeInsets.all(8),
               child: Text(
                 errorStacktrace!,
-                textAlign: TextAlign.justify,
                 maxLines: 2,
               )),
           SizedBox(height: 8),
@@ -64,9 +63,7 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
       ],
@@ -82,9 +79,7 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
       ],
