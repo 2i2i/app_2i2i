@@ -83,7 +83,7 @@ extension name on String {
       case Routes.webView:
         return 'web_view';
       default:
-        return this;
+        return '';
     }
   }
 }

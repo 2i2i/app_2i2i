@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "347734179578-pack539ulqgoo7nbhhi4k2gnnr3s1qjg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "e4d8cbe9576354a8967d0009dfbd30fee09310df"
+          }
+        },
+        {
           "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -44,4 +52,3 @@
   ],
   "configuration_version": "1"
 }
-

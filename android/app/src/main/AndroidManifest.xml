@@ -60,18 +60,30 @@
                 android:name="flutter_deeplinking_enabled"
                 android:value="true" />
 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="twoitwoi.com" />
+            </intent-filter>
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:scheme="test" />
+                <data
+                    android:host="2i2i.page.link"
+                    android:pathPrefix="/share"
+                    android:scheme="https" />
 
-                <data android:host="test.2i2i.app" />
-                <data android:host="twoitwoi.com" />
+                <data
+                    android:host="i2i2.page.link"
+                    android:pathPrefix="/share"
+                    android:scheme="https" />
             </intent-filter>
 
         </activity>

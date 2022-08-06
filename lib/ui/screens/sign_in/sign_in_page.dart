@@ -7,14 +7,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/routes/app_routes.dart';
-import '../../commons/custom.dart';
 import '../app/no_internet_screen.dart';
 import '../app/wait_page.dart';
 
@@ -43,12 +40,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       }
     });
 
-    userIdNav.addListener(() {
-      if (userIdNav.value.isNotEmpty) {
-        context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
-        userIdNav.value = '';
-      }
-    });
     super.initState();
   }
 
