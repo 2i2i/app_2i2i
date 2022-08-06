@@ -47,7 +47,6 @@ class SetupUserViewModel with ChangeNotifier {
   final GoogleSignIn googleSignIn;
   final AlgorandService algorand;
 
-
   UserModel? userInfoModel;
   SocialLinksModel? socialLinksModel;
 
@@ -60,11 +59,7 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future updateFirebaseMessagingToken(String uid) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging
-        .getToken(
-      vapidKey: dotenv.env['TOKEN_KEY'].toString(),
-    )
-        .then((String? token) {
+    return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
       if (token is String) return database.updateToken(uid, token);
     });
     // log(X + 'token=$token');
@@ -84,7 +79,7 @@ class SetupUserViewModel with ChangeNotifier {
     final f2 = updateFirebaseMessagingToken(uid);
     // final f3 = setupAlgorandAccount(uid);
     final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, /*f3,*/ f4]);
+    return Future.wait([f2, /* f3,*/ f4]);
   }
 
   Future<void> signInAnonymously() async {
