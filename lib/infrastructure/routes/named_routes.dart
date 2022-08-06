@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/app/error_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
 import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
@@ -39,13 +40,22 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
+      print('uri state ${state.location}');
+      print('uri previousRouteLocation $previousRouteLocation');
+      print('uri userIdNav.value ${userIdNav.value}\n');
+      bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;
+      print('uri isTrue $isTrue');
+      if (isTrue && userIdNav.value.isNotEmpty) {
+        previousRouteLocation = Routes.user;
+        return '/user/${userIdNav.value}';
+      }
       if (state.location.contains(Routes.user.nameFromPath())) {
         currentIndex.value = 0;
       }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
       bool validForPrevious = !goingToLocked /*&& state.location != Routes.root*/ && state.location != previousRouteLocation;
-      if (validForPrevious) {
+      if (validForPrevious && state.location.nameFromPath().isNotEmpty) {
         previousRouteLocation = state.location;
       }
       if (locked && goingToLocked) {
@@ -60,9 +70,7 @@ class NamedRoutes {
       }
       if (previousRouteLocation is String) {
         if (showRating.value['show'] == true) {
-          String a = '$previousRouteLocation';
           previousRouteLocation = null;
-          print('========== $a');
           return null;
         }
       }
@@ -84,7 +92,7 @@ class NamedRoutes {
         path: Routes.myUser,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          // child: getView(TestScreen1()),
+          // child: getView(TestScreen()),
           child: getView(MyUserPage()),
           // child: Scaffold(),
         ),
@@ -146,13 +154,19 @@ class NamedRoutes {
         name: Routes.user.nameFromPath(),
         path: Routes.user,
         pageBuilder: (context, state) {
+          previousRouteLocation = state.location;
           String userId = '';
+          if (userIdNav.value.isNotEmpty) {
+            userId = userIdNav.value;
+            userIdNav.value = '';
+          }
           if (state.extra is Map) {
             userId = (state.extra as Map)['uid'] ?? '';
           }
           if (state.params['uid'] is String) {
             userId = state.params['uid']!;
           }
+          print('uri userId $userId');
           if (userId.trim().isNotEmpty) {
             return NoTransitionPage<void>(
               key: state.pageKey,
@@ -318,12 +332,14 @@ class NamedRoutes {
       ),
     ],
     errorPageBuilder: (context, state) {
+      print('error ${state.error?.toString()}');
       return NoTransitionPage<void>(
         key: state.pageKey,
         child: getView(Scaffold(body: ErrorPage(state.error))),
       );
     },
     errorBuilder: (context, state) {
+      print('error ${state.error?.toString()}');
       return getView(Scaffold(body: ErrorPage(state.error)));
     },
   );
