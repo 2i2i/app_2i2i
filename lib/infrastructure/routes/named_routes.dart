@@ -40,11 +40,7 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
-      print('uri state ${state.location}');
-      print('uri previousRouteLocation $previousRouteLocation');
-      print('uri userIdNav.value ${userIdNav.value}\n');
       bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;
-      print('uri isTrue $isTrue');
       if (isTrue && userIdNav.value.isNotEmpty) {
         previousRouteLocation = Routes.user;
         return '/user/${userIdNav.value}';

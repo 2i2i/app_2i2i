@@ -7,13 +7,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import '../../commons/qr_image.dart';
 import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
@@ -61,16 +59,14 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
-              }
-              bool hostStatus = await widget.myHangoutPageViewModel.acceptBid(bidIns);
+              // CustomDialogs.loader(true, context);
+
+              bool hostStatus = await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(false, _scaffoldKey.currentContext!);
-              }
+
+              // CustomDialogs.loader(false, context);
             }
           },
           child: Container(

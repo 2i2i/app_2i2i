@@ -48,11 +48,9 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
             Expanded(
               child: Builder(builder: (context) {
                 if (!myAccountPageViewModel.isLoading) {
-                  LocalAccount? localAccount =
-                      myAccountPageViewModel.localAccount;
+                  LocalAccount? localAccount = myAccountPageViewModel.localAccount;
                   return FutureBuilder(
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
                         List<String> perhaps = snapshot.data;
                         return Column(
@@ -67,26 +65,20 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   crossAxisCount: 2,
                                   childAspectRatio: 5,
                                   padding: EdgeInsets.all(8),
-                                  children:
-                                      List.generate(perhaps.length, (index) {
+                                  children: List.generate(perhaps.length, (index) {
                                     return ListTile(
                                       leading: CircleAvatar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
+                                        backgroundColor: Theme.of(context).primaryColor,
                                         radius: 10,
                                         child: Text(
                                           '${index + 1}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .caption,
+                                          style: Theme.of(context).textTheme.caption,
                                         ),
                                       ),
                                       minLeadingWidth: 10,
                                       title: Text(
                                         '${perhaps[index]}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText2,
+                                        style: Theme.of(context).textTheme.bodyText2,
                                       ),
                                     );
                                   }),
@@ -99,15 +91,12 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                                   child: ElevatedButton.icon(
                                     onPressed: () {
                                       if (perhaps.isNotEmpty) {
-                                        Clipboard.setData(ClipboardData(
-                                            text: perhaps.join(' ')));
-                                        CustomDialogs.showToastMessage(context,
-                                            Keys.copyMessage.tr(context));
+                                        Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
+                                        CustomDialogs.showToastMessage(context, Keys.copyMessage.tr(context));
                                       }
                                     },
                                     label: Text(Keys.copy.tr(context)),
-                                    icon:
-                                        Icon(Icons.copy_all_rounded, size: 16),
+                                    icon: Icon(Icons.copy_all_rounded, size: 16),
                                   ),
                                 ),
                                 SizedBox(width: 8),
@@ -137,8 +126,8 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                         height: MediaQuery.of(context).size.height / 2,
                       );
                     },
-                    // TODO not use delay
-                    future: Future.delayed(Duration(seconds: 1), () => localAccount?.account?.seedPhrase ?? [""]),
+                    // TODO not use delay: ==> done
+                    future: Future.value(localAccount?.account?.seedPhrase ?? [""]),
                   );
                 }
                 return WaitPage(

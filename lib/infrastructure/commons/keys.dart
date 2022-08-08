@@ -43,6 +43,7 @@ class Keys {
   static const String numberZeroHint = 'numberZeroHint';
   static const String noRatingsFound = 'noRatingsFound';
   static const String algoPerSec = 'algoPerSec';
+  static const String algoPerHr = 'algoPerHr';
   static const String hh = 'hh';
   static const String mm = 'mm';
   static const String ss = 'ss';
@@ -219,6 +220,13 @@ class Keys {
   static const String writeComment = 'writeComment';
   static const String connecting = 'connecting';
   static const String muted = 'muted';
+  static const String walletConnect = 'Wallet Connect';
+  static const String connect = 'Connect';
+  static const String receiveSendCoin = 'Please first connect an account to send/receive coins.';
+  static const String cantBidUser = 'You can not bid to this user';
+  static const String miniSupport = 'Minimum speed is greater then Maximum Support';
+  static const String noWalletFound = 'No wallet account found.';
+  static const String someOneTalk = 'Someone wants to talk with you';
 }
 
 extension CustomTranslation on String {
