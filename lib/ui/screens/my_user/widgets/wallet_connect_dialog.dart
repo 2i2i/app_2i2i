@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
+import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
@@ -140,10 +141,11 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
       var launchUri;
       try {
         if (defaultTargetPlatform == TargetPlatform.iOS) {
+          final bridge = await getWCBridge();
           launchUri = Uri(
             scheme: 'algorand-wc',
             host: 'wc',
-            queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
+            queryParameters: {'uri': _displayUri, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"},
           );
         } else {
           launchUri = Uri.parse(_displayUri);

@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
+import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
@@ -200,12 +201,13 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
         barrierDismissible: true,
       );
     } else {
+      final bridge = await getWCBridge();
       var launchUri;
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         launchUri = Uri(
           scheme: 'algorand-wc',
           host: 'wc',
-          queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
+          queryParameters: {'uri': _displayUri, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"
         );
       } else {
         launchUri = Uri.parse(_displayUri);
