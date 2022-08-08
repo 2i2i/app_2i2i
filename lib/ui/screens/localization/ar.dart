@@ -201,6 +201,13 @@ class ar {
       Keys.writeComment: 'أكتب تعليقا...',
       Keys.connecting: 'توصيل...',
       Keys.muted: 'كتم الصوت',
+      Keys.walletConnect: 'Wallet Connect',
+      Keys.connect: 'الاتصال',
+      Keys.receiveSendCoin: 'يرجى أولا ربط حساب لإرسال / استقبال العملات.',
+      Keys.cantBidUser: 'لا يمكنك المزايدة لهذا المستخدم',
+      Keys.miniSupport: 'السرعة الدنيا أكبر من الحد الأقصى للدعم',
+      Keys.noWalletFound: 'لم يتم العثور على حساب المحفظة.',
+      Keys.someOneTalk: 'شخص ما يريد التحدث معك',
     };
   }
 }

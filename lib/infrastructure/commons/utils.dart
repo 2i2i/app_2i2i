@@ -156,6 +156,10 @@ String prettyDuration(Duration duration) {
   return components.join();
 }
 
+num doubleWithoutDecimalToInt(double val) {
+  return val % 1 == 0 ? val.toInt() : val;
+}
+
 bool haveToWait(var provider) {
   if (provider is AsyncError) {
     log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');

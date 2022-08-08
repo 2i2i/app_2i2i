@@ -35,18 +35,19 @@ class CustomAlertWidget {
     );
     if (errorStacktrace?.isNotEmpty ?? false) {
       messageWidget = Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 8),
           Text(
             errorMessage,
           ),
+          SizedBox(height: 8),
           Container(
               decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
               margin: EdgeInsets.only(top: 8),
               padding: EdgeInsets.all(8),
               child: Text(
                 errorStacktrace!,
-                textAlign: TextAlign.justify,
                 maxLines: 2,
               )),
           SizedBox(height: 8),
@@ -64,9 +65,7 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
       ],
@@ -82,9 +81,7 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
       ],

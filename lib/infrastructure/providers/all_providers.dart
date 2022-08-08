@@ -364,15 +364,15 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meeting: meeting.asData!.value);
 });
 
-final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, UserModel>((ref, B) {
+final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, String>((ref, B) {
   // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('addBidPageViewModelProvider - functions=$functions');
   final algorand = ref.watch(algorandProvider);
   // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
 
-  final accounts = ref.watch(accountsProvider);
-  if (accounts is AsyncLoading) return null;
+  // final accounts = ref.watch(accountsProvider);
+  // if (accounts is AsyncLoading) return null;
 
   final accountService = ref.watch(accountServiceProvider);
 
@@ -381,14 +381,23 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
   final myUid = ref.watch(myUIDProvider);
   if (myUid == null) return null;
 
+  final userModelB = ref.watch(userProvider(B));
+  if (userModelB is AsyncLoading || userModelB is AsyncError) return null;
+
   return AddBidPageViewModel(
-      A: myUid, database: database, functions: functions, algorand: algorand, accounts: accounts.value!, accountService: accountService, B: B);
+      A: myUid,
+      database: database,
+      functions: functions,
+      algorand: algorand,
+      /*accounts: accounts.value!,*/
+      accountService: accountService,
+      B: userModelB.value!);
 });
 
-final accountsProvider = FutureProvider((ref) {
-  final accountService = ref.watch(accountServiceProvider);
-  return accountService.getAllAccounts();
-});
+// final accountsProvider = FutureProvider((ref) {
+//   final accountService = ref.watch(accountServiceProvider);
+//   return accountService.getAllAccounts();
+// });
 
 final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
   final database = ref.watch(databaseProvider);

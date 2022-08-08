@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
+import '../my_user/widgets/wallet_connect_dialog.dart';
 import 'widgets/account_info.dart';
 import 'widgets/add_account_options_widget.dart';
 
@@ -52,14 +54,15 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 }
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                  itemCount: myAccountPageViewModel.walletConnectAccounts.length,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   itemBuilder: (BuildContext context, int index) {
+                    String address = myAccountPageViewModel.addresses[index];
                     return AccountInfo(
                       true,
                       index: index,
-                      key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                      account: myAccountPageViewModel.accounts![index],
+                      key: ObjectKey(myAccountPageViewModel.addresses[index]),
+                      address: address,
                     );
                   },
                 );
@@ -70,8 +73,9 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
       ),
       floatingActionButton: FloatingActionButton(
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
-        onPressed: () {
-          showBottomSheet.value = !showBottomSheet.value;
+        onPressed: () async {
+          await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+          // showBottomSheet.value = !showBottomSheet.value;
         },
         child: ValueListenableBuilder(
           valueListenable: showBottomSheet,

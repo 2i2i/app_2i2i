@@ -58,9 +58,13 @@ class MyUserPageViewModel {
 
     String? addressOfUserB;
     if (bidIn.public.speed.num != 0) {
-      final account = await accountService.getMainAccount();
-      if (account is AbstractAccount) {
-        addressOfUserB = account.address;
+      Map sessionWithAddress = await accountService.getAllWalletAddress();
+      List<String> addresses = [];
+      for (List<String> val in sessionWithAddress.values) {
+        addresses.addAll(val);
+      }
+      if (addresses.isNotEmpty) {
+        addressOfUserB = addresses.first;
       } else {
         final String? result = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
         if (result?.isEmpty ?? false) {
@@ -95,7 +99,6 @@ class MyUserPageViewModel {
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
-    await Future.delayed(Duration(seconds: 5));
     if (!bidOut.active) return;
 
     if (bidOut.speed.num == 0) {
@@ -103,7 +106,7 @@ class MyUserPageViewModel {
     }
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid({'bidId': bidOut.id});
+    final HttpsCallableResult result = await cancelBid.call({'bidId': bidOut.id});
   }
 
   Future updateHangout(UserModel user) => userChanger.updateSettings(user);
