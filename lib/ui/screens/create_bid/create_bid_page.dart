@@ -3,12 +3,10 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +19,7 @@ import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
+import '../my_user/widgets/wallet_connect_dialog.dart';
 import 'top_card_widget.dart';
 
 class CreateBidPageRouterObject {
@@ -256,20 +255,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               ),
                               SizedBox(height: 8),
                               Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                  child: IconButton(
-                                    onPressed: () => showBidAlert(myAccountPageViewModel),
-                                    iconSize: 30,
-                                    icon: Icon(
-                                      Icons.add_circle_rounded,
-                                      color: Theme.of(context).colorScheme.secondary,
-                                    ),
-                                  )
-                                  /*ElevatedButton(
-                                      child: Text(Strings().addAccount),
-                                    )*/
-
-                                  )
+                                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                child: IconButton(
+                                  // onPressed: () => showBidAlert(myAccountPageViewModel),
+                                  onPressed: () async {
+                                    await addWalletAccount(context, myAccountPageViewModel);
+                                  },
+                                  iconSize: 30,
+                                  icon: Icon(
+                                    Icons.add_circle_rounded,
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         );
@@ -292,7 +290,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                         ),
                         TextButton(
                           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-                          onPressed: () => showBidAlert(myAccountPageViewModel),
+                          // onPressed: () => showBidAlert(myAccountPageViewModel),
+                          onPressed: () async {
+                            await addWalletAccount(context, myAccountPageViewModel);
+                          },
                           child: Text(
                             Keys.addAccount.tr(context),
                           ),
@@ -388,7 +389,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: TextStyle(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -426,6 +430,18 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
+  Future<void> addWalletAccount(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
+    String? addressOfAccount = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+    if (addressOfAccount?.isNotEmpty ?? false) {
+      final x = myAccountPageViewModel.addresses;
+      int index = x.indexOf(addressOfAccount!);
+      if (controller.hasClients) {
+        controller.jumpToPage(index > 0 ? index : 0);
+        controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
+      }
+    }
+  }
+
   void showBidAlert(MyAccountPageViewModel myAccountPageViewModel) {
     CustomAlertWidget.showBottomSheet(
       context,
@@ -434,12 +450,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
             final x = myAccountPageViewModel.addresses;
-            log(X + 'showBidAlert + address=$address x=$x');
-            int lastIndex = myAccountPageViewModel.addresses.length - 1;
             int index = x.indexOf(address);
-            log(X + 'showBidAlert + lastIndex=$lastIndex index=$index');
-            controller.jumpToPage(index > 0 ? index : 0);
-            controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
+            if (controller.hasClients) {
+              controller.jumpToPage(index > 0 ? index : 0);
+              controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
+            }
           }
         },
       ),
@@ -521,7 +536,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
         await addBid(addBidPageViewModel: addBidPageViewModel);
-        Navigator.of(context).maybePop();
+        // Navigator.of(context).maybePop();
       }
     }
   }
@@ -564,16 +579,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
     String? sessionId;
-    if (speed.num != 0) {
-      CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
-    } else {
-      CustomDialogs.loader(true, context);
-    }
+
     var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
     if (address is String) {
       sessionId = myAccountPageViewModel.getSessionId(address!);
     }
-    await addBidPageViewModel.addBid(sessionId: sessionId, address: address, amount: amount, speed: speed, bidComment: comment, context: context);
-    CustomDialogs.loader(false, context);
+    await addBidPageViewModel.addBid(
+      sessionId: sessionId,
+      address: address,
+      amount: amount,
+      speed: speed,
+      bidComment: comment,
+      context: context,
+    );
+    // CustomDialogs.loader(false, context);
   }
 }

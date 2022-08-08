@@ -66,16 +66,11 @@ class MyUserPageViewModel {
       if (addresses.isNotEmpty) {
         addressOfUserB = addresses.first;
       } else {
-        await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        return true;
+        addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        if (addressOfUserB?.isEmpty ?? true) {
+          return true;
+        }
       }
-      /*final account = await accountService.getMainAccount();
-      if (account is AbstractAccount) {
-        addressOfUserB = account.address;
-      } else {
-        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        return true;
-      }*/
     }
     final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
     await database.acceptBid(meeting);

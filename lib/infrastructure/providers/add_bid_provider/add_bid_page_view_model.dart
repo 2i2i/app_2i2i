@@ -12,6 +12,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
+import '../../../ui/commons/custom_dialogs.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -57,18 +58,13 @@ class AddBidPageViewModel {
     BuildContext? context,
     Function? timeout,
   }) async {
+    FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
-      if (context != null) {
-        await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: "You can not bid to this user");
-      }
+      await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
     } else if (speed.num < B.rule.minSpeed) {
-      if (context != null) {
-        await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: "Minimum speed is greater then Maximum Support");
-      }
-    } else if (speed.num > B.rule.minSpeed && sessionId is String) {
-      if (context != null) {
-        await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: "Minimum speed is less then Maximum Support");
-      }
+      await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.miniSupport.tr(context));
+    } else if (speed.num != 0 && (sessionId?.isEmpty ?? true)) {
+      await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.noWalletFound.tr(context));
     } else {
       final net = AppConfig().ALGORAND_NET;
       final String? addrA = speed.num == 0 ? null : address;
@@ -77,6 +73,12 @@ class AddBidPageViewModel {
       // lock coins
       Map<String, String> txns = {};
       try {
+        if (speed.num != 0) {
+          CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+        } else {
+          CustomDialogs.loader(true, context);
+        }
+
         if (speed.num != 0 && sessionId is String) {
           final note = bidId + '.' + speed.num.toString() + '.' + speed.assetId.toString();
 
@@ -120,29 +122,29 @@ class AddBidPageViewModel {
         TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
 
         if (bUserTokenModel is TokenModel) {
-          Map jsonDataCurrentUser = {"title": "2i2i", "body": 'Someone wants to talk with you'};
+          Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
           await FirebaseNotifications().sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
         }
+
+        CustomDialogs.loader(false, context);
+        Navigator.pop(context);
       } on TimeoutException catch (e) {
         timeout?.call();
-        return;
+        Navigator.pop(context);
       } on AlgorandException catch (ex) {
         final cause = ex.cause;
         if (cause is dio.DioError) {
           final message = cause.response?.data['message'];
-          if (context != null) {
-            CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: '$message');
-          }
+          CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: '$message');
+          Navigator.pop(context);
         }
-        return;
       } on WalletConnectException catch (e) {
-        if (context != null) {
-          await CustomAlertWidget.showErrorDialog(
-            context,
-            Keys.errorWhileAddBid.tr(context),
-            errorStacktrace: '${e.message}',
-          );
-        }
+        await CustomAlertWidget.showErrorDialog(
+          context,
+          Keys.errorWhileAddBid.tr(context),
+          errorStacktrace: '${e.message}',
+        );
+        Navigator.pop(context);
       } catch (e) {
         log('AlgorandException catch $e');
       }

@@ -201,6 +201,13 @@ class ja {
       Keys.writeComment: 'コメントを書く...',
       Keys.connecting: '接続しています...',
       Keys.muted: 'ミュート',
+      Keys.walletConnect: 'ウォレットコネクト',
+      Keys.connect: '接続',
+      Keys.receiveSendCoin: 'コインを送受信するには、まずアカウントを接続してください。',
+      Keys.cantBidUser: 'このユーザーには入札できません',
+      Keys.miniSupport: '最小速度が最大サポートよりも大きい',
+      Keys.noWalletFound: 'ウォレット アカウントが見つかりません。',
+      Keys.someOneTalk: '誰かがあなたと話したい',
     };
   }
 }

@@ -5,8 +5,9 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../common_main.dart';
 import 'package:http/http.dart';
+
+import '../../../common_main.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -25,8 +26,8 @@ class FirebaseNotifications {
   }
 
   Future<void> awesomeNotificationSetup() async {
-    await FirebaseMessaging.instance.getToken();
     await Firebase.initializeApp();
+    await FirebaseMessaging.instance.getToken();
   }
 
   Future sendNotification(String token, Map data, bool isIos) async {

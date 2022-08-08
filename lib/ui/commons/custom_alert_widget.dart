@@ -35,11 +35,13 @@ class CustomAlertWidget {
     );
     if (errorStacktrace?.isNotEmpty ?? false) {
       messageWidget = Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 8),
           Text(
             errorMessage,
           ),
+          SizedBox(height: 8),
           Container(
               decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
               margin: EdgeInsets.only(top: 8),
