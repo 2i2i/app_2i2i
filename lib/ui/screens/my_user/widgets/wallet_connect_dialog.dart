@@ -13,7 +13,6 @@ import '../../../../infrastructure/data_access_layer/accounts/walletconnect_acco
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import '../../../commons/custom_alert_widget.dart';
 import '../../../commons/custom_dialogs.dart';
 import '../../my_account/widgets/qr_image_widget.dart';
 
@@ -37,12 +36,12 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: kToolbarHeight, right: kToolbarHeight, left: kToolbarHeight, bottom: 10),
+      padding: EdgeInsets.all(kToolbarHeight),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Wallet Connect",
+            Keys.walletConnect.tr(context),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black),
           ),
@@ -51,7 +50,7 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
             height: kToolbarHeight,
             alignment: Alignment.center,
             child: Text(
-              "Please first connect an account to receive coins.",
+              Keys.receiveSendCoin.tr(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.black),
             ),
@@ -72,9 +71,9 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
                     // Share.share('${Keys.comeAndHangOut.tr(context)}:\n$message');
                     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
                     final address = await _createSession(myAccountPageViewModel, myAccountPageViewModel.accountService!);
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(address);
                   },
-                  child: Text('Connect'),
+                  child: Text(Keys.connect.tr(context)),
                 ),
               ),
             ],
@@ -106,6 +105,7 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
+      await myAccountPageViewModel.getWalletAccount();
       CustomDialogs.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
@@ -138,34 +138,27 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
       );
     } else {
       var launchUri;
-      if (defaultTargetPlatform == TargetPlatform.iOS) {
-        launchUri = Uri(
-          scheme: 'algorand-wc',
-          host: 'wc',
-          queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
-        );
-      } else {
-        launchUri = Uri.parse(_displayUri);
+      try {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          launchUri = Uri(
+            scheme: 'algorand-wc',
+            host: 'wc',
+            queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
+          );
+        } else {
+          launchUri = Uri.parse(_displayUri);
+        }
+        isAvailable = await launchUrl(launchUri);
+      } on PlatformException catch (err) {
+        print(err);
       }
-      CustomAlertWidget.confirmDialog(
-        context,
-        description: Keys.transactionConfirmMsg.tr(context),
-        title: Keys.pleaseConfirm.tr(context),
-        onPressed: () async {
-          try {
-            isAvailable = await launchUrl(launchUri);
-          } on PlatformException catch (err) {
-            print(err);
-          }
-          if (!isAvailable) {
-            await launchUrl(
-                Uri.parse(Platform.isAndroid
-                    ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
-                    : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
-                mode: LaunchMode.externalApplication);
-          }
-        },
-      );
+      if (!isAvailable) {
+        await launchUrl(
+            Uri.parse(Platform.isAndroid
+                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+            mode: LaunchMode.externalApplication);
+      }
     }
   }
 }

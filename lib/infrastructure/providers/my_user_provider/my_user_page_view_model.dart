@@ -66,16 +66,11 @@ class MyUserPageViewModel {
       if (addresses.isNotEmpty) {
         addressOfUserB = addresses.first;
       } else {
-        await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        return true;
+        addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        if (addressOfUserB?.isEmpty ?? true) {
+          return true;
+        }
       }
-      /*final account = await accountService.getMainAccount();
-      if (account is AbstractAccount) {
-        addressOfUserB = account.address;
-      } else {
-        CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        return true;
-      }*/
     }
     final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
     await database.acceptBid(meeting);
@@ -104,7 +99,6 @@ class MyUserPageViewModel {
   }
 
   Future cancelOwnBid({required BidOut bidOut}) async {
-    await Future.delayed(Duration(seconds: 5));
     if (!bidOut.active) return;
 
     if (bidOut.speed.num == 0) {
@@ -112,7 +106,7 @@ class MyUserPageViewModel {
     }
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid({'bidId': bidOut.id});
+    final HttpsCallableResult result = await cancelBid.call({'bidId': bidOut.id});
   }
 
   Future updateHangout(UserModel user) => userChanger.updateSettings(user);

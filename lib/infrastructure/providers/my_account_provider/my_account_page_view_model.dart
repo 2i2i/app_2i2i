@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
+import '../../data_access_layer/accounts/walletconnect_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../all_providers.dart';
@@ -43,6 +44,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
     } catch (e) {
       log("$e");
     }
+    notifyListeners();
+  }
+
+  Future<void> getWalletAccount() async {
+    walletConnectAccounts = await accountService!.getAllWalletAddress();
     notifyListeners();
   }
 
@@ -95,6 +101,13 @@ class MyAccountPageViewModel extends ChangeNotifier {
       }
     }
     return '';
+  }
+
+  Future disconnectAccount(String address) async {
+    String sessionId = getSessionId(address);
+    var connector = await WalletConnectAccount.newConnector(sessionId);
+    connector.killSession();
+    storage?.remove('wallet_connect_accounts');
   }
 
   Future<void> addLocalAccount() async {

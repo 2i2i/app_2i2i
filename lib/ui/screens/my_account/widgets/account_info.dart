@@ -216,6 +216,21 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
+                /*Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.symmetric(horizontal: 6),
+                  child: IconButton(
+                    iconSize: 18,
+                    icon: Icon(Icons.delete),
+                    onPressed: () async {
+                      CustomDialogs.loader(true, context);
+                      await ref.read(myAccountPageViewModelProvider).disconnectAccount(widget.address);
+                      CustomDialogs.loader(false, context);
+                      setState(() {});
+                    },
+                  ),
+                ),*/
                 /*if (widget.account is LocalAccount)
                   Container(
                     height: 40,

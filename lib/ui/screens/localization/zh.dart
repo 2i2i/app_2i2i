@@ -201,6 +201,13 @@ class zh {
       Keys.writeComment: '写个评论...',
       Keys.connecting: '正在连接...',
       Keys.muted: '静音',
+      Keys.walletConnect: '钱包连接',
+      Keys.connect: '连接',
+      Keys.receiveSendCoin: '请先连接一个帐户以发送/接收硬币。',
+      Keys.cantBidUser: '您不能对该用户出价',
+      Keys.miniSupport: '最小速度大于最大支持',
+      Keys.noWalletFound: '未找到钱包帐户。',
+      Keys.someOneTalk: '有人想和你谈谈',
     };
   }
 }

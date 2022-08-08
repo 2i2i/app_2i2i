@@ -202,6 +202,13 @@ class en {
       Keys.writeComment: 'Write a comment...',
       Keys.connecting: 'Connecting...',
       Keys.muted: 'Muted',
+      Keys.walletConnect: 'Wallet Connect',
+      Keys.connect: 'Connect',
+      Keys.receiveSendCoin: 'Please first connect an account to send/receive coins.',
+      Keys.cantBidUser: 'You can not bid to this user',
+      Keys.miniSupport: 'Minimum speed is greater then Maximum Support',
+      Keys.noWalletFound: 'No wallet account found.',
+      Keys.someOneTalk: 'Someone wants to talk with you',
     };
   }
 }

@@ -364,7 +364,7 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meeting: meeting.asData!.value);
 });
 
-final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, UserModel>((ref, B) {
+final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, String>((ref, B) {
   // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('addBidPageViewModelProvider - functions=$functions');
@@ -381,6 +381,9 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
   final myUid = ref.watch(myUIDProvider);
   if (myUid == null) return null;
 
+  final userModelB = ref.watch(userProvider(B));
+  if (userModelB is AsyncLoading || userModelB is AsyncError) return null;
+
   return AddBidPageViewModel(
       A: myUid,
       database: database,
@@ -388,7 +391,7 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
       algorand: algorand,
       /*accounts: accounts.value!,*/
       accountService: accountService,
-      B: B);
+      B: userModelB.value!);
 });
 
 // final accountsProvider = FutureProvider((ref) {
