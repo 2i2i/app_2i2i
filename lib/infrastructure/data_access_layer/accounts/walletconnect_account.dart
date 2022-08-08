@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
@@ -15,9 +19,9 @@ class WalletConnectAccount extends AbstractAccount {
   static Future<WalletConnect> newConnector([String key = '0']) async {
     final sessionStorage = WalletConnectSecureStorage(storageKey: key);
     final session = await sessionStorage.getSession();
-
+    final bridge = await getWCBridge();
     return WalletConnect(
-      bridge: 'https://bridge.walletconnect.org',
+      bridge: bridge,
       session: session,
       sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
@@ -27,6 +31,22 @@ class WalletConnectAccount extends AbstractAccount {
         icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
       ),
     );
+  }
+
+  static Future<String> getWCBridge() async {
+    try {
+      final r = await http.get(Uri.parse('https://wc.perawallet.app/servers.json'));
+      final jsonResponse = jsonDecode(r.body);
+      if (jsonResponse is Map && jsonResponse['servers'] is List) {
+        final bridges = jsonResponse["servers"];
+        final rng = Random();
+        final ix = rng.nextInt(bridges.length);
+        return bridges[ix];
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return 'https://bridge.walletconnect.org';
   }
 
   final SecureStorage storage = SecureStorage();
