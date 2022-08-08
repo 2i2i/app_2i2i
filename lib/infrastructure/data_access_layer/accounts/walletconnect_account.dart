@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
+import '../../commons/utils.dart';
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import 'abstract_account.dart';
@@ -15,9 +16,9 @@ class WalletConnectAccount extends AbstractAccount {
   static Future<WalletConnect> newConnector([String key = '0']) async {
     final sessionStorage = WalletConnectSecureStorage(storageKey: key);
     final session = await sessionStorage.getSession();
-
+    final bridge = await getWCBridge();
     return WalletConnect(
-      bridge: 'https://bridge.walletconnect.org',
+      bridge: bridge,
       session: session,
       sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
