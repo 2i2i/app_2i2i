@@ -29,7 +29,8 @@
                 <string>Editor</string>
                 <key>CFBundleURLName</key>
                 <array>
-                    <string>about.2i2i.app</string>
+                    <string>i2i2.page.link</string>
+                    <string>2i2i.page.link</string>
                     <string>test.2i2i.app</string>
                 </array>
                 <key>CFBundleURLSchemes</key>
@@ -41,16 +42,7 @@
         </array>
         <key>CFBundleVersion</key>
         <string>$(FLUTTER_BUILD_NUMBER)</string>
-        <key>FlutterDeepLinkingEnabled</key>
-        <true/>
-        <key>LSApplicationQueriesSchemes</key>
-        <array>
-            <string>https</string>
-            <string>http</string>
-            <string>algorand</string>
-            <string>algorand-wc</string>
-            <string>wc</string>
-        </array>
+
         <key>LSRequiresIPhoneOS</key>
         <true/>
         <key>NSCameraUsageDescription</key>

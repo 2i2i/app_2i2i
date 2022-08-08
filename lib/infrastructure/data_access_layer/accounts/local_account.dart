@@ -127,8 +127,7 @@ class LocalAccount extends AbstractAccount {
   Future<Account> _libAccount() async {
     final privateKey = await storage.read('account_$_numAccount');
     final Uint8List seed = base64Decode(privateKey!);
-    return algorandLib.client[AppConfig().ALGORAND_NET]!
-        .loadAccountFromSeed(seed);
+    return algorandLib.client[AppConfig().ALGORAND_NET]!.loadAccountFromSeed(seed);
   }
 
   Future _loadAccountFromMnemonic(List<String> mnemonic) async {

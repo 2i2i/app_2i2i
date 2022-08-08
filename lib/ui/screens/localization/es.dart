@@ -203,6 +203,13 @@ class es {
       Keys.writeComment: 'Escribir un comentario...',
       Keys.connecting: 'Conectando...',
       Keys.muted: 'Apagado',
+      Keys.walletConnect: 'Monedero Conectar',
+      Keys.connect: 'Conectar',
+      Keys.receiveSendCoin: 'Primero conecte una cuenta para enviar/recibir monedas.',
+      Keys.cantBidUser: 'No puedes pujar por este usuario',
+      Keys.miniSupport: 'La velocidad mínima es mayor que el soporte máximo',
+      Keys.noWalletFound: 'No se encontró ninguna cuenta de billetera.',
+      Keys.someOneTalk: 'Alguien quiere hablar contigo',
     };
   }
 }

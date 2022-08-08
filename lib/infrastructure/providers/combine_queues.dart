@@ -9,18 +9,11 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // bidInsPublic comes sorted by ts
-List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic,
-    List<Lounge> loungeHistory, int loungeHistoryIndex) {
-  final loungeHistoryAsInts = loungeHistory
-      .map((e) => Lounge.values.indexWhere((element) => element == e))
-      .toList();
+List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic, List<Lounge> loungeHistory, int loungeHistoryIndex) {
+  final loungeHistoryAsInts = loungeHistory.map((e) => Lounge.values.indexWhere((element) => element == e)).toList();
   List<List<BidInPublic>> sections = _splitByRules(bidInsPublic);
-  final sortedSections = sections
-      .map(
-          (e) => _combineQueuesCore(e, loungeHistoryAsInts, loungeHistoryIndex))
-      .toList();
-  final bidInsPublicSorted =
-      sortedSections.expand((element) => element).toList();
+  final sortedSections = sections.map((e) => _combineQueuesCore(e, loungeHistoryAsInts, loungeHistoryIndex)).toList();
+  final bidInsPublicSorted = sortedSections.expand((element) => element).toList();
   return bidInsPublicSorted;
 }
 
@@ -44,18 +37,12 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   return bidInsPublicSections;
 }
 
-List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
-    List<int> loungeHistory, int loungeHistoryIndex) {
+List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic, List<int> loungeHistory, int loungeHistoryIndex) {
   // split into chronies and highrollers
-  List<BidInPublic> bidInsChronies = bidInsPublic
-      .where((bidIn) => bidIn.speed.num == bidIn.rule.minSpeed)
-      .toList();
-  List<BidInPublic> bidInsHighRollers = bidInsPublic
-      .where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num)
-      .toList();
+  List<BidInPublic> bidInsChronies = bidInsPublic.where((bidIn) => bidIn.speed.num == bidIn.rule.minSpeed).toList();
+  List<BidInPublic> bidInsHighRollers = bidInsPublic.where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num).toList();
   if (bidInsChronies.length + bidInsHighRollers.length != bidInsPublic.length)
-    throw Exception(
-        'UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+    throw Exception('UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
   // sort highrollers by speed
   bidInsHighRollers.sort((b1, b2) {
@@ -66,10 +53,8 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
   // if one side empty, return other side
   if (bidInsHighRollers.isEmpty || rule.importance[Lounge.highroller]! == 0)
     return bidInsChronies;
-  else if (bidInsChronies.isEmpty || rule.importance[Lounge.chrony]! == 0)
-    return bidInsHighRollers;
-  final N = rule.importance.values
-      .fold(0, (int previousValue, int element) => previousValue + element);
+  else if (bidInsChronies.isEmpty || rule.importance[Lounge.chrony]! == 0) return bidInsHighRollers;
+  final N = rule.importance.values.fold(0, (int previousValue, int element) => previousValue + element);
   double targetChronyRatio = rule.importance[Lounge.chrony]! / N;
 
   // loop
@@ -78,8 +63,7 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
   int chronyIndex = 0;
   int highRollerIndex = 0;
   int loungeSum = 0;
-  while (
-      bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
+  while (bidInsSorted.length < bidInsChronies.length + bidInsHighRollers.length) {
     BidInPublic nextChrony = bidInsChronies[chronyIndex];
     BidInPublic nextHighroller = bidInsHighRollers[highRollerIndex];
 
@@ -94,8 +78,7 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
         i %= loungeHistory.length;
       }
 
-      loungeSum = recentLoungesHistory.fold(
-          0, (int previousValue, int element) => previousValue + element);
+      loungeSum = recentLoungesHistory.fold(0, (int previousValue, int element) => previousValue + element);
     }
 
     // update loungeSum
@@ -147,8 +130,7 @@ List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic,
 
 // TESTS
 
-BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) =>
-    BidInPublic.fromMap({
+BidInPublic bTest(speed, minSpeed, importChrony, importHighroller, ts) => BidInPublic.fromMap({
       'speed': Quantity.fromMap({
         'num': speed,
         'assetId': 0,
@@ -341,8 +323,7 @@ Map combineQueuesTestCreate_8() {
   };
 }
 
-Map combineQueuesTestCreate_random_single(double changeRuleProb,
-    double highRollerProb, List<int> loungeHistory, int loungeHistoryIndex) {
+Map combineQueuesTestCreate_random_single(double changeRuleProb, double highRollerProb, List<int> loungeHistory, int loungeHistoryIndex) {
   final rng = new Random();
   final N = rng.nextInt(1000);
   log('N=$N');
@@ -379,8 +360,7 @@ Map combineQueuesTestCreate_random_single(double changeRuleProb,
   };
 }
 
-Map combineQueuesTestCreate_9() => combineQueuesTestCreate_random_single(
-    0.1, 0.2, [1, 1, 1, 0, 0, 0, 1, 0], 4);
+Map combineQueuesTestCreate_9() => combineQueuesTestCreate_random_single(0.1, 0.2, [1, 1, 1, 0, 0, 0, 1, 0], 4);
 
 void combineQueuesTestRun() {
   final testData = combineQueuesTestCreate_9();
@@ -391,11 +371,6 @@ void combineQueuesTestRun() {
   log('C: ${bidIns.where((e) => e.speed.num == e.rule.minSpeed).length}');
   log('H: ${bidIns.where((e) => e.speed.num != e.rule.minSpeed).length}');
   log('bidIns: ${bidIns.length}');
-  final result = bidIns
-      .map((e) =>
-          (e.speed.num == e.rule.minSpeed ? 'C' : 'H') +
-          '_' +
-          e.ts.microsecondsSinceEpoch.toString())
-      .join(' ');
+  final result = bidIns.map((e) => (e.speed.num == e.rule.minSpeed ? 'C' : 'H') + '_' + e.ts.microsecondsSinceEpoch.toString()).join(' ');
   log(result);
 }

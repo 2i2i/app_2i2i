@@ -16,7 +16,7 @@ import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
 
-class UserBidInsList extends ConsumerWidget {
+class UserBidInsList extends ConsumerStatefulWidget {
   UserBidInsList({
     required this.titleWidget,
     required this.onTap,
@@ -28,13 +28,19 @@ class UserBidInsList extends ConsumerWidget {
 
   final void Function(BidIn bidIn) onTap;
 
+  @override
+  ConsumerState<UserBidInsList> createState() => _UserBidInsListState();
+}
+
+class _UserBidInsListState extends ConsumerState<UserBidInsList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+  Widget build(BuildContext context) {
+    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(widget.myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
-
+    final logoHeight = 60.0;
+    final logoWidth = logoHeight * 1.4;
     // store for notification
     markAsRead(bidInsWithUsers);
     List<BidIn> bidIns = bidInsWithUsers.toList();
@@ -53,16 +59,14 @@ class UserBidInsList extends ConsumerWidget {
             }
 
             if (camera && microphone && bidIns.isNotEmpty) {
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
-              }
-              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
+              // CustomDialogs.loader(true, context);
+
+              bool hostStatus = await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
               if (!hostStatus) {
                 CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
               }
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(false, _scaffoldKey.currentContext!);
-              }
+
+              // CustomDialogs.loader(false, context);
             }
           },
           child: Container(
@@ -73,7 +77,7 @@ class UserBidInsList extends ConsumerWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary // changes position of shadow
-                    ),
+                ),
               ],
             ),
             alignment: Alignment.center,
@@ -88,8 +92,8 @@ class UserBidInsList extends ConsumerWidget {
                 SizedBox(height: 2),
                 Text(Keys.talk.tr(context),
                     style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                          color: Theme.of(context).cardColor,
-                        ))
+                      color: Theme.of(context).cardColor,
+                    ))
               ],
             ),
           ),
@@ -97,15 +101,15 @@ class UserBidInsList extends ConsumerWidget {
       ),
       body: bidInsWithUsers.isNotEmpty
           ? ListView.builder(
-              itemCount: bidInsWithUsers.length,
-              padding: const EdgeInsets.only(top: 10, bottom: 80),
-              itemBuilder: (_, ix) {
-                return BidInTile(
-                  bidInList: bidInsWithUsers,
-                  index: ix,
-                );
-              },
-            )
+        itemCount: bidInsWithUsers.length,
+        padding: const EdgeInsets.only(top: 10, bottom: 80),
+        itemBuilder: (_, ix) {
+          return BidInTile(
+            bidInList: bidInsWithUsers,
+            index: ix,
+          );
+        },
+      )
           : NoBidPage(noBidsText: Keys.roomIsEmpty.tr(context)),
     );
   }

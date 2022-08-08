@@ -8,7 +8,7 @@ import '../../infrastructure/commons/keys.dart';
 
 class CustomAlertWidget {
   static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
-    showModalBottomSheet(
+    return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
@@ -32,30 +32,29 @@ class CustomAlertWidget {
   static Future showErrorDialog(BuildContext context, String errorMessage, {String? title, String? errorStacktrace}) async {
     Widget messageWidget = Text(
       errorMessage,
-      textAlign: TextAlign.justify,
     );
     if (errorStacktrace?.isNotEmpty ?? false) {
       messageWidget = Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 8),
           Text(
             errorMessage,
-            textAlign: TextAlign.justify,
           ),
+          SizedBox(height: 8),
           Container(
               decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
               margin: EdgeInsets.only(top: 8),
               padding: EdgeInsets.all(8),
               child: Text(
                 errorStacktrace!,
-                textAlign: TextAlign.justify,
                 maxLines: 2,
               )),
           SizedBox(height: 8),
         ],
       );
     }
-    var dialog = CupertinoAlertDialog(
+    var cupertinoDialog = CupertinoAlertDialog(
       title: Text(
         title ?? Keys.error.tr(context),
         style: TextStyle(
@@ -66,14 +65,40 @@ class CustomAlertWidget {
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
       ],
     );
-    return Future.delayed(Duration.zero).then((value) => showCupertinoDialog(context: context, builder: (context) => dialog));
+    var materialDialog = AlertDialog(
+      title: Text(
+        title ?? Keys.error.tr(context),
+        style: TextStyle(
+          color: Theme.of(context).errorColor,
+        ),
+      ),
+      content: messageWidget,
+      actions: [
+        TextButton(
+          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(Keys.okay.tr(context)),
+        ),
+      ],
+    );
+    return Future.delayed(Duration.zero).then((value) async {
+      if (Platform.isIOS) {
+        await showCupertinoDialog(
+          context: context,
+          builder: (context) => cupertinoDialog,
+        );
+      } else {
+        await showDialog(
+          context: context,
+          builder: (context) => materialDialog,
+        );
+      }
+    });
   }
 
   static Future<void> confirmDialog(BuildContext context,

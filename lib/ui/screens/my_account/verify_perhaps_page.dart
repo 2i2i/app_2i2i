@@ -108,10 +108,8 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
               ? () async {
                   CustomDialogs.loader(true, context);
                   try {
-                    final myAccountPageViewModel =
-                        ref.read(myAccountPageViewModelProvider);
-                    await myAccountPageViewModel
-                        .saveLocalAccount(widget.account);
+                    final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+                    await myAccountPageViewModel.saveLocalAccount(widget.account);
                     await widget.account.setMainAccount();
                   } catch (e) {
                     log("$e");

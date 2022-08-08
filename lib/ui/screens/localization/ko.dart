@@ -202,6 +202,13 @@ class ko {
       Keys.writeComment: '코멘트 쓰기...',
       Keys.connecting: '연결 중...',
       Keys.muted: '음소거',
+      Keys.walletConnect: '지갑 연결',
+      Keys.connect: '연결하다',
+      Keys.receiveSendCoin: '코인을 송금/수신하려면 먼저 계정을 연결하세요.',
+      Keys.cantBidUser: '이 사용자에게 입찰할 수 없습니다.',
+      Keys.miniSupport: '최소 속도가 최대 지원보다 큽니다.',
+      Keys.noWalletFound: '지갑 계정을 찾을 수 없습니다.',
+      Keys.someOneTalk: '누군가 당신과 이야기하고 싶어합니다',
     };
   }
 }

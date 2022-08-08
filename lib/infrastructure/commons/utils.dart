@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import 'keys.dart';
 
@@ -156,11 +160,31 @@ String prettyDuration(Duration duration) {
   return components.join();
 }
 
+num doubleWithoutDecimalToInt(double val) {
+  return val % 1 == 0 ? val.toInt() : val;
+}
+
 bool haveToWait(var provider) {
   if (provider is AsyncError) {
     log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;
+}
+
+Future<String> getWCBridge() async {
+  try {
+    final r = await http.get(Uri.parse('https://wc.perawallet.app/servers.json'));
+    final jsonResponse = jsonDecode(r.body);
+    if (jsonResponse is Map && jsonResponse['servers'] is List) {
+      final bridges = jsonResponse["servers"];
+      final rng = Random();
+      final ix = rng.nextInt(bridges.length);
+      return bridges[ix];
+    }
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+  return 'https://bridge.walletconnect.org';
 }
 
 const int MILLION = 1000000;
