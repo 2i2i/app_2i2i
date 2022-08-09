@@ -181,7 +181,7 @@ class CustomDialogs {
 
   static infoDialog({required BuildContext context, required Widget child, bool rootNavigator = true}) async {
     showDialog(
-      barrierDismissible: false,
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
         return WillPopScope(

@@ -3,10 +3,8 @@
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
@@ -14,6 +12,7 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
+import '../create_bid/widgets/wallet_status_info.dart';
 import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerStatefulWidget {
@@ -47,27 +46,15 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
     return Scaffold(
       key: _scaffoldKey,
       floatingActionButton: Visibility(
-        visible: bidInsWithUsers.isNotEmpty,
+        // visible: bidInsWithUsers.isNotEmpty,
+        visible: true,
         child: InkResponse(
           onTap: () async {
-            bool camera = true;
-            bool microphone = true;
-
-            if (!kIsWeb) {
-              camera = await Permission.camera.request().isGranted;
-              microphone = await Permission.microphone.request().isGranted;
-            }
-
-            if (camera && microphone && bidIns.isNotEmpty) {
-              // CustomDialogs.loader(true, context);
-
-              bool hostStatus = await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
-              if (!hostStatus) {
-                CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
-              }
-
-              // CustomDialogs.loader(false, context);
-            }
+            await CustomDialogs.infoDialog(
+                child: WalletStatusInfo(
+                  bidIns: bidIns,
+                ),
+                context: context);
           },
           child: Container(
             width: kToolbarHeight * 1.15,
@@ -76,8 +63,7 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
-                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary // changes position of shadow
-                ),
+                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary),
               ],
             ),
             alignment: Alignment.center,
@@ -92,8 +78,8 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
                 SizedBox(height: 2),
                 Text(Keys.talk.tr(context),
                     style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                      color: Theme.of(context).cardColor,
-                    ))
+                          color: Theme.of(context).cardColor,
+                        ))
               ],
             ),
           ),
@@ -101,15 +87,15 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
       ),
       body: bidInsWithUsers.isNotEmpty
           ? ListView.builder(
-        itemCount: bidInsWithUsers.length,
-        padding: const EdgeInsets.only(top: 10, bottom: 80),
-        itemBuilder: (_, ix) {
-          return BidInTile(
-            bidInList: bidInsWithUsers,
-            index: ix,
-          );
-        },
-      )
+              itemCount: bidInsWithUsers.length,
+              padding: const EdgeInsets.only(top: 10, bottom: 80),
+              itemBuilder: (_, ix) {
+                return BidInTile(
+                  bidInList: bidInsWithUsers,
+                  index: ix,
+                );
+              },
+            )
           : NoBidPage(noBidsText: Keys.roomIsEmpty.tr(context)),
     );
   }
