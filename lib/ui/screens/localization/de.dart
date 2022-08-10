@@ -168,7 +168,7 @@ class de {
       Keys.logOut: 'AUSLOGGEN',
       Keys.connectAccount: 'Konto verbinden mit',
       Keys.updateAvailable: 'Update verfügbar',
-      Keys.loginMsg: 'Das Uber des Redens',
+      Keys.loginMsg: 'verdiene Münzen durch Reden',
       Keys.loginMsg2: '2i2i bietet Gästen und Gastgebern einen sicheren und privaten Ort, an dem sie sich in Form von Videoanrufen treffen können',
       Keys.loginMsg3: '>501 MEETINGS SEIT DEM START',
       Keys.signInWithGoogle: 'Anmeldung mit Google',
