@@ -12,7 +12,6 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
-import '../../../ui/commons/custom_dialogs.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -74,9 +73,9 @@ class AddBidPageViewModel {
       Map<String, String> txns = {};
       try {
         if (speed.num != 0) {
-          CustomDialogs.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
+          CustomAlertWidget.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
         } else {
-          CustomDialogs.loader(true, context);
+          CustomAlertWidget.loader(true, context);
         }
 
         if (speed.num != 0 && sessionId is String) {
@@ -126,9 +125,9 @@ class AddBidPageViewModel {
           await FirebaseNotifications().sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
         }
 
-        CustomDialogs.loader(false, context);
+        CustomAlertWidget.loader(false, context);
         Navigator.pop(context);
-      } on TimeoutException catch (e) {
+      } on TimeoutException {
         timeout?.call();
         Navigator.pop(context);
       } on AlgorandException catch (ex) {

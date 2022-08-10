@@ -2,7 +2,6 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,9 +9,9 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
-import '../create_bid/widgets/wallet_status_info.dart';
 import 'widgets/bid_in_tile.dart';
 
 class UserBidInsList extends ConsumerStatefulWidget {
@@ -38,23 +37,18 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
   Widget build(BuildContext context) {
     final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(widget.myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
-    final logoHeight = 60.0;
-    final logoWidth = logoHeight * 1.4;
     // store for notification
     markAsRead(bidInsWithUsers);
     List<BidIn> bidIns = bidInsWithUsers.toList();
     return Scaffold(
       key: _scaffoldKey,
       floatingActionButton: Visibility(
-        // visible: bidInsWithUsers.isNotEmpty,
-        visible: true,
+        visible: bidInsWithUsers.isNotEmpty,
         child: InkResponse(
           onTap: () async {
-            await CustomDialogs.infoDialog(
-                child: WalletStatusInfo(
-                  bidIns: bidIns,
-                ),
-                context: context);
+            CustomAlertWidget.loader(true, context);
+            await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
+            CustomAlertWidget.loader(false, context);
           },
           child: Container(
             width: kToolbarHeight * 1.15,

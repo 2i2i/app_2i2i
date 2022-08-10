@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -133,7 +132,7 @@ class SetupUserViewModel with ChangeNotifier {
       if (e.code == 'credential-already-in-use') {
         await googleSignIn.signOut();
       }
-      CustomDialogs.showToastMessage(context, '${e.message}');
+      CustomAlertWidget.showToastMessage(context, '${e.message}');
       throw e;
     }
   }
@@ -144,7 +143,7 @@ class SetupUserViewModel with ChangeNotifier {
       User? existingUser = await firebaseUser!.unlink('google.com');
       log("$existingUser");
     } on FirebaseAuthException catch (e) {
-      CustomDialogs.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
+      CustomAlertWidget.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
       throw e;
     }
   }
@@ -185,7 +184,7 @@ class SetupUserViewModel with ChangeNotifier {
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
-      CustomDialogs.showToastMessage(context, "${e.message}");
+      CustomAlertWidget.showToastMessage(context, "${e.message}");
       throw e;
     }
   }
@@ -240,7 +239,7 @@ class SetupUserViewModel with ChangeNotifier {
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
     } on FirebaseAuthException catch (e) {
-      CustomDialogs.showToastMessage(context, "${e.message}");
+      CustomAlertWidget.showToastMessage(context, "${e.message}");
       throw e;
     }
   }
@@ -258,7 +257,7 @@ class SetupUserViewModel with ChangeNotifier {
       description: description,
       onPressed: () async {
         try {
-          CustomDialogs.loader(true, mainContext);
+          CustomAlertWidget.loader(true, mainContext);
           final HttpsCallable deleteUser = functions.httpsCallable('deleteMe');
           HttpsCallableResult result = await deleteUser.call();
           if (result.data is List) {
@@ -271,12 +270,12 @@ class SetupUserViewModel with ChangeNotifier {
                 await signOutFromAuth();
                 currentIndex.value = 1;
                 mainContext.go(Routes.myUser);
-                CustomDialogs.loader(false, mainContext);
+                CustomAlertWidget.loader(false, mainContext);
               }
             }
           }
         } catch (e) {
-          CustomDialogs.loader(false, mainContext);
+          CustomAlertWidget.loader(false, mainContext);
           print(e);
         }
       },

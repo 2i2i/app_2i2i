@@ -2,8 +2,10 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../ui/commons/custom_alert_widget.dart';
 import '../../../ui/screens/my_user/widgets/wallet_connect_dialog.dart';
@@ -43,10 +45,7 @@ class MyUserPageViewModel {
     return addressOfUserB;
   }
 
-  Future<String?> setSecond(BuildContext context) async {
-    String addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-    return addressOfUserB;
-  }
+  Future<String?> setSecond(BuildContext context) async {}
 
   Future setThird(List<BidIn> bidIns, String addressOfUserB, BuildContext context) async {
     BidIn bidIn = bidIns.first;
@@ -98,70 +97,84 @@ class MyUserPageViewModel {
     return true;
   }
 
-  Future<bool> acceptBid(List<BidIn> bidIns, BuildContext context, String address) async {
-    BidIn bidIn = bidIns.first;
+  Future acceptCall(
+      {required BidIn bidIn,
+      required BuildContext context,
+      required String addressOfUserB,
+      UserModel? firstUser,
+      UserModel? secondUser,
+      TokenModel? firstUserTokenModel,
+      TokenModel? secondUserTokenModel}) async {
+    bool camera = true;
+    bool microphone = true;
 
-    UserModel? firstUser;
-    UserModel? secondUser;
-
-    TokenModel? firstUserTokenModel;
-    TokenModel? secondUserTokenModel;
-
-    firstUser = bidIn.user;
-    if (firstUser == null) {
-      return false;
+    if (!kIsWeb) {
+      camera = await Permission.camera.request().isGranted;
+      microphone = await Permission.microphone.request().isGranted;
     }
+    if (camera && microphone) {
+      final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
+      await database.acceptBid(meeting);
 
-    firstUserTokenModel = await database.getTokenFromId(firstUser.id);
+      if ((firstUserTokenModel is TokenModel)) {
+        Map jsonDataCurrentUser = {
+          'route': Routes.lock,
+          'type': 'CALL',
+          "title": user.name,
+          "body": 'Incoming video call',
+          "meetingId": bidIn.public.id,
+          "meetingData": meeting.toMap(),
+        };
+        await FirebaseNotifications().sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
 
-    if (bidIns.length > 1) {
-      secondUser = bidIns[1].user;
-      secondUserTokenModel = await database.getTokenFromId(secondUser!.id);
-    }
-
-    if (!bidIn.public.active) return false;
-
-    if (bidIn.user!.isInMeeting()) {
-      await cancelNoShow(bidIn: bidIn);
-      return false;
-    }
-
-    String? addressOfUserB;
-    if (bidIn.public.speed.num != 0) {
-      Map sessionWithAddress = await accountService.getAllWalletAddress();
-      List<String> addresses = [];
-      for (List<String> val in sessionWithAddress.values) {
-        addresses.addAll(val);
-      }
-      if (addresses.isNotEmpty) {
-        addressOfUserB = addresses.first;
-      } else {
-        addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        if (addressOfUserB?.isEmpty ?? true) {
-          return true;
+        if (secondUserTokenModel is TokenModel) {
+          Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
+          await FirebaseNotifications().sendNotification((secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
         }
       }
     }
-    final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
-    await database.acceptBid(meeting);
+  }
 
-    if ((firstUserTokenModel is TokenModel)) {
-      Map jsonDataCurrentUser = {
-        'route': Routes.lock,
-        'type': 'CALL',
-        "title": user.name,
-        "body": 'Incoming video call',
-        "meetingId": bidIn.public.id,
-        "meetingData": meeting.toMap(),
-      };
-      await FirebaseNotifications().sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
+  Future acceptBid(List<BidIn> bidIns, BuildContext context) async {
+    UserModel? firstUser;
+    UserModel? secondUser;
+    String? addressOfUserB;
+    TokenModel? firstUserTokenModel;
+    TokenModel? secondUserTokenModel;
 
-      if (secondUserTokenModel is TokenModel) {
-        Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
-        await FirebaseNotifications().sendNotification((secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
+    BidIn bidIn = bidIns.first;
+
+    firstUser = bidIn.user;
+
+    if (bidIn.user!.isInMeeting()) {
+      await cancelNoShow(bidIn: bidIn);
+    } else if (bidIn.public.active && firstUser != null) {
+      firstUserTokenModel = await database.getTokenFromId(firstUser.id);
+      if (bidIns.length > 1) {
+        secondUser = bidIns[1].user;
+        secondUserTokenModel = await database.getTokenFromId(secondUser!.id);
+      }
+      if (bidIn.public.speed.num != 0) {
+        Map sessionWithAddress = await accountService.getAllWalletAddress();
+        List<String> addresses = [];
+        for (List<String> val in sessionWithAddress.values) {
+          addresses.addAll(val);
+        }
+        if (addresses.isNotEmpty) {
+          addressOfUserB = addresses.first;
+        } else {
+          addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+        }
+        await acceptCall(
+            context: context,
+            addressOfUserB: addressOfUserB!,
+            bidIn: bidIn,
+            firstUser: firstUser,
+            secondUser: secondUser,
+            firstUserTokenModel: firstUserTokenModel,
+            secondUserTokenModel: secondUserTokenModel);
       }
     }
-    return true;
   }
 
   Future cancelNoShow({required BidIn bidIn}) async {
@@ -176,7 +189,7 @@ class MyUserPageViewModel {
     }
     // 0 < speed
     final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    final HttpsCallableResult result = await cancelBid.call({'bidId': bidOut.id});
+    await cancelBid.call({'bidId': bidOut.id});
   }
 
   Future updateHangout(UserModel user) => userChanger.updateSettings(user);

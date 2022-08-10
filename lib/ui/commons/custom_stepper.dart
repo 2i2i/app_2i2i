@@ -1,11 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class StepProgressView extends StatelessWidget {
-  final List<String> titles;
+  final List<Map<String, dynamic>> titles;
   final List<String> descriptionList;
   final int curStep;
+  final bool isLoading;
 
-  StepProgressView({Key? key, required this.titles, required this.descriptionList, required this.curStep}) : super(key: key);
+  StepProgressView({Key? key, required this.titles, required this.descriptionList, required this.curStep, this.isLoading = false}) : super(key: key);
 
   Widget build(BuildContext context) {
     return Column(
@@ -28,7 +30,7 @@ class StepProgressView extends StatelessWidget {
               children: [
                 if (curStep < titles.length)
                   TextSpan(
-                    text: " ${titles[curStep]}",
+                    text: " ${titles[curStep]['title']}",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary),
                   ),
               ],
@@ -38,15 +40,19 @@ class StepProgressView extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (curStep < descriptionList.length)
-          Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.amberAccent.shade100, borderRadius: BorderRadius.circular(6)),
-            child: Text(
-              "${descriptionList[curStep]}",
-              maxLines: 5,
-            ),
-          ),
+        Container(
+            alignment: Alignment.center,
+            child: isLoading
+                ? Center(child: CupertinoActivityIndicator())
+                : Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: Colors.amberAccent.shade100, borderRadius: BorderRadius.circular(6)),
+                    child: Text(
+                      "${descriptionList[curStep]}",
+                      maxLines: 5,
+                    ),
+                  ),
+            height: MediaQuery.of(context).size.width / 4),
       ],
     );
   }
@@ -54,10 +60,14 @@ class StepProgressView extends StatelessWidget {
   List<Widget> _iconViews(BuildContext context) {
     var list = <Widget>[];
     titles.asMap().forEach(
-      (i, icon) {
-        var circleColor = (i == 0 || curStep > i) ? Theme.of(context).colorScheme.secondary : Color(0xFFE6EEF3);
+          (i, icon) {
+        var circleColor = (i == 0 || curStep > (i - 1) || curStep == 2)
+            ? titles[i]['isComplete']
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).errorColor
+            : Color(0xFFE6EEF3);
         var lineColor = curStep > i ? Theme.of(context).colorScheme.secondary : Color(0xFFE6EEF3);
-        var iconColor = (i == 0 || curStep > i) ? Theme.of(context).colorScheme.secondary : Color(0xFFE6EEF3);
+        IconData icon = titles[i]['isComplete'] ? Icons.done : Icons.close;
 
         list.add(
           CircleAvatar(
@@ -65,7 +75,7 @@ class StepProgressView extends StatelessWidget {
             radius: 12,
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: Icon(Icons.done, color: Colors.white, size: 16),
+              icon: Icon(icon, color: Colors.white, size: 16),
               color: Colors.white,
               onPressed: null,
             ),
@@ -86,25 +96,6 @@ class StepProgressView extends StatelessWidget {
       },
     );
 
-    return list;
-  }
-
-  List<Widget> _titleViews(BuildContext context) {
-    var list = <Widget>[];
-    titles.asMap().forEach(
-      (i, text) {
-        list.add(
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.caption,
-            ),
-          ),
-        );
-      },
-    );
     return list;
   }
 }

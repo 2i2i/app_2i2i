@@ -76,7 +76,6 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   Future<void> getTappedOnKey() async {
-    String? value = await storage.read('tappedOnKey');
     isTappedOnKey = true;
     // isTappedOnKey = (value == "1");
     notifyListeners();

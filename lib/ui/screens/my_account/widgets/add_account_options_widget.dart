@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -164,13 +163,13 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       );
 
       isDialogOpen.value = false;
-      CustomDialogs.loader(true, context, rootNavigator: true);
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
       await account.save(id);
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       await myAccountPageViewModel.getWalletAccount();
-      CustomDialogs.loader(false, context, rootNavigator: true);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
     } else {
