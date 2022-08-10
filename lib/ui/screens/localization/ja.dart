@@ -168,7 +168,7 @@ class ja {
       Keys.logOut: 'ログアウト',
       Keys.connectAccount: 'アカウントを接続する',
       Keys.updateAvailable: '利用可能なアップデート',
-      Keys.loginMsg: '話すのユーバー',
+      Keys.loginMsg: '会話でコインを獲得',
       Keys.loginMsg2: '2i2iは、ゲストとホストがビデオ通話の形で会うための安全でプライベートなスペースを提供します',
       Keys.loginMsg3: 'ローンチ以来501回以上の会議',
       Keys.signInWithGoogle: 'Googleでサインイン',

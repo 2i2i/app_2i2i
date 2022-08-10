@@ -168,7 +168,7 @@ class zh {
       Keys.logOut: '登出',
       Keys.connectAccount: '連接帳戶',
       Keys.updateAvailable: '更新可用',
-      Keys.loginMsg: '说话的优步',
+      Keys.loginMsg: '说话赚金币',
       Keys.loginMsg2: '2i2i 以視頻通話的形式為客人和主人提供安全私密的會面空間',
       Keys.loginMsg3: '>自啟動以來的 501 次會議',
       Keys.signInWithGoogle: '用谷歌登錄',

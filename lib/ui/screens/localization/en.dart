@@ -169,7 +169,7 @@ class en {
       Keys.logOut: 'LOGOUT',
       Keys.connectAccount: 'Connect account with',
       Keys.updateAvailable: 'Update Available',
-      Keys.loginMsg: 'The Uber of talking',
+      Keys.loginMsg: 'earn coins by talking',
       Keys.loginMsg2: '2i2i provides a safe and private space for Guests and Host to meet in the form of video calls',
       Keys.loginMsg3: '>501 MEETINGS SINCE LAUNCH',
       Keys.signInWithGoogle: 'Sign in with Google',

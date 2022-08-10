@@ -169,7 +169,7 @@ class ko {
       Keys.logOut: '로그 아웃',
       Keys.connectAccount: '계정 연결',
       Keys.updateAvailable: '업데이트 가능',
-      Keys.loginMsg: '말하는 Uber',
+      Keys.loginMsg: '대화로 코인을 벌다',
       Keys.loginMsg2: '2i2i\'는 게스트와 호스트가 영상통화 형태로 만날 수 있는 안전하고 프라이빗한 공간을 제공하며',
       Keys.loginMsg3: '>출시 이후 501회 회의',
       Keys.signInWithGoogle: '구글로 로그인',

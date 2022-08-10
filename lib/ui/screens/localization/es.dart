@@ -169,7 +169,7 @@ class es {
       Keys.logOut: 'CERRAR SESIÓN',
       Keys.connectAccount: 'Conectar cuenta con',
       Keys.updateAvailable: 'Actualización disponible',
-      Keys.loginMsg: 'El Uber de hablar',
+      Keys.loginMsg: 'gana monedas hablando',
       Keys.loginMsg2:
           '2i2i proporciona un espacio seguro y privado para que los Huéspedes y el Anfitrión se reúnan en forma de videollamadas',
       Keys.loginMsg3: '>501 REUNIONES DESDE EL LANZAMIENTO',
