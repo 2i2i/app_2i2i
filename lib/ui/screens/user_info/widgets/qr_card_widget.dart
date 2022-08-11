@@ -20,7 +20,7 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.url}';
+    var userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.id}';
     if (widget.user.url?.isNotEmpty ?? false) {
       userURL = widget.user.url!;
     }
