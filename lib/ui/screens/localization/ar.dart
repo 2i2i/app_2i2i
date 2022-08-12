@@ -168,7 +168,7 @@ class ar {
       Keys.logOut: 'تسجيل خروج',
       Keys.connectAccount: "ربط الحساب بـ",
       Keys.updateAvailable: 'التحديث متاح',
-      Keys.loginMsg: "أوبر الحديث",
+      Keys.loginMsg: "كسب النقود من خلال التحدث",
       Keys.loginMsg2: "يوفر 2i2i مساحة آمنة وخاصة للضيوف والمضيفين للالتقاء في شكل مكالمات فيديو",
       Keys.loginMsg3: "> 501 اجتماعات منذ الإطلاق",
       Keys.signInWithGoogle: 'الدخول مع جوجل',
