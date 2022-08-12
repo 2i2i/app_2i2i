@@ -209,6 +209,15 @@ class de {
       Keys.miniSupport: 'Die minimale Geschwindigkeit ist größer als die maximale Unterstützung',
       Keys.noWalletFound: 'Kein Wallet-Konto gefunden.',
       Keys.someOneTalk: 'Jemand möchte mit Ihnen sprechen',
+      Keys.openApp: 'Offen',
+      Keys.connectWallet: 'Brieftasche verbinden',
+      Keys.walletDesMsg1:
+          'Um das Gebot anzunehmen, müssen Sie ein Brieftaschenkonto verbinden, um den Betrag aus Ihrer Brieftasche zu bezahlen.\n\nTippen Sie auf die Schaltfläche Verbinden und Sie werden zur Brieftaschenanwendung weitergeleitet.',
+      Keys.walletDesMsg2:
+          'Ihr Wallet ist mit der Anwendung verbunden, jetzt können Sie mit diesem Benutzer sprechen.\n\nDrücken Sie die Schaltfläche "Sprechen", um sich mit diesem Benutzer zu verbinden.',
+      Keys.walletDesMsg3:
+          'Ihre Brieftasche ist nicht mit der Anwendung verbunden, daher können Sie ohne Brieftasche nicht mit diesem Benutzer sprechen.\n\nDrücken Sie die Schaltfläche „Wiederholen“, um Ihre Brieftasche erneut zu verbinden.',
+      Keys.retry: 'Wiederholen',
     };
   }
 }

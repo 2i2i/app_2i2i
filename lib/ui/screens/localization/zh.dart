@@ -208,6 +208,12 @@ class zh {
       Keys.miniSupport: '最小速度大于最大支持',
       Keys.noWalletFound: '未找到钱包帐户。',
       Keys.someOneTalk: '有人想和你谈谈',
+      Keys.openApp: '打開',
+      Keys.connectWallet: '連接錢包',
+      Keys.walletDesMsg1: '要接受投標，您需要連接錢包帳戶以從您的錢包中支付金額。\n\n點擊連接按鈕，您將重定向到錢包應用程序。',
+      Keys.walletDesMsg2: '您的電子錢包已與應用程序連接，現在您可以與該用戶交談。\n\n按“交談”按鈕與該用戶連接。',
+      Keys.walletDesMsg3: '您的錢包未與應用程序連接，因此您無法在沒有錢包的情況下與此用戶交談。\n\n按重試按鈕重新連接您的錢包。',
+      Keys.retry: '重試',
     };
   }
 }

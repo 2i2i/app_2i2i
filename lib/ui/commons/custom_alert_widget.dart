@@ -8,6 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 import '../../infrastructure/commons/keys.dart';
+import '../../infrastructure/commons/theme.dart';
 
 class CustomAlertWidget {
   static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
@@ -217,7 +218,7 @@ class CustomAlertWidget {
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
                     message,
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.headline6?.copyWith(color: AppTheme().black),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -336,7 +337,69 @@ class CustomAlertWidget {
     );
   }
 
-  static infoDialog({required BuildContext context, required Widget child, bool rootNavigator = true}) async {
+  static customAlertDialog(bool isLoading, BuildContext context,
+      {String title = '', String message = '', bool rootNavigator = false, required VoidCallback? onPressed}) async {
+    AlertDialog child = AlertDialog(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Container(
+              height: 110,
+              width: 110,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 80,
+                height: 80,
+              ),
+            ),
+          ),
+          Visibility(
+            visible: message.isNotEmpty,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                message,
+                style: Theme.of(context).textTheme.titleSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Tap Open button you will redirect to wallet application, if application is not installed you will redirect to play store.',
+            style: Theme.of(context).textTheme.caption,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          child: Text(Keys.cancel.tr(context)),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(
+            primary: Theme.of(context).colorScheme.secondary,
+          ),
+          onPressed: onPressed,
+          child: Text(Keys.openApp.tr(context)),
+        )
+      ],
+    );
     showDialog(
       barrierDismissible: true,
       context: context,

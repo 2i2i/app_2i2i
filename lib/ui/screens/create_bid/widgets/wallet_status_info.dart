@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -27,15 +28,9 @@ class WalletStatusInfo extends ConsumerStatefulWidget {
 }
 
 class _WalletStatusInfoState extends ConsumerState<WalletStatusInfo> {
-  List<Map<String, dynamic>> titleList = [
-    {'title': "Connect Wallet", 'isComplete': true, 'buttonText': 'Talk'},
-    {'title': "Talk", 'isComplete': true, 'buttonText': 'Talk'},
-  ];
+  List<Map<String, dynamic>> titleList = [];
 
-  List<String> descriptionList = [
-    "Bid is created now the next step is connect wallet account to pay amount from your wallet.\n\nYou will redirect to wallet application",
-    "Bid is created now the next step is connect wallet account to pay amount from your wallet.\n\nYou will redirect to wallet application",
-  ];
+  List<String> descriptionList = [];
 
   String _displayUri = '';
 
@@ -47,6 +42,15 @@ class _WalletStatusInfoState extends ConsumerState<WalletStatusInfo> {
 
   @override
   Widget build(BuildContext context) {
+    titleList = [
+      {'title': Keys.connectWallet.tr(context), 'isComplete': true, 'buttonText': Keys.connect.tr(context)},
+      {'title': Keys.talk.tr(context), 'isComplete': true, 'buttonText': Keys.talk.tr(context)},
+    ];
+
+    descriptionList = [
+      Keys.walletDesMsg1.tr(context),
+      Keys.walletDesMsg1.tr(context),
+    ];
     final walletStatusModel = ref.watch(walletStatusProvider);
     final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
     final myAccountPageViewProvider = ref.watch(myAccountPageViewModelProvider);
@@ -78,51 +82,37 @@ class _WalletStatusInfoState extends ConsumerState<WalletStatusInfo> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
+                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(Keys.cancel.tr(context))),
                 SizedBox(width: 8),
                 TextButton(
                     onPressed: () async {
-                      if (titleList[walletStatusModel.cuntStep]['isComplete']) {
-                        walletStatusModel.updateCountStep(walletStatusModel.cuntStep + 1);
-                      }
                       switch (walletStatusModel.cuntStep) {
-                        case 1:
+                        case 0:
                           walletStatusModel.updateProgress(true);
-                          String? address = await ref.read(myUserPageViewModelProvider)?.setFirst(widget.bidIns.first, context);
-                          if (address?.isEmpty ?? true) {
-                            String? address = await _createSession(myAccountPageViewProvider.accountService!);
-                            titleList[1]['title'] = (address?.isNotEmpty ?? false) ? "Wallet connected" : "Wallet is not connected";
-                            descriptionList[1] = (address?.isNotEmpty ?? false)
-                                ? "Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this bidder."
-                                : "Your Wallet is not connected with application now you can talk with this user without wallet";
-                            titleList[1]['isComplete'] = address?.isNotEmpty ?? false;
-                            walletStatusModel.updateAddress(address!);
-                          } else {
-                            titleList[1]['isComplete'] = true;
-                            descriptionList[1] =
-                                "Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this bidder.";
-                            titleList[1]['title'] = "Wallet connected";
-                          }
+                          String? address = await _createSession(myAccountPageViewProvider.accountService!);
+                          titleList[0]['title'] = (address?.isNotEmpty ?? false) ? "Wallet connected" : "Wallet is not connected";
+                          descriptionList[0] = (address?.isNotEmpty ?? false) ? Keys.walletDesMsg2.tr(context) : Keys.walletDesMsg3.tr(context);
+                          titleList[0]['isComplete'] = address?.isNotEmpty ?? false;
+                          walletStatusModel.updateAddress(address!);
                           walletStatusModel.updateProgress(false);
+                          if (address.isNotEmpty) {
+                            walletStatusModel.updateCountStep(walletStatusModel.cuntStep + 1);
+                          }
+                          break;
+                        case 1:
+                          Future.delayed(Duration(seconds: 1)).then((value) {
+                            Navigator.of(context).pop(walletStatusModel.addressOfUserB);
+                          });
                           break;
                         case 2:
-                          descriptionList[2] = "Connecting with this user...";
-                          titleList[2]['title'] = "Talk";
-                          Future.delayed(Duration(seconds: 1)).then((value) {
-                            Navigator.of(context).pop();
-                          });
-
-                          await myHangoutPageViewModel?.setThird(widget.bidIns, walletStatusModel.addressOfUserB!, context);
-                          break;
-                        case 3:
                           break;
                       }
                     },
                     child: Text((walletStatusModel.cuntStep > 1)
-                        ? 'Talk'
+                        ? Keys.talk.tr(context)
                         : titleList[walletStatusModel.cuntStep]['isComplete']
                             ? titleList[walletStatusModel.cuntStep]['buttonText']
-                            : 'Retry')),
+                            : Keys.retry.tr(context))),
               ],
             )
         ],

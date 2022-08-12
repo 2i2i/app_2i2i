@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../infrastructure/commons/theme.dart';
+
 class StepProgressView extends StatelessWidget {
   final List<Map<String, dynamic>> titles;
   final List<String> descriptionList;
@@ -25,7 +27,7 @@ class StepProgressView extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: RichText(
             text: TextSpan(
-              text: "Step $curStep:",
+              text: "Step ${curStep + 1}:",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               children: [
                 if (curStep < titles.length)
@@ -48,9 +50,7 @@ class StepProgressView extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(color: Colors.amberAccent.shade100, borderRadius: BorderRadius.circular(6)),
                     child: Text(
-                      "${descriptionList[curStep]}",
-                      maxLines: 5,
-                    ),
+                        "${descriptionList[curStep]}", maxLines: 5, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme().black)),
                   ),
             height: MediaQuery.of(context).size.width / 4),
       ],

@@ -209,6 +209,12 @@ class ko {
       Keys.miniSupport: '최소 속도가 최대 지원보다 큽니다.',
       Keys.noWalletFound: '지갑 계정을 찾을 수 없습니다.',
       Keys.someOneTalk: '누군가 당신과 이야기하고 싶어합니다',
+      Keys.openApp: '열려 있는',
+      Keys.connectWallet: '지갑 연결',
+      Keys.walletDesMsg1: '입찰을 수락하려면 지갑 계정을 연결하여 지갑에서 금액을 지불해야 합니다.\n\n연결 버튼을 누르면 지갑 응용 프로그램으로 리디렉션됩니다.',
+      Keys.walletDesMsg2: '지갑이 애플리케이션과 연결되었습니다. 이제 이 사용자와 대화할 수 있습니다.\n\n이 사용자와 연결하려면 대화 버튼을 누르세요.',
+      Keys.walletDesMsg3: '지갑이 애플리케이션과 연결되어 있지 않으므로 지갑이 없으면 이 사용자와 대화할 수 없습니다.\n\n지갑을 다시 연결하려면 재시도 버튼을 누르세요.',
+      Keys.retry: '다시 해 보다',
     };
   }
 }

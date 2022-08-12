@@ -9,7 +9,6 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import '../../commons/custom_alert_widget.dart';
 import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
@@ -46,9 +45,9 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
         visible: bidInsWithUsers.isNotEmpty,
         child: InkResponse(
           onTap: () async {
-            CustomAlertWidget.loader(true, context);
+            // CustomAlertWidget.loader(true, context);
             await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
-            CustomAlertWidget.loader(false, context);
+            // CustomAlertWidget.loader(false, context);
           },
           child: Container(
             width: kToolbarHeight * 1.15,
