@@ -34,6 +34,12 @@ class Custom {
           _initialUriIsHandled = true;
           String userId = '';
           Uri? uri = await getInitialUri();
+          if (uri?.queryParameters['link'] is String) {
+            var link = uri!.queryParameters['link'];
+            if (link?.isNotEmpty ?? false) {
+              uri = Uri.parse(link!);
+            }
+          }
           if (uri != null) {
             print('uri init ${uri.pathSegments}');
             if (uri.queryParameters['uid'] is String) {
@@ -52,6 +58,12 @@ class Custom {
           print('uri $uri');
           if (!mounted || uri == null) return;
           String userId = '';
+          if (uri.queryParameters['link'] is String) {
+            var link = uri.queryParameters['link'];
+            if (link?.isNotEmpty ?? false) {
+              uri = Uri.parse(link!);
+            }
+          }
           if (uri.queryParameters['uid'] is String) {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
