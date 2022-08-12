@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class WalletStatusModel extends ChangeNotifier {
-  int cuntStep = 0;
+  int cuntStep = 1;
   String? addressOfUserB;
   bool isLoading = false;
 

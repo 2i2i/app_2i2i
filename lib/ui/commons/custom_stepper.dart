@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../infrastructure/commons/theme.dart';
-
 class StepProgressView extends StatelessWidget {
   final List<Map<String, dynamic>> titles;
   final List<String> descriptionList;
@@ -24,19 +22,11 @@ class StepProgressView extends StatelessWidget {
         ),
         SizedBox(height: 6),
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: RichText(
-            text: TextSpan(
-              text: "Step ${curStep + 1}:",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-              children: [
-                if (curStep < titles.length)
-                  TextSpan(
-                    text: " ${titles[curStep]['title']}",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                  ),
-              ],
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: _titleViews(context),
           ),
         ),
         SizedBox(
@@ -46,12 +36,9 @@ class StepProgressView extends StatelessWidget {
             alignment: Alignment.center,
             child: isLoading
                 ? Center(child: CupertinoActivityIndicator())
-                : Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: Colors.amberAccent.shade100, borderRadius: BorderRadius.circular(6)),
-                    child: Text(
-                        "${descriptionList[curStep]}", maxLines: 5, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme().black)),
-                  ),
+                : descriptionList[curStep].isNotEmpty
+                    ? Text("${descriptionList[curStep]}", maxLines: 5, style: Theme.of(context).textTheme.bodyMedium)
+                    : Container(),
             height: MediaQuery.of(context).size.width / 4),
       ],
     );
@@ -96,6 +83,28 @@ class StepProgressView extends StatelessWidget {
       },
     );
 
+    return list;
+  }
+
+  List<Widget> _titleViews(BuildContext context) {
+    var list = <Widget>[];
+    titles.asMap().forEach(
+      (i, text) {
+        list.add(
+          Expanded(
+            child: Text(
+              text['title'],
+              textAlign: i == 0
+                  ? TextAlign.left
+                  : i == 2
+                      ? TextAlign.end
+                      : TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        );
+      },
+    );
     return list;
   }
 }

@@ -36,21 +36,25 @@ class _WalletStatusInfoState extends ConsumerState<WalletStatusInfo> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      titleList = [
+        {'title': 'Accept Bid', 'isComplete': true, 'buttonText': 'Accept'},
+        {'title': Keys.connectWallet.tr(context), 'isComplete': true, 'buttonText': Keys.connect.tr(context)},
+        {'title': Keys.talk.tr(context), 'isComplete': true, 'buttonText': Keys.talk.tr(context)},
+      ];
+
+      descriptionList = [
+        "",
+        Keys.walletDesMsg1.tr(context),
+        Keys.walletDesMsg1.tr(context),
+      ];
+    });
     ref.read(myAccountPageViewModelProvider).initMethod();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    titleList = [
-      {'title': Keys.connectWallet.tr(context), 'isComplete': true, 'buttonText': Keys.connect.tr(context)},
-      {'title': Keys.talk.tr(context), 'isComplete': true, 'buttonText': Keys.talk.tr(context)},
-    ];
-
-    descriptionList = [
-      Keys.walletDesMsg1.tr(context),
-      Keys.walletDesMsg1.tr(context),
-    ];
     final walletStatusModel = ref.watch(walletStatusProvider);
     final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
     final myAccountPageViewProvider = ref.watch(myAccountPageViewModelProvider);
@@ -88,29 +92,32 @@ class _WalletStatusInfoState extends ConsumerState<WalletStatusInfo> {
                     onPressed: () async {
                       switch (walletStatusModel.cuntStep) {
                         case 0:
+                          walletStatusModel.updateCountStep(walletStatusModel.cuntStep + 1);
+                          break;
+                        case 1:
                           walletStatusModel.updateProgress(true);
                           String? address = await _createSession(myAccountPageViewProvider.accountService!);
-                          titleList[0]['title'] = (address?.isNotEmpty ?? false) ? "Wallet connected" : "Wallet is not connected";
-                          descriptionList[0] = (address?.isNotEmpty ?? false) ? Keys.walletDesMsg2.tr(context) : Keys.walletDesMsg3.tr(context);
-                          titleList[0]['isComplete'] = address?.isNotEmpty ?? false;
+                          titleList[1]['title'] = (address?.isNotEmpty ?? false) ? "Wallet connected" : "Wallet is not connected";
+                          descriptionList[1] = (address?.isNotEmpty ?? false) ? Keys.walletDesMsg2.tr(context) : Keys.walletDesMsg3.tr(context);
+                          titleList[1]['isComplete'] = address?.isNotEmpty ?? false;
                           walletStatusModel.updateAddress(address!);
                           walletStatusModel.updateProgress(false);
                           if (address.isNotEmpty) {
                             walletStatusModel.updateCountStep(walletStatusModel.cuntStep + 1);
                           }
                           break;
-                        case 1:
+                        case 2:
                           Future.delayed(Duration(seconds: 1)).then((value) {
                             Navigator.of(context).pop(walletStatusModel.addressOfUserB);
                           });
                           break;
-                        case 2:
+                        case 3:
                           break;
                       }
                     },
                     child: Text((walletStatusModel.cuntStep > 1)
                         ? Keys.talk.tr(context)
-                        : titleList[walletStatusModel.cuntStep]['isComplete']
+                        : (titleList.isNotEmpty && titleList[walletStatusModel.cuntStep]['isComplete'] ?? false)
                             ? titleList[walletStatusModel.cuntStep]['buttonText']
                             : Keys.retry.tr(context))),
               ],
