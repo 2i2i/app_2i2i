@@ -211,11 +211,13 @@ class en {
       Keys.someOneTalk: 'Someone wants to talk with you',
       Keys.openApp: 'Open',
       Keys.connectWallet: 'Connect Wallet',
-      Keys.walletDesMsg1:
-          'User will pay you per second, To make this transaction please connect your wallet.\n\nPress Connect button then you\'ll redirect to wallet application.',
-      Keys.walletDesMsg2: 'Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this user.',
-      Keys.walletDesMsg3: 'User will pay you per second, To make this transaction please connect your wallet.\n\nPress Retry button to re connect your wallet.',
       Keys.retry: 'Retry',
+      Keys.walletDesMsg1:
+          'You are having paid call bids. To make those calls app require your wallet connect account. It will be used to collect money that another user will send you.\n\nTo connect wallet you will have to press connect button and then you will be redirect to wallet connect application. Accept connection request there and come back to move next.',
+      Keys.walletDesMsg2: 'The wallet is successfully connected. Now you can talk and earn from calls.\n\nPress talk button to start calling.',
+      Keys.acceptBid: 'Accept Bid',
+      Keys.startTalk: 'Start Talk',
+      Keys.failToConnect: 'Fail to connect. Please try again.',
     };
   }
 }

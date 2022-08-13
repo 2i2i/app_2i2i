@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
@@ -40,102 +41,100 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(AppSpacings.s22),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                divider(theme),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        checkContainer(true, false, theme),
-                        Text('Accept Bid'),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        checkContainer(walletConnectAddress.isNotEmpty, selectedIndex == 1, theme, isFailed),
-                        Text('Wallet Connect'),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        checkContainer(false, selectedIndex == 2, theme),
-                        Text('Start Talk'),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: AppSpacings.s80),
-            Text(
-              getDescForSelected(),
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.justify,
-            ),
-            Visibility(
-              visible: isFailed,
-              child: Padding(
-                padding: EdgeInsets.only(top: AppSpacings.s10),
-                child: Text(
-                  'Fail to connect. Please try again.',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.errorColor),
-                  textAlign: TextAlign.justify,
-                ),
+    return Padding(
+      padding: EdgeInsets.all(AppSpacings.s22),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              divider(theme),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      checkContainer(true, false, theme),
+                      Text(Keys.acceptBid.tr(context)),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      checkContainer(walletConnectAddress.isNotEmpty, selectedIndex == 1, theme, isFailed),
+                      Text(Keys.walletConnect.tr(context)),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      checkContainer(false, selectedIndex == 2, theme),
+                      Text(Keys.startTalk.tr(context)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: AppSpacings.s40),
+          Text(
+            getDescForSelected(context),
+            style: theme.textTheme.bodyMedium,
+            textAlign: TextAlign.justify,
+          ),
+          Visibility(
+            visible: isFailed,
+            child: Padding(
+              padding: EdgeInsets.only(top: AppSpacings.s10),
+              child: Text(
+                Keys.failToConnect.tr(context),
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.errorColor),
+                textAlign: TextAlign.justify,
               ),
             ),
-            SizedBox(height: AppSpacings.s80),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Cancel'),
-                  ),
+          ),
+          SizedBox(height: AppSpacings.s40),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(Keys.cancel.tr(context)),
                 ),
-                SizedBox(width: AppSpacings.s12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (selectedIndex == 1) {
-                        onClickConnect();
-                      } else {
-                        Navigator.of(context).pop(walletConnectAddress);
-                      }
-                    },
-                    child: Text(selectedIndex == 1 ? (isFailed ? 'Retry' : 'Connect') : 'Talk'),
-                  ),
+              ),
+              SizedBox(width: AppSpacings.s12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (selectedIndex == 1) {
+                      onClickConnect();
+                    } else {
+                      Navigator.of(context).pop(walletConnectAddress);
+                    }
+                  },
+                  child: Text(selectedIndex == 1 ? (isFailed ? Keys.retry.tr(context) : Keys.connect.tr(context)) : Keys.talk.tr(context)),
                 ),
-              ],
-            )
-          ],
-        ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
 
-  String getDescForSelected() {
+  String getDescForSelected(BuildContext context) {
     if (selectedIndex == 1) {
-      return 'This is paid call and user will pay you for each second. Wallet is required to be connected for make transactions.';
+      return Keys.walletDesMsg1.tr(context);
     }
-    return 'Your wallet has been connected successfully. Press talk to start video call.';
+    return Keys.walletDesMsg2.tr(context);
   }
 
   Widget checkContainer(bool check, bool selected, ThemeData theme, [bool? isFailed]) {
     return Container(
-      color: theme.brightness == Brightness.dark ? Colors.black : Colors.white,
-      padding: EdgeInsets.symmetric(vertical: AppSpacings.s10),
+      color: Theme.of(context).cardColor,
+      padding: EdgeInsets.symmetric(vertical: AppSpacings.s8),
       child: Icon(
         isFailed == true
             ? Icons.cancel
@@ -147,6 +146,7 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
             : check || selected
                 ? theme.colorScheme.secondary
                 : null,
+        size: 28,
       ),
     );
   }

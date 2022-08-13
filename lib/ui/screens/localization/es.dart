@@ -212,13 +212,14 @@ class es {
       Keys.someOneTalk: 'Alguien quiere hablar contigo',
       Keys.openApp: 'Abierto',
       Keys.connectWallet: 'Conectar billetera',
-      Keys.walletDesMsg1:
-          'Para aceptar la oferta, debe conectar la cuenta de billetera para pagar el monto de su billetera.\n\nToque el botón Conectar y lo redirigirá a la aplicación de billetera.',
-      Keys.walletDesMsg2:
-          'Su billetera está conectada con la aplicación ahora puede hablar con este usuario.\n\nPresione el botón Hablar para conectarse con este usuario.',
-      Keys.walletDesMsg3:
-          'Su billetera no está conectada con la aplicación, por lo que no puede hablar con este usuario sin billetera.\n\nPresione el botón Reintentar para volver a conectar su billetera.',
       Keys.retry: 'Rever',
+      Keys.walletDesMsg1:
+          'Tiene ofertas de llamada pagadas. Para hacer esas llamadas, la aplicación requiere su cuenta de conexión de billetera. Se utilizará para recolectar dinero que otro usuario le enviará.\n\nPara conectar la billetera, deberá presionar el botón de conexión y luego será redirigido a la aplicación de conexión de billetera. Acepte la solicitud de conexión allí y vuelva para continuar.',
+      Keys.walletDesMsg2:
+          'La billetera está conectada con éxito. Ahora puede hablar y ganar con las llamadas.\n\nPresione el botón de hablar para comenzar a llamar.',
+      Keys.acceptBid: 'Aceptar oferta',
+      Keys.startTalk: 'Empezar a hablar',
+      Keys.failToConnect: 'Error al conectar. Inténtalo de nuevo.',
     };
   }
 }
