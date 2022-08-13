@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/layout/spacings.dart';
 import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -200,13 +200,13 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
       );
 
       isDialogOpen.value = false;
-      CustomDialogs.loader(true, context, rootNavigator: true);
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
       await account.save(id);
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       await myAccountPageViewModel.getWalletAccount();
-      CustomDialogs.loader(false, context, rootNavigator: true);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
     } else {

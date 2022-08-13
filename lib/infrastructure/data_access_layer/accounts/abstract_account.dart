@@ -99,8 +99,6 @@ class AccountService {
   Future<int> getNumWalletConnectAccounts() async {
     String val = await storage.read('wallet_connect_accounts') ?? '';
     return int.tryParse(val) ?? 0;
-    log('getNumWalletConnectAccounts - WalletConnectAccount.cache=${WalletConnectAccount.cache}');
-    return WalletConnectAccount.cache.length;
   }
 
   Future<int> getNumAccounts() async {
