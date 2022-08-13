@@ -5,8 +5,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-import '../../../ui/commons/custom_alert_widget.dart';
-import '../../../ui/screens/my_user/widgets/wallet_connect_dialog.dart';
+import '../../../ui/screens/my_user/widgets/wallet_connect_instruction_dialog.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
@@ -63,13 +62,17 @@ class MyUserPageViewModel {
       for (List<String> val in sessionWithAddress.values) {
         addresses.addAll(val);
       }
+      if (addresses.isEmpty) {
+        final result = await showModalBottomSheet(context: context, builder: (context) => ConnectDialog());
+        if (result is String) {
+          addresses.add(result);
+        } else {
+          Navigator.of(context).maybePop();
+          return false;
+        }
+      }
       if (addresses.isNotEmpty) {
         addressOfUserB = addresses.first;
-      } else {
-        addressOfUserB = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
-        if (addressOfUserB?.isEmpty ?? true) {
-          return true;
-        }
       }
     }
     final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
