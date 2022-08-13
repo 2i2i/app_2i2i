@@ -210,6 +210,15 @@ class es {
       Keys.miniSupport: 'La velocidad mínima es mayor que el soporte máximo',
       Keys.noWalletFound: 'No se encontró ninguna cuenta de billetera.',
       Keys.someOneTalk: 'Alguien quiere hablar contigo',
+      Keys.openApp: 'Abierto',
+      Keys.connectWallet: 'Conectar billetera',
+      Keys.walletDesMsg1:
+          'Para aceptar la oferta, debe conectar la cuenta de billetera para pagar el monto de su billetera.\n\nToque el botón Conectar y lo redirigirá a la aplicación de billetera.',
+      Keys.walletDesMsg2:
+          'Su billetera está conectada con la aplicación ahora puede hablar con este usuario.\n\nPresione el botón Hablar para conectarse con este usuario.',
+      Keys.walletDesMsg3:
+          'Su billetera no está conectada con la aplicación, por lo que no puede hablar con este usuario sin billetera.\n\nPresione el botón Reintentar para volver a conectar su billetera.',
+      Keys.retry: 'Rever',
     };
   }
 }

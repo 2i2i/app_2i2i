@@ -209,6 +209,13 @@ class en {
       Keys.miniSupport: 'Minimum speed is greater then Maximum Support',
       Keys.noWalletFound: 'No wallet account found.',
       Keys.someOneTalk: 'Someone wants to talk with you',
+      Keys.openApp: 'Open',
+      Keys.connectWallet: 'Connect Wallet',
+      Keys.walletDesMsg1:
+          'User will pay you per second, To make this transaction please connect your wallet.\n\nPress Connect button then you\'ll redirect to wallet application.',
+      Keys.walletDesMsg2: 'Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this user.',
+      Keys.walletDesMsg3: 'User will pay you per second, To make this transaction please connect your wallet.\n\nPress Retry button to re connect your wallet.',
+      Keys.retry: 'Retry',
     };
   }
 }

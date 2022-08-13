@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
 
 class RecoverAccountPage extends ConsumerStatefulWidget {
@@ -170,16 +170,16 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
   Future<void> onClickRecover(String uid, FirestoreDatabase database) async {
     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
     List<String> keys = listOfString.map((e) => e.text).toList();
-    CustomDialogs.loader(true, context);
+    CustomAlertWidget.loader(true, context);
     try {
       final account = await myAccountPageViewModel.recoverAccount(keys);
       await account.setMainAccount();
       context.pop();
     } catch (e) {
-      CustomDialogs.showToastMessage(context, Keys.noKeyFound.tr(context));
+      CustomAlertWidget.showToastMessage(context, Keys.noKeyFound.tr(context));
       log(e.toString());
     }
-    CustomDialogs.loader(false, context);
+    CustomAlertWidget.loader(false, context);
   }
 
   void checkIsInValid() {

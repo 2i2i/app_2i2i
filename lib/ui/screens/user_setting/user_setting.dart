@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -401,11 +400,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
                 onPressed: () async {
-                  CustomDialogs.loader(true, context);
+                  CustomAlertWidget.loader(true, context);
 
                   await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
 
-                  CustomDialogs.loader(false, context);
+                  CustomAlertWidget.loader(false, context);
                   Navigator.of(context).pop();
                 },
                 child: Text(Keys.save.tr(context)),
@@ -439,11 +438,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   onPressed: () async {
                     if (!(widget.fromBottomSheet ?? false)) {
-                      CustomDialogs.loader(true, context);
+                      CustomAlertWidget.loader(true, context);
                     }
                     await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                     if (!(widget.fromBottomSheet ?? false)) {
-                      CustomDialogs.loader(false, context);
+                      CustomAlertWidget.loader(false, context);
                     }
                     // await Navigator.of(context).maybePop();
                   },
@@ -680,7 +679,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           forcedRedirectEnabled: false,
         ),
       );
-      final Uri linkGenerated = await dynamicLinks.buildLink(parameters);
       final shortUri = await dynamicLinks.buildShortLink(parameters);
       if (shortUri.shortUrl.toString().isNotEmpty) {
         FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());

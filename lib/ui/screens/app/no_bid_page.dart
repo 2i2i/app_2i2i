@@ -73,7 +73,7 @@ class NoBidPage extends ConsumerWidget {
                       icon: Icon(Icons.copy)),*/
                   IconButton(
                       onPressed: () {
-                        Share.share('${Keys.joinInvite.tr(context)}\n$message');
+                         Share.share('${Keys.joinInvite.tr(context)}\n$message');
                       },
                       icon: Icon(
                         Icons.share,

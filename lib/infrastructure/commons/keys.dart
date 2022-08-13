@@ -181,17 +181,17 @@ class Keys {
   static const String appVersion = 'appVersion';
   static const String logOut = 'logOut';
 
-  static const String connectAccount ='connectAccount';
-  static const String updateAvailable ='updateAvailable';
-  static const String loginMsg ='loginMsg';
-  static const String loginMsg2 ='loginMsg2';
-  static const String loginMsg3 ='loginMsg3';
-  static const String signInWithGoogle ='signInWithGoogle';
-  static const String signInWithApple ='signInWithApple';
-  static const String signInWithTwitter ='signInWithTwitter';
-  static const String signInAnonymously ='signInAnonymously';
+  static const String connectAccount = 'connectAccount';
+  static const String updateAvailable = 'updateAvailable';
+  static const String loginMsg = 'loginMsg';
+  static const String loginMsg2 = 'loginMsg2';
+  static const String loginMsg3 = 'loginMsg3';
+  static const String signInWithGoogle = 'signInWithGoogle';
+  static const String signInWithApple = 'signInWithApple';
+  static const String signInWithTwitter = 'signInWithTwitter';
+  static const String signInAnonymously = 'signInAnonymously';
 
-  static const String searchFaq ='searchFaq';
+  static const String searchFaq = 'searchFaq';
   static const String noInternetTitle = 'noInternetTitle';
   static const String noInternetMessage = 'noInternetMessage';
   static const String loading = 'loading';
@@ -227,10 +227,25 @@ class Keys {
   static const String miniSupport = 'Minimum speed is greater then Maximum Support';
   static const String noWalletFound = 'No wallet account found.';
   static const String someOneTalk = 'Someone wants to talk with you';
+
+  static const String openApp = 'Open';
+
+  static const String connectWallet = 'Connect Wallet';
+
+  static const String walletDesMsg1 =
+      'To Accept bid you need to connect wallet account to pay amount from your wallet.\n\nTap on Connect button and you\'ll redirect to wallet application.';
+
+  static const String walletDesMsg2 =
+      'Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this user.';
+
+  static const String walletDesMsg3 =
+      'Your Wallet is not connected with application so you can\'t talk with this user without wallet.\n\nPress Retry button to re connect your wallet.';
+
+  static const String retry = 'Retry';
 }
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)?.translate(this)??'';
+    return ApplicationLocalizations.of(context)?.translate(this) ?? '';
   }
 }

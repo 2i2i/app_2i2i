@@ -13,7 +13,7 @@ import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
-import '../../../commons/custom_dialogs.dart';
+import '../../../commons/custom_alert_widget.dart';
 
 class AccountInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
@@ -181,11 +181,11 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       color: iconColor(context),
                     ),
                     onPressed: () async {
-                      CustomDialogs.loader(true, context);
+                      CustomAlertWidget.loader(true, context);
                       var val = await getBalance();
                       balances = val;
                       if (widget.afterRefresh != null) widget.afterRefresh!();
-                      CustomDialogs.loader(false, context);
+                      CustomAlertWidget.loader(false, context);
                       setState(() {});
                     },
                   ),
@@ -216,7 +216,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-                /*Container(
+                Container(
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
@@ -224,13 +224,13 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     iconSize: 18,
                     icon: Icon(Icons.delete),
                     onPressed: () async {
-                      CustomDialogs.loader(true, context);
+                      CustomAlertWidget.loader(true, context);
                       await ref.read(myAccountPageViewModelProvider).disconnectAccount(widget.address);
-                      CustomDialogs.loader(false, context);
+                      CustomAlertWidget.loader(false, context);
                       setState(() {});
                     },
                   ),
-                ),*/
+                ),
                 /*if (widget.account is LocalAccount)
                   Container(
                     height: 40,

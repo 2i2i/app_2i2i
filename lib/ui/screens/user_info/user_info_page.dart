@@ -1,6 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
@@ -79,7 +77,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       }
     }
 
-    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       appBar: AppBar(
