@@ -161,7 +161,10 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       //}
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
-        log("methodCall.method=============> setMethodCallHandler");
+        log("methodCall.method=============> setMethodCallHandler ${methodCall.method}");
+        if (methodCall.method == 'dynamicLink') {
+          Custom.deepLinks(context, mounted, methodCall.arguments);
+        }
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {

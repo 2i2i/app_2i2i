@@ -23,6 +23,7 @@ class MainActivity : FlutterActivity() {
     private var notificationManager: NotificationManager? = null
     private var incomingCallNotificationBuilder: NotificationBuilder? = null
     var places: HashMap<String, String>? = null
+    private var initialLink: String = "";
 
     companion object {
         var channel: MethodChannel? = null
@@ -35,6 +36,7 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "app.2i2i/notification"
         )
+
 
         channel?.setMethodCallHandler { call, result ->
             if (call.method == "ANSWER") {
@@ -119,13 +121,20 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun handleIntent(intent: Intent) {
+    private fun handleIntent(intent: Intent): String {
         val appLinkAction = intent.action
         val appLinkData: Uri? = intent.data
         Log.i("APP LINK C", appLinkData.toString());
         Log.i("APP LINK dataString ", intent.dataString.toString());
         Log.i("APP LINK clipData ", intent.clipData.toString());
         Log.i("APP LINK scheme ", intent.scheme.toString());
+
+        if (appLinkData != null) {
+            initialLink = appLinkData.toString()
+            channel?.invokeMethod("dynamicLink", initialLink)
+//            return appLinkData.toString();
+        }
+        return "";
     }
 
 }

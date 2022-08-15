@@ -22,35 +22,20 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(BuildContext context, bool mounted) async {
+  static Future<void> deepLinks(BuildContext context, bool mounted, [String? url]) async {
     if (!kIsWeb) {
       try {
         // String mainUrl = '';
 
+        if (url?.isNotEmpty ?? false) {
+          handleURI(Uri.parse(url!), '');
+        }
         bool _initialUriIsHandled = false;
         if (!_initialUriIsHandled) {
           _initialUriIsHandled = true;
           String userId = '';
           Uri? uri = await getInitialUri();
-          if (uri?.queryParameters['link'] is String) {
-            var link = uri!.queryParameters['link'];
-            if (link?.isNotEmpty ?? false) {
-              uri = Uri.parse(link!);
-            }
-          }
-          if (uri != null) {
-            print('uri init ${uri.pathSegments}');
-            if (uri.queryParameters['uid'] is String) {
-              userId = uri.queryParameters['uid'] as String;
-              userIdNav.value = userId;
-              isUserLocked.notifyListeners();
-            } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
-              String userId = uri.pathSegments.last;
-              print(userId);
-              userIdNav.value = userId;
-              isUserLocked.notifyListeners();
-            }
-          }
+          handleURI(uri, userId);
         }
         uriLinkStream.listen((Uri? uri) {
           print('uri $uri');
@@ -74,6 +59,28 @@ class Custom {
         });
       } catch (e) {
         log("$e");
+      }
+    }
+  }
+
+  static void handleURI(Uri? uri, String userId) {
+    if (uri?.queryParameters['link'] is String) {
+      var link = uri!.queryParameters['link'];
+      if (link?.isNotEmpty ?? false) {
+        uri = Uri.parse(link!);
+      }
+    }
+    if (uri != null) {
+      print('uri init ${uri.pathSegments}');
+      if (uri.queryParameters['uid'] is String) {
+        userId = uri.queryParameters['uid'] as String;
+        userIdNav.value = userId;
+        isUserLocked.notifyListeners();
+      } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
+        String userId = uri.pathSegments.last;
+        print(userId);
+        userIdNav.value = userId;
+        isUserLocked.notifyListeners();
       }
     }
   }

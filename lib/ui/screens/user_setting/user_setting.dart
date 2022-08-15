@@ -664,7 +664,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
       final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: link,
-        link: Uri.parse('$link/user/$uid'),
+        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
         androidParameters: AndroidParameters(
           packageName: 'app.i2i2',
           fallbackUrl: Uri.parse('https://about.2i2i.app'),
