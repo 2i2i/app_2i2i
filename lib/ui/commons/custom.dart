@@ -1,3 +1,4 @@
+import 'package:app_2i2i/common_main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
@@ -6,6 +7,7 @@ import '../../infrastructure/data_access_layer/services/logging.dart';
 import '../../infrastructure/providers/all_providers.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
+bool _initialUriIsHandled = false;
 
 class Custom {
   static getBoxDecoration(BuildContext context, {Color? color, double radius = 10}) {
@@ -30,8 +32,8 @@ class Custom {
         if (url?.isNotEmpty ?? false) {
           handleURI(Uri.parse(url!), '');
         }
-        bool _initialUriIsHandled = false;
         if (!_initialUriIsHandled) {
+          platform.invokeListMethod('getInitialUri');
           _initialUriIsHandled = true;
           String userId = '';
           Uri? uri = await getInitialUri();
