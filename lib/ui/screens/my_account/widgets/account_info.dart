@@ -216,7 +216,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-                Container(
+              /*  Container(
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
@@ -230,7 +230,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       setState(() {});
                     },
                   ),
-                ),
+                ),*/
                 /*if (widget.account is LocalAccount)
                   Container(
                     height: 40,

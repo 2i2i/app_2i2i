@@ -53,28 +53,33 @@ class MyUserPageViewModel {
     } else if (bidIn.user!.isInMeeting()) {
       CustomAlertWidget.showToastMessage(context, "Bidder is busy with another user");
       await cancelNoShow(bidIn: bidIn);
-    } else if (bidIn.public.speed.num != 0) {
-      Map sessionWithAddress = await accountService.getAllWalletAddress();
-      List<String> addresses = [];
-      for (List<String> val in sessionWithAddress.values) {
-        addresses.addAll(val);
-      }
-      if (addresses.isEmpty) {
-        final result = await showModalBottomSheet(context: context, builder: (context) => ConnectDialog());
-        if (result is String) {
-          addresses.add(result);
+    } else {
+      if (bidIn.public.speed.num != 0) {
+        Map sessionWithAddress = await accountService.getAllWalletAddress();
+        List<String> addresses = [];
+        for (List<String> val in sessionWithAddress.values) {
+          addresses.addAll(val);
+        }
+        if (addresses.isEmpty) {
+          final result =
+              await CustomAlertWidget.showBottomSheet(context, child: ConnectDialog(), isDismissible: true, backgroundColor: Theme.of(context).cardColor);
+          if (result is String) {
+            addresses.add(result);
+          } else {
+            Navigator.of(context).maybePop();
+            return false;
+          }
         } else {
-          Navigator.of(context).maybePop();
-          return false;
+          addressOfUserB = addresses.first;
         }
       }
-      if (addresses.isNotEmpty) {
-        addressOfUserB = addresses.first;
-      }
+      CustomAlertWidget.loader(true, context);
+      await acceptCall(bidIns, addressOfUserB, context);
+      // CustomAlertWidget.loader(false, context);
     }
   }
 
-  Future acceptCall(List<BidIn> bidIns, String addressOfUserB, BuildContext context) async {
+  Future acceptCall(List<BidIn> bidIns, String? addressOfUserB, BuildContext context) async {
     BidIn bidIn = bidIns.first;
 
     UserModel? firstUser;
