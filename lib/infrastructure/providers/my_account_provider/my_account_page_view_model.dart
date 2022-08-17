@@ -145,7 +145,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<void> updateAccounts() async {
-    var numAccount = await accountService?.getNumAccounts() ?? 0;
+    await accountService?.getNumAccounts() ?? 0;
     notifyListeners();
   }
 }

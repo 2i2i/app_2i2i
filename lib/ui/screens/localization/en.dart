@@ -209,6 +209,15 @@ class en {
       Keys.miniSupport: 'Minimum speed is greater then Maximum Support',
       Keys.noWalletFound: 'No wallet account found.',
       Keys.someOneTalk: 'Someone wants to talk with you',
+      Keys.openApp: 'Open',
+      Keys.connectWallet: 'Connect Wallet',
+      Keys.retry: 'Retry',
+      Keys.walletDesMsg1:
+          'You are having paid call bids. To make those calls app require your wallet connect account. It will be used to collect money that another user will send you.\n\nTo connect wallet you will have to press connect button and then you will be redirect to wallet connect application. Accept connection request there and come back to move next.',
+      Keys.walletDesMsg2: 'The wallet is successfully connected. Now you can talk and earn from calls.\n\nPress talk button to start calling.',
+      Keys.acceptBid: 'Accept Bid',
+      Keys.startTalk: 'Start Talk',
+      Keys.failToConnect: 'Fail to connect. Please try again.',
     };
   }
 }

@@ -14,7 +14,7 @@ import '../../../../infrastructure/data_access_layer/accounts/walletconnect_acco
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import '../../../commons/custom_dialogs.dart';
+import '../../../commons/custom_alert_widget.dart';
 import '../../my_account/widgets/qr_image_widget.dart';
 
 class WalletConnectDialog extends ConsumerStatefulWidget {
@@ -100,14 +100,14 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
       );
 
       isDialogOpen.value = false;
-      CustomDialogs.loader(true, context, rootNavigator: true);
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
       log("$sessionStatus");
       await account.save(id);
       if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       await myAccountPageViewModel.getWalletAccount();
-      CustomDialogs.loader(false, context, rootNavigator: true);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
     } else {

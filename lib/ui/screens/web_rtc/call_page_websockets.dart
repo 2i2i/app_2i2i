@@ -76,7 +76,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     localId = amA ? widget.meeting.A : widget.meeting.B;
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(appSettingProvider).appInit();
       initRenderers();
       _connect();
     });
@@ -535,7 +534,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
           if (mounted) {
             setState(() {});
           }
-
+          if (!(appSettingModel?.isVideoEnabled ?? false)) {
+            _muteVideo();
+          }
+          if (!(appSettingModel?.isAudioEnabled ?? false)) {
+            _muteAudio();
+          }
           log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
             return widget.meetingChanger.roomCreatedMeeting(widget.meeting.id, _session!.sid + '-' + _session!.pid);

@@ -209,6 +209,16 @@ class de {
       Keys.miniSupport: 'Die minimale Geschwindigkeit ist größer als die maximale Unterstützung',
       Keys.noWalletFound: 'Kein Wallet-Konto gefunden.',
       Keys.someOneTalk: 'Jemand möchte mit Ihnen sprechen',
+      Keys.openApp: 'Offen',
+      Keys.connectWallet: 'Brieftasche verbinden',
+      Keys.retry: 'Wiederholen',
+      Keys.walletDesMsg1:
+          'Sie haben bezahlte Call-Gebote. Um diese Anrufe zu tätigen, benötigen Sie Ihr Wallet Connect-Konto. Es wird verwendet, um Geld zu sammeln, das Ihnen ein anderer Benutzer sendet.\n\nUm die Brieftasche zu verbinden, müssen Sie die Verbindungstaste drücken und dann werden Sie zur Brieftaschenverbindungsanwendung weitergeleitet. Akzeptieren Sie dort die Verbindungsanfrage und kommen Sie zurück, um weiterzumachen.',
+      Keys.walletDesMsg2:
+          'Die Brieftasche wurde erfolgreich verbunden. Jetzt können Sie mit Anrufen sprechen und verdienen.\n\nDrücken Sie die Sprechtaste, um mit dem Anrufen zu beginnen.',
+      Keys.acceptBid: 'Gebot annehmen',
+      Keys.startTalk: 'Gespräch beginnen',
+      Keys.failToConnect: 'Verbindung fehlgeschlagen. Bitte versuche es erneut.',
     };
   }
 }

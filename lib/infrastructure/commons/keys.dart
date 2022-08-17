@@ -181,17 +181,17 @@ class Keys {
   static const String appVersion = 'appVersion';
   static const String logOut = 'logOut';
 
-  static const String connectAccount ='connectAccount';
-  static const String updateAvailable ='updateAvailable';
-  static const String loginMsg ='loginMsg';
-  static const String loginMsg2 ='loginMsg2';
-  static const String loginMsg3 ='loginMsg3';
-  static const String signInWithGoogle ='signInWithGoogle';
-  static const String signInWithApple ='signInWithApple';
-  static const String signInWithTwitter ='signInWithTwitter';
-  static const String signInAnonymously ='signInAnonymously';
+  static const String connectAccount = 'connectAccount';
+  static const String updateAvailable = 'updateAvailable';
+  static const String loginMsg = 'loginMsg';
+  static const String loginMsg2 = 'loginMsg2';
+  static const String loginMsg3 = 'loginMsg3';
+  static const String signInWithGoogle = 'signInWithGoogle';
+  static const String signInWithApple = 'signInWithApple';
+  static const String signInWithTwitter = 'signInWithTwitter';
+  static const String signInAnonymously = 'signInAnonymously';
 
-  static const String searchFaq ='searchFaq';
+  static const String searchFaq = 'searchFaq';
   static const String noInternetTitle = 'noInternetTitle';
   static const String noInternetMessage = 'noInternetMessage';
   static const String loading = 'loading';
@@ -227,10 +227,24 @@ class Keys {
   static const String miniSupport = 'Minimum speed is greater then Maximum Support';
   static const String noWalletFound = 'No wallet account found.';
   static const String someOneTalk = 'Someone wants to talk with you';
+
+  static const String openApp = 'Open';
+
+  static const String connectWallet = 'Connect Wallet';
+
+  static const String retry = 'Retry';
+
+  static const String walletDesMsg1 =
+      'You are having paid call bids. To make those calls app require your wallet connect account. It will be used to collect money that another user will send you.\n\nTo connect wallet you will have to press connect button and then you will be redirect to wallet connect application. Accept connection request there and come back to move next.';
+  static const String walletDesMsg2 = 'The wallet is successfully connected. Now you can talk and earn from calls.\n\nPress talk button to start calling.';
+
+  static const String acceptBid = 'Accept Bid';
+  static const String startTalk = 'Start Talk';
+  static const String failToConnect = 'Fail to connect. Please try again.';
 }
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)?.translate(this)??'';
+    return ApplicationLocalizations.of(context)?.translate(this) ?? '';
   }
 }

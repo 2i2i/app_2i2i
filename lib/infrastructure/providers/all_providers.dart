@@ -18,6 +18,7 @@ import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../models/meeting_history_model.dart';
+import '../models/wallet_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
 import 'faq_cv_provider/faq_provider.dart';
@@ -180,6 +181,10 @@ final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
 final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
   final database = ref.watch(databaseProvider);
   return MeetingHistoryModel(database: database);
+});
+
+final walletStatusProvider = ChangeNotifierProvider.autoDispose<WalletStatusModel>((ref) {
+  return WalletStatusModel();
 });
 
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {

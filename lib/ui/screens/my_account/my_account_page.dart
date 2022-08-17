@@ -54,7 +54,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                 }
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: myAccountPageViewModel.walletConnectAccounts.length,
+                  itemCount: myAccountPageViewModel.addresses.length,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   itemBuilder: (BuildContext context, int index) {
                     String address = myAccountPageViewModel.addresses[index];

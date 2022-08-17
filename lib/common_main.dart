@@ -121,47 +121,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       ref.read(appSettingProvider).getLocal(widget.local);
       await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-
-      // TODO the following is not working yet
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        log('Got a message whilst in the foreground!');
-        log('Message data: ${message.data}');
-
-        if (message.notification != null) {
-          log('Message also contained a notification: ${message.notification}');
-        }
-
-        if (message.data['action'] == 'update') {
-          NamedRoutes.updateAvailable = true;
-        }
-      });
-      // if (kIsWeb) {
-      //   html.document.addEventListener('visibilitychange', (event) {
-      //     if (html.document.visibilityState != 'visible') {
-      //       //check after for 2 sec that is it still in background
-      //       Future.delayed(Duration(seconds: 2)).then((value) async {
-      //         if (html.document.visibilityState != 'visible') {
-      //           await updateHeartbeat(Status.IDLE);
-      //         }
-      //       });
-      //     } else {
-      //       updateHeartbeat(Status.ONLINE);
-      //     }
-      //   });
-      //}
-
       platform.setMethodCallHandler((MethodCall methodCall) async {
-        log("methodCall.method=============> setMethodCallHandler");
+        log("methodCall.method=============> setMethodCallHandler ${methodCall.method}");
+        if (methodCall.method == 'dynamicLink') {
+          Custom.deepLinks(context, mounted, methodCall.arguments);
+        }
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {

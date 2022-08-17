@@ -76,14 +76,13 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   Future<void> getTappedOnKey() async {
-    String? value = await storage.read('tappedOnKey');
     isTappedOnKey = true;
     // isTappedOnKey = (value == "1");
     notifyListeners();
   }
 
   bool updateRequired = false;
-  String version = "1.0.27";
+  String version = "1.0.29";
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);

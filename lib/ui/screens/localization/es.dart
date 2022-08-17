@@ -210,6 +210,16 @@ class es {
       Keys.miniSupport: 'La velocidad mínima es mayor que el soporte máximo',
       Keys.noWalletFound: 'No se encontró ninguna cuenta de billetera.',
       Keys.someOneTalk: 'Alguien quiere hablar contigo',
+      Keys.openApp: 'Abierto',
+      Keys.connectWallet: 'Conectar billetera',
+      Keys.retry: 'Rever',
+      Keys.walletDesMsg1:
+          'Tiene ofertas de llamada pagadas. Para hacer esas llamadas, la aplicación requiere su cuenta de conexión de billetera. Se utilizará para recolectar dinero que otro usuario le enviará.\n\nPara conectar la billetera, deberá presionar el botón de conexión y luego será redirigido a la aplicación de conexión de billetera. Acepte la solicitud de conexión allí y vuelva para continuar.',
+      Keys.walletDesMsg2:
+          'La billetera está conectada con éxito. Ahora puede hablar y ganar con las llamadas.\n\nPresione el botón de hablar para comenzar a llamar.',
+      Keys.acceptBid: 'Aceptar oferta',
+      Keys.startTalk: 'Empezar a hablar',
+      Keys.failToConnect: 'Error al conectar. Inténtalo de nuevo.',
     };
   }
 }
