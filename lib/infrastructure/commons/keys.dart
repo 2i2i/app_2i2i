@@ -232,16 +232,15 @@ class Keys {
 
   static const String connectWallet = 'Connect Wallet';
 
-  static const String walletDesMsg1 =
-      'To Accept bid you need to connect wallet account to pay amount from your wallet.\n\nTap on Connect button and you\'ll redirect to wallet application.';
-
-  static const String walletDesMsg2 =
-      'Your Wallet is connected with application now you can talk with this user.\n\nPress Talk button to connect with this user.';
-
-  static const String walletDesMsg3 =
-      'Your Wallet is not connected with application so you can\'t talk with this user without wallet.\n\nPress Retry button to re connect your wallet.';
-
   static const String retry = 'Retry';
+
+  static const String walletDesMsg1 =
+      'You are having paid call bids. To make those calls app require your wallet connect account. It will be used to collect money that another user will send you.\n\nTo connect wallet you will have to press connect button and then you will be redirect to wallet connect application. Accept connection request there and come back to move next.';
+  static const String walletDesMsg2 = 'The wallet is successfully connected. Now you can talk and earn from calls.\n\nPress talk button to start calling.';
+
+  static const String acceptBid = 'Accept Bid';
+  static const String startTalk = 'Start Talk';
+  static const String failToConnect = 'Fail to connect. Please try again.';
 }
 
 extension CustomTranslation on String {
