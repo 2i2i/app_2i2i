@@ -127,7 +127,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccount> {
                         height: MediaQuery.of(context).size.height / 2,
                       );
                     },
-                    // TODO not use delay: ==> done
+                    // TODO not use delay: ==> done (Here we note make delay its just use to call function in future builder)
                     future: Future.value(localAccount?.account?.seedPhrase ?? [""]),
                   );
                 }

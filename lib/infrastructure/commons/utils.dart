@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import 'keys.dart';
 
@@ -24,6 +25,13 @@ int epochSecsNow() {
   DateTime n = DateTime.now().toUtc();
   var s = n.millisecondsSinceEpoch / 1000;
   return s.round();
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime toLocalDateTime({String format = "yyyy-MM-dd hh:mm:ss"}) {
+    var dateTime = DateFormat(format).parse(this.toString(), false);
+    return dateTime.toLocal();
+  }
 }
 
 String secondsToSensibleTimePeriod(num secs, BuildContext context) {

@@ -180,10 +180,3 @@ class MeetingHistoryTile extends ConsumerWidget {
     return time;
   }
 }
-
-extension DateTimeExtension on DateTime {
-  DateTime toLocalDateTime({String format = "yyyy-MM-dd hh:mm:ss"}) {
-    var dateTime = DateFormat(format).parse(this.toString(), false);
-    return dateTime.toLocal();
-  }
-}
