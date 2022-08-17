@@ -71,7 +71,7 @@ class AlgorandService {
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
-  // TODO: needs a try-catch
+  // TODO: needs a try-catch ==> Removed
   // Future<TransactionResponse> getTransactionResponse(
   //         String transactionId, AlgorandNet net) =>
   //     algorandLib.client[net]!.indexer().getTransactionById(transactionId);

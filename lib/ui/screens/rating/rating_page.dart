@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/models/meeting_model.dart';
+import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../app/wait_page.dart';
 import 'widgets/rating_tile.dart';
@@ -23,7 +23,6 @@ class _RatingPageState extends ConsumerState<RatingPage> {
 
   @override
   Widget build(BuildContext context) {
-
     user = ref.watch(userPageViewModelProvider(widget.uid))?.user;
 
     final ratingListAsyncValue = ref.watch(ratingListProvider(widget.uid));
@@ -33,12 +32,12 @@ class _RatingPageState extends ConsumerState<RatingPage> {
     } else if (ratingListAsyncValue is AsyncError) {
       return Scaffold(
         body: Center(
-          child: Text(Keys.somethingWantWrong.tr(context),style: Theme.of(context).textTheme.subtitle1),
+          child: Text(Keys.somethingWantWrong.tr(context), style: Theme.of(context).textTheme.subtitle1),
         ),
       );
     }
 
-    final ratingList = ratingListAsyncValue.asData!.value;
+    final ratingList = ratingListAsyncValue.value;
     final totalRating = (user!.rating * 5).toStringAsFixed(1);
 
     return Scaffold(
@@ -67,17 +66,14 @@ class _RatingPageState extends ConsumerState<RatingPage> {
                   ),
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.circular(20)),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColorLight, borderRadius: BorderRadius.circular(20)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('($totalRating/5)',
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2,
+                        Text(
+                          '($totalRating/5)',
+                          style: Theme.of(context).textTheme.subtitle2,
                         ),
                         SizedBox(width: 4),
                         Icon(
@@ -93,16 +89,17 @@ class _RatingPageState extends ConsumerState<RatingPage> {
             SizedBox(height: 10),
             Expanded(
               flex: 5,
-              child: ratingList.isEmpty
+              child: ratingList?.isEmpty ?? false
                   ? Center(
                       child: Text(
                         Keys.noRatingsFound.tr(context),
                         style: Theme.of(context).textTheme.subtitle2,
-                      ),)
+                      ),
+                    )
                   : ListView.builder(
-                      itemCount: ratingList.length,
+                      itemCount: ratingList?.length ?? 0,
                       itemBuilder: (BuildContext context, int index) {
-                        RatingModel ratingModel = ratingList[index];
+                        RatingModel ratingModel = ratingList![index];
                         return RatingTile(
                           ratingModel: ratingModel,
                         );
