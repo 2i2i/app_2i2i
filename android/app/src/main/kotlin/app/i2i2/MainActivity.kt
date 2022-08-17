@@ -56,6 +56,8 @@ class MainActivity : FlutterActivity() {
                     }
                 }
 //                result.success(places)
+            } else if (call.method == "getInitialUri") {
+                handleIntent(intent);
             } else {
                 result.notImplemented()
             }
