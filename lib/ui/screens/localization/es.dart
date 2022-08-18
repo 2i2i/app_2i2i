@@ -214,9 +214,9 @@ class es {
       Keys.connectWallet: 'Conectar billetera',
       Keys.retry: 'Rever',
       Keys.walletDesMsg1:
-          'Tiene ofertas de llamada pagadas. Para hacer esas llamadas, la aplicación requiere su cuenta de conexión de billetera. Se utilizará para recolectar dinero que otro usuario le enviará.\n\nPara conectar la billetera, deberá presionar el botón de conexión y luego será redirigido a la aplicación de conexión de billetera. Acepte la solicitud de conexión allí y vuelva para continuar.',
+          'Para recibir monedas, debe conectar una cuenta. Haga clic en Conectar para conectar una cuenta de WalletConnect en su aplicación de billetera. Luego regresa a 2i2i.',
       Keys.walletDesMsg2:
-          'La billetera está conectada con éxito. Ahora puede hablar y ganar con las llamadas.\n\nPresione el botón de hablar para comenzar a llamar.',
+          'Has conectado una cuenta. Ahora puedes recibir monedas. Haga clic en Hablar para conectarse con su Invitado.',
       Keys.acceptBid: 'Aceptar oferta',
       Keys.startTalk: 'Empezar a hablar',
       Keys.failToConnect: 'Error al conectar. Inténtalo de nuevo.',

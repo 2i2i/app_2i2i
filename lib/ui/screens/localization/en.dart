@@ -213,8 +213,8 @@ class en {
       Keys.connectWallet: 'Connect Wallet',
       Keys.retry: 'Retry',
       Keys.walletDesMsg1:
-          'You are having paid call bids. To make those calls app require your wallet connect account. It will be used to collect money that another user will send you.\n\nTo connect wallet you will have to press connect button and then you will be redirect to wallet connect application. Accept connection request there and come back to move next.',
-      Keys.walletDesMsg2: 'The wallet is successfully connected. Now you can talk and earn from calls.\n\nPress talk button to start calling.',
+          'To receive coins, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.',
+      Keys.walletDesMsg2: 'You have connected an account. Now you can receive coins. Click Talk to connect with your Guest.',
       Keys.acceptBid: 'Accept Bid',
       Keys.startTalk: 'Start Talk',
       Keys.failToConnect: 'Fail to connect. Please try again.',
