@@ -8,9 +8,9 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../infrastructure/commons/keys.dart';
 
 class QrCodeWidget extends StatefulWidget {
-  final UserModel user;
+  final String userUrl;
 
-  const QrCodeWidget({Key? key, required this.user}) : super(key: key);
+  const QrCodeWidget({Key? key, required this.userUrl}) : super(key: key);
 
   @override
   State<QrCodeWidget> createState() => _QrCodeWidgetState();
@@ -20,10 +20,10 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    String userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.id}';
-    if (widget.user.url?.isNotEmpty ?? false) {
-      userURL = widget.user.url!;
-    }
+    // String userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.id}';
+    // if (widget.user.url?.isNotEmpty ?? false) {
+    //   userURL = widget.user.url!;
+    // }
     return Padding(
       padding: EdgeInsets.only(top: kToolbarHeight, right: kToolbarHeight, left: kToolbarHeight, bottom: 10),
       child: Column(

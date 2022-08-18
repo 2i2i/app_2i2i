@@ -81,12 +81,16 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                     context.pushNamed(Routes.userSetting.nameFromPath());
                     currentIndex.value = 1;
                   },
-                  onTapQr: () => CustomAlertWidget.showBottomSheet(
-                    context,
-                    child: QrCodeWidget(
-                      user: user,
-                    ),
-                  ),
+                  onTapQr: () {
+                    if (user.url?.isNotEmpty ?? false) {
+                      CustomAlertWidget.showBottomSheet(
+                        context,
+                        child: QrCodeWidget(
+                          userUrl: user.url!,
+                        ),
+                      );
+                    }
+                  },
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
