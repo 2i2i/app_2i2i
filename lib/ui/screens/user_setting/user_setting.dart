@@ -674,7 +674,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           fallbackUrl: Uri.parse('https://about.2i2i.app'),
           ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
           ipadBundleId: 'app.2i2i',
-        ),
+          appStoreId: '1609689141'),
         navigationInfoParameters: const NavigationInfoParameters(
           forcedRedirectEnabled: false,
         ),

@@ -9,7 +9,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 class QrWidget extends ConsumerWidget {
   final imageSize;
   final logoSize;
-  final message;
+  final String message;
   final bool? hideLogo;
   final bool lightOnly;
 
@@ -18,7 +18,8 @@ class QrWidget extends ConsumerWidget {
     this.imageSize,
     this.logoSize,
     this.hideLogo,
-    required this.message,  this.lightOnly=false,
+    required this.message,
+    this.lightOnly = false,
   }) : super(key: key);
 
   Future<ui.Image> _loadOverlayImage(BuildContext context) async {
@@ -45,7 +46,6 @@ class QrWidget extends ConsumerWidget {
 
           final logoHeight = logoSize != null ? logoSize : 60.0;
           final logoWidth = logoHeight * 1.4;
-
           return CustomPaint(
             size: Size.square(size.toDouble()),
             painter: QrPainter(

@@ -80,5 +80,9 @@
         <false/>
         <key>CADisableMinimumFrameDurationOnPhone</key>
         <true/>
+        <key>FirebaseDynamicLinksCustomDomains</key>
+        <array>
+          <string>https://about.2i2i.app/user</string>
+        </array>
     </dict>
 </plist>

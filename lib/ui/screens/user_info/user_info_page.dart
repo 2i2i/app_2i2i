@@ -77,7 +77,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       }
     }
 
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -156,12 +155,16 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               user: userB,
               isFav: isFriend,
               estWaitTime: estWaitTime,
-              onTapQr: () => CustomAlertWidget.showBottomSheet(
-                context,
-                child: QrCodeWidget(
-                  user: userB,
-                ),
-              ),
+              onTapQr: () {
+                if (userB.url?.isNotEmpty ?? false) {
+                  CustomAlertWidget.showBottomSheet(
+                    context,
+                    child: QrCodeWidget(
+                      userUrl: userB.url!,
+                    ),
+                  );
+                }
+              },
               onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: userB), backgroundColor: Colors.transparent),
               onTapFav: () {
                 if (userModelChanger != null) {
