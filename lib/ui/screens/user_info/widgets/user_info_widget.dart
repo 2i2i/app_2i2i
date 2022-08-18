@@ -117,9 +117,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         ),
                       ),
                     ),
-                    InkResponse(
-                      onTap: widget.onTapQr,
-                      child: Icon(Icons.qr_code, size: 25),
+                    Visibility(
+                      visible: widget.user.url?.isNotEmpty ?? false,
+                      child: InkResponse(
+                        onTap: widget.onTapQr,
+                        child: Icon(Icons.qr_code, size: 25),
+                      ),
                     ),
                     if (widget.onTapFav != null)
                       InkResponse(

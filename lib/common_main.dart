@@ -124,7 +124,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       platform.setMethodCallHandler((MethodCall methodCall) async {
         log("methodCall.method=============> setMethodCallHandler ${methodCall.method}");
         if (methodCall.method == 'dynamicLink') {
-          Custom.deepLinks(context, mounted, methodCall.arguments);
+          // Custom.deepLinks(context, mounted, methodCall.arguments);
         }
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
@@ -235,6 +235,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       builder: (context, widget) {
+        // return TestScreen();
         return ScrollConfiguration(
           behavior: MyBehavior(),
           child: ResponsiveLayoutBuilder(
