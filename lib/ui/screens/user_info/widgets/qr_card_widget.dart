@@ -1,8 +1,6 @@
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/qr_image.dart';
 // import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -30,7 +28,7 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           QrWidget(
-            message: userURL,
+            message: widget.userUrl,
             imageSize: MediaQuery.of(context).size.height * 0.225,
             logoSize: MediaQuery.of(context).size.height * 0.04,
             lightOnly: true,
@@ -45,7 +43,7 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
             ),
             alignment: Alignment.center,
             child: Text(
-              userURL,
+              widget.userUrl,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1?.copyWith(decoration: TextDecoration.underline, color: Colors.black),
             ),
@@ -63,7 +61,7 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    Share.share('${Keys.comeAndHangOut.tr(context)}:\n${userURL}');
+                    Share.share('${Keys.comeAndHangOut.tr(context)}:\n${widget.userUrl}');
                     Navigator.of(context).maybePop();
                   },
                   child: Text(Keys.share.tr(context)),
