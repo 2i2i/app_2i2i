@@ -1,7 +1,6 @@
-import 'package:app_2i2i/common_main.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:uni_links/uni_links.dart';
 
 import '../../infrastructure/data_access_layer/services/logging.dart';
 import '../../infrastructure/providers/all_providers.dart';
@@ -24,24 +23,25 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(BuildContext context, bool mounted, [String? url]) async {
+  static Future<void> deepLinks(
+    BuildContext context,
+    bool mounted,
+  ) async {
     if (!kIsWeb) {
       try {
-        // String mainUrl = '';
-
-        if (url?.isNotEmpty ?? false) {
-          handleURI(Uri.parse(url!), '');
-        }
         if (!_initialUriIsHandled) {
-          platform.invokeListMethod('getInitialUri');
           _initialUriIsHandled = true;
           String userId = '';
-          Uri? uri = await getInitialUri();
-          handleURI(uri, userId);
+          PendingDynamicLinkData? pendingDynamicLinkData = await FirebaseDynamicLinks.instance.getInitialLink();
+          if (pendingDynamicLinkData != null) {
+            handleURI(pendingDynamicLinkData.link, userId);
+          }
         }
-        uriLinkStream.listen((Uri? uri) {
-          print('uri $uri');
-          if (!mounted || uri == null) return;
+
+        FirebaseDynamicLinks.instance.onLink.listen((event) {
+          print(event.link);
+          Uri uri = event.link;
+          if (!mounted) return;
           String userId = '';
           if (uri.queryParameters['link'] is String) {
             var link = uri.queryParameters['link'];

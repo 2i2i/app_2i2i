@@ -1,7 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:app_2i2i/ui/layout/spacings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -20,9 +19,11 @@ class NoBidPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.watch(myUIDProvider);
     if (uid == null) return WaitPage();
-    var message = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/$uid';
-    if (FirebaseAuth.instance.currentUser?.photoURL?.isNotEmpty ?? false) {
-      message = FirebaseAuth.instance.currentUser!.photoURL!;
+    final userModel = ref.watch(userProvider(uid));
+    if (haveToWait(userModel)) return WaitPage();
+    String? message;
+    if (userModel.value?.url?.isNotEmpty ?? false) {
+      message = userModel.value!.url!;
     }
     return Container(
       width: double.infinity,
@@ -45,7 +46,7 @@ class NoBidPage extends ConsumerWidget {
                   child: QrWidget(
                     imageSize: MediaQuery.of(context).size.height * 0.18,
                     logoSize: MediaQuery.of(context).size.height * 0.04,
-                    message: message,
+                    message: message ?? '',
                   ),
                 ),
               ),
@@ -57,28 +58,35 @@ class NoBidPage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Flexible(
-                    flex: 2,
-                    child: Text(message,
+                  if (message?.isNotEmpty ?? false)
+                    Flexible(
+                      flex: 2,
+                      child: Text(
+                        message ?? '',
                         textAlign: TextAlign.center,
                         maxLines: 3,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(decoration: TextDecoration.underline)),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  if (message?.isEmpty ?? true)
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: AppSpacings.s20, vertical: AppSpacings.s10),
+                        child: LinearProgressIndicator(),
+                      ),
+                    ),
+                  Visibility(
+                    visible: message?.isNotEmpty ?? false,
+                    child: IconButton(
+                        onPressed: () {
+                          Share.share('${Keys.joinInvite.tr(context)}\n$message');
+                        },
+                        icon: Icon(
+                          Icons.share,
+                          size: 20,
+                        )),
                   ),
-                  /*IconButton(
-                      onPressed: () async {
-                        await Clipboard.setData(new ClipboardData(text: message));
-                        CustomDialogs.showToastMessage(
-                            context, Keys.copyMessage.tr(context));
-                      },
-                      icon: Icon(Icons.copy)),*/
-                  IconButton(
-                      onPressed: () {
-                         Share.share('${Keys.joinInvite.tr(context)}\n$message');
-                      },
-                      icon: Icon(
-                        Icons.share,
-                        size: 20,
-                      )),
                 ],
               ),
             ],
