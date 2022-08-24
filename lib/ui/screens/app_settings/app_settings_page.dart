@@ -320,7 +320,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       await signUpViewModel.signOutFromAuth();
                       await ref.read(storageProvider).clearStorage();
                       currentIndex.value = 1;
-                      context.go(Routes.myUser);
+                      if (mounted) context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
@@ -342,7 +342,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               child: FutureBuilder(
                 future: ref.read(setupUserViewModelProvider).getAuthList(),
                 builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-                  if(snapshot.data is List<String>) {
+                  if (snapshot.data is List<String>) {
                     List<String> list = snapshot.data!;
                     return Row(
                       children: [
@@ -392,7 +392,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                                           await _webViewController?.clearMatches();
                                           await _webViewController?.removeAllUserScripts();
                                           Navigator.of(context).pop(idToken);
-
                                         }
                                       }
                                     },
@@ -403,10 +402,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                                 },
                               );
                               final result = await Navigator.of(context).push(route);
-                              if(result is String){
+                              if (result is String) {
                                 String token = result.split(':').first;
                                 String id = result.split(':').last;
-                                await signUpViewModel.signInWithInstagram(context, id,true);
+                                await signUpViewModel.signInWithInstagram(context, id, true);
                                 await ref.read(setupUserViewModelProvider).getAuthList();
                               }
                             },
@@ -436,7 +435,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   }
                   return Container();
                 },
-
               ),
             ),
             SizedBox(height: 16),
@@ -477,7 +475,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
-      if(sessionStatus.accounts.isNotEmpty) {
+      if (sessionStatus.accounts.isNotEmpty) {
         var setupUserViewModel = ref.watch(setupUserViewModelProvider);
         String userId = ref.read(myUIDProvider) ?? '';
 
@@ -529,5 +527,4 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       );
     }
   }
-
 }

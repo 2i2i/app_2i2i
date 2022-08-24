@@ -297,7 +297,7 @@ class SetupUserViewModel with ChangeNotifier {
               await signInProcess(uid, socialLinkModel: socialLinksModel).then((_) async {
                 await account.save(sessionId).then((_) {
                   myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC', userId: uid).then((_) {
-                    myAccountPageViewModel.updateAccounts().then((_) {
+                    myAccountPageViewModel.updateAccounts(notify: false).then((_) {
                       account.setMainAccount();
                     });
                   });

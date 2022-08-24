@@ -21,9 +21,9 @@ import 'package:walletconnect_dart/walletconnect_dart.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../commons/custom.dart';
 import '../app/no_internet_screen.dart';
 import '../app/wait_page.dart';
-import '../my_account/widgets/qr_image_widget.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -328,7 +328,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     if (!account.connector.connected) {
       SessionStatus sessionStatus = await account.connector.createSession(
         chainId: 4160,
-        onDisplayUri: (uri) => _changeDisplayUri(uri),
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
       );
       isDialogOpen.value = false;
       if (sessionStatus.accounts.isNotEmpty) {
@@ -336,33 +336,5 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       }
     }
     return account.address;
-  }
-
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
-    if (mounted) {
-      setState(() {});
-    }
-
-    bool isLaunch = false;
-    if (Platform.isAndroid || Platform.isIOS) {
-      isLaunch = await launchUrl(Uri.parse(uri));
-    }
-    if (!isLaunch) {
-      isDialogOpen.value = true;
-      await showDialog(
-        context: context,
-        builder: (context) => ValueListenableBuilder(
-          valueListenable: isDialogOpen,
-          builder: (BuildContext context, bool value, Widget? child) {
-            if (!value) {
-              Navigator.of(context).pop();
-            }
-            return QrImagePage(imageUrl: _displayUri);
-          },
-        ),
-        barrierDismissible: true,
-      );
-    }
   }
 }

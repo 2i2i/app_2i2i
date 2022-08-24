@@ -121,7 +121,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     // return localAccount;
   }
 
-  Future updateDBWithNewAccount(String address, {String userId = '',String type = 'LOCAL'}) => database.addAlgorandAccount(uid??userId, address, type);
+  Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);
 
   Future<void> saveLocalAccount(LocalAccount account) async {
     if (uid == null) return;
@@ -144,8 +144,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
     return account;
   }
 
-  Future<void> updateAccounts() async {
+  Future<void> updateAccounts({bool notify = true}) async {
     await accountService?.getNumAccounts() ?? 0;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 }
