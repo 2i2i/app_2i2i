@@ -2,15 +2,11 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
-import 'package:app_2i2i/infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:app_2i2i/ui/screens/instagram_login.dart';
 import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget.dart';
@@ -29,6 +25,7 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
@@ -463,9 +460,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   Future<String?> _createSession() async {
-    var myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+
+    // var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+    // String userId = ref.read(myUIDProvider)??'';
+
     final account = WalletConnectAccount.fromNewConnector(
       accountService: myAccountPageViewModel.accountService!,
+      connector: connector,
     );
     // Create a new session
     if (!account.connector.connected) {
@@ -475,20 +479,19 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
       );
       if(sessionStatus.accounts.isNotEmpty) {
         var setupUserViewModel = ref.watch(setupUserViewModelProvider);
-        String userId = ref.read(myUIDProvider)??'';
-
+        String userId = ref.read(myUIDProvider) ?? '';
 
         isDialogOpen.value = false;
-        CustomDialogs.loader(true, context, rootNavigator: true);
+        CustomAlertWidget.loader(true, context, rootNavigator: true);
 
-        await account.save();
-        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
+        await account.save(id);
+        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address);
         await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
         await myAccountPageViewModel.updateAccounts();
         await account.setMainAccount();
         await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
 
-        CustomDialogs.loader(false, context, rootNavigator: true);
+        CustomAlertWidget.loader(false, context, rootNavigator: true);
         _displayUri = '';
 
         return account.address;

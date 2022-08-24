@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
 import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import 'package:app_2i2i/ui/screens/instagram_login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +15,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
@@ -64,7 +61,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final signUpViewModel = ref.watch(setupUserViewModelProvider);
+    final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if (!appSettingModel.isInternetAvailable) {
@@ -318,10 +315,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   Future<void> onTapSignInWithAlgorand(SetupUserViewModel signUpViewModel, BuildContext context) async {
     var accountService = await ref.watch(accountServiceProvider);
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    final account = WalletConnectAccount.fromNewConnector(accountService: accountService);
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+    final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
     String? address = await _createSession(accountService, account);
     if (address is String) {
-      await signUpViewModel.signInWithWalletConnect(context, address, account, myAccountPageViewModel);
+      await signUpViewModel.signInWithWalletConnect(context, address, account, id, myAccountPageViewModel);
     }
   }
 
@@ -336,7 +335,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         return sessionStatus.accounts.first;
       }
     }
-    return null;
+    return account.address;
   }
 
   Future _changeDisplayUri(String uri) async {
