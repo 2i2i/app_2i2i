@@ -3,40 +3,47 @@ import 'dart:typed_data';
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
+import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
+import '../../commons/utils.dart';
 import '../repository/algorand_service.dart';
+import '../repository/secure_storage_service.dart';
 import 'abstract_account.dart';
 
 class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> cache = [];
 
-  static WalletConnect newConnector() {
+  static Future<WalletConnect> newConnector([String key = '0']) async {
+    final sessionStorage = WalletConnectSecureStorage(storageKey: key);
+    final session = await sessionStorage.getSession();
+    final bridge = await getWCBridge();
     return WalletConnect(
-      bridge: 'https://bridge.walletconnect.org',
+      bridge: bridge,
+      session: session,
+      sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
-        name: 'WalletConnect',
-        description: 'WalletConnect Developer App',
-        url: 'https://walletconnect.org',
-        icons: [
-          'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
-        ],
+        name: '2i2i',
+        description: 'earn coins by talking',
+        url: 'https://2i2i.app',
+        icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
       ),
     );
   }
+
+  final SecureStorage storage = SecureStorage();
 
   late WalletConnect connector;
   late AlgorandWalletConnectProvider provider;
 
   WalletConnectAccount({required AccountService accountService, required this.connector, required this.provider}) : super(accountService: accountService);
 
-  factory WalletConnectAccount.fromNewConnector({required AccountService accountService}) {
-    final connector = newConnector();
+  factory WalletConnectAccount.fromNewConnector({required AccountService accountService, required WalletConnect connector}) {
     final provider = AlgorandWalletConnectProvider(connector);
     return WalletConnectAccount(accountService: accountService, connector: connector, provider: provider);
   }
 
   // TODO cache management
-  Future<void> save() async {
+  Future<void> save(String sessionId) async {
     // final List<Future<void>> futures = [];
     // for (int i = 0; i < connector.session.accounts.length; i++) {
     // final account = WalletConnectAccount(
@@ -44,46 +51,42 @@ class WalletConnectAccount extends AbstractAccount {
     //     connector: connector,
     // );
 
-    address = connector.session.accounts[0];
-    await updateBalances(net: AppConfig().ALGORAND_NET);
-    // futures.add(updateBalances());
+    List<String> accounts = await accountService.getAllWalletConnectAccounts();
+    accounts.add(sessionId);
+    storage.write('wallet_connect_accounts', accounts.join(','));
 
-    int alreadyExistIndex =
-        cache.indexWhere((element) => element.address == address);
-    if (alreadyExistIndex < 0) {
-      cache.add(this);
-    } else {
-      cache[alreadyExistIndex] = this;
+    if (connector.session.accounts.isNotEmpty) {
+      address = connector.session.accounts[0];
+      await updateBalances(net: AppConfig().ALGORAND_NET);
+      // futures.add(updateBalances());
+      int alreadyExistIndex = cache.indexWhere((element) => element.address == address);
+      if (alreadyExistIndex < 0) {
+        cache.add(this);
+      } else {
+        cache[alreadyExistIndex] = this;
+      }
     }
-    // }
-    // await Future.wait(futures);
   }
 
   static List<WalletConnectAccount> getAllAccounts() => cache;
 
+  static List<String> getAllAccountAddresses(WalletConnect connector) => connector.session.accounts;
+
   @override
-  Future<String> optInToASA(
-      {required int assetId,
-      required AlgorandNet net,
-      waitForConfirmation = true}) {
+  Future<String> optInToASA({required int assetId, required AlgorandNet net, waitForConfirmation = true}) {
     // TODO: implement optInToASA
     throw UnimplementedError();
   }
 
   @override
-  Future<String> optInToDapp(
-      {required int dappId,
-      required AlgorandNet net,
-      bool waitForConfirmation = false}) {
+  Future<String> optInToDapp({required int dappId, required AlgorandNet net, bool waitForConfirmation = false}) {
     // TODO: implement optInToDapp
     throw UnimplementedError();
   }
 
   @override
   Future<List<Uint8List>> sign(List<RawTransaction> txns) {
-    final txnsBytes = txns
-        .map((txn) => Encoder.encodeMessagePack(txn.toMessagePack()))
-        .toList();
+    final txnsBytes = txns.map((txn) => Encoder.encodeMessagePack(txn.toMessagePack())).toList();
     return provider.signTransactions(txnsBytes);
   }
 }

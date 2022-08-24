@@ -50,7 +50,7 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     int amount = meetingModel.energy['B'] ?? 0;
     if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
-    double amountInALGO = amount / 1000000;
+    double amountInALGO = amount / MILLION;
 
     return InkResponse(
       onTap: onTap,
@@ -178,12 +178,5 @@ class MeetingHistoryTile extends ConsumerWidget {
     DateFormat formatDate = new DateFormat("yyyy-MM-dd\nhh:mm:a");
     String time = formatDate.format(meetingTime.toLocal());
     return time;
-  }
-}
-
-extension DateTimeExtension on DateTime {
-  DateTime toLocalDateTime({String format = "yyyy-MM-dd HH:mm:ss"}) {
-    var dateTime = DateFormat(format).parse(this.toString(), true);
-    return dateTime.toLocal();
   }
 }

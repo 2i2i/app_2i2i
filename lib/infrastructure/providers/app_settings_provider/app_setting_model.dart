@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../commons/keys.dart';
@@ -26,6 +28,25 @@ class AppSettingModel extends ChangeNotifier {
   bool isVideoEnabled = true;
   bool swapVideo = false;
 
+  // bool isTappedOnKey = false;
+  bool isTappedOnKey = true;
+
+  bool isInternetAvailable = true;
+
+  void setInternetStatus(bool value) {
+    isInternetAvailable = value;
+    notifyListeners();
+  }
+
+  Future<bool> checkConnectivity() async {
+    try {
+      ConnectivityResult result = await Connectivity().checkConnectivity();
+      return result != ConnectivityResult.none;
+    } on PlatformException {
+      return false;
+    }
+  }
+
   void appInit() {
     isVideoEnabled = true;
     isAudioEnabled = true;
@@ -47,8 +68,21 @@ class AppSettingModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setTappedOnKey(String value) async {
+    await storage.write('tappedOnKey', value);
+    isTappedOnKey = true;
+    // isTappedOnKey = value == "1";
+    notifyListeners();
+  }
+
+  Future<void> getTappedOnKey() async {
+    isTappedOnKey = true;
+    // isTappedOnKey = (value == "1");
+    notifyListeners();
+  }
+
   bool updateRequired = false;
-  String version = "1";
+  String version = "1.0.31";
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
@@ -62,7 +96,7 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   Future<void> checkIfUpdateAvailable() async {
-    if(kIsWeb){
+    if (kIsWeb) {
       return;
     }
     AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();

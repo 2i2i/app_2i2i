@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
+
 import './utils/device_info.dart' if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart' if (dart.library.js) './utils/websocket_web.dart';
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 
 enum SignalingState {
   ConnectionOpen,
@@ -104,9 +106,9 @@ class SignalingWebSockets {
     'optional': [],
   };
 
-  Future close() async {
+  Future<void> close() async {
     await _cleanSessions();
-    _socket?.close();
+    await _socket?.closeSocket();
   }
 
   void switchCamera() {
@@ -125,8 +127,8 @@ class SignalingWebSockets {
   }
 
   bool muteVideo() {
-    if (_localStream != null) {
-      bool enabled = _localStream?.getVideoTracks()[0].enabled ?? false;
+    if (_localStream != null && (_localStream?.getVideoTracks().length ?? 0) > 0) {
+      bool enabled = _localStream?.getVideoTracks().first.enabled ?? false;
       _localStream!.getVideoTracks()[0].enabled = !enabled;
       return !enabled;
     }
@@ -135,8 +137,7 @@ class SignalingWebSockets {
 
   void invite(String peerId, String media, bool useScreen) async {
     var sessionId = _selfId + '-' + peerId;
-    Session session =
-        await _createSession(null, peerId: peerId, sessionId: sessionId, media: media, screenSharing: useScreen);
+    Session session = await _createSession(null, peerId: peerId, sessionId: sessionId, media: media, screenSharing: useScreen);
     _sessions[sessionId] = session;
     if (media == 'data') {
       _createDataChannel(session);
@@ -176,8 +177,7 @@ class SignalingWebSockets {
         var media = data['media'];
         var sessionId = data['session_id'];
         var session = _sessions[sessionId];
-        var newSession =
-            await _createSession(session, peerId: peerId, sessionId: sessionId, media: media, screenSharing: false);
+        var newSession = await _createSession(session, peerId: peerId, sessionId: sessionId, media: media, screenSharing: false);
         _sessions[sessionId] = newSession;
         await newSession.pc?.setRemoteDescription(RTCSessionDescription(description['sdp'], description['type']));
         await _createAnswer(newSession, media);
@@ -202,12 +202,13 @@ class SignalingWebSockets {
         var candidateMap = data['candidate'];
         var sessionId = data['session_id'];
         var session = _sessions[sessionId];
-        RTCIceCandidate candidate =
-            RTCIceCandidate(candidateMap['candidate'], candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
+        RTCIceCandidate candidate = RTCIceCandidate(candidateMap['candidate'], candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
 
         if (session != null) {
           if (session.pc != null) {
-            await session.pc?.addCandidate(candidate);
+            await session.pc?.addCandidate(candidate).catchError((onError) {
+              print("Your error ========>$onError");
+            });
           } else {
             session.remoteCandidates.add(candidate);
           }
@@ -282,7 +283,7 @@ class SignalingWebSockets {
 
     _socket?.onMessage = (message) {
       log('Received data: ' + message);
-      onMessage(_decoder.convert(message));
+      onMessage.call(_decoder.convert(message));
     };
 
     _socket?.onClose = (int code, String reason) {
@@ -309,9 +310,8 @@ class SignalingWebSockets {
             }
     };
 
-    MediaStream stream = userScreen
-        ? await navigator.mediaDevices.getDisplayMedia(mediaConstraints)
-        : await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream stream =
+        userScreen ? await navigator.mediaDevices.getDisplayMedia(mediaConstraints) : await navigator.mediaDevices.getUserMedia(mediaConstraints);
     onLocalStream?.call(stream);
     return stream;
   }

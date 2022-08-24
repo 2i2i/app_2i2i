@@ -38,7 +38,7 @@ import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-  await dotenv.load(fileName: ".env_dev");
+  await dotenv.load(fileName: "assets/.env_dev");
 
   FirebaseApp app = await Firebase.initializeApp(
       options: kIsWeb

@@ -61,7 +61,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
             .textTheme
             .overline!
             .copyWith(color: Theme.of(mainContext).shadowColor),
-        text: '${Keys.algoSec.tr(mainContext)}');
+        text: '${Keys.algoPerSec.tr(mainContext)}');
 
     TextSpan span = new TextSpan(
       children: [span1, span2],

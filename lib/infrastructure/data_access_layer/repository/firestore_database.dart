@@ -218,6 +218,8 @@ class FirestoreDatabase {
       transaction.update(userBRef, obj);
 
       return Future.value();
+    }).catchError((onError) {
+      print(onError);
     });
   }
 
@@ -273,24 +275,23 @@ class FirestoreDatabase {
       );
 
   Stream<UserModel> userStream({required String uid}) {
-    if (uid.isNotEmpty) {
-      return _service.documentStream(
-        path: FirestorePath.user(uid),
-        builder: (data, documentId) {
-          data ??= {};
-          return UserModel.fromMap(data, documentId);
-        },
-      ).handleError((error) {
-        log('error ${error}');
-      });
-    }
-    return Stream.empty();
+    return _service
+        .documentStream(
+      path: FirestorePath.user(uid),
+      builder: (data, documentId) {
+        if (data == null) {
+          return UserModel(id: documentId);
+        }
+        return UserModel.fromMap(data, documentId);
+      },
+    )
+        .handleError((e) {
+      print(e);
+    });
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
-      log(onError);
-    });
+    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid));
     if (snapshot.data() is Map) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
@@ -299,15 +300,11 @@ class FirestoreDatabase {
   }
 
   Future<void> updateUser(UserModel user) {
-    return _service
-        .setData(
+    return _service.setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    )
-        .catchError((error) {
-      log(error);
-    });
+    );
   }
 
   Future<AppVersionModel?> getAppVersion() async {
@@ -373,7 +370,9 @@ class FirestoreDatabase {
     log(I + 'usersStream - tags=$tags');
     return _service.collectionStream(
       path: FirestorePath.users(),
-      builder: (data, documentId) => UserModel.fromMap(data, documentId),
+      builder: (data, documentId) {
+        return UserModel.fromMap(data, documentId);
+      },
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
     ).handleError(
       (error) {
@@ -412,11 +411,15 @@ class FirestoreDatabase {
   }
 
   Stream<List<BidInPrivate>> bidInsPrivateStream({required String uid}) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.bidInsPrivate(uid),
       builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
-    );
+    )
+        .handleError((err) {
+      print("----------> $err");
+    });
   }
 
   Stream<List<BidOut>> bidOutsStream({required String uid}) {
@@ -519,7 +522,7 @@ class FirestoreDatabase {
   }
 
   Future<void> addChat(String uid, ChatModel chat) => _service.setData(
-        path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
+    path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
         data: chat.toMap(),
       );
 }

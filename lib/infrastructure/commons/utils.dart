@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+
+import 'keys.dart';
 
 String shortString(String string, {int maxLength = 10}) {
-  if (maxLength < string.length)
-    return string.substring(0, maxLength - 3) + '...';
+  if (maxLength < string.length) return string.substring(0, maxLength - 3) + '...';
   return string;
 }
 
@@ -15,35 +21,24 @@ String ordinalIndicator(int x) {
   return 'th';
 }
 
-String microALGOToLargerUnit(int microALGO, {int maxDigits = 2, String unitALGO = 'ALGO'}) {
-  final N = microALGO.toString().length;
-  if (N <= maxDigits) return '$microALGO μ$unitALGO';
-  if (N <= maxDigits + 3) return '~${(microALGO / 1000).round()} m$unitALGO';
-  if (N <= maxDigits + 4) return '~${(microALGO / 10000).round()} c$unitALGO';
-  if (N <= maxDigits + 5) return '~${(microALGO / 100000).round()} d$unitALGO';
-  if (N <= maxDigits + 6) return '~${(microALGO / 1000000).round()} $unitALGO';
-  if (N <= maxDigits + 7) return '~${(microALGO / 10000000).round()} deca$unitALGO';
-  if (N <= maxDigits + 8) return '~${(microALGO / 100000000).round()} hecto$unitALGO';
-  if (N <= maxDigits + 9) return '~${(microALGO / 1000000000).round()} k$unitALGO';
-  if (N <= maxDigits + 10) return '~${(microALGO / 10000000000).round()} M$unitALGO';
-  if (N <= maxDigits + 11) return '~${(microALGO / 100000000000).round()} G$unitALGO';
-  if (N <= maxDigits + 12)
-    return '~${(microALGO / 1000000000000).round()} MALGO';
-  throw Exception(
-      'microALGOToLargerUnit - amount too large: microALGO=$microALGO - maxDigits=$maxDigits');
-}
-
 int epochSecsNow() {
   DateTime n = DateTime.now().toUtc();
   var s = n.millisecondsSinceEpoch / 1000;
   return s.round();
 }
 
-String secondsToSensibleTimePeriod(num secs) {
-  if (secs == 0) return 'zero';
-  if (secs == double.infinity) return 'foreever';
+extension DateTimeExtension on DateTime {
+  DateTime toLocalDateTime({String format = "yyyy-MM-dd hh:mm:ss"}) {
+    var dateTime = DateFormat(format).parse(this.toString(), false);
+    return dateTime.toLocal();
+  }
+}
 
-  String currentBestTimePeriod = 'secs';
+String secondsToSensibleTimePeriod(num secs, BuildContext context) {
+  if (secs == 0) return Keys.zero.tr(context);
+  if (secs == double.infinity) return Keys.forever.tr(context);
+
+  String currentBestTimePeriod = Keys.secs.tr(context);
   double currentBestNum = secs.toDouble();
   // int currentBestNumDigits = mainPartLength(currentBestNum);
 
@@ -53,7 +48,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'minutes';
+  currentBestTimePeriod = Keys.minutes.tr(context);
   currentBestNum = minutesNum;
   // final minutesLength = mainPartLength(minutesNum);
 
@@ -63,7 +58,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'hours';
+  currentBestTimePeriod = Keys.hours.tr(context);
   currentBestNum = hoursNum;
 
   // days
@@ -72,7 +67,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'days';
+  currentBestTimePeriod = Keys.days.tr(context);
   currentBestNum = daysNum;
 
   // weeks
@@ -81,7 +76,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'weeks';
+  currentBestTimePeriod = Keys.weeks.tr(context);
   currentBestNum = weeksNum;
 
   // months
@@ -90,7 +85,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'months';
+  currentBestTimePeriod = Keys.months.tr(context);
   currentBestNum = monthsNum;
 
   // years
@@ -99,7 +94,7 @@ String secondsToSensibleTimePeriod(num secs) {
     final bestNum = currentBestNum.round();
     return '~ $bestNum $currentBestTimePeriod';
   }
-  currentBestTimePeriod = 'years';
+  currentBestTimePeriod = Keys.years.tr(context);
   currentBestNum = yearsNum;
 
   // decades
@@ -121,6 +116,7 @@ num getMaxDuration({required num budget, required num speed}) {
   }
   return (budget / speed).floor();
 }
+
 extension NoRoundingDecimal on double {
   String toDecimalAsFixed(int toDecimal) {
     var right;
@@ -135,6 +131,7 @@ extension NoRoundingDecimal on double {
     return number.toStringAsFixed(toDecimal);
   }
 }
+
 String getDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
@@ -159,8 +156,7 @@ String prettyDuration(Duration duration) {
   }
 
   var seconds = duration.inSeconds % 60;
-  var centiseconds =
-      (duration.inMilliseconds % 1000) ~/ 10;
+  var centiseconds = (duration.inMilliseconds % 1000) ~/ 10;
   if (components.isEmpty || seconds != 0 || centiseconds != 0) {
     components.add('$seconds');
     if (centiseconds != 0) {
@@ -172,13 +168,43 @@ String prettyDuration(Duration duration) {
   return components.join();
 }
 
+num doubleWithoutDecimalToInt(double val) {
+  return val % 1 == 0 ? val.toInt() : val;
+}
+
 bool haveToWait(var provider) {
   if (provider is AsyncError) {
     log('\n\n\n\n\n\n\n\n\n\n${provider.stackTrace.toString()}\n\n\n\n\n\n\n\n\n\n');
   }
   return provider == null || provider is AsyncLoading || provider is AsyncError;
 }
+
+Future<String> getWCBridge() async {
+  try {
+    final r = await http.get(Uri.parse('https://wc.perawallet.app/servers.json'));
+    final jsonResponse = jsonDecode(r.body);
+    if (jsonResponse is Map && jsonResponse['servers'] is List) {
+      final bridges = jsonResponse["servers"];
+      final rng = Random();
+      final ix = rng.nextInt(bridges.length);
+      return bridges[ix];
+    }
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+  return 'https://bridge.walletconnect.org';
+}
+
+const int MILLION = 1000000;
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+/*
 class MyBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) => ClampingScrollPhysics();
-}
+}*/

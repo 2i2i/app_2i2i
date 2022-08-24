@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
-import '../home/wait_page.dart';
+import '../../commons/custom_alert_widget.dart';
+import '../app/wait_page.dart';
+import '../my_user/widgets/wallet_connect_dialog.dart';
 import 'widgets/account_info.dart';
 import 'widgets/add_account_options_widget.dart';
 
@@ -15,16 +17,16 @@ class MyAccountPage extends ConsumerStatefulWidget {
 }
 
 class _MyAccountPageState extends ConsumerState<MyAccountPage> {
-
-
   @override
   void initState() {
     super.initState();
     // Future.delayed(Duration(seconds: 2)).then((value) {
-      ref.read(myAccountPageViewModelProvider).initMethod();
+    ref.read(myAccountPageViewModelProvider).initMethod();
     // });
   }
+
   ValueNotifier<bool> showBottomSheet = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
@@ -44,39 +46,42 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ),
             SizedBox(height: 15),
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  if(myAccountPageViewModel.isLoading){
-                    return WaitPage(isCupertino: true,);
-                  }
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: myAccountPageViewModel.accounts?.length ?? 0,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                    itemBuilder: (BuildContext context, int index) {
-                      return AccountInfo(
-                        true,
-                        key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                        account: myAccountPageViewModel.accounts![index],
-                      );
-                    },
+              child: Builder(builder: (context) {
+                if (myAccountPageViewModel.isLoading) {
+                  return WaitPage(
+                    isCupertino: true,
                   );
                 }
-              ),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: myAccountPageViewModel.addresses.length,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  itemBuilder: (BuildContext context, int index) {
+                    String address = myAccountPageViewModel.addresses[index];
+                    return AccountInfo(
+                      true,
+                      index: index,
+                      key: ObjectKey(myAccountPageViewModel.addresses[index]),
+                      address: address,
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
-        onPressed: () {
-          showBottomSheet.value = !showBottomSheet.value;
+        onPressed: () async {
+          await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+          // showBottomSheet.value = !showBottomSheet.value;
         },
         child: ValueListenableBuilder(
           valueListenable: showBottomSheet,
           builder: (BuildContext context, bool value, Widget? child) {
             return Icon(
-              value?Icons.close:Icons.add,
+              value ? Icons.close : Icons.add,
               color: Theme.of(context).cardColor,
               size: 35,
             );
@@ -96,8 +101,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               return Visibility(
                 visible: value,
                 child: Container(
-                    child:
-                        AddAccountOptionsWidgets(showBottom: showBottomSheet),
+                    child: AddAccountOptionsWidgets(showBottom: showBottomSheet),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.only(
@@ -111,9 +115,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         },
         elevation: 0,
         enableDrag: true,
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.black
-            : Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.black : Theme.of(context).scaffoldBackgroundColor,
       ),
     );
   }

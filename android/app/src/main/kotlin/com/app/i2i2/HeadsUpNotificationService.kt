@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import app.i2i2.MainActivity
 import com.app.i2i2.notification.NotificationBuilder
-import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 class HeadsUpNotificationService : Service() {
@@ -62,7 +61,7 @@ class HeadsUpNotificationService : Service() {
                         disposeNotification()
                     }
                 }
-                timer.schedule(task, 15000)
+                timer.schedule(task, 30000)
             } else if (intent.action.equals(ConfigKey.CALL_ACCEPT)) {
                 disposeNotification()
                 var openIntent: Intent? = null

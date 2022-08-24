@@ -20,6 +20,13 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.app.i2i2.MyApplication"
         android:icon="@mipmap/ic_launcher"
@@ -35,9 +42,7 @@
             android:theme="@style/Theme.AppCompat"
             android:turnScreenOn="true"
             android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="flutter_deeplinking_enabled"
-                android:value="true" />
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -51,6 +56,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -62,21 +71,24 @@
                     android:scheme="test" />
             </intent-filter>
 
-
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with https://YOUR_HOST -->
-                <data
-                    android:host="about.2i2i.app"
-                    android:pathPrefix="/"
-                    android:scheme="https" />
-            </intent-filter>
-
+            <!--            <intent-filter android:autoVerify="true">-->
+            <!--                <action android:name="android.intent.action.VIEW" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <category android:name="android.intent.category.BROWSABLE" />-->
+            <!---->
+            <!--                <data-->
+            <!--                    android:host="about.2i2i.app"-->
+            <!--                    android:pathPrefix="/"-->
+            <!--                    android:scheme="https" />-->
+            <!---->
+            <!--                <data-->
+            <!--                    android:host="about.2i2i.app"-->
+            <!--                    android:scheme="https" />-->
+            <!---->
+            <!--            </intent-filter>-->
 
         </activity>
+
         <provider
             android:name="com.pichillilorenzo.flutter_inappwebview.InAppWebViewFileProvider"
             android:authorities="${applicationId}.flutter_inappwebview.fileprovider"
@@ -110,7 +122,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/alert_color" />
 
-        <service android:name="com.app.i2i2.HeadsUpNotificationService"/>
+        <service android:name="com.app.i2i2.HeadsUpNotificationService" />
 
 
     </application>

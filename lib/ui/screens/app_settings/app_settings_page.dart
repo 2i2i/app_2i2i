@@ -11,11 +11,12 @@ import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:app_2i2i/ui/screens/instagram_login.dart';
 import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -86,7 +87,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -110,7 +114,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () => context.pushNamed(Routes.userSetting.nameFromPath()),
+                    onTap: () {
+                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 4;
+                    },
                     title: Text(
                       Keys.bio.tr(context),
                       style: Theme.of(context).textTheme.subtitle1,
@@ -122,9 +129,20 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     onTap: () {
                       context.pushNamed(Routes.account.nameFromPath());
                     },
-                    title: Text(
-                      Keys.wallet.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                    title: Row(
+                      children: [
+                        Text(
+                          Keys.wallet.tr(context),
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                        Visibility(
+                          visible: !(appSettingModel.isTappedOnKey),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -210,11 +228,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       switch (index) {
                         case 0:
                           appSettingModel.setThemeMode(Keys.light);
+                          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
                           break;
                         case 1:
                           appSettingModel.setThemeMode(Keys.dark);
+                          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
                           break;
                         case 2:
+                          var brightness = MediaQuery.of(context).platformBrightness;
+                          bool isDarkMode = brightness == Brightness.dark;
+                          SystemChrome.setSystemUIOverlayStyle(isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
                           appSettingModel.setThemeMode(Keys.auto);
                           break;
                       }
@@ -283,8 +306,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
-                        ? Text('Update Available',
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                        ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
                         : null,
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
@@ -294,18 +316,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               Icons.arrow_circle_left_rounded,
                             ),
                           )
-                        : Text("${appSettingModel.version}",
-                            style:
-                                Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
+                        : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
                       await signUpViewModel.signOutFromAuth();
+                      await ref.read(storageProvider).clearStorage();
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
                     },
-                    title: Text(Keys.logOut.tr(context),
-                        style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
+                    title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
               ),
@@ -313,10 +333,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 20),
             //connect social
             Visibility(
-              visible:
-                  !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
+              visible: !signUpViewModel.authList.contains('google.com') && !signUpViewModel.authList.contains('apple.com'),
               child: Text(
-                'Connect account with',
+                Keys.connectAccount.tr(context),
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ),
@@ -423,11 +442,17 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
 
               ),
             ),
-            SizedBox(height: 32),
-            Text('${Keys.appVersion.tr(context)}: v23',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
-            SizedBox(height: 20),
+            SizedBox(height: 16),
+            TextButton(
+                onPressed: () async {
+                  await signUpViewModel.deleteUser(
+                      title: "${Keys.deleteAccount.tr(context)}!", description: Keys.deleteAccountMessage.tr(context), mainContext: context);
+                  await ref.read(storageProvider).clearStorage();
+                },
+                child: Text(
+                  Keys.deleteAccount.tr(context),
+                  style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
+                ))
           ],
         ),
       ),

@@ -1,5 +1,7 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
@@ -19,14 +21,11 @@ class RatingTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ProfileWidget(
-              stringPath: (ratingModel.rating * 5).toStringAsFixed(0),
+              stringPath: (ratingModel.rating * 5).toStringAsFixed(1).replaceAll(RegExp(r'([.]*0)(?!.*\d)'), '').toString(),
               isRating: true,
               showBorder: true,
               radius: 65,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline5!
-                  .copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: 10),
@@ -59,21 +58,16 @@ class RatingTile extends StatelessWidget {
                           },
                         ),
                       ),
-                      // SizedBox(width: 6),
-                      // Text('24 Dec 2021',
-                      //     style: Theme.of(context)
-                      //         .textTheme
-                      //         .caption) //todo created date time
+                      SizedBox(width: 6),
+                      Text(DateFormat().add_yMMMMd().format(DateTime.fromMillisecondsSinceEpoch(ratingModel.createdAt).toLocal()),
+                          style: Theme.of(context).textTheme.caption) //todo created date time <= Done
                     ],
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       ratingModel.comment ?? "",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1
-                          ?.copyWith(fontStyle: FontStyle.italic),
+                      style: Theme.of(context).textTheme.subtitle1?.copyWith(fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),
@@ -84,5 +78,15 @@ class RatingTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getTime(DateTime? createdAt) {
+    String time = "";
+    if (createdAt is DateTime) {
+      DateTime meetingTime = createdAt.toLocalDateTime();
+      DateFormat formatDate = new DateFormat("yyyy-MM-dd\nhh:mm:a");
+      time = formatDate.format(meetingTime.toLocal());
+    }
+    return time;
   }
 }

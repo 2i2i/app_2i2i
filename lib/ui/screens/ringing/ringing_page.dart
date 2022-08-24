@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
@@ -7,15 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:perfect_volume_control/perfect_volume_control.dart';
 
+import '../../../common_main.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/meeting_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
-import '../../../common_main.dart';
 import '../../commons/custom_profile_image_view.dart';
-import '../home/wait_page.dart';
+import '../app/wait_page.dart';
+import '../web_rtc/widgets/circle_button.dart';
 import 'ripples_animation.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
@@ -30,21 +33,34 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   RingingPageState({Key? key});
 
-  RingingPageViewModel? ringingPageViewModel;
-
   Timer? timer;
   final player = AudioPlayer();
+  StreamSubscription<double>? _subscription;
+
+  ValueNotifier<bool> volumeState = ValueNotifier(true);
 
   @override
   void initState() {
-    start();
+    _subscription = PerfectVolumeControl.stream.listen((value) {
+      volumeState.value = false;
+      stopRingAudio();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(appSettingProvider).appInit();
+    });
+
+    startRingAudio();
     platform.invokeMethod('ANSWER', "ANSWER");
     super.initState();
   }
 
   @override
   Future<void> dispose() async {
-    finish();
+    Future.delayed(Duration.zero, () async {
+      _subscription?.cancel();
+      await finishTimer();
+    });
     super.dispose();
   }
 
@@ -52,30 +68,40 @@ class RingingPageState extends ConsumerState<RingingPage> {
     if (timer != null) return;
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
     timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      final finishFuture = finish();
-      final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
-      await Future.wait([finishFuture, endMeetingFuture]);
+      if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
+        final finishFuture = finishTimer();
+        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
+        await Future.wait([finishFuture, endMeetingFuture]);
+      }
     });
   }
 
-  Future<void> start() async {
+  Future<void> startRingAudio() async {
     await player.setAsset('assets/video_call.mp3');
     await player.setLoopMode(LoopMode.one);
     if (!player.playing) {
+      volumeState.value = true;
       await player.play();
     }
   }
 
-  Future<void> finish() async {
+  Future<void> stopRingAudio() async {
+    if (player.playing) {
+      await player.stop();
+    }
+  }
+
+  Future<void> finishTimer() async {
     if (timer?.isActive ?? false) {
       timer?.cancel();
     }
     timer = null;
 
-    if (player.playing) {
-      await player.stop();
+    await stopRingAudio();
+
+    if (Platform.isIOS) {
+      await platform.invokeMethod('CUT_CALL');
     }
-    await player.dispose();
   }
 
   final FirebaseFunctions functions = FirebaseFunctions.instance;
@@ -86,15 +112,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
-    if (haveToWait(_ringingPageViewModel)) {
+    final ringingPageViewModel = ref.watch(ringingPageViewModelProvider);
+    final appSettingModel = ref.watch(appSettingProvider);
+    if (haveToWait(ringingPageViewModel)) {
       return WaitPage();
     }
 
-    ringingPageViewModel = _ringingPageViewModel;
     if (ringingPageViewModel is RingingPageViewModel) {
-      setTimer(ringingPageViewModel!);
+      setTimer(ringingPageViewModel);
     }
+
     String callerName = '';
     String callerBio = '';
     String bidComment = '';
@@ -103,14 +130,14 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
     bool amA = ringingPageViewModel!.amA();
 
-    final meetingId = ringingPageViewModel?.meeting.id;
-    if (amA && meetingId != null) {
+    final meetingId = ringingPageViewModel.meeting.id;
+    if (amA) {
       final bidOutAsyncValue = ref.watch(bidOutProvider(meetingId));
       if (!haveToWait(bidOutAsyncValue)) {
         final bidOut = bidOutAsyncValue.value!;
         bidComment = bidOut.comment ?? '';
       }
-    } else if (meetingId != null) {
+    } else {
       final bidInPrivateAsyncValue = ref.watch(bidInPrivateProvider(meetingId));
       if (!haveToWait(bidInPrivateAsyncValue)) {
         final bidInPrivate = bidInPrivateAsyncValue.value!;
@@ -118,17 +145,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
       }
     }
 
-    String otherUserId = amA ? ringingPageViewModel!.meeting.B : ringingPageViewModel!.meeting.A;
+    String otherUserId = amA ? ringingPageViewModel.meeting.B : ringingPageViewModel.meeting.A;
     final otherUserAsyncValue = ref.read(userProvider(otherUserId));
     if (!haveToWait(otherUserAsyncValue)) {
-      callerName = otherUserAsyncValue.asData!.value.name;
-      callerBio = otherUserAsyncValue.asData!.value.bio;
-      callerRating = otherUserAsyncValue.asData!.value.rating;
+      callerName = otherUserAsyncValue.value!.name;
+      callerBio = otherUserAsyncValue.value!.bio;
+      callerRating = otherUserAsyncValue.value!.rating;
     }
 
-    if (ringingPageViewModel?.meeting is Meeting) {
-      maxDuration = ringingPageViewModel!.meeting.maxDuration();
-    }
+    maxDuration = ringingPageViewModel.meeting.maxDuration();
 
     return Scaffold(
       body: Container(
@@ -146,9 +171,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
         child: Column(
           children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
-                width: MediaQuery.of(context).size.width / 1.5,
+                width: MediaQuery.of(context).size.width,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,10 +187,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     SizedBox(height: 12),
                     Text(
                       callerName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
+                      style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).primaryColorDark),
                     ),
                     SizedBox(height: 14),
                     Text(
@@ -185,8 +207,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                     ),
                     SizedBox(height: 14),
@@ -225,8 +246,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
                           )
                         ],
                       ),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
+                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(61)),
                     ),
                     Container(
                       width: kTextTabBarHeight,
@@ -238,65 +258,93 @@ class RingingPageState extends ConsumerState<RingingPage> {
                     SizedBox(height: 4),
                     if (maxDuration != double.infinity)
                       Text(
-                        '${secondsToSensibleTimePeriod(maxDuration.toInt())} (${ringingPageViewModel!.meeting.speed.num} μAlgo/s)',
+                        '${secondsToSensibleTimePeriod(maxDuration.toInt(), context)} (${ringingPageViewModel.meeting.speed.num} μAlgo/s)',
                         maxLines: 2,
                         softWrap: true,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                       ),
                   ],
                 ),
               ),
             ),
             Expanded(
-                flex: 1,
+                flex: 2,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    (!isClicked &&
-                            ringingPageViewModel!.amA() &&
-                            ringingPageViewModel!.meeting.status == MeetingStatus.ACCEPTED_B)
-                        ? Ripples(
-                            color: Colors.white.withOpacity(0.3),
-                            child: InkWell(
-                              onTap: () async {
-                                isClicked = true;
-                                if (mounted) {
-                                  setState(() {});
-                                }
-                                final finishFuture = finish();
-                                final acceptMeetingFuture = ringingPageViewModel!.acceptMeeting();
-                                await Future.wait([finishFuture, acceptMeetingFuture]);
-                              },
-                              child: CircleAvatar(
-                                  radius: kToolbarHeight,
-                                  child: Text(
-                                    '${Keys.Start.tr(context)}',
-                                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                        fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
-                                  )),
+                    (!isClicked && ringingPageViewModel.amA() && ringingPageViewModel.meeting.status == MeetingStatus.ACCEPTED_B)
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Ripples(
+                              color: Colors.white.withOpacity(0.3),
+                              child: InkWell(
+                                onTap: () async {
+                                  isClicked = true;
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
+                                  final finishFuture = finishTimer();
+                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
+                                  await Future.wait([finishFuture, acceptMeetingFuture]);
+                                },
+                                child: CircleAvatar(
+                                    radius: kToolbarHeight,
+                                    child: Text(
+                                      '${Keys.Start.tr(context)}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle1
+                                          ?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.secondary),
+                                    )),
+                              ),
                             ),
                           )
                         : Container(
                             alignment: Alignment.center,
                             margin: EdgeInsets.symmetric(horizontal: 22),
                             padding: EdgeInsets.symmetric(vertical: 14, horizontal: 22),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
-                            child: Text(
-                                amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(color: Theme.of(context).primaryColorDark)),
+                            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.2), borderRadius: BorderRadius.circular(20)),
+                            child: Text(amA ? '${Keys.connectingHost.tr(context)}' : '${Keys.connectingGuest.tr(context)}',
+                                style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark)),
                           ),
                   ],
                 )),
-            SizedBox(
-              height: 10,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(color: Colors.white38, shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleButton(
+                        icon: appSettingModel.isAudioEnabled ? Icons.mic_rounded : Icons.mic_off_rounded,
+                        onTap: () async {
+                          await ref
+                              .read(meetingChangerProvider)
+                              .muteAudio(ringingPageViewModel.meeting.id, amA: amA, audioStatus: !(appSettingModel.isAudioEnabled));
+                          appSettingModel.setAudioStatus(!(appSettingModel.isAudioEnabled));
+                        },
+                      ),
+                      CircleButton(
+                        icon: appSettingModel.isVideoEnabled ? Icons.videocam_rounded : Icons.videocam_off_rounded,
+                        onTap: () async {
+                          await ref
+                              .read(meetingChangerProvider)
+                              .muteAudio(ringingPageViewModel.meeting.id, amA: amA, audioStatus: !(appSettingModel.isVideoEnabled));
+                          appSettingModel.setVideoStatus(!(appSettingModel.isVideoEnabled));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             )
           ],
         ),

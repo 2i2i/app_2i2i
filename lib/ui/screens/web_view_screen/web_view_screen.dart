@@ -62,8 +62,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 allowsInlineMediaPlayback: true,
               ),
             ),
-            androidOnPermissionRequest:
-                (InAppWebViewController controller, String origin, List<String> resources) async {
+            androidOnPermissionRequest: (InAppWebViewController controller, String origin, List<String> resources) async {
               return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
             },
             onLoadStop: (InAppWebViewController controller, Uri? url) {

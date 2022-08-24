@@ -1,15 +1,18 @@
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
+import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
@@ -32,7 +35,6 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
 
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
-  bool isMobile = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
   late BuildContext buildContext;
 
   @override
@@ -56,16 +58,17 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ],
+              ),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -78,75 +81,67 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             subtitle: Text(Keys.walletAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
-          ),
-          ListTile(
-            onTap: () {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.recover.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/recover.svg',
-                height: 15,
-                width: 15,
-                color: Theme.of(context).colorScheme.secondary,
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.recover.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ]),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  'assets/icons/recover.svg',
+                  height: 15,
+                  width: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
+              title: Text(Keys.recoverPassphrase.tr(context)),
+              subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
+              trailing: Icon(Icons.navigate_next),
             ),
-            title: Text(Keys.recoverPassphrase.tr(context)),
-            subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
-            trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
-          ),
-          ListTile(
-            onTap: () async {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.createLocalAccount.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      spreadRadius: 0.5,
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/wallet.svg',
-                height: 15,
-                width: 15,
-                color: Theme.of(context).colorScheme.secondary,
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () async {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.createLocalAccount.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ]),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  'assets/icons/wallet.svg',
+                  height: 15,
+                  width: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
+              title: Text(Keys.addLocalAccount.tr(context)),
+              subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
+              trailing: Icon(Icons.navigate_next),
             ),
-            title: Text(Keys.addLocalAccount.tr(context)),
-            subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
-            trailing: Icon(Icons.navigate_next),
           ),
         ],
       ),
@@ -154,29 +149,37 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+
     var setupUserViewModel = ref.watch(setupUserViewModelProvider);
     String userId = ref.read(myUIDProvider)??'';
 
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
+      connector: connector,
     );
+
     // Create a new session
     if (!account.connector.connected) {
-      SessionStatus sessionStatus = await account.connector.createSession(
+      await account.connector.connect(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
 
       isDialogOpen.value = false;
-      CustomDialogs.loader(true, context, rootNavigator: true);
-      log("$sessionStatus");
-      await account.save();
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
+      await account.save(id);
+
       var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
-      await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      if (account.address.isNotEmpty) {
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      }
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
+      await myAccountPageViewModel.getWalletAccount();
       await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
-      CustomDialogs.loader(false, context, rootNavigator: true);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
     } else {
@@ -185,15 +188,13 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
     }
   }
 
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
+  Future _changeDisplayUri(String url) async {
+    bool isAvailable = false;
+    _displayUri = url;
     if (mounted) {
       setState(() {});
     }
-    bool isAvailable = await canLaunchUrl(Uri.parse('algorand://'));
-    if (isMobile && isAvailable) {
-      await launchUrl(Uri.parse(uri));
-    } else {
+    if (kIsWeb) {
       isDialogOpen.value = true;
       await showDialog(
         context: context,
@@ -207,6 +208,37 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
           },
         ),
         barrierDismissible: true,
+      );
+    } else {
+      final bridge = await getWCBridge();
+      var launchUri;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        launchUri = Uri(
+          scheme: 'algorand-wc',
+          host: 'wc',
+          queryParameters: {'uri': _displayUri, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"
+        );
+      } else {
+        launchUri = Uri.parse(_displayUri);
+      }
+      CustomAlertWidget.confirmDialog(
+        context,
+        description: Keys.transactionConfirmMsg.tr(context),
+        title: Keys.pleaseConfirm.tr(context),
+        onPressed: () async {
+          try {
+            isAvailable = await launchUrl(launchUri);
+          } on PlatformException catch (err) {
+            print(err);
+          }
+          if (!isAvailable) {
+            await launchUrl(
+                Uri.parse(Platform.isAndroid
+                    ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                    : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+                mode: LaunchMode.externalApplication);
+          }
+        },
       );
     }
   }

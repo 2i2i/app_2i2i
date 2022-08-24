@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '10.0'
+# platform :ios, '9.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -27,10 +27,9 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-
-#   pod 'Firebase/AppCheck'
   use_frameworks!
   use_modular_headers!
+  pod 'Firebase/AppCheck'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
@@ -83,8 +82,14 @@ post_install do |installer|
         ## dart: PermissionGroup.criticalAlerts
         # 'PERMISSION_CRITICAL_ALERTS=1'
       ]
-      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='10.0'
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulators*]']='arm64 i386'
+      target.build_configurations.each do |config|
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+              '$(inherited)',
+              'AUDIO_SESSION_MICROPHONE=0'
+            ]
+          end
+      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='11.0'
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulators*]']='arm64'
       config.build_settings['ONLY_ACTIVE_ARCH']='YES'
     end
   end

@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
@@ -15,6 +16,7 @@ import 'package:rich_text_controller/rich_text_controller.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
@@ -74,28 +76,29 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               widget.fromBottomSheet ?? false ? Keys.setUpAccount.tr(context) : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileWidget(
-                    onTap: () {
-                      CustomAlertWidget.showBidAlert(context, ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ));
-                    },
+                    onTap: () => CustomAlertWidget.showBottomSheet(
+                          context,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -106,14 +109,21 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 1),
                       TextFormField(
+                        //maxLength: 30,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(30),
+                          // FilteringTextInputFormatter.deny(' ',),
+                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
+                        ],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: userNameEditController,
                         textInputAction: TextInputAction.next,
@@ -123,6 +133,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           value ??= '';
                           if (value.trim().isEmpty) {
                             return Keys.required.tr(context);
+                          } else if (value.trim().length < 3) {
+                            return 'Required min 3 characters';
+                          }
+                          if (value.trim().length < 3) {
+                            return "name must be 3 characters long";
                           }
                           return null;
                         },
@@ -143,6 +158,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(200),
+              ],
               controller: bioTextController,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -164,21 +182,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '${Keys.minSpeed.tr(context)}: ${minSpeedString()}',
+                    '${Keys.minSpeed.tr(context)}: ${minSpeedString(context)}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
                   TextFormField(
                     onChanged: (value) => setState(() {}),
                     controller: speedEditController,
-                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                    ],
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
                       value ??= '';
-                      if (value.trim().isEmpty || int.tryParse(value) == null) {
+                      if (value.trim().isEmpty || num.tryParse(value) == null) {
                         return Keys.enterValidData.tr(context);
                       }
                       return null;
@@ -309,9 +329,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).shadowColor.withOpacity(0.20),
-                        borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
                       children: [
@@ -328,10 +346,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                 activeTrackColor: Theme.of(context).cardColor,
                                 inactiveTrackColor: Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
-                                    mainContext: context,
-                                    thumbRadius: 15,
-                                    showValue: true,
-                                    valueMain: (_importanceRatioValue?.round() ?? 0).toString()),
+                                    mainContext: context, thumbRadius: 15, showValue: true, valueMain: (_importanceRatioValue?.round() ?? 0).toString()),
                               ),
                               child: _importanceSliderValue == null
                                   ? Container()
@@ -342,11 +357,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                       onChanged: (value) {
                                         setState(() {
                                           _importanceSliderValue = value;
-                                          _importanceRatioValue =
-                                              (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                      (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                      _importanceSliderMaxHalf +
-                                                  2.0;
+                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                                  _importanceSliderMaxHalf +
+                                              2.0;
                                           // log(X +
                                           //     '_importanceSliderValue=$_importanceSliderValue');
                                           // log(X +
@@ -382,19 +396,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               ),
             ),
             // const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(true, context);
-                }
-                await onClickSave(
-                    context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                if (!(widget.fromBottomSheet ?? false)) {
-                  CustomDialogs.loader(false, context);
-                }
-                // await Navigator.of(context).maybePop();
-              },
-              child: Text(Keys.save.tr(context)),
+            Visibility(
+              visible: (widget.fromBottomSheet ?? false),
+              child: ElevatedButton(
+                onPressed: () async {
+                  CustomAlertWidget.loader(true, context);
+
+                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+
+                  CustomAlertWidget.loader(false, context);
+                  Navigator.of(context).pop();
+                },
+                child: Text(Keys.save.tr(context)),
+              ),
             )
           ],
         ),
@@ -404,7 +418,44 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          Visibility(
+            visible: !(widget.fromBottomSheet ?? false),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomAlertWidget.loader(true, context);
+                    }
+                    await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                    if (!(widget.fromBottomSheet ?? false)) {
+                      CustomAlertWidget.loader(false, context);
+                    }
+                    // await Navigator.of(context).maybePop();
+                  },
+                  child: Text(
+                    Keys.save.tr(context),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
       body: body,
     );
   }
@@ -418,7 +469,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = user.rule.minSpeed.toString();
+      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -445,54 +496,70 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     setState(() {});
   }
 
+  // Map<Lounge, int> oldFindImportances(double ratio, Lounge lounge) {
+  //   // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
+  //   final a = ratio - 1.0;
+  //   // log(X + 'findImportances: a=$a');
+
+  //   int small = 1;
+  //   double largeDouble = a * small;
+  //   int largeInt = largeDouble.round();
+
+  //   // log(X +
+  //   //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+  //   int minSmall = small;
+  //   int minLarge = largeInt;
+  //   double minError = (largeDouble - largeInt).abs();
+
+  //   // log(X +
+  //   //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+  //   while (small < _importanceSliderMaxHalf * 2.0) {
+  //     small++;
+  //     largeDouble = a * small;
+  //     largeInt = largeDouble.round();
+  //     // log(X +
+  //     //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
+
+  //     if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
+  //     final error = (largeDouble - largeInt).abs();
+  //     // log(X + 'findImportances: error=$error');
+  //     if (error < minError) {
+  //       minSmall = small;
+  //       minLarge = largeInt;
+  //       minError = error;
+  //       // log(X +
+  //       //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+  //     }
+  //   }
+  //   // log(X +
+  //   //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
+
+  //   return lounge == Lounge.chrony
+  //       ? {
+  //           Lounge.chrony: minSmall,
+  //           Lounge.highroller: minLarge,
+  //         }
+  //       : {
+  //           Lounge.chrony: minLarge,
+  //           Lounge.highroller: minSmall,
+  //         };
+  // }
+
+  // let's use a trivial implementation for now
   Map<Lounge, int> findImportances(double ratio, Lounge lounge) {
-    // log(X + 'findImportances: ratio=$ratio lounge=$lounge');
-    final a = ratio - 1.0;
-    // log(X + 'findImportances: a=$a');
-
-    int small = 1;
-    double largeDouble = a * small;
-    int largeInt = largeDouble.round();
-
-    // log(X +
-    //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-    int minSmall = small;
-    int minLarge = largeInt;
-    double minError = (largeDouble - largeInt).abs();
-
-    // log(X +
-    //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
-    while (small < _importanceSliderMaxHalf * 2.0) {
-      small++;
-      largeDouble = a * small;
-      largeInt = largeDouble.round();
-      // log(X +
-      //     'findImportances: small=$small largeDouble=$largeDouble largeInt=$largeInt');
-
-      if (_importanceSliderMaxHalf * 2.0 - 1.0 < largeInt) continue;
-      final error = (largeDouble - largeInt).abs();
-      // log(X + 'findImportances: error=$error');
-      if (error < minError) {
-        minSmall = small;
-        minLarge = largeInt;
-        minError = error;
-        // log(X +
-        //     'findImportances: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-      }
-    }
-    // log(X +
-    //     'findImportances: DONE: minSmall=$minSmall minLarge=$minLarge minError=$minError');
-
+    // final o = oldFindImportances(ratio, lounge);
+    // log(Y + 'findImportances: ratio=$ratio lounge=$lounge o=$o');
+    final m = ratio.round() - 1;
     return lounge == Lounge.chrony
         ? {
-            Lounge.chrony: minSmall,
-            Lounge.highroller: minLarge,
+            Lounge.chrony: 1,
+            Lounge.highroller: m,
           }
         : {
-            Lounge.chrony: minLarge,
-            Lounge.highroller: minSmall,
+            Lounge.chrony: m,
+            Lounge.highroller: 1,
           };
   }
 
@@ -504,14 +571,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
-  String minSpeedString() {
+  String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
-    final minSpeedPerSec = int.parse(speedEditController.text);
+    final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / 1000000;
+    final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
     // final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$minSpeedPerHourinALGO ALGO/hour';
+    return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
+
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -544,16 +613,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   }
 
   Future<void> onClickSave(
-      {required MyUserPageViewModel? myUserPageViewModel,
-      required SetupUserViewModel? setupUserViewModel,
-      required BuildContext context}) async {
+      {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      SocialLinksModel? socialLinksModel = setupUserViewModel?.socialLinksModel;
-      user!.socialLinks = [socialLinksModel!];
+      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
@@ -564,12 +629,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-        final importances = findImportances(_importanceRatioValue!, lounge);
+        final importance = findImportances(_importanceRatioValue!, lounge);
 
-        Rule rule = Rule(minSpeed: int.parse(speedEditController.text), maxMeetingDuration: seconds, importance: {
-          Lounge.chrony: importances[Lounge.chrony]!,
-          Lounge.highroller: importances[Lounge.highroller]!,
-        });
+        Rule rule = Rule(
+          minSpeed: getSpeedFromText(),
+          maxMeetingDuration: seconds,
+          importance: {
+            Lounge.chrony: importance[Lounge.chrony]!,
+            Lounge.highroller: importance[Lounge.highroller]!,
+          },
+        );
         user.rule = rule;
       } else {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
@@ -580,8 +649,45 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           user.imageUrl = firebaseImageUrl;
         }
       }
+      try {
+        user.url = await createDeepLinkUrl(user.id);
+      } catch (e) {
+        debugPrint(e.toString());
+      }
       await myUserPageViewModel?.updateHangout(user);
     }
+  }
+
+  Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: link,
+        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
+        androidParameters: AndroidParameters(
+          packageName: 'app.i2i2',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+        ),
+        iosParameters: IOSParameters(
+          bundleId: 'app.2i2i',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+          ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+          ipadBundleId: 'app.2i2i',
+          appStoreId: '1609689141'),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
   }
 
   Future<String?> uploadImage() async {

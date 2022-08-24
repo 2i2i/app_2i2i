@@ -1,4 +1,4 @@
-// TODO where to move this file?
+// TODO where to move this file? <== Done
 
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
@@ -21,7 +21,7 @@ class ProfileIcon extends ConsumerWidget {
     if ((bidInList.value ?? []).isEmpty) {
       return normalReturn;
     }
-    List<BidInPublic> bids = bidInList.asData!.value;
+    List<BidInPublic> bids = bidInList.value ?? [];
     if (bids.isEmpty) {
       return normalReturn;
     }
@@ -63,12 +63,10 @@ class ProfileIcon extends ConsumerWidget {
         });
   }
 
-  Widget selectedIcon(String iconPath, BuildContext context,
-      {bool isSelected = false}) {
+  Widget selectedIcon(String iconPath, BuildContext context, {bool isSelected = false}) {
     return Padding(
       padding: const EdgeInsets.all(6),
-      child: SvgPicture.asset(iconPath,
-          color: isSelected ? Theme.of(context).colorScheme.secondary : null),
+      child: SvgPicture.asset(iconPath, color: isSelected ? Theme.of(context).colorScheme.secondary : null),
     );
   }
 }

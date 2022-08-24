@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
@@ -10,13 +11,11 @@ import 'abstract_account.dart';
 
 class LocalAccount extends AbstractAccount {
   Account? account;
+  late int _numAccount;
+  final SecureStorage storage;
+  final AlgorandLib algorandLib;
 
-  LocalAccount._create(
-      {required this.algorandLib,
-      required this.storage,
-      required accountService,
-      this.account})
-      : super(accountService: accountService);
+  LocalAccount._create({required this.algorandLib, required this.storage, required accountService}) : super(accountService: accountService);
 
   static Future<LocalAccount> create({
     required AlgorandLib algorandLib,
@@ -128,8 +127,7 @@ class LocalAccount extends AbstractAccount {
   Future<Account> _libAccount() async {
     final privateKey = await storage.read('account_$_numAccount');
     final Uint8List seed = base64Decode(privateKey!);
-    return algorandLib.client[AppConfig().ALGORAND_NET]!
-        .loadAccountFromSeed(seed);
+    return algorandLib.client[AppConfig().ALGORAND_NET]!.loadAccountFromSeed(seed);
   }
 
   Future _loadAccountFromMnemonic(List<String> mnemonic) async {
@@ -177,8 +175,4 @@ class LocalAccount extends AbstractAccount {
       await storage.write(storageAccountKey, privateKey);
     }
   }
-
-  late int _numAccount;
-  final SecureStorage storage;
-  final AlgorandLib algorandLib;
 }

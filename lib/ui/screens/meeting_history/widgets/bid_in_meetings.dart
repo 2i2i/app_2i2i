@@ -1,5 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,7 +41,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     if (haveToWait(meetingHistoryModel)) {
       return Center(child: WaitPage());
     }
-    List<Meeting> meetingListA = meetingHistoryModel?.meetingHistoryList ?? [];
+    List<Meeting> meetingListA = meetingHistoryModel?.aMeetingHistoryList ?? [];
 
     if (meetingListA.isEmpty && !(meetingHistoryModel?.isRequesting ?? false)) {
       return Center(

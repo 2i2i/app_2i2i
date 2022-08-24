@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>aps-environment</key>
-	<string>development</string>
+	<string>production</string>
 	<key>com.apple.developer.applesignin</key>
 	<array>
 		<string>Default</string>
@@ -11,6 +11,10 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:about.2i2i.app</string>
+		<string>applinks:2i2i.page.link</string>
+		<string>applinks:i2i2.page.link</string>
 	</array>
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>production</string>
 </dict>
 </plist>

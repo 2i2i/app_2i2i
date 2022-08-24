@@ -1,7 +1,8 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/services/logging.dart';
@@ -9,13 +10,16 @@ import '../data_access_layer/services/logging.dart';
 @immutable
 class Quantity {
   const Quantity({required this.num, required this.assetId});
+
   final int num;
   final int assetId;
+
   factory Quantity.fromMap(Map<String, dynamic> data) {
     final int num = data['num'];
     final int assetId = data['assetId'];
     return Quantity(num: num, assetId: assetId);
   }
+
   Map<String, dynamic> toMap() {
     return {
       'num': num,
@@ -47,6 +51,7 @@ class BidOut extends Equatable {
   final bool active;
   final int energy;
   final String? comment;
+  final bool isLoading = false;
 
   @override
   List<Object> get props => [id];

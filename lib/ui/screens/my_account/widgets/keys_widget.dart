@@ -1,4 +1,4 @@
-import 'package:app_2i2i/ui/screens/home/wait_page.dart';
+import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/accounts/local_account.dart';
-import '../../../commons/custom_dialogs.dart';
+import '../../../commons/custom_alert_widget.dart';
 
 class KeysWidget extends StatelessWidget {
   final LocalAccount account;
@@ -160,8 +160,7 @@ class KeysWidget extends StatelessWidget {
                           if (perhaps.isNotEmpty) {
                             Clipboard.setData(
                                 ClipboardData(text: perhaps.join(' ')));
-                            CustomDialogs.showToastMessage(
-                                context, Keys.copyMessage.tr(context));
+                            CustomAlertWidget.showToastMessage(context, Keys.copyMessage.tr(context));
                           }
                           Navigator.of(context, rootNavigator: true).pop();
                         },
