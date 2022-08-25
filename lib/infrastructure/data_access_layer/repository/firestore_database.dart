@@ -76,6 +76,7 @@ class FirestoreDatabase {
         data: {
           'type': type,
           'ts': FieldValue.serverTimestamp(),
+          'id': algorandAccount,
         },
         merge: false,
       );

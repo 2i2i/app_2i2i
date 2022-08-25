@@ -618,7 +618,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
+      String userName;
+      SocialLinksModel? socialLinksModel;
+      if (setupUserViewModel!.socialLinksModel?.userName?.isNotEmpty ?? false) {
+        userName = setupUserViewModel.socialLinksModel!.userName!;
+      } else {
+        userName = userNameEditController.text;
+      }
+      socialLinksModel = setupUserViewModel.socialLinksModel!;
+      socialLinksModel.userName = userName;
+      user?.socialLinks = [socialLinksModel];
     }
     if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
@@ -643,6 +652,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       } else {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
       }
+
+      FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);
+
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();
         if ((firebaseImageUrl ?? "").isNotEmpty) {
@@ -670,11 +682,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           fallbackUrl: Uri.parse('https://about.2i2i.app'),
         ),
         iosParameters: IOSParameters(
-          bundleId: 'app.2i2i',
-          fallbackUrl: Uri.parse('https://about.2i2i.app'),
-          ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
-          ipadBundleId: 'app.2i2i',
-          appStoreId: '1609689141'),
+            bundleId: 'app.2i2i',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadBundleId: 'app.2i2i',
+            appStoreId: '1609689141'),
         navigationInfoParameters: const NavigationInfoParameters(
           forcedRedirectEnabled: false,
         ),

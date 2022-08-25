@@ -454,16 +454,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     );
   }
 
-  String _displayUri = '';
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   Future<String?> _createSession() async {
     var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
     String id = DateTime.now().toString();
     final connector = await WalletConnectAccount.newConnector(id);
-
-    // var setupUserViewModel = ref.watch(setupUserViewModelProvider);
-    // String userId = ref.read(myUIDProvider)??'';
 
     final account = WalletConnectAccount.fromNewConnector(
       accountService: myAccountPageViewModel.accountService!,
@@ -473,7 +469,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     if (!account.connector.connected) {
       SessionStatus sessionStatus = await account.connector.createSession(
         chainId: 4160,
-        onDisplayUri: (uri) => _changeDisplayUri(uri),
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
       );
       if (sessionStatus.accounts.isNotEmpty) {
         var setupUserViewModel = ref.watch(setupUserViewModelProvider);
@@ -483,14 +479,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         CustomAlertWidget.loader(true, context, rootNavigator: true);
 
         await account.save(id);
-        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address);
+        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address, userName: setupUserViewModel.userInfoModel!.name);
         await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
         await myAccountPageViewModel.updateAccounts();
         await account.setMainAccount();
         await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
 
         CustomAlertWidget.loader(false, context, rootNavigator: true);
-        _displayUri = '';
 
         return account.address;
       }
@@ -498,33 +493,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
       return null;
-    }
-  }
-
-  Future _changeDisplayUri(String uri) async {
-    _displayUri = uri;
-    if (mounted) {
-      setState(() {});
-    }
-    bool isLaunch = false;
-    if (Platform.isAndroid || Platform.isIOS) {
-      isLaunch = await launchUrl(Uri.parse(uri));
-    }
-    if (!isLaunch) {
-      isDialogOpen.value = true;
-      await showDialog(
-        context: context,
-        builder: (context) => ValueListenableBuilder(
-          valueListenable: isDialogOpen,
-          builder: (BuildContext context, bool value, Widget? child) {
-            if (!value) {
-              Navigator.of(context).pop();
-            }
-            return QrImagePage(imageUrl: _displayUri);
-          },
-        ),
-        barrierDismissible: true,
-      );
     }
   }
 }
