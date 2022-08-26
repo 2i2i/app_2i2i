@@ -82,7 +82,7 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   bool updateRequired = false;
-  String version = "1.0.31";
+  String version = "1.0.32";
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
