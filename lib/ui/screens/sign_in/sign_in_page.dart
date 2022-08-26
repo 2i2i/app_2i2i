@@ -177,27 +177,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
-                          color: Theme.of(context).colorScheme.secondary,
-                          child: ListTile(
-                            onTap: () async {
-                              await ref.read(setupUserViewModelProvider).signInAnonymously();
-                            },
-                            dense: true,
-                            leading: Icon(Icons.account_circle_rounded, color: Colors.black),
-                            title: Text(
-                              Keys.signInAnonymously.tr(context),
-                              style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                            ),
-                          ),
-                        ),
-                        Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
                           color: Theme.of(context).iconTheme.color,
                           child: ListTile(
                             onTap: () async {
@@ -271,6 +250,27 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 Keys.signInWithInstagram.tr(context),
                                 style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).cardColor),
                               ),
+                            ),
+                          ),
+                        ),
+                        Card(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          color: Theme.of(context).colorScheme.secondary,
+                          child: ListTile(
+                            onTap: () async {
+                              await ref.read(setupUserViewModelProvider).signInAnonymously();
+                            },
+                            dense: true,
+                            leading: Icon(Icons.account_circle_rounded, color: Colors.black),
+                            title: Text(
+                              Keys.signInAnonymously.tr(context),
+                              style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
                             ),
                           ),
                         ),

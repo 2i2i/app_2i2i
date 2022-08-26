@@ -313,6 +313,8 @@ class SetupUserViewModel with ChangeNotifier {
       CustomAlertWidget.showToastMessage(context, "${e.message}");
       CustomAlertWidget.loader(false, context, rootNavigator: true);
       throw e;
+    } catch (e) {
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
     }
   }
 
