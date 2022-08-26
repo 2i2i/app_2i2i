@@ -320,10 +320,11 @@ class SetupUserViewModel with ChangeNotifier {
     String? uid;
     socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id);
 
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
+    User? user = FirebaseAuth.instance.currentUser;
     try {
-      if (userId is String && forLink) {
-        await signInProcess(userId, socialLinkModel: socialLinksModel);
+      if ((user?.uid is String) && forLink) {
+        socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id, userName: user!.displayName);
+        await signInProcess(user.uid, socialLinkModel: socialLinksModel);
       } else {
         final app = admin.FirebaseAdmin.instance.app();
         if (app is admin.App) {

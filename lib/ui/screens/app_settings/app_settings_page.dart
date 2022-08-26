@@ -9,7 +9,6 @@ import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:app_2i2i/ui/screens/instagram_login.dart';
-import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -373,6 +372,20 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                             child: Image.asset('assets/twitter.png', height: 25, width: 25),
                           ),
                           visible: !kIsWeb && !list.contains('twitter.com'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'apple',
+                            onPressed: () async {
+                              await signUpViewModel.signInWithApple(context, linkWithCredential: true);
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/apple.png', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && Platform.isIOS && !list.contains('apple.com'),
                         ),
                         Visibility(
                           child: FloatingActionButton.small(
