@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '31'
+    flutterVersionCode = '32'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0.31'
+    flutterVersionName = '1.0.32'
 }
 
 apply plugin: 'com.android.application'
@@ -46,9 +46,12 @@ android {
     defaultConfig {
         applicationId "app.i2i2"
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
+        }
     }
 
     flavorDimensions "app"
