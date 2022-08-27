@@ -81,7 +81,7 @@ class SetupUserViewModel with ChangeNotifier {
     return Future.wait([f2, /* f3,*/ f4]);
   }
 
-  Future<void> signInAnonymously() async {
+  Future<void> signInAnonymously(BuildContext context) async {
     UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
     String? uid = firebaseUser.user?.uid;
     if (uid is String) await signInProcess(uid, socialLinkModel: null);

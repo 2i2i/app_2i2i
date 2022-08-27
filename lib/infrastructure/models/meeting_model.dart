@@ -428,7 +428,7 @@ class Meeting extends Equatable {
 class RatingModel {
   final double rating;
   final String? comment;
-  final int createdAt;
+  final int? createdAt;
 
   RatingModel({required this.rating, this.comment, required this.createdAt});
 
@@ -440,7 +440,7 @@ class RatingModel {
 
     final double rating = double.parse(data['rating'].toString());
     final String? comment = data['comment'];
-    final int createdAt = data['createdAt'];
+    final int createdAt = (data.containsKey('createdAt') && data['createdAt'] != null) ? data['createdAt'] : 0;
 
     return RatingModel(rating: rating, comment: comment, createdAt: createdAt);
   }

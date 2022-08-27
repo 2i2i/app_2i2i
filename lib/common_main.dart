@@ -40,9 +40,6 @@ Future<void> main() async {
   if (!kIsWeb) {
     await Firebase.initializeApp();
     await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
-
-    String? token = await FirebaseAppCheck.instance.getToken(true);
-    log("$token");
   } else {
     await Firebase.initializeApp(
         options: FirebaseOptions(

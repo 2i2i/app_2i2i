@@ -66,40 +66,39 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           children: [
             ProfileWidget(
               stringPath: (widget.user.imageUrl?.isNotEmpty ?? false) ? widget.user.imageUrl! : widget.user.name,
-              imageType: (widget.user.imageUrl?.isNotEmpty ?? false)
-                  ? ImageType.NETWORK_IMAGE
-                  : ImageType.NAME_IMAGE,
+              imageType: (widget.user.imageUrl?.isNotEmpty ?? false) ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
               statusColor: statusColor,
               radius: 80,
             ),
             Expanded(
               child: ListTile(
                 title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              widget.user.name,
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          ),
-                          Visibility(
-                            visible: widget.user.isVerified(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 4.0),
-                              child: Tooltip(
-                                triggerMode: TooltipTriggerMode.tap,
-                                message: Keys.connectedSocialAccount.tr(context),
-                                child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
-                              ),
-                            ),
-                          )
-                        ],
+                    Flexible(
+                      flex: 6,
+                      child: Text(
+                        widget.user.name,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        maxLines: 3,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
+                    SizedBox(width: 4),
+                    Flexible(
+                      flex: 2,
+                      child: Tooltip(
+                        triggerMode: TooltipTriggerMode.tap,
+                        message: Keys.connectedSocialAccount.tr(context),
+                        child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
+                      ),
+                    )
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
@@ -166,10 +165,11 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               },
                             ),
                           ),
-                          SizedBox(width: 5),
-                          Text(
-                            '($totalRating/5)',
-                            style: Theme.of(context).textTheme.caption,
+                          Flexible(
+                            child: Text(
+                              '($totalRating/5)',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           )
                         ],
                       ),

@@ -164,7 +164,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           color: Theme.of(context).colorScheme.secondary,
                           child: ListTile(
                               onTap: () async {
-                                await ref.read(setupUserViewModelProvider).signInAnonymously();
+                                await ref.read(setupUserViewModelProvider).signInAnonymously(context);
                               },
                               dense: true,
                               leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),

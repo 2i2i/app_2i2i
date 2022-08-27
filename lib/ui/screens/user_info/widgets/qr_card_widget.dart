@@ -45,7 +45,10 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
             child: Text(
               widget.userUrl,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(decoration: TextDecoration.underline, color: Colors.black),
+              style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                    decoration: TextDecoration.underline,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
             ),
           ),
           SizedBox(height: 16),
