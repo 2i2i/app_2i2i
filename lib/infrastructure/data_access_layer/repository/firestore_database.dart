@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -73,6 +74,7 @@ class FirestoreDatabase {
         data: {
           'type': type,
           'ts': FieldValue.serverTimestamp(),
+          'id': algorandAccount,
         },
         merge: false,
       );
@@ -336,19 +338,53 @@ class FirestoreDatabase {
     return null;
   }
 
+  Future<List> checkAddressAvailable(String address) async {
+    var documentSnapshot = await _service.getCollectionGroupData(
+      path: FirestorePath.alograndAccountPath(),
+      queryBuilder: (query) => query.where('id', isEqualTo: address).orderBy('ts', descending: true),
+      builder: (Map<String, dynamic>? data, DocumentReference documentID) {
+        if (data is Map) {
+          List paths = documentID.path.split('/');
+          if (paths.length > 1) {
+            String userId = paths[1];
+            return userId;
+          }
+        }
+      },
+    );
+    if (documentSnapshot.isNotEmpty) {
+      return documentSnapshot.toList();
+    }
+    return [];
+  }
+
+  Future<List> checkInstaUserAvailable(SocialLinksModel socialLinksModel) async {
+    var documentSnapshot = await _service.getCollectionData(
+      path: FirestorePath.users(),
+      queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()),
+      builder: (Map<String, dynamic>? data, DocumentReference documentID) {
+        return documentID.id;
+      },
+    );
+    if (documentSnapshot.isNotEmpty) {
+      return documentSnapshot.toList();
+    }
+    return [];
+  }
+
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
-    return _service
-        .collectionStream(
+    return _service.collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
         return UserModel.fromMap(data, documentId);
       },
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
-    )
-        .handleError((error) {
-      log(error);
-    });
+    ).handleError(
+      (error) {
+        log(error);
+      }
+    );
   }
 
   Stream<Room> roomStream({required String meetingId}) => _service.documentStream(

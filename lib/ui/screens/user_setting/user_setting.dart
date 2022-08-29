@@ -615,7 +615,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     UserModel? user = myUserPageViewModel?.user;
 
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
+      String userName;
+      SocialLinksModel? socialLinksModel;
+      if (setupUserViewModel!.socialLinksModel?.userName?.isNotEmpty ?? false) {
+        userName = setupUserViewModel.socialLinksModel!.userName!;
+      } else {
+        userName = userNameEditController.text;
+      }
+      socialLinksModel = setupUserViewModel.socialLinksModel!;
+      socialLinksModel.userName = userName;
+      user?.socialLinks = [socialLinksModel];
     }
 
     if (!invalidTime.value || (widget.fromBottomSheet ?? false)) {
@@ -641,6 +650,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       } else {
         user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
       }
+
+      FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);
 
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();

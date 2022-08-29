@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../infrastructure/commons/utils.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
 import '../../infrastructure/providers/all_providers.dart';
+import '../screens/my_account/widgets/qr_image_widget.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
 bool _initialUriIsHandled = false;
@@ -23,10 +29,8 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(
-    BuildContext context,
-    bool mounted,
-  ) async {
+  static Future<void> deepLinks(BuildContext context,
+      bool mounted,) async {
     if (!kIsWeb) {
       try {
         if (!_initialUriIsHandled) {
@@ -83,6 +87,50 @@ class Custom {
         print(userId);
         userIdNav.value = userId;
         isUserLocked.notifyListeners();
+      }
+    }
+  }
+
+  static Future changeDisplayUri(BuildContext context, String url, {required ValueNotifier<bool> isDialogOpen}) async {
+    bool isAvailable = false;
+    if (kIsWeb) {
+      isDialogOpen.value = true;
+      await showDialog(
+        context: context,
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: isDialogOpen,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (!value) {
+              Navigator.of(context).pop();
+            }
+            return QrImagePage(imageUrl: url);
+          },
+        ),
+        barrierDismissible: true,
+      );
+    } else {
+      var launchUri;
+      try {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          final bridge = await getWCBridge();
+          launchUri = Uri(
+            scheme: 'algorand-wc',
+            host: 'wc',
+            queryParameters: {'uri': url, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"},
+          );
+        } else {
+          launchUri = Uri.parse(url);
+        }
+        isAvailable = await launchUrl(launchUri);
+      } on PlatformException catch (err) {
+        print(err);
+      }
+      if (!isAvailable) {
+        await launchUrl(
+            Uri.parse(Platform.isAndroid
+                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+            mode: LaunchMode.externalApplication);
       }
     }
   }

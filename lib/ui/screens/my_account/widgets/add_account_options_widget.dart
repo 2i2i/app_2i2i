@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
@@ -150,6 +151,10 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
     String id = DateTime.now().toString();
     final connector = await WalletConnectAccount.newConnector(id);
+
+    var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+    String userId = ref.read(myUIDProvider)??'';
+
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
       connector: connector,
@@ -165,10 +170,15 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       isDialogOpen.value = false;
       CustomAlertWidget.loader(true, context, rootNavigator: true);
       await account.save(id);
-      if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+
+      var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
+      if (account.address.isNotEmpty) {
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      }
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
       await myAccountPageViewModel.getWalletAccount();
+      await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
       CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;

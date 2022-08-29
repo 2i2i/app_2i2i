@@ -190,6 +190,7 @@ class Keys {
   static const String signInWithApple = 'signInWithApple';
   static const String signInWithTwitter = 'signInWithTwitter';
   static const String signInAnonymously = 'signInAnonymously';
+  static const String signInWithWalletConnect ='Wallet Connect';
 
   static const String searchFaq = 'searchFaq';
   static const String noInternetTitle = 'noInternetTitle';
@@ -236,6 +237,8 @@ class Keys {
   static const String connectWallet = 'Connect Wallet';
 
   static const String retry = 'Retry';
+
+  static const String signInWithInstagram = 'Sign in with Instagram';
 
   static const String walletDesMsg1 =
       'To receive coins, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.';
