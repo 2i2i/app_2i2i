@@ -1,21 +1,30 @@
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
+import 'package:app_2i2i/ui/screens/instagram_login.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
@@ -25,11 +34,14 @@ class AppSettingPage extends ConsumerStatefulWidget {
 
 class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
+  InstagramService instagram = InstagramService();
+  InAppWebViewController? _webViewController;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
+      ref.read(myAccountPageViewModelProvider).initMethod();
     });
     super.initState();
   }
@@ -307,7 +319,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       await signUpViewModel.signOutFromAuth();
                       await ref.read(storageProvider).clearStorage();
                       currentIndex.value = 1;
-                      context.go(Routes.myUser);
+                      if (mounted) context.go(Routes.myUser);
                     },
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
@@ -326,51 +338,116 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             SizedBox(height: 12),
             Container(
               // decoration: Custom.getBoxDecoration(context),
-              child: Row(
-                children: [
-                  Visibility(
-                    visible: !signUpViewModel.authList.contains('google.com'),
-                    child: FloatingActionButton.small(
-                      onPressed: () async {
-                        await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
-                      },
-                      heroTag: 'google',
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: Image.asset('assets/google.png', height: 25, width: 25),
-                    ),
-                  ),
-                  Visibility(
-                    child: FloatingActionButton.small(
-                      onPressed: () async {
-                        await signUpViewModel.signInWithTwitter(context, linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
-                      },
-                      heroTag: 'twitter',
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: Image.asset('assets/twitter.png', height: 25, width: 25),
-                    ),
-                    visible: !kIsWeb && !signUpViewModel.authList.contains('twitter.com'),
-                  ),
-                  Visibility(
-                    child: FloatingActionButton.small(
-                      heroTag: 'apple',
-                      onPressed: () async {
-                        await signUpViewModel.signInWithApple(context, linkWithCredential: true);
-                        await ref.read(setupUserViewModelProvider).getAuthList();
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: Image.asset('assets/apple.png', height: 25, width: 25),
-                    ),
-                    visible: !kIsWeb && Platform.isIOS && !signUpViewModel.authList.contains('apple.com'),
-                  ),
-                ],
+              child: FutureBuilder(
+                future: ref.read(setupUserViewModelProvider).getAuthList(),
+                builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                  if (snapshot.data is List<String>) {
+                    List<String> list = snapshot.data!;
+                    return Row(
+                      children: [
+                        Visibility(
+                          visible: !list.contains('google.com'),
+                          child: FloatingActionButton.small(
+                            onPressed: () async {
+                              await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            heroTag: 'google',
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/google.png', height: 25, width: 25),
+                          ),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            onPressed: () async {
+                              await signUpViewModel.signInWithTwitter(context, linkWithCredential: true);
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            heroTag: 'twitter',
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/twitter.png', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && !list.contains('twitter.com'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'apple',
+                            onPressed: () async {
+                              await signUpViewModel.signInWithApple(context, linkWithCredential: true);
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/apple.png', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && Platform.isIOS && !list.contains('apple.com'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'instagram',
+                            onPressed: () async {
+                              MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) {
+                                  return InstagramLogin(
+                                    onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                      instagram.getAuthorizationCode(url.toString());
+                                      if (url?.host == InstagramConfig.redirectUriHost) {
+                                        String idToken = await instagram.getTokenAndUserID();
+                                        if (idToken.split(':').isNotEmpty) {
+                                          // _webViewController?.reload();
+                                          await _webViewController?.clearCache();
+                                          await _webViewController?.clearFocus();
+                                          await _webViewController?.clearMatches();
+                                          await _webViewController?.removeAllUserScripts();
+                                          Navigator.of(context).pop(idToken);
+                                        }
+                                      }
+                                    },
+                                    onWebViewCreated: (InAppWebViewController? value) {
+                                      _webViewController = value;
+                                    },
+                                  );
+                                },
+                              );
+                              final result = await Navigator.of(context).push(route);
+                              if (result is String) {
+                                String token = result.split(':').first;
+                                String id = result.split(':').last;
+                                await signUpViewModel.signInWithInstagram(context, id, true);
+                                await ref.read(setupUserViewModelProvider).getAuthList();
+                              }
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: SvgPicture.asset('assets/instagram.svg', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && !list.contains('Instagram'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'algorand',
+                            onPressed: () async {
+                              await _createSession();
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/algo_logo.png', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && !list.contains('WalletConnect'),
+                        ),
+                      ],
+                    );
+                  }
+                  return Container();
+                },
               ),
             ),
             SizedBox(height: 16),
@@ -388,5 +465,47 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         ),
       ),
     );
+  }
+
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
+
+  Future<String?> _createSession() async {
+    var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+
+    final account = WalletConnectAccount.fromNewConnector(
+      accountService: myAccountPageViewModel.accountService!,
+      connector: connector,
+    );
+    // Create a new session
+    if (!account.connector.connected) {
+      SessionStatus sessionStatus = await account.connector.createSession(
+        chainId: 4160,
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
+      );
+      if (sessionStatus.accounts.isNotEmpty) {
+        var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+        String userId = ref.read(myUIDProvider) ?? '';
+
+        isDialogOpen.value = false;
+        CustomAlertWidget.loader(true, context, rootNavigator: true);
+
+        await account.save(id);
+        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address, userName: setupUserViewModel.userInfoModel!.name);
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+        await myAccountPageViewModel.updateAccounts();
+        await account.setMainAccount();
+        await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
+
+        CustomAlertWidget.loader(false, context, rootNavigator: true);
+
+        return account.address;
+      }
+      return null;
+    } else {
+      log('_MyAccountPageState - _createSession - connector already connected');
+      return null;
+    }
   }
 }

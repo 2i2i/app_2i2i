@@ -244,7 +244,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                             color: iconColor(context),
                           ),
                           onPressed: () async {
-                            CustomDialogs.infoDialog(
+                            CustomAlertWidget.infoDialog(
                               context: context,
                               child: KeysWidget(account: widget.account as LocalAccount),
                             );

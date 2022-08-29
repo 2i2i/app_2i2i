@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_admin/firebase_admin.dart' as admin;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +28,7 @@ import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
 import '../../routes/app_routes.dart';
+import '../my_account_provider/my_account_page_view_model.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -87,7 +91,7 @@ class SetupUserViewModel with ChangeNotifier {
     if (uid is String) await signInProcess(uid, socialLinkModel: null);
   }
 
-  Future<void> getAuthList() async {
+  Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
     authList = [];
@@ -96,7 +100,10 @@ class SetupUserViewModel with ChangeNotifier {
         authList.add(element.providerId);
       });
     }
-    notifyListeners();
+    List<String> list = userInfoModel?.socialLinks.map((e) => e.accountName ?? '').toList() ?? [];
+    authList.addAll(list);
+    Future.delayed(Duration.zero).then((value) => notifyListeners());
+    return authList;
   }
 
   Future<void> signInWithGoogle(BuildContext context, {bool linkWithCredential = false}) async {
@@ -240,6 +247,133 @@ class SetupUserViewModel with ChangeNotifier {
       }
     } on FirebaseAuthException catch (e) {
       CustomAlertWidget.showToastMessage(context, "${e.message}");
+      throw e;
+    }
+  }
+
+  Future<void> signInWithWalletConnect(
+    BuildContext context,
+    String address,
+    WalletConnectAccount account,
+    String sessionId,
+    MyAccountPageViewModel myAccountPageViewModel,
+  ) async {
+    String? uid;
+
+    try {
+      final app = admin.FirebaseAdmin.instance.app();
+      if (app is admin.App) {
+        CustomAlertWidget.loader(true, context, rootNavigator: true);
+        var result = await app.auth().createCustomToken(address);
+        List ids = await database.checkAddressAvailable(address);
+        if (ids.length > 1) {
+          final id = await showDialog(
+            context: context,
+            builder: (context) => ChooseAccountDialog(
+              userIds: ids,
+              onSelectId: (String value) {
+                Navigator.of(context).pop(value);
+              },
+            ),
+            // barrierDismissible: false,
+          );
+          if (id is String) {
+            uid = id;
+          }
+        } else if (ids.isNotEmpty) {
+          uid = ids.first;
+        } else {
+          uid = address;
+          socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: uid);
+        }
+
+        if (uid?.isNotEmpty ?? false) {
+          result = await app.auth().createCustomToken(uid!);
+          var firebaseUser = await auth.signInWithCustomToken(result);
+          CustomAlertWidget.loader(false, context, rootNavigator: true);
+          if (firebaseUser.user is User) {
+            String? uid = firebaseUser.user?.uid;
+            if (uid is String) {
+              await signInProcess(uid, socialLinkModel: socialLinksModel).then((_) async {
+                await account.save(sessionId).then((_) {
+                  myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC', userId: uid).then((_) {
+                    myAccountPageViewModel.updateAccounts(notify: false).then((_) {
+                      account.setMainAccount();
+                    });
+                  });
+                });
+              });
+            }
+          }
+        } else {
+          CustomAlertWidget.loader(false, context, rootNavigator: true);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      CustomAlertWidget.showToastMessage(context, "${e.message}");
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
+      throw e;
+    } catch (e) {
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
+    }
+  }
+
+  Future<void> signInWithInstagram(context, id, [bool forLink = false]) async {
+    String? uid;
+    socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id);
+
+    User? user = FirebaseAuth.instance.currentUser;
+    try {
+      if ((user?.uid is String) && forLink) {
+        socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id, userName: user!.displayName);
+        await signInProcess(user.uid, socialLinkModel: socialLinksModel);
+      } else {
+        final app = admin.FirebaseAdmin.instance.app();
+        if (app is admin.App) {
+          CustomAlertWidget.loader(true, context, rootNavigator: true);
+          var result = await app.auth().createCustomToken(id);
+          // var firebaseUser = await auth.signInWithCustomToken(result);
+          List ids = await database.checkInstaUserAvailable(socialLinksModel!);
+          if (ids.length > 1) {
+            final id = await showDialog(
+              context: context,
+              useRootNavigator: true,
+              builder: (context) => ChooseAccountDialog(
+                userIds: ids,
+                onSelectId: (String value) {
+                  Navigator.of(context, rootNavigator: true).pop(value);
+                },
+              ),
+              // barrierDismissible: false,
+            );
+            if (id is String) {
+              uid = id;
+            }
+          } else if (ids.isNotEmpty) {
+            uid = ids.first;
+          } else {
+            uid = id;
+          }
+
+          if (uid?.isNotEmpty ?? false) {
+            // await FirebaseAuth.instance.signOut();
+            result = await app.auth().createCustomToken(uid!);
+            var firebaseUser = await auth.signInWithCustomToken(result);
+            CustomAlertWidget.loader(false, context, rootNavigator: true);
+            if (firebaseUser.user is User) {
+              String? uid = firebaseUser.user?.uid;
+              if (uid is String) {
+                await signInProcess(id, socialLinkModel: socialLinksModel);
+              }
+            }
+          } else {
+            CustomAlertWidget.loader(false, context, rootNavigator: true);
+          }
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      CustomAlertWidget.showToastMessage(context, "${e.message}");
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       throw e;
     }
   }
