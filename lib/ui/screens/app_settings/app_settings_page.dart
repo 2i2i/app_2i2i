@@ -16,7 +16,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
@@ -287,12 +286,13 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () {
+                    onTap: () async {
                       if (appSettingModel.updateRequired) {
-                        StoreRedirect.redirect(
-                          androidAppId: "app.i2i2",
-                          iOSAppId: "app.2i2i",
-                        );
+                        await launchUrl(
+                            Uri.parse(Platform.isAndroid
+                                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+                            mode: LaunchMode.externalApplication);
                       }
                     },
                     title: Text(

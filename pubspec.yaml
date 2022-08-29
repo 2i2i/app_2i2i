@@ -33,7 +33,7 @@ dependencies:
   walletconnect_secure_storage: ^1.0.0
   algorand_dart: ^1.0.3
   image_picker: ^0.8.5+3
-  flutter_webrtc: ^0.9.4
+  flutter_webrtc: ^0.8.12
   just_audio: ^0.9.28
   flutter_riverpod: ^1.0.4
 
@@ -73,7 +73,7 @@ dependencies:
   permission_handler: ^10.0.0
   flutter_dotenv: ^5.0.2
 
-  store_redirect: ^2.0.1
+  #store_redirect: ^2.0.1
   connectivity_plus: ^2.3.6+1
 
   share_plus: ^4.0.10+1

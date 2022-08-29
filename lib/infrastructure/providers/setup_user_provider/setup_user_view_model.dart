@@ -25,7 +25,6 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
-import '../../routes/app_routes.dart';
 import '../my_account_provider/my_account_page_view_model.dart';
 
 class SetupUserViewModel with ChangeNotifier {
@@ -52,42 +51,6 @@ class SetupUserViewModel with ChangeNotifier {
   SocialLinksModel? socialLinksModel;
 
   List<String> authList = [];
-
-  Future<UserModel?> getUserInfoModel(String uid) async {
-    userInfoModel = await database.getUser(uid);
-    return userInfoModel;
-  }
-
-  Future updateFirebaseMessagingToken(String uid) async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
-      if (token is String) return database.updateToken(uid, token);
-    });
-    // log(X + 'token=$token');
-    // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
-  }
-
-  Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
-    userInfoModel = await getUserInfoModel(uid);
-    if (socialLinkModel is SocialLinksModel) {
-      userInfoModel?.socialLinks.add(socialLinkModel);
-      if ((userInfoModel?.name ?? "").isNotEmpty) {
-        await database.updateUser(userInfoModel!);
-      }
-    } else {
-      userInfoModel?.socialLinks = [];
-    }
-    final f2 = updateFirebaseMessagingToken(uid);
-    // final f3 = setupAlgorandAccount(uid);
-    final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, /* f3,*/ f4]);
-  }
-
-  Future<void> signInAnonymously() async {
-    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
-    String? uid = firebaseUser.user?.uid;
-    if (uid is String) await signInProcess(uid, socialLinkModel: null);
-  }
 
   Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
@@ -243,6 +206,8 @@ class SetupUserViewModel with ChangeNotifier {
             break;
           case TwitterLoginStatus.error:
             break;
+          default:
+            break;
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -286,18 +251,6 @@ class SetupUserViewModel with ChangeNotifier {
     // final f3 = setupAlgorandAccount(uid);
     final f4 = updateDeviceInfo(uid);
     return Future.wait([f2, /* f3,*/ f4]);
-  }
-
-  Future<void> getAuthList() async {
-    User? firebaseUser = FirebaseAuth.instance.currentUser;
-    List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
-    authList = [];
-    if (userAuthList.isNotEmpty) {
-      userAuthList.forEach((element) {
-        authList.add(element.providerId);
-      });
-    }
-    notifyListeners();
   }
 
   Future<void> signInWithWalletConnect(
