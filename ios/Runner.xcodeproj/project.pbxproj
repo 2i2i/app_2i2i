@@ -138,7 +138,6 @@
 				68A2AEBAE45E96485C0ED679 /* Pods-Runner.profile-main.xcconfig */,
 				DE96319564F58F34249D7343 /* Pods-Runner.profile-dev.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -336,7 +335,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		249021D3217E4FDB00AE95B9 /* Profile-main */ = {
+		249021D3217E4FDB00AE95B9 /* Profile-production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -385,9 +384,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = "Profile-main";
+			name = "Profile-production";
 		};
-		249021D4217E4FDB00AE95B9 /* Profile-main */ = {
+		249021D4217E4FDB00AE95B9 /* Profile-production */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
@@ -415,9 +414,9 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Profile-main";
+			name = "Profile-production";
 		};
-		97C147031CF9000F007C117D /* Debug-main */ = {
+		97C147031CF9000F007C117D /* Debug-production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -472,9 +471,9 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = "Debug-main";
+			name = "Debug-production";
 		};
-		97C147041CF9000F007C117D /* Release-main */ = {
+		97C147041CF9000F007C117D /* Release-production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -525,9 +524,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = "Release-main";
+			name = "Release-production";
 		};
-		97C147061CF9000F007C117D /* Debug-main */ = {
+		97C147061CF9000F007C117D /* Debug-production */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
@@ -556,9 +555,9 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Debug-main";
+			name = "Debug-production";
 		};
-		97C147071CF9000F007C117D /* Release-main */ = {
+		97C147071CF9000F007C117D /* Release-production */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
@@ -586,7 +585,7 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Release-main";
+			name = "Release-production";
 		};
 		FAB8125327E129530073801A /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
@@ -847,28 +846,28 @@
 		97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				97C147031CF9000F007C117D /* Debug-main */,
+				97C147031CF9000F007C117D /* Debug-production */,
 				FAB8125327E129530073801A /* Debug-dev */,
-				97C147041CF9000F007C117D /* Release-main */,
+				97C147041CF9000F007C117D /* Release-production */,
 				FAB8125527E129600073801A /* Release-dev */,
-				249021D3217E4FDB00AE95B9 /* Profile-main */,
+				249021D3217E4FDB00AE95B9 /* Profile-production */,
 				FAB8125727E129680073801A /* Profile-dev */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release-main";
+			defaultConfigurationName = "Release-production";
 		};
 		97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				97C147061CF9000F007C117D /* Debug-main */,
+				97C147061CF9000F007C117D /* Debug-production */,
 				FAB8125427E129530073801A /* Debug-dev */,
-				97C147071CF9000F007C117D /* Release-main */,
+				97C147071CF9000F007C117D /* Release-production */,
 				FAB8125627E129600073801A /* Release-dev */,
-				249021D4217E4FDB00AE95B9 /* Profile-main */,
+				249021D4217E4FDB00AE95B9 /* Profile-production */,
 				FAB8125827E129680073801A /* Profile-dev */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release-main";
+			defaultConfigurationName = "Release-production";
 		};
 /* End XCConfigurationList section */
 	};
