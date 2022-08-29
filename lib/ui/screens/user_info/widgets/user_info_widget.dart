@@ -60,6 +60,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,29 +73,28 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             ),
             Expanded(
               child: ListTile(
-                title: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      flex: 6,
-                      child: Text(
-                        widget.user.name,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                        maxLines: 3,
-                        style: Theme.of(context).textTheme.headline6,
+                title: RichText(
+                  maxLines: 3,
+                  text: new TextSpan(
+                    style: Theme.of(context).textTheme.headline6,
+                    children: [
+                      TextSpan(text: widget.user.name, style: new TextStyle(fontWeight: FontWeight.bold)),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Visibility(
+                          visible: widget.user.isVerified(),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 6.0),
+                            child: Tooltip(
+                              triggerMode: TooltipTriggerMode.tap,
+                              message: Keys.connectedSocialAccount.tr(context),
+                              child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 4),
-                    Flexible(
-                      flex: 2,
-                      child: Tooltip(
-                        triggerMode: TooltipTriggerMode.tap,
-                        message: Keys.connectedSocialAccount.tr(context),
-                        child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
-                      ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -138,7 +138,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 2),
+                    SizedBox(height: 4),
                     InkWell(
                       onTap: () => context.pushNamed(Routes.ratings.nameFromPath(), params: {'uid': widget.user.id}),
                       child: Row(

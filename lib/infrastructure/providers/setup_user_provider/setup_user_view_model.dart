@@ -9,13 +9,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/entity/auth_result.dart';
 import 'package:twitter_login/twitter_login.dart';
 
-import '../../../ui/screens/home/bottom_nav_bar.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -24,7 +22,6 @@ import '../../data_access_layer/repository/secure_storage_service.dart';
 import '../../data_access_layer/services/logging.dart';
 import '../../models/social_links_model.dart';
 import '../../models/user_model.dart';
-import '../../routes/app_routes.dart';
 
 class SetupUserViewModel with ChangeNotifier {
   SetupUserViewModel(
@@ -51,56 +48,9 @@ class SetupUserViewModel with ChangeNotifier {
 
   List<String> authList = [];
 
-  Future<UserModel?> getUserInfoModel(String uid) async {
-    userInfoModel = await database.getUser(uid);
-    return userInfoModel;
-  }
-
-  Future updateFirebaseMessagingToken(String uid) async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
-      if (token is String) return database.updateToken(uid, token);
-    });
-    // log(X + 'token=$token');
-    // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
-  }
-
-  Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
-    userInfoModel = await getUserInfoModel(uid);
-    if (socialLinkModel is SocialLinksModel) {
-      userInfoModel?.socialLinks.add(socialLinkModel);
-      if ((userInfoModel?.name ?? "").isNotEmpty) {
-        await database.updateUser(userInfoModel!);
-      }
-    } else {
-      userInfoModel?.socialLinks = [];
-    }
-    final f2 = updateFirebaseMessagingToken(uid);
-    // final f3 = setupAlgorandAccount(uid);
-    final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, /* f3,*/ f4]);
-  }
-
-  Future<void> signInAnonymously(BuildContext context) async {
-    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
-    String? uid = firebaseUser.user?.uid;
-    if (uid is String) await signInProcess(uid, socialLinkModel: null);
-  }
-
-  Future<void> getAuthList() async {
-    User? firebaseUser = FirebaseAuth.instance.currentUser;
-    List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
-    authList = [];
-    if (userAuthList.isNotEmpty) {
-      userAuthList.forEach((element) {
-        authList.add(element.providerId);
-      });
-    }
-    notifyListeners();
-  }
-
   Future<void> signInWithGoogle(BuildContext context, {bool linkWithCredential = false}) async {
     try {
+      CustomAlertWidget.loader(true, context);
       User? existingUser;
       UserCredential? firebaseUser;
 
@@ -110,7 +60,6 @@ class SetupUserViewModel with ChangeNotifier {
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
@@ -134,22 +83,16 @@ class SetupUserViewModel with ChangeNotifier {
       }
       CustomAlertWidget.showToastMessage(context, '${e.message}');
       throw e;
-    }
-  }
-
-  Future<void> unLink(BuildContext context) async {
-    try {
-      User? firebaseUser = FirebaseAuth.instance.currentUser;
-      User? existingUser = await firebaseUser!.unlink('google.com');
-      log("$existingUser");
-    } on FirebaseAuthException catch (e) {
-      CustomAlertWidget.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
+    } catch (e) {
+      CustomAlertWidget.loader(false, context);
       throw e;
     }
+    CustomAlertWidget.loader(false, context);
   }
 
   Future<void> signInWithApple(BuildContext context, {bool linkWithCredential = false}) async {
     try {
+      CustomAlertWidget.loader(true, context);
       User? existingUser;
       UserCredential? firebaseUser;
       if (linkWithCredential) {
@@ -174,7 +117,6 @@ class SetupUserViewModel with ChangeNotifier {
       } else {
         firebaseUser = await auth.signInWithCredential(oauthCredential);
       }
-
       socialLinksModel = SocialLinksModel(userName: credential.email, userEmail: credential.email, accountName: 'Apple', userId: credential.userIdentifier);
 
       String? uid = firebaseUser.user?.uid;
@@ -183,14 +125,20 @@ class SetupUserViewModel with ChangeNotifier {
         socialLinksModel?.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
+      CustomAlertWidget.loader(false, context);
     } on FirebaseAuthException catch (e) {
+      CustomAlertWidget.loader(false, context);
       CustomAlertWidget.showToastMessage(context, "${e.message}");
+      throw e;
+    } catch (e) {
+      CustomAlertWidget.loader(false, context);
       throw e;
     }
   }
 
   Future<void> signInWithTwitter(BuildContext context, {bool linkWithCredential = false}) async {
     try {
+      CustomAlertWidget.loader(true, context);
       User? existingUser;
       UserCredential? firebaseUser;
       AuthCredential? twitterAuthCredential;
@@ -206,48 +154,101 @@ class SetupUserViewModel with ChangeNotifier {
           redirectURI: "test://twoitwoi.com",
         );
 
-        try {
-          authResult = await twitterLogin.login();
-          print(authResult.status);
-          if (authResult.authToken is String && authResult.authTokenSecret is String) {
-            twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
-          }
-        } catch (e) {
-          print(e);
-        }
-      }
-      if (linkWithCredential && existingUser != null) {
-        if (kIsWeb) {
-          firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
-        } else if (twitterAuthCredential != null) {
-          firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
-        }
-      } else {
-        if (kIsWeb) {
-          firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
-        } else if (twitterAuthCredential != null) {
-          firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
-        }
-      }
+        authResult = await twitterLogin.login();
+        switch (authResult.status) {
+          case TwitterLoginStatus.loggedIn:
+            if (authResult.authToken is String && authResult.authTokenSecret is String) {
+              twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+            }
+            if (linkWithCredential && existingUser != null) {
+              if (kIsWeb) {
+                firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
+              } else if (twitterAuthCredential != null) {
+                firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
+              }
+            } else {
+              if (kIsWeb) {
+                firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
+              } else if (twitterAuthCredential != null) {
+                firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
+              }
+            }
 
-      if (authResult?.user != null) {
-        socialLinksModel = SocialLinksModel(userName: authResult?.user?.name ?? '', accountName: 'Twitter', userId: "${authResult?.user?.id ?? ""}");
-      }
+            if (authResult.user != null) {
+              socialLinksModel = SocialLinksModel(userName: authResult.user?.name ?? '', accountName: 'Twitter', userId: "${authResult.user?.id ?? ""}");
+            }
 
-      String? uid = firebaseUser?.user?.uid;
-      if (uid is String) {
-        await signInProcess(uid, socialLinkModel: socialLinksModel);
+            String? uid = firebaseUser?.user?.uid;
+            if (uid is String) {
+              await signInProcess(uid, socialLinkModel: socialLinksModel);
+            }
+            break;
+          case TwitterLoginStatus.cancelledByUser:
+            break;
+          case TwitterLoginStatus.error:
+            break;
+        }
       }
     } on FirebaseAuthException catch (e) {
       CustomAlertWidget.showToastMessage(context, "${e.message}");
       throw e;
     }
+    CustomAlertWidget.loader(false, context);
+  }
+
+  Future<void> signInAnonymously(BuildContext context) async {
+    CustomAlertWidget.loader(true, context);
+    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
+    String? uid = firebaseUser.user?.uid;
+    if (uid is String) await signInProcess(uid, socialLinkModel: null);
+    CustomAlertWidget.loader(false, context);
+  }
+
+  Future<UserModel?> getUserInfoModel(String uid) async {
+    userInfoModel = await database.getUser(uid);
+    return userInfoModel;
+  }
+
+  Future updateFirebaseMessagingToken(String uid) async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
+      if (token is String) return database.updateToken(uid, token);
+    });
+  }
+
+  Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
+    userInfoModel = await getUserInfoModel(uid);
+    if (socialLinkModel is SocialLinksModel) {
+      userInfoModel?.socialLinks.add(socialLinkModel);
+      if ((userInfoModel?.name ?? "").isNotEmpty) {
+        await database.updateUser(userInfoModel!);
+      }
+    } else {
+      userInfoModel?.socialLinks = [];
+    }
+    final f2 = updateFirebaseMessagingToken(uid);
+    // final f3 = setupAlgorandAccount(uid);
+    final f4 = updateDeviceInfo(uid);
+    return Future.wait([f2, /* f3,*/ f4]);
+  }
+
+  Future<void> getAuthList() async {
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
+    List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
+    authList = [];
+    if (userAuthList.isNotEmpty) {
+      userAuthList.forEach((element) {
+        authList.add(element.providerId);
+      });
+    }
+    notifyListeners();
   }
 
   Future<void> signOutFromAuth() async {
     socialLinksModel = null;
     await googleSignIn.signOut();
     await auth.signOut();
+    await storage.clearStorage();
   }
 
   Future<void> deleteUser({required BuildContext mainContext, required String title, required String description}) async {
@@ -266,22 +267,30 @@ class SetupUserViewModel with ChangeNotifier {
             if (mapIndex > -1) {
               Map dataMap = dataList[mapIndex];
               if ((dataMap['successCount'] ?? 0) > 0) {
-                await Future.delayed(Duration(milliseconds: 300));
-                await signOutFromAuth();
-                currentIndex.value = 1;
-                mainContext.go(Routes.myUser);
                 CustomAlertWidget.loader(false, mainContext);
+                await signOutFromAuth();
               }
             }
           }
         } catch (e) {
           CustomAlertWidget.loader(false, mainContext);
-          print(e);
+          throw e;
         }
       },
       yesButtonTextStyle: TextStyle(color: Theme.of(mainContext).errorColor),
       noButtonTextStyle: TextStyle(color: Theme.of(mainContext).colorScheme.secondary),
     );
+  }
+
+  Future<void> unLink(BuildContext context) async {
+    try {
+      User? firebaseUser = FirebaseAuth.instance.currentUser;
+      User? existingUser = await firebaseUser!.unlink('google.com');
+      log("$existingUser");
+    } on FirebaseAuthException catch (e) {
+      CustomAlertWidget.showToastMessage(context, 'Error occurred using Google Sign In. Try again.');
+      throw e;
+    }
   }
 
   Future updateDeviceInfo(String uid) async {

@@ -9,10 +9,10 @@ ValueNotifier<String> userIdNav = ValueNotifier("");
 bool _initialUriIsHandled = false;
 
 class Custom {
-  static getBoxDecoration(BuildContext context, {Color? color, double radius = 10}) {
+  static getBoxDecoration(BuildContext context, {Color? color, double radius = 10, BorderRadiusGeometry? borderRadius}) {
     return BoxDecoration(
       color: color ?? Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: borderRadius ?? BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
           offset: Offset(2, 4),

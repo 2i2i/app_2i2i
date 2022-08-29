@@ -16,6 +16,7 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
@@ -25,6 +26,7 @@ class AppSettingPage extends ConsumerStatefulWidget {
 
 class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -47,6 +49,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     }
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CustomAppbar(
         backgroundColor: Colors.transparent,
         title: Text(
@@ -110,9 +113,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     trailing: Icon(Icons.navigate_next),
                   ),
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.account.nameFromPath());
-                    },
+                    onTap: () => context.pushNamed(Routes.account.nameFromPath()),
                     title: Row(
                       children: [
                         Text(
@@ -231,8 +232,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               },
             ),
             SizedBox(height: 20),
-
-            //link
             Text(
               Keys.more.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
@@ -295,19 +294,25 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
                         ? RotatedBox(
-                            quarterTurns: 1,
-                            child: Icon(
-                              Icons.arrow_circle_left_rounded,
-                            ),
-                          )
+                      quarterTurns: 1,
+                      child: Icon(
+                        Icons.arrow_circle_left_rounded,
+                      ),
+                    )
                         : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
-                      await signUpViewModel.signOutFromAuth();
-                      await ref.read(storageProvider).clearStorage();
-                      currentIndex.value = 1;
-                      context.go(Routes.myUser);
+                      CustomAlertWidget.confirmDialog(
+                        context,
+                        title: "Logout",
+                        description: "Are you sure want to logout?",
+                        onPressed: () async {
+                          await signUpViewModel.signOutFromAuth();
+                        },
+                        yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+                        noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      );
                     },
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
@@ -377,8 +382,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             TextButton(
                 onPressed: () async {
                   await signUpViewModel.deleteUser(
-                      title: "${Keys.deleteAccount.tr(context)}!", description: Keys.deleteAccountMessage.tr(context), mainContext: context);
-                  await ref.read(storageProvider).clearStorage();
+                      title: "${Keys.deleteAccount.tr(context)}!",
+                      description: Keys.deleteAccountMessage.tr(context),
+                      mainContext: _scaffoldKey.currentContext ?? context);
                 },
                 child: Text(
                   Keys.deleteAccount.tr(context),

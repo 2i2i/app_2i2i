@@ -7,13 +7,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/routes/app_routes.dart';
 import '../app/no_internet_screen.dart';
 import '../app/wait_page.dart';
+import '../home/bottom_nav_bar.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final WidgetBuilder homePageBuilder;
@@ -64,6 +67,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   if (firebaseUser != null) {
                     // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder(context);
+                  } else {
+                    Future.delayed(Duration(milliseconds: 500)).then((value) {
+                      currentIndex.value = 1;
+                      context.go(Routes.myUser);
+                    });
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
