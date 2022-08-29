@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../infrastructure/commons/keys.dart';
@@ -122,7 +123,7 @@ class CustomAlertWidget {
         ),
       ],
     );
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await showCupertinoDialog(
         context: context,
         builder: (context) => cupertinoDialog,

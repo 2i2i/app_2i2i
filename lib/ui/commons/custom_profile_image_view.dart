@@ -82,8 +82,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 bottom: 1,
                 right: 1,
                 child: Container(
-                  width: 18,
-                  height: 18,
+                  width: MediaQuery.of(context).size.height * 0.020,
+                  height: MediaQuery.of(context).size.height * 0.020,
                   child: Material(
                     color: widget.statusColor,
                     shape: CircleBorder(side: BorderSide(color: Colors.white, width: 3)),

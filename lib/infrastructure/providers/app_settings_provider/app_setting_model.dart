@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../ui/screens/app_settings/app_settings_page_web.dart';
 import '../../commons/keys.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
@@ -29,6 +30,25 @@ class AppSettingModel extends ChangeNotifier {
   bool swapVideo = false;
 
   bool isInternetAvailable = true;
+
+  List<LanguageModel> languageList = [
+    LanguageModel(title: "English", languageCode: "en", countryCode: ""),
+    LanguageModel(title: "汉语", languageCode: "zh", countryCode: ""),
+    LanguageModel(title: "Español", languageCode: "es", countryCode: ""),
+    LanguageModel(title: "عَرَبِي", languageCode: "ar", countryCode: ""),
+    LanguageModel(title: "Deutsch", languageCode: "de", countryCode: ""),
+    LanguageModel(title: "日本語", languageCode: "ja", countryCode: ""),
+    LanguageModel(title: "한국어", languageCode: "ko", countryCode: ""),
+  ];
+
+  int selectedIndex = 0;
+  LanguageModel? dropdownValue;
+
+  setDropDownValue({LanguageModel? value}) {
+    dropdownValue = value ?? languageList.where((element) => Locale(element.languageCode!) == locale).first;
+    setLocal(value!.languageCode!);
+    notifyListeners();
+  }
 
   void setInternetStatus(bool value) {
     isInternetAvailable = value;
@@ -80,7 +100,7 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   Future<void> checkIfUpdateAvailable() async {
-    if(kIsWeb){
+    if (kIsWeb) {
       return;
     }
     AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();

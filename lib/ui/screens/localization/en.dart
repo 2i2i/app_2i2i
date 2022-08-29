@@ -115,7 +115,7 @@ class en {
       Keys.bidOut: 'Waiting',
       Keys.noBidFound: 'No bids found',
       Keys.noMeetingsFound: 'No meetings found',
-      Keys.roomIsEmpty: 'So empty',
+      Keys.roomIsEmpty: 'Room is empty',
       Keys.meetingsHistory: 'Meetings History',
       Keys.history: 'History',
       Keys.friendList: 'Friend list',

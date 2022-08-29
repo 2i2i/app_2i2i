@@ -3,6 +3,7 @@
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/app/no_bid_page_holder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,6 @@ import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
 
@@ -40,6 +40,7 @@ class UserBidInsList extends ConsumerWidget {
     List<BidIn> bidIns = bidInsWithUsers.toList();
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Colors.transparent,
       floatingActionButton: Visibility(
         visible: bidInsWithUsers.isNotEmpty,
         child: InkResponse(
@@ -106,7 +107,7 @@ class UserBidInsList extends ConsumerWidget {
                 );
               },
             )
-          : NoBidPage(noBidsText: Keys.roomIsEmpty.tr(context)),
+          : NoBidPageHolder(noBidsText: Keys.roomIsEmpty.tr(context)),
     );
   }
 

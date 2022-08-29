@@ -19,7 +19,7 @@ import '../app/no_internet_screen.dart';
 import '../app/wait_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
-  final WidgetBuilder homePageBuilder;
+  final Widget homePageBuilder;
 
   SignInPage({required this.homePageBuilder});
 
@@ -72,7 +72,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 return authStateChanges.when(data: (firebaseUser) {
                   if (firebaseUser != null) {
                     // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
-                    return widget.homePageBuilder(context);
+                    return widget.homePageBuilder;
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

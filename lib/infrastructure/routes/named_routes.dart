@@ -1,34 +1,33 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/screens/app/error_page.dart';
-import 'package:app_2i2i/ui/screens/app_settings/app_settings_page.dart';
-import 'package:app_2i2i/ui/screens/app_settings/widgets/language_widget.dart';
 import 'package:app_2i2i/ui/screens/block_list/block_list_page.dart';
-import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
-import 'package:app_2i2i/ui/screens/faq/faq_screen.dart';
-import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
+import 'package:app_2i2i/ui/screens/favorites/favorite_list_page_holder.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
-import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
-import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
-import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
-import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
-import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
-import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
-import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
-import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
-import 'package:app_2i2i/ui/screens/search/search_page.dart';
-import 'package:app_2i2i/ui/screens/top/top_page.dart';
-import 'package:app_2i2i/ui/screens/user_info/user_info_page.dart';
-import 'package:app_2i2i/ui/screens/user_setting/user_setting.dart';
+import 'package:app_2i2i/ui/screens/meeting_history/meeting_history_holder.dart';
+import 'package:app_2i2i/ui/screens/my_account/recover_account_holder.dart';
+import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page_holder.dart';
+import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list_holder.dart';
+import 'package:app_2i2i/ui/screens/rating/rating_page_holder.dart';
+import 'package:app_2i2i/ui/screens/user_info/user_info_page_holder.dart';
 import 'package:app_2i2i/ui/screens/web_view_screen/web_view_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../ui/screens/auth_screen/auth_screen.dart';
-import '../../ui/screens/sign_in/sign_in_page.dart';
+import '../../ui/screens/app_settings/app_settings_page_holder.dart';
+import '../../ui/screens/app_settings/widgets/language_widget_holder.dart';
+import '../../ui/screens/auth_screen/auth_screen_holder.dart';
+import '../../ui/screens/create_bid/create_bid_page_Holder.dart';
+import '../../ui/screens/faq/faq_screen_holder.dart';
+import '../../ui/screens/my_account/create_local_account_holder.dart';
+import '../../ui/screens/my_account/my_account_page_holder.dart';
+import '../../ui/screens/my_user/my_user_page_holder.dart';
+import '../../ui/screens/search/search_page_holder.dart';
+import '../../ui/screens/sign_in/sign_in_page_holder.dart';
+import '../../ui/screens/top/top_page_holder.dart';
+import '../../ui/screens/user_setting/user_setting_holder.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -75,7 +74,7 @@ class NamedRoutes {
         path: Routes.root,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(SearchPage()),
+          child: getView(SearchPageHolder()),
           // child: getView(TestScreen()),
         ),
       ),
@@ -85,7 +84,7 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           // child: getView(TestScreen1()),
-          child: getView(MyUserPage()),
+          child: getView(MyUserPageHolder()),
           // child: Scaffold(),
         ),
       ),
@@ -94,7 +93,7 @@ class NamedRoutes {
         path: Routes.account,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(MyAccountPage()),
+          child: getView(MyAccountPageHolder()),
           // child: Scaffold(),
         ),
       ),
@@ -103,7 +102,7 @@ class NamedRoutes {
         path: Routes.faq,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(FAQScreen()),
+          child: getView(FAQScreenHolder()),
           // child: Scaffold(),
         ),
       ),
@@ -112,7 +111,7 @@ class NamedRoutes {
         path: Routes.setting,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(AppSettingPage()),
+          child: getView(AppSettingPageHolder()),
           // child: Scaffold(),
         ),
       ),
@@ -121,7 +120,7 @@ class NamedRoutes {
         path: Routes.bidOut,
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
-          child: getView(UserBidOut()),
+          child: getView(UserBidOutHolder()),
           // child: Scaffold(),
         ),
       ),
@@ -156,7 +155,7 @@ class NamedRoutes {
           if (userId.trim().isNotEmpty) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(UserInfoPage(B: userId)),
+              child: getView(UserInfoPageHolder(B: userId)),
             );
           }
           return NoTransitionPage<void>(
@@ -171,7 +170,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(UserSetting(fromBottomSheet: false)),
+            child: getView(UserSettingHolder(fromBottomSheet: false)),
           );
         },
       ),
@@ -181,7 +180,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(LanguagePage()),
+            child: getView(LanguagePageHolder()),
           );
         },
       ),
@@ -191,7 +190,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(RecoverAccountPage()),
+            child: getView(RecoverAccountPageHolder()),
           );
         },
       ),
@@ -202,8 +201,7 @@ class NamedRoutes {
           if (state.params['walletAddress'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(
-                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+              child: getView(WebViewScreen(walletAddress: state.params['walletAddress']!)),
             );
           }
           return NoTransitionPage<void>(
@@ -219,7 +217,7 @@ class NamedRoutes {
           if (state.params['uid'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(RatingPage(uid: state.params['uid']!)),
+              child: getView(RatingPageHolder(uid: state.params['uid']!)),
             );
           }
           return NoTransitionPage<void>(
@@ -234,7 +232,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(TopPage()),
+            child: getView(TopPageHolder()),
           );
         },
       ),
@@ -254,7 +252,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(FavoriteListPage()),
+            child: getView(FavoriteListPageHolder()),
           );
         },
       ),
@@ -264,7 +262,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(CreateLocalAccount()),
+            child: getView(CreateLocalAccountHolder()),
           );
         },
       ),
@@ -274,7 +272,7 @@ class NamedRoutes {
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(MeetingHistory()),
+            child: getView(MeetingHistoryHolder()),
           );
         },
       ),
@@ -289,7 +287,7 @@ class NamedRoutes {
               LocalAccount account = map['account'];
               return NoTransitionPage<void>(
                 key: state.pageKey,
-                child: getView(VerifyPerhapsPage(perhaps, account)),
+                child: getView(VerifyPerhapsPageHolder(account: account, perhaps: perhaps)),
               );
             }
           }
@@ -306,8 +304,7 @@ class NamedRoutes {
           if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage.fromObject(
-                  state.extra as CreateBidPageRouterObject)),
+              child: getView(CreateBidPageHolder.fromObject(state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(
@@ -329,13 +326,15 @@ class NamedRoutes {
   );
 
   static Widget getView(Widget page) {
-    Widget widget = SignInPage(
-      homePageBuilder: (context) => AuthScreen(pageChild: page, updateAvailable: updateAvailable),
+    Widget widget = SignInPageHolder(
+      homePageBuilder: AuthScreenHolder(
+        pageChild: page,
+      ),
     );
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+        /*if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(
@@ -347,7 +346,7 @@ class NamedRoutes {
               ),
             ),
           );
-        }
+        }*/
         return widget;
       },
     );

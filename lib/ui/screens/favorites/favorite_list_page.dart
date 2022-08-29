@@ -1,13 +1,13 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
+import 'package:app_2i2i/ui/commons/custom_app_bar_holder.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
+import 'package:app_2i2i/ui/screens/search/widgtes/user_info_tile_holder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
-import '../search/widgtes/user_info_tile.dart';
 
 class FavoriteListPage extends ConsumerStatefulWidget {
   const FavoriteListPage({Key? key}) : super(key: key);
@@ -28,7 +28,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
     favList = myUserAsyncValue.value!.friends;
 
     return Scaffold(
-      appBar: CustomAppbar(
+      appBar: CustomAppbarHolder(
         backgroundColor: Colors.transparent,
         title: Text(
           Keys.fav.tr(context),
@@ -37,9 +37,25 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
       ),
       body: favList.isEmpty
           ? Center(
-              child: Text(
-                Keys.noHostsFound.tr(context),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height / 16,
+                    child: Image.asset(
+                      'assets/join_host.png',
+                      fit: BoxFit.fitWidth,
+                      color: Theme.of(context).hintColor,
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 50,
+                  ),
+                  Text(
+                    Keys.noHostsFound.tr(context),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
+                  ),
+                ],
               ),
             )
           : Padding(
@@ -53,7 +69,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
                   if (haveToWait(user)) {
                     return Container();
                   }
-                  return UserInfoTile(
+                  return UserInfoTileHolder(
                     user: user.value!,
                     myUid: myUid,
                     isForBlockedUser: false,

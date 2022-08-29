@@ -18,7 +18,6 @@ class BottomNavBar extends ConsumerStatefulWidget {
 }
 
 class _BottomNavBarState extends ConsumerState<BottomNavBar> {
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -36,7 +35,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
         if (value == false) {
           return Container(
             padding: const EdgeInsets.all(4.0),
-            color: Colors.transparent,
+            decoration: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(20)),
             child: ValueListenableBuilder(
               valueListenable: currentIndex,
               builder: (BuildContext context, int value, Widget? child) {
@@ -70,8 +69,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                       label: Keys.home.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: SvgPicture.asset('assets/icons/house.svg',
-                            color: Theme.of(context).colorScheme.secondary),
+                        child: SvgPicture.asset('assets/icons/house.svg', color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: SvgPicture.asset('assets/icons/house.svg'),
                     ),
@@ -79,8 +77,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                       label: Keys.profile.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: SvgPicture.asset('assets/icons/person.svg',
-                            color: Theme.of(context).colorScheme.secondary),
+                        child: SvgPicture.asset('assets/icons/person.svg', color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: ProfileIcon(),
                     ),
@@ -88,8 +85,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                       label: Keys.bidOut.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: Icon(Icons.call_made,
-                            color: Theme.of(context).colorScheme.secondary),
+                        child: Icon(Icons.call_made, color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -100,8 +96,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                       label: Keys.favorites.tr(context),
                       activeIcon: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: Icon(Icons.favorite,
-                            color: Theme.of(context).colorScheme.secondary),
+                        child: Icon(Icons.favorite, color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: Padding(
                         padding: const EdgeInsets.all(6),
@@ -114,14 +109,13 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                         padding: const EdgeInsets.all(6),
                         child: appSettingModel.updateRequired
                             ? RotatedBox(
-                          quarterTurns: 1,
-                          child: Icon(
-                            Icons.arrow_circle_left_rounded,
-                            color: Colors.amber,
-                          ),
-                        )
-                            : SvgPicture.asset('assets/icons/setting.svg',
-                            color: Theme.of(context).colorScheme.secondary),
+                                quarterTurns: 1,
+                                child: Icon(
+                                  Icons.arrow_circle_left_rounded,
+                                  color: Colors.amber,
+                                ),
+                              )
+                            : SvgPicture.asset('assets/icons/setting.svg', color: Theme.of(context).colorScheme.secondary),
                       ),
                       icon: Padding(
                         padding: const EdgeInsets.all(6),

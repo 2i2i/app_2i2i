@@ -16,7 +16,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_se
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -35,7 +34,7 @@ import 'common_main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown,DeviceOrientation.portraitUp]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await dotenv.load(fileName: ".env");
   // await Firebase.initializeApp(
   //     options: kIsWeb
@@ -49,18 +48,15 @@ Future<void> main() async {
   //             measurementId: "G-BXKG3DRTJ4")
   //         : null);
   await Firebase.initializeApp(
-      options: kIsWeb
-          ? FirebaseOptions(
-              apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
-              authDomain: "app-2i2i.firebaseapp.com",
-              projectId: "app-2i2i",
-              storageBucket: "app-2i2i.appspot.com",
-              messagingSenderId: "347734179578",
-              appId: "1:347734179578:web:f9c11616c64e12c643d343")
-          : null);
+      options: FirebaseOptions(
+          apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+          authDomain: "app-2i2i.firebaseapp.com",
+          projectId: "app-2i2i",
+          storageBucket: "app-2i2i.appspot.com",
+          messagingSenderId: "347734179578",
+          appId: "1:347734179578:web:f9c11616c64e12c643d343"));
 
-  await FirebaseAppCheck.instance.activate(
-      webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
+  await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -74,8 +70,7 @@ Future<void> main() async {
 
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
-      options.dsn =
-          'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
     }, appRunner: () {
       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
         FlutterSecureStorage().read(key: 'language').then((local) {

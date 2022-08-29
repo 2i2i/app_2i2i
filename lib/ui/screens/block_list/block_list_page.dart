@@ -1,12 +1,12 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/ui/screens/search/widgtes/user_info_tile_holder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
-import '../search/widgtes/user_info_tile.dart';
 
 class BlockListPage extends ConsumerStatefulWidget {
   const BlockListPage({Key? key}) : super(key: key);
@@ -61,7 +61,7 @@ class _BlockListPageState extends ConsumerState<BlockListPage> {
                         return CupertinoActivityIndicator();
                       }
                       final blockedUser = blockedUserAsyncValue.value!;
-                      return UserInfoTile(
+                      return UserInfoTileHolder(
                         user: blockedUser,
                         myUid: myUid,
                         isForBlockedUser: true,

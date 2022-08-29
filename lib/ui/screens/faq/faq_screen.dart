@@ -1,4 +1,5 @@
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
+import 'package:app_2i2i/ui/screens/faq/faq_keywords_list_holder.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,6 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/models/faq_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import 'faq.dart';
-import 'faq_keywords_list.dart';
 
 class FAQScreen extends ConsumerStatefulWidget {
   @override
@@ -105,7 +105,7 @@ class _FAQScreenState extends ConsumerState<FAQScreen> {
                 child: ListView(
                   children: [
                     SizedBox(height: 8),
-                    FAQKeywordsList(),
+                    FAQKeywordsListHolder(),
                     FaqListWidget(),
                     SizedBox(height: 20),
                   ],

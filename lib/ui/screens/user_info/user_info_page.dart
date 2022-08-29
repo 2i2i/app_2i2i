@@ -5,7 +5,10 @@ import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
+import 'package:app_2i2i/ui/screens/my_user/chat_widget_holder.dart';
+import 'package:app_2i2i/ui/screens/user_info/other_bid_list_holder.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
+import 'package:app_2i2i/ui/screens/user_info/widgets/user_info_widget_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,9 +19,6 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
-import '../my_user/chat_widget.dart';
-import 'other_bid_list.dart';
-import 'widgets/user_info_widget.dart';
 
 class UserInfoPage extends ConsumerStatefulWidget {
   UserInfoPage({required this.B});
@@ -156,7 +156,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
             ),
             padding: EdgeInsets.only(right: 20, left: 20, bottom: 8),
-            child: UserInfoWidget(
+            child: UserInfoWidgetHolder(
               user: userB,
               isFav: isFriend,
               estWaitTime: estWaitTime,
@@ -174,7 +174,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                   ),
                 );
               },
-              onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: userB), backgroundColor: Colors.transparent),
+              onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidgetHolder(user: userB), backgroundColor: Colors.transparent),
               onTapFav: () {
                 if (userModelChanger != null) {
                   if (!isFriend) {
@@ -187,7 +187,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
             ),
           ),
           Expanded(
-            child: OtherBidInList(
+            child: OtherBidInListHolder(
               user: userB,
               bidIns: bidInsSorted,
             ),

@@ -7,15 +7,15 @@ import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/named_routes.dart';
 import '../../commons/custom_alert_widget.dart';
-import '../home/bottom_nav_bar.dart';
+import '../home/bottom_nav_bar_holder_.dart';
 import '../rating/add_rating_page.dart';
 import '../user_setting/user_setting.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   final Widget pageChild;
-  final bool updateAvailable;
 
-  const AuthScreen({required this.pageChild, required this.updateAvailable, Key? key}) : super(key: key);
+
+  const AuthScreen({required this.pageChild,  Key? key}) : super(key: key);
 
   @override
   ConsumerState<AuthScreen> createState() => _AuthScreenState();
@@ -64,7 +64,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           : AppBar(
               leading: Container(),
               toolbarHeight: 20,
-              title: Text(AlgorandNet.testnet.name + ' - v41' + (widget.updateAvailable ? ' - update: reload page' : '')),
+              title: Text(AlgorandNet.testnet.name + ' - v41'),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
               centerTitle: true,
               backgroundColor: Colors.green,
@@ -74,7 +74,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         visible: (NamedRoutes.showRating.value['show'] ?? false),
         child: AddRatingPage(showRating: NamedRoutes.showRating),
       ),
-      bottomNavigationBar: BottomNavBar(),
+      bottomNavigationBar: BottomNavBarHolder(),
     );
   }
 }

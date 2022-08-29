@@ -13,7 +13,7 @@ class VerifyPerhapsPage extends ConsumerStatefulWidget {
   final List perhaps;
   final LocalAccount account;
 
-  const VerifyPerhapsPage(this.perhaps, this.account, {Key? key})
+  const VerifyPerhapsPage( {Key? key,required this.perhaps,required this.account,})
       : super(key: key);
 
   @override

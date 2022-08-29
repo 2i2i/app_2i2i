@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget_holder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +19,6 @@ import '../../../../infrastructure/data_access_layer/accounts/walletconnect_acco
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
-import 'qr_image_widget.dart';
 
 class AddAccountOptionsWidgets extends ConsumerStatefulWidget {
   final ValueNotifier? showBottom;
@@ -57,14 +57,21 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             leading: Container(
               height: 50,
               width: 50,
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  spreadRadius: 0.5,
-                )
-              ]),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  ),
+                ],
+              ),
               alignment: Alignment.center,
               child: Image.asset(
                 'assets/wallet_connect.png',
@@ -95,8 +102,9 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
                   color: Colors.black.withOpacity(0.08),
                   blurRadius: 20,
                   spreadRadius: 0.5,
-                )
-              ]),
+                ),
+              ],
+            ),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -189,7 +197,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             if (!value) {
               Navigator.of(context).pop();
             }
-            return QrImagePage(imageUrl: _displayUri);
+            return QrImagePageHolder(imageUrl: _displayUri);
           },
         ),
         barrierDismissible: true,

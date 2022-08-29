@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -64,7 +63,7 @@ class FirestoreDatabase {
       transaction.set(userDocRef, userInfoMap);
       return Future.value();
     }).catchError((onError) {
-      log(onError);
+      log("Exep[tiomn............");
     });
   }
 
@@ -149,7 +148,7 @@ class FirestoreDatabase {
       path: FirestorePath.token(uid),
       data: {
         'token': token,
-        'isIos': Platform.isIOS,
+        'isIos': false /*Platform.isIOS*/,
         'ts': FieldValue.serverTimestamp(),
       },
       merge: true,
@@ -299,11 +298,15 @@ class FirestoreDatabase {
   }
 
   Future<void> updateUser(UserModel user) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
   }
 
   Future<AppVersionModel?> getAppVersion() async {
@@ -487,7 +490,7 @@ class FirestoreDatabase {
   }
 
   Future<void> addChat(String uid, ChatModel chat) => _service.setData(
-    path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
+        path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
         data: chat.toMap(),
       );
 }

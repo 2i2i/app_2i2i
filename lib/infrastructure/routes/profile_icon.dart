@@ -40,33 +40,12 @@ class ProfileIcon extends ConsumerWidget {
           }
 
           return SizedBox(
-            height: 30,
-            width: 30,
-            child: Stack(
-              children: [
-                selectedIcon('assets/icons/person.svg', context),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    height: 15,
-                    width: 15,
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+
           );
         });
   }
 
   Widget selectedIcon(String iconPath, BuildContext context, {bool isSelected = false}) {
-    return Padding(
-      padding: const EdgeInsets.all(6),
-      child: SvgPicture.asset(iconPath, color: isSelected ? Theme.of(context).colorScheme.secondary : null),
-    );
+    return SvgPicture.asset(iconPath,height: 25, color: isSelected ? Theme.of(context).colorScheme.secondary : null,);
   }
 }

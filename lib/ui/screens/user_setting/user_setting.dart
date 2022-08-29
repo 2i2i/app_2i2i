@@ -24,8 +24,9 @@ import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
+  final GlobalKey<ScaffoldState>? key;
 
-  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({this.key, this.fromBottomSheet});
 
   @override
   _UserSettingState createState() => _UserSettingState();
@@ -118,9 +119,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                         //maxLength: 30,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(30),
-                          // FilteringTextInputFormatter.deny(' ',),
-                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
-                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
+                          //FilteringTextInputFormatter.deny(' ',),
+                          FilteringTextInputFormatter.deny(RegExp(r'[/\\.,?!£$%^&*()+=.]')),
+                          FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]")),
                         ],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: userNameEditController,
@@ -398,13 +399,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
                 onPressed: () async {
+                  try {
+                    if (formKey.currentState?.validate() ?? false) {
+                      widget.key?.currentState?.closeEndDrawer();
+                      CustomDialogs.loader(true, context);
 
-                    CustomDialogs.loader(true, context);
+                      await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
 
-                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-
-                    CustomDialogs.loader(false, context);
-                  Navigator.of(context).pop();
+                      CustomDialogs.loader(false, context);
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
                 },
                 child: Text(Keys.save.tr(context)),
               ),
@@ -436,6 +443,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     ),
                   ),
                   onPressed: () async {
+                    widget.key?.currentState?.closeEndDrawer();
                     if (!(widget.fromBottomSheet ?? false)) {
                       CustomDialogs.loader(true, context);
                     }
@@ -613,42 +621,46 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<void> onClickSave(
       {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
-    FocusScope.of(context).requestFocus(FocusNode());
-    bool validate = formKey.currentState?.validate() ?? false;
-    UserModel? user = myUserPageViewModel?.user;
-    if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-      user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
-    }
-    if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
-      if (!(widget.fromBottomSheet ?? false)) {
-        int seconds = int.tryParse(secondEditController.text) ?? 0;
-        seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
-        seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
-
-        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
-
-        final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-        final importance = findImportances(_importanceRatioValue!, lounge);
-
-        Rule rule = Rule(
-          minSpeed: getSpeedFromText(),
-          maxMeetingDuration: seconds,
-          importance: {
-            Lounge.chrony: importance[Lounge.chrony]!,
-            Lounge.highroller: importance[Lounge.highroller]!,
-          },
-        );
-        user.rule = rule;
-      } else {
-        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+    try {
+      FocusScope.of(context).requestFocus(FocusNode());
+      bool validate = formKey.currentState?.validate() ?? false;
+      UserModel? user = myUserPageViewModel?.user;
+      if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
+        user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
       }
-      if (imageType == ImageType.ASSENT_IMAGE) {
-        String? firebaseImageUrl = await uploadImage();
-        if ((firebaseImageUrl ?? "").isNotEmpty) {
-          user.imageUrl = firebaseImageUrl;
+      if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
+        if (!(widget.fromBottomSheet ?? false)) {
+          int seconds = int.tryParse(secondEditController.text) ?? 0;
+          seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
+          seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
+
+          user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+
+          final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
+          final importance = findImportances(_importanceRatioValue!, lounge);
+
+          Rule rule = Rule(
+            minSpeed: getSpeedFromText(),
+            maxMeetingDuration: seconds,
+            importance: {
+              Lounge.chrony: importance[Lounge.chrony]!,
+              Lounge.highroller: importance[Lounge.highroller]!,
+            },
+          );
+          user.rule = rule;
+        } else {
+          user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
         }
+        if (imageType == ImageType.ASSENT_IMAGE) {
+          String? firebaseImageUrl = await uploadImage();
+          if ((firebaseImageUrl ?? "").isNotEmpty) {
+            user.imageUrl = firebaseImageUrl;
+          }
+        }
+        await myUserPageViewModel?.updateHangout(user);
       }
-      await myUserPageViewModel?.updateHangout(user);
+    } catch (e) {
+      print(e);
     }
   }
 

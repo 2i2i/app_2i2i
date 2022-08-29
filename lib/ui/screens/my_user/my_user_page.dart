@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
+import 'package:app_2i2i/ui/screens/my_user/chat_widget_holder.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,7 @@ import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
 import '../home/bottom_nav_bar.dart';
-import '../user_info/widgets/user_info_widget.dart';
-import 'chat_widget.dart';
+import '../user_info/widgets/user_info_widget_holder.dart';
 import 'user_bid_in_list.dart';
 
 class MyUserPage extends ConsumerStatefulWidget {
@@ -79,7 +79,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
             child: Column(
               children: [
                 SizedBox(height: 8),
-                UserInfoWidget(
+                UserInfoWidgetHolder(
                   user: user,
                   onTapRules: () {
                     context.pushNamed(Routes.userSetting.nameFromPath());
@@ -102,7 +102,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
-                  onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent),
+                  onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidgetHolder(user: user), backgroundColor: Colors.transparent),
                   isFav: true,
                 ),
               ],

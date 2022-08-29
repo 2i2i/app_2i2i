@@ -68,7 +68,10 @@ class _MeetingHistoryState extends ConsumerState<MeetingHistory> with TickerProv
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text(Keys.asGuest.tr(context).toUpperCase()), SizedBox(width: 8), Icon(Icons.call_made_rounded, color: AppTheme().red)],
+                      children: [Text(Keys.asGuest.tr(context).toUpperCase()),
+                        SizedBox(width: 8), Icon(Icons.call_made_rounded,
+                            color: AppTheme().red),
+                      ],
                     ),
                   ),
                 ],

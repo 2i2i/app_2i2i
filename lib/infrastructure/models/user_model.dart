@@ -123,6 +123,7 @@ class UserModel extends Equatable {
     this.heartbeatBackground,
     this.tags = const <String>[],
     this.imageUrl,
+    this.url = "",
     this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
@@ -145,6 +146,7 @@ class UserModel extends Equatable {
   String name;
   String? imageUrl;
   String bio;
+  String url = "";
   List<String> tags;
 
   void setTags() {
@@ -205,9 +207,8 @@ class UserModel extends Equatable {
       throw StateError('missing data for uid: $documentId');
     }
 
-
-
-    final Status status =data.containsKey('status') && data['status'] !=null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+    final Status status =
+        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
@@ -226,7 +227,7 @@ class UserModel extends Equatable {
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
     final DateTime? heartbeatBackground = data['heartbeatBackground']?.toDate();
     final DateTime? heartbeatForeground = data['heartbeatForeground']?.toDate();
-    final Rule rule =data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
+    final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 
     return UserModel(
@@ -265,6 +266,7 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
+      'url': url,
       'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }

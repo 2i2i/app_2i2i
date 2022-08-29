@@ -77,7 +77,7 @@ final searchUsersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((
   return database.usersStream(tags: filter);
 });
 
-final setupUserViewModelProvider = ChangeNotifierProvider.autoDispose<SetupUserViewModel>((ref) {
+final setupUserViewModelProvider = ChangeNotifierProvider<SetupUserViewModel>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
   final database = ref.watch(databaseProvider);
   final algorandLib = ref.watch(algorandLibProvider);

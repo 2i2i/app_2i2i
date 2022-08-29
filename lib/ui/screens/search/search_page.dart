@@ -2,13 +2,13 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
+import 'package:app_2i2i/ui/screens/search/widgtes/user_info_tile_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import 'widgtes/user_info_tile.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   @override
@@ -129,7 +129,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         // physics: ClampingScrollPhysics(),
         itemCount: userList.length,
-        itemBuilder: (_, index) => UserInfoTile(
+        itemBuilder: (_, index) => UserInfoTileHolder(
           user: userList[index]!,
           myUid: mainUserID,
           isForBlockedUser: false,

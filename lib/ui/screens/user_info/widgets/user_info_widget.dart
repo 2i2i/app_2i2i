@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
@@ -103,7 +104,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: getValueForScreenType<double>(
+                          context: context,
+                          mobile: 6,
+                          tablet: 6,
+                          desktop: MediaQuery.of(context).size.width/40,
+                        ), vertical: 4),
                         child: Icon(Icons.chat_outlined, size: 25),
                       ),
                     ),
@@ -112,7 +118,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: InkResponse(
                         onTap: widget.onTapWallet,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: getValueForScreenType<double>(
+                            context: context,
+                            mobile: 6,
+                            tablet: 6,
+                            desktop: MediaQuery.of(context).size.width/40,
+                          ), vertical: 4),
                           child: Icon(Icons.attach_money, size: 25),
                         ),
                       ),
@@ -125,7 +136,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       InkResponse(
                         onTap: widget.onTapFav,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: getValueForScreenType<double>(
+                            context: context,
+                            mobile: 6,
+                            tablet: 6,
+                            desktop: MediaQuery.of(context).size.width/40,
+                          ), vertical: 4),
                           child: Icon(widget.isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                               color: widget.isFav ? Colors.red : Colors.grey, size: 25),
                         ),
@@ -238,6 +254,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         widget.estWaitTime is int
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.timer,
@@ -252,7 +269,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                 ],
               )
             : Container(),
-        SizedBox(height: 10),
+        SizedBox(height: MediaQuery.of(context).size.height/40),
         UserRulesWidget(
           user: widget.user,
           onTapRules: widget.onTapRules,
