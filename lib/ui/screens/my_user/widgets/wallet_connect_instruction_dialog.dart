@@ -1,21 +1,16 @@
-import 'dart:io';
-
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/layout/spacings.dart';
-import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
-import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
+import '../../../commons/custom.dart';
 
 class ConnectDialog extends ConsumerStatefulWidget {
   const ConnectDialog({Key? key}) : super(key: key);
@@ -196,7 +191,7 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
     if (!account.connector.connected) {
       await account.connector.connect(
         chainId: 4160,
-        onDisplayUri: (uri) => _changeDisplayUri(uri),
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
       );
 
       isDialogOpen.value = false;
@@ -212,54 +207,6 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');
       return null;
-    }
-  }
-
-  Future _changeDisplayUri(String url) async {
-    bool isAvailable = false;
-    _displayUri = url;
-    if (mounted) {
-      setState(() {});
-    }
-    if (kIsWeb) {
-      isDialogOpen.value = true;
-      await showDialog(
-        context: context,
-        builder: (context) => ValueListenableBuilder(
-          valueListenable: isDialogOpen,
-          builder: (BuildContext context, bool value, Widget? child) {
-            if (!value) {
-              Navigator.of(context).pop();
-            }
-            return QrImagePage(imageUrl: _displayUri);
-          },
-        ),
-        barrierDismissible: true,
-      );
-    } else {
-      var launchUri;
-      try {
-        if (defaultTargetPlatform == TargetPlatform.iOS) {
-          final bridge = await getWCBridge();
-          launchUri = Uri(
-            scheme: 'algorand-wc',
-            host: 'wc',
-            queryParameters: {'uri': _displayUri, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"},
-          );
-        } else {
-          launchUri = Uri.parse(_displayUri);
-        }
-        isAvailable = await launchUrl(launchUri);
-      } on PlatformException catch (err) {
-        print(err);
-      }
-      if (!isAvailable) {
-        await launchUrl(
-            Uri.parse(Platform.isAndroid
-                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
-                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
-            mode: LaunchMode.externalApplication);
-      }
     }
   }
 }

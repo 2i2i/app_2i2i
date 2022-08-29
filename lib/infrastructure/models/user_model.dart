@@ -208,7 +208,7 @@ class UserModel extends Equatable {
     }
 
     final Status status =
-        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'],orElse: ()=>Status.ONLINE) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];

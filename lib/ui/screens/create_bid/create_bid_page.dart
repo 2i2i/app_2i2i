@@ -592,6 +592,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       bidComment: comment,
       context: context,
     );
-    // CustomDialogs.loader(false, context);
+    // CustomAlertWidget.loader(false, context);
   }
 }

@@ -15,6 +15,6 @@
 		<string>applinks:i2i2.page.link</string>
 	</array>
 	<key>com.apple.developer.devicecheck.appattest-environment</key>
-	<string>production</string>
+	<string>development</string>
 </dict>
 </plist>
