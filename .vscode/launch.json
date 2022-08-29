@@ -27,7 +27,7 @@
       "request": "launch",
       "type": "dart",
       "args": [
-        "--flavor main",
+        "--flavor production",
         "-t",
         "lib/main.dart"
       ]
