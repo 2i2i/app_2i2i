@@ -14,6 +14,8 @@ class CustomTextField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
+  final bool autofocus;
+
   const CustomTextField(
       {Key? key,
       required this.title,
@@ -24,8 +26,10 @@ class CustomTextField extends StatelessWidget {
       this.autovalidateMode,
       this.controller,
       this.inputFormatters,
+      this.autofocus = false,
       this.keyboardType,
-      this.onChanged, this.focusNode})
+      this.onChanged,
+      this.focusNode})
       : super(key: key);
 
   @override
@@ -43,7 +47,7 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           autovalidateMode: autovalidateMode,
           validator: validator,
-          autofocus: false,
+          autofocus: autofocus,
           keyboardType: keyboardType,
           style: TextStyle(color: AppTheme().cardDarkColor),
           onChanged: onChanged,

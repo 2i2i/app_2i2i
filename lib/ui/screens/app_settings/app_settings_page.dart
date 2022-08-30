@@ -16,7 +16,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
@@ -34,6 +33,7 @@ class AppSettingPage extends ConsumerStatefulWidget {
 
 class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   InstagramService instagram = InstagramService();
   InAppWebViewController? _webViewController;
 
@@ -59,6 +59,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     }
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CustomAppbar(
         backgroundColor: Colors.transparent,
         title: Text(
@@ -122,9 +123,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     trailing: Icon(Icons.navigate_next),
                   ),
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.account.nameFromPath());
-                    },
+                    onTap: () => context.pushNamed(Routes.account.nameFromPath()),
                     title: Row(
                       children: [
                         Text(
@@ -243,8 +242,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               },
             ),
             SizedBox(height: 20),
-
-            //link
             Text(
               Keys.more.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
@@ -289,12 +286,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () {
-                      if (appSettingModel.updateRequired) {
-                        StoreRedirect.redirect(
-                          androidAppId: "app.i2i2",
-                          iOSAppId: "app.2i2i",
-                        );
+                    onTap: () async {
+                      if (appSettingModel.updateRequired && !Platform.isIOS) {
+                        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
                       }
                     },
                     title: Text(
@@ -307,19 +301,25 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
                         ? RotatedBox(
-                            quarterTurns: 1,
-                            child: Icon(
-                              Icons.arrow_circle_left_rounded,
-                            ),
-                          )
+                      quarterTurns: 1,
+                      child: Icon(
+                        Icons.arrow_circle_left_rounded,
+                      ),
+                    )
                         : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () async {
-                      await signUpViewModel.signOutFromAuth();
-                      await ref.read(storageProvider).clearStorage();
-                      currentIndex.value = 1;
-                      if (mounted) context.go(Routes.myUser);
+                      CustomAlertWidget.confirmDialog(
+                        context,
+                        title: "Logout",
+                        description: "Are you sure want to logout?",
+                        onPressed: () async {
+                          await signUpViewModel.signOutFromAuth();
+                        },
+                        yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+                        noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      );
                     },
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
@@ -454,8 +454,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             TextButton(
                 onPressed: () async {
                   await signUpViewModel.deleteUser(
-                      title: "${Keys.deleteAccount.tr(context)}!", description: Keys.deleteAccountMessage.tr(context), mainContext: context);
-                  await ref.read(storageProvider).clearStorage();
+                      title: "${Keys.deleteAccount.tr(context)}!",
+                      description: Keys.deleteAccountMessage.tr(context),
+                      mainContext: _scaffoldKey.currentContext ?? context);
                 },
                 child: Text(
                   Keys.deleteAccount.tr(context),

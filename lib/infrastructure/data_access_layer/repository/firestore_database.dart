@@ -57,16 +57,14 @@ class FirestoreDatabase {
         heartbeatBackground: DateTime.now(),
         heartbeatForeground: DateTime.now(),
         socialLinks: []);
-    Map userInfoMap = createdUserModel.toMap();
+    Map<String, dynamic> userInfoMap = createdUserModel.toMap();
     userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
     userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
-    return _service.runTransaction((transaction) {
-      final userDocRef = _service.firestore.collection(FirestorePath.users()).doc(uid);
-      transaction.set(userDocRef, userInfoMap);
-      return Future.value();
-    }).catchError((onError) {
-      log(onError);
-    });
+    await _service.firestore.collection(FirestorePath.users()).doc(uid).set(userInfoMap).catchError(
+      (onError) {
+        print(onError);
+      },
+    );
   }
 
   String newDocId({required String path}) => _service.newDocId(path: path);
@@ -106,7 +104,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      log(onError);
+      // log(onError);
     });
   }
 
@@ -237,10 +235,17 @@ class FirestoreDatabase {
 
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
-        .collectionStream(path: FirestorePath.ratings(uid), builder: (data, documentId) => RatingModel.fromMap(data, documentId))
-        .handleError((value) {
-      log(value);
-    });
+        .collectionStream(
+      path: FirestorePath.ratings(uid),
+      builder: (data, documentId) {
+        return RatingModel.fromMap(data, documentId);
+      },
+    )
+        .handleError(
+      (value) {
+        log(value);
+      },
+    );
   }
 
   Future<void> addBlocked(String uid, String targetUid) => _service.setData(

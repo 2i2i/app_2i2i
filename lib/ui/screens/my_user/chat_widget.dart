@@ -161,7 +161,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               SizedBox(width: 4),
               InkResponse(
                 onTap: () async {
-                  if (commentController.text.isNotEmpty) {
+                  if (commentController.text.toString().trim().isNotEmpty) {
                     await userModelChanger.addComment(widget.user.id,
                         ChatModel(message: commentController.text, ts: DateTime.now().toUtc(), writerName: currentUser.name, writerUid: currentUserId));
                     commentController.clear();

@@ -60,46 +60,45 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileWidget(
               stringPath: (widget.user.imageUrl?.isNotEmpty ?? false) ? widget.user.imageUrl! : widget.user.name,
-              imageType: (widget.user.imageUrl?.isNotEmpty ?? false)
-                  ? ImageType.NETWORK_IMAGE
-                  : ImageType.NAME_IMAGE,
+              imageType: (widget.user.imageUrl?.isNotEmpty ?? false) ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
               statusColor: statusColor,
               radius: 80,
             ),
             Expanded(
               child: ListTile(
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              widget.user.name,
-                              style: Theme.of(context).textTheme.headline6,
+                title: RichText(
+                  maxLines: 3,
+                  text: new TextSpan(
+                    style: Theme.of(context).textTheme.headline6,
+                    children: [
+                      TextSpan(text: widget.user.name, style: new TextStyle(fontWeight: FontWeight.bold)),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Visibility(
+                          visible: widget.user.isVerified(),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 6.0),
+                            child: Tooltip(
+                              triggerMode: TooltipTriggerMode.tap,
+                              message: Keys.connectedSocialAccount.tr(context),
+                              child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
                             ),
                           ),
-                          Visibility(
-                            visible: widget.user.isVerified(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 4.0),
-                              child: Tooltip(
-                                triggerMode: TooltipTriggerMode.tap,
-                                message: Keys.connectedSocialAccount.tr(context),
-                                child: SvgPicture.asset('assets/icons/done_tick.svg', width: 14, height: 14),
-                              ),
-                            ),
-                          )
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
@@ -139,7 +138,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 2),
+                    SizedBox(height: 4),
                     InkWell(
                       onTap: () => context.pushNamed(Routes.ratings.nameFromPath(), params: {'uid': widget.user.id}),
                       child: Row(
@@ -166,10 +165,11 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               },
                             ),
                           ),
-                          SizedBox(width: 5),
-                          Text(
-                            '($totalRating/5)',
-                            style: Theme.of(context).textTheme.caption,
+                          Flexible(
+                            child: Text(
+                              '($totalRating/5)',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           )
                         ],
                       ),

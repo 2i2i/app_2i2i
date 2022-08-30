@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
@@ -306,7 +307,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     builder: (BuildContext context, bool value, Widget? child) {
                       if (value) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 10, right: 10),
+                          padding: const EdgeInsets.only(top: 12, left: 6, right: 6),
                           child: CustomTextField(
                             focusNode: focusNode,
                             autovalidateMode: AutovalidateMode.always,
@@ -346,7 +347,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     },
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 8.0),
-                                      child: Icon(Icons.remove_circle, color: Theme.of(context).iconTheme.color),
+                                      child: Icon(Icons.remove_circle, color: AppTheme().black),
                                     ),
                                   ),
                                 ],
@@ -408,6 +409,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       ),
                       onPressed: () {
                         isAddSupportVisible.value = !isAddSupportVisible.value;
+                        FocusScope.of(context).requestFocus(focusNode);
+                        focusNode.requestFocus();
                       },
                       child: Row(
                         children: [
