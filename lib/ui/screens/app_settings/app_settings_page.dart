@@ -287,12 +287,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: () async {
-                      if (appSettingModel.updateRequired) {
-                        await launchUrl(
-                            Uri.parse(Platform.isAndroid
-                                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
-                                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
-                            mode: LaunchMode.externalApplication);
+                      if (appSettingModel.updateRequired && !Platform.isIOS) {
+                        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
                       }
                     },
                     title: Text(

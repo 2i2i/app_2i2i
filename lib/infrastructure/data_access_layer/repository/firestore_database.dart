@@ -104,7 +104,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      log(onError);
+      // log(onError);
     });
   }
 
