@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../commons/custom.dart';
 import '../../commons/qr_image.dart';
 import 'wait_page.dart';
 
@@ -40,7 +39,7 @@ class NoBidPage extends ConsumerWidget {
               Text(noBidsText, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).disabledColor)),
               SizedBox(height: kTextTabBarHeight),
               Container(
-                decoration: Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
+                // decoration: Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: QrWidget(
@@ -79,9 +78,7 @@ class NoBidPage extends ConsumerWidget {
                   Visibility(
                     visible: message?.isNotEmpty ?? false,
                     child: IconButton(
-                        onPressed: () {
-                          Share.share('${Keys.joinInvite.tr(context)}\n$message');
-                        },
+                        onPressed: () => Share.share('${Keys.joinInvite.tr(context)}\n$message'),
                         icon: Icon(
                           Icons.share,
                           size: 20,

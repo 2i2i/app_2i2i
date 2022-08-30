@@ -75,10 +75,10 @@ class AppSettingModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTappedOnKey() async {
+  Future<void> getTappedOnKey({bool isNotify = true}) async {
     isTappedOnKey = true;
     // isTappedOnKey = (value == "1");
-    notifyListeners();
+    if (isNotify) notifyListeners();
   }
 
   bool updateRequired = false;

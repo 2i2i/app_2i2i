@@ -88,6 +88,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
                           context,
+                          backgroundColor: Theme.of(context).cardColor,
                           child: ImagePickOptionWidget(
                             imageCallBack: (ImageType imageType, String imagePath) {
                               if (imagePath.isNotEmpty) {
@@ -400,12 +401,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
                 onPressed: () async {
-                  CustomAlertWidget.loader(true, context);
-
-                  await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-
-                  CustomAlertWidget.loader(false, context);
-                  Navigator.of(context).pop();
+                  if (formKey.currentState?.validate() ?? false) {
+                    CustomAlertWidget.loader(true, context);
+                    await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                    CustomAlertWidget.loader(false, context);
+                    Navigator.of(context).pop();
+                  }
                 },
                 child: Text(Keys.save.tr(context)),
               ),
@@ -426,7 +427,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 15),
                 child: ElevatedButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -437,14 +438,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     ),
                   ),
                   onPressed: () async {
-                    if (!(widget.fromBottomSheet ?? false)) {
+                    if (formKey.currentState?.validate() ?? false) {
                       CustomAlertWidget.loader(true, context);
-                    }
-                    await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                    if (!(widget.fromBottomSheet ?? false)) {
+                      await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                       CustomAlertWidget.loader(false, context);
                     }
-                    // await Navigator.of(context).maybePop();
                   },
                   child: Text(
                     Keys.save.tr(context),
@@ -612,11 +610,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave(
-      {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
+  Future<void> onClickSave({required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    bool validate = formKey.currentState?.validate() ?? false;
     UserModel? user = myUserPageViewModel?.user;
+
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
       String userName;
       SocialLinksModel? socialLinksModel;
@@ -629,7 +626,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       socialLinksModel.userName = userName;
       user?.socialLinks = [socialLinksModel];
     }
-    if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
+
+    if (!invalidTime.value || (widget.fromBottomSheet ?? false)) {
       if (!(widget.fromBottomSheet ?? false)) {
         int seconds = int.tryParse(secondEditController.text) ?? 0;
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
@@ -661,12 +659,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           user.imageUrl = firebaseImageUrl;
         }
       }
-      try {
-        user.url = await createDeepLinkUrl(user.id);
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-      await myUserPageViewModel?.updateHangout(user);
+
+      user.url = await createDeepLinkUrl(user.id);
+      await myUserPageViewModel?.database.updateUser(user).then((value) {
+        CustomAlertWidget.showToastMessage(context, "User saved successfully");
+      });
     }
   }
 

@@ -11,6 +11,7 @@ class ImagePickOptionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       child: Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -59,8 +59,9 @@ class RatingTile extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 6),
-                      Text(DateFormat().add_yMMMMd().format(DateTime.fromMillisecondsSinceEpoch(ratingModel.createdAt).toLocal()),
-                          style: Theme.of(context).textTheme.caption) //todo created date time <= Done
+                      if ((ratingModel.createdAt ?? 0) > 0)
+                        Text(DateFormat().add_yMMMMd().format(DateTime.fromMillisecondsSinceEpoch(ratingModel.createdAt!).toLocal()),
+                            style: Theme.of(context).textTheme.caption) //todo created date time <= Done
                     ],
                   ),
                   subtitle: Padding(

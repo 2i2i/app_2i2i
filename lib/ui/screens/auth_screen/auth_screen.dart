@@ -23,37 +23,33 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      ref.read(appSettingProvider).getTappedOnKey();
-      final uid = ref.read(myUIDProvider);
-      if (uid is String) {
-        UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
-        if (userModel == null) {
-          final database = ref.read(databaseProvider);
-          await database.createUser(uid);
-          CustomAlertWidget.showBottomSheet(context,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-              enableDrag: false,
-              isDismissible: false);
-        } else if (userModel.name.isEmpty) {
-          CustomAlertWidget.showBottomSheet(context,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-              enableDrag: false,
-              isDismissible: false);
-        }
-      }
-    });
+    createUserBottomSheet();
     super.initState();
+  }
+
+  Future<void> createUserBottomSheet() async {
+    bool showUserSetting = false;
+    ref.read(appSettingProvider).getTappedOnKey(isNotify: false);
+    final uid = ref.read(myUIDProvider);
+    if (uid is String) {
+      UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
+      if (userModel == null) {
+        final database = ref.read(databaseProvider);
+        await database.createUser(uid);
+        showUserSetting = true;
+      }
+      if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
+        CustomAlertWidget.showBottomSheet(context,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: UserSetting(
+                fromBottomSheet: true,
+              ),
+            ),
+            enableDrag: false,
+            isDismissible: false);
+      }
+    }
   }
 
   @override

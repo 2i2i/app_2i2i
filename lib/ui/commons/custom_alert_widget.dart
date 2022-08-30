@@ -133,6 +133,7 @@ class CustomAlertWidget {
     );
     var materialDialog = AlertDialog(
       title: Text(title),
+      elevation: 2,
       content: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(description),

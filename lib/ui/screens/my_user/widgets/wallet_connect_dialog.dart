@@ -44,7 +44,9 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
           Text(
             Keys.walletConnect.tr(context),
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).iconTheme.color,
+                ),
           ),
           SizedBox(height: 16),
           Container(
@@ -53,7 +55,9 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
             child: Text(
               Keys.receiveSendCoin.tr(context),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Colors.black),
+              style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                    color: Theme.of(context).iconTheme.color,
+                  ),
             ),
           ),
           SizedBox(height: 16),

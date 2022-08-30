@@ -451,6 +451,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
   @override
   void dispose() {
     outInit();
+    widget.onHangPhone(remoteId, widget.meeting.id);
     super.dispose();
   }
 
@@ -494,8 +495,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     _session = null;
 
     if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
-
-    widget.onHangPhone(remoteId, widget.meeting.id);
 
     if (Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');

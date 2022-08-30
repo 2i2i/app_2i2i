@@ -5,7 +5,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../ui/commons/custom_alert_widget.dart';
 import '../../../ui/screens/my_user/widgets/wallet_connect_instruction_dialog.dart';
@@ -100,8 +99,12 @@ class MyUserPageViewModel {
     bool microphone = true;
 
     if (!kIsWeb) {
-      camera = await Permission.camera.request().isGranted;
-      microphone = await Permission.microphone.request().isGranted;
+      try {
+        // camera = await Permission.camera.request().isGranted;
+        // microphone = await Permission.microphone.request().isGranted;
+      } catch (e) {
+        print(e);
+      }
     }
     if (camera && microphone) {
       final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
