@@ -212,12 +212,13 @@ class ko {
       Keys.openApp: '열려 있는',
       Keys.connectWallet: '지갑 연결',
       Keys.retry: '다시 해 보다',
-      Keys.walletDesMsg1:
-          '코인을 받으려면 계정을 연결해야 합니다. 연결을 클릭하여 지갑 앱에서 WalletConnect 계정을 연결하십시오. 그 후 2i2i로 돌아갑니다.',
+      Keys.walletDesMsg1: '코인을 받으려면 계정을 연결해야 합니다. 연결을 클릭하여 지갑 앱에서 WalletConnect 계정을 연결하십시오. 그 후 2i2i로 돌아갑니다.',
       Keys.walletDesMsg2: '계정을 연결했습니다. 이제 코인을 받을 수 있습니다. 대화를 클릭하여 게스트와 연결합니다.',
       Keys.acceptBid: '입찰 수락',
       Keys.startTalk: '토크 시작',
       Keys.failToConnect: '연결에 실패했습니다. 다시 시도해 주세요.',
+      Keys.cancelBid: '입찰 취소!',
+      Keys.cancelBidMsg: '입찰을 취소하시겠습니까?',
     };
   }
 }

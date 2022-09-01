@@ -210,13 +210,14 @@ class ar {
       Keys.someOneTalk: 'شخص ما يريد التحدث معك',
       Keys.openApp: 'فتح',
       Keys.connectWallet: 'ربط المحفظة',
-      Keys.walletDesMsg1:
-          'لتلقي العملات المعدنية ، تحتاج إلى ربط حساب. انقر فوق Connect to لتوصيل حساب WalletConnect في تطبيق محفظتك. بعد ذلك ارجع إلى 2i2i.',
+      Keys.walletDesMsg1: 'لتلقي العملات المعدنية ، تحتاج إلى ربط حساب. انقر فوق Connect to لتوصيل حساب WalletConnect في تطبيق محفظتك. بعد ذلك ارجع إلى 2i2i.',
       Keys.walletDesMsg2: 'لقد قمت بتوصيل حساب. الآن يمكنك الحصول على عملات معدنية. انقر فوق التحدث للتواصل مع الضيف الخاص بك.',
       Keys.acceptBid: 'قبول العطاء',
       Keys.startTalk: 'ابدأ الحديث',
       Keys.failToConnect: 'فشل في الاتصال. حاول مرة اخرى.',
       Keys.retry: 'أعد المحاولة',
+      Keys.cancelBid: 'إلغاء المزايدة!',
+      Keys.cancelBidMsg: 'هل أنت متأكد من أنك تريد إلغاء المزايدة؟',
     };
   }
 }

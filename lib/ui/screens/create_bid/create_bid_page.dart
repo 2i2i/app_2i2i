@@ -331,7 +331,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     child: Text(
                                       '${Keys.algoPerSec.tr(context)}',
                                       style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                                            color: Theme.of(context).iconTheme.color,
+                                            color: AppTheme().black,
                                             fontWeight: FontWeight.normal,
                                           ),
                                     ),

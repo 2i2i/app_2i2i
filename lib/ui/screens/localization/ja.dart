@@ -211,12 +211,13 @@ class ja {
       Keys.openApp: '開ける',
       Keys.connectWallet: 'ウォレットを接続',
       Keys.retry: 'リトライ',
-      Keys.walletDesMsg1:
-          'コインを受け取るには、アカウントを接続する必要があります。 Connect to をクリックして、Wallet アプリで WalletConnect アカウントを接続します。その後、2i2i に戻ります。',
+      Keys.walletDesMsg1: 'コインを受け取るには、アカウントを接続する必要があります。 Connect to をクリックして、Wallet アプリで WalletConnect アカウントを接続します。その後、2i2i に戻ります。',
       Keys.walletDesMsg2: 'アカウントが接続されました。これでコインを受け取ることができます。 [トーク] をクリックして、ゲストとつながります。',
       Keys.acceptBid: '入札を受け入れる',
       Keys.startTalk: 'トーク開始',
       Keys.failToConnect: '接続できません。もう一度やり直してください。',
+      Keys.cancelBid: '入札をキャンセル！',
+      Keys.cancelBidMsg: '入札をキャンセルしてもよろしいですか？',
     };
   }
 }

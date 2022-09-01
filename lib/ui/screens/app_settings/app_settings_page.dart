@@ -301,26 +301,24 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     iconColor: Colors.amber,
                     trailing: appSettingModel.updateRequired
                         ? RotatedBox(
-                      quarterTurns: 1,
-                      child: Icon(
-                        Icons.arrow_circle_left_rounded,
-                      ),
-                    )
+                            quarterTurns: 1,
+                            child: Icon(
+                              Icons.arrow_circle_left_rounded,
+                            ),
+                          )
                         : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
-                    onTap: () async {
-                      CustomAlertWidget.confirmDialog(
-                        context,
-                        title: "Logout",
-                        description: "Are you sure want to logout?",
-                        onPressed: () async {
-                          await signUpViewModel.signOutFromAuth();
-                        },
-                        yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
-                        noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                      );
-                    },
+                    onTap: () => CustomAlertWidget.confirmDialog(
+                      context,
+                      title: Keys.logout.tr(context),
+                      description: Keys.logoutAreYouSure.tr(context),
+                      onPressed: () async {
+                        await signUpViewModel.signOutFromAuth();
+                      },
+                      yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+                      noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
