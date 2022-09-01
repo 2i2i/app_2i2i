@@ -14,13 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
+import '../../../infrastructure/models/signIn_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
@@ -43,6 +43,15 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   InstagramService instagram = InstagramService();
   InAppWebViewController? _webViewController;
+
+  List<SignInModel> socialList = [
+    SignInModel(icon: "assets/google.png", label: 'Google'),
+    if (!kIsWeb && Platform.isIOS) SignInModel(icon: "assets/apple.png", label: 'Apple'),
+    if (!kIsWeb) SignInModel(icon: "assets/twitter.png", label: 'Twitter'),
+    SignInModel(icon: "assets/algo_logo.png", label: 'Wallet connect'),
+    SignInModel(icon: "assets/icons/instagram_logo.png", label: 'Instagram'),
+    SignInModel(icon: "assets/icons/guest.png", label: 'As Guest'),
+  ];
 
   @override
   void initState() {
@@ -96,7 +105,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       children: [
                         Expanded(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.asset(
@@ -122,163 +131,103 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ],
                           ),
                         ),
-                        NotificationListener(
-                          onNotification: (notification) {
-                            return true;
-                          },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            child: ListTile(
-                              onTap: () async {
-                                await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
-                              },
-                              dense: true,
-                              leading: Image.asset('assets/google.png', height: 25, width: 25),
-                              title:
-                                  Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !kIsWeb && Platform.isIOS,
-                          child: Card(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            color: Theme.of(context).iconTheme.color,
-                            child: ListTile(
-                              onTap: () async {
-                                await ref.read(setupUserViewModelProvider).signInWithApple(context);
-                              },
-                              dense: true,
-                              leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
-                              title: Text(Keys.signInWithApple.tr(context),
-                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !kIsWeb,
-                          child: Card(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            child: ListTile(
-                                onTap: () async {
-                                  await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
-                                },
-                                dense: true,
-                                leading: Image.asset('assets/twitter.png', height: 30, width: 30),
-                                title: Text(
-                                  Keys.signInWithTwitter.tr(context),
-                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500),
-                                )),
-                          ),
-                        ),
-                        Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: Theme.of(context).iconTheme.color,
-                          child: ListTile(
-                            onTap: () async {
-                              await onTapSignInWithAlgorand(signUpViewModel, context);
-                            },
-                            dense: true,
-                            leading: Image.asset(
-                              'assets/algo_logo.png',
-                              height: 30,
-                            ),
-                            title: Text(
-                              Keys.signInWithWalletConnect.tr(context),
-                              style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).cardColor),
-                            ),
-                          ),
-                        ),
-                        Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: Theme.of(context).iconTheme.color,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30.0),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color(0xffF58529),
-                                  Color(0xffFEDA77),
-                                  Color(0xffDD2A7B),
-                                  Color(0xff8134AF),
-                                  Color(0xff515BD4),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: kToolbarHeight * 0.55),
+                              Row(
+                                children: [
+                                  Expanded(child: Divider()),
+                                  Text('Sign in with social media', style: Theme.of(context).textTheme.caption),
+                                  Expanded(child: Divider()),
                                 ],
                               ),
-                            ),
-                            child: ListTile(
-                              onTap: () async {
-                                // await onTapSignInWithAlgorand(signUpViewModel, context);
-                                MaterialPageRoute route = MaterialPageRoute(
-                                  builder: (context) {
-                                    return InstagramLogin(
-                                      onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
-                                        instagram.getAuthorizationCode(url.toString());
-                                        if (url?.host == InstagramConfig.redirectUriHost) {
-                                          String idToken = await instagram.getTokenAndUserID();
-                                          if (idToken.split(':').isNotEmpty) {
-                                            await _webViewController?.clearCache();
-                                            await _webViewController?.clearFocus();
-                                            await _webViewController?.clearMatches();
-                                            await _webViewController?.removeAllUserScripts();
-                                            Navigator.of(context).pop(idToken);
-                                          }
-                                        }
-                                      },
-                                      onWebViewCreated: (InAppWebViewController? value) {
-                                        _webViewController = value;
-                                      },
-                                    );
-                                  },
-                                );
-                                final result = await Navigator.of(context).push(route);
-                                if(result is String) {
-                                  String token = result.split(':').first;
-                                  String id = result.split(':').last;
-                                  await signUpViewModel.signInWithInstagram(context, id);
-                                }
-                              },
-                              dense: true,
-                              leading: SvgPicture.asset('assets/instagram.svg', height: 30),
-                              title: Text(
-                                Keys.signInWithInstagram.tr(context),
-                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).cardColor),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: Theme.of(context).colorScheme.secondary,
-                          child: ListTile(
-                            onTap: () async {
-                              await ref.read(setupUserViewModelProvider).signInAnonymously(context);
-                            },
-                            dense: true,
-                            leading: Icon(Icons.account_circle_rounded, color: Colors.black),
-                            title: Text(
-                              Keys.signInAnonymously.tr(context),
-                              style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                              SizedBox(height: kToolbarHeight * 0.55),
+                              Row(
+                                children: [
+                                  Custom.signInButton(
+                                    label: 'Google',
+                                    icon: 'assets/google.png',
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
+                                    },
                                   ),
-                            ),
+                                  Custom.signInButton(
+                                    label: 'Twitter',
+                                    icon: 'assets/twitter.png',
+                                    isVisibleIf: !kIsWeb,
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Custom.signInButton(
+                                    label: 'Instagram',
+                                    icon: 'assets/icons/instagram_logo.png',
+                                    onPressed: () async {
+                                      MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (context) {
+                                          return InstagramLogin(
+                                            onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                              instagram.getAuthorizationCode(url.toString());
+                                              if (url?.host == InstagramConfig.redirectUriHost) {
+                                                String idToken = await instagram.getTokenAndUserID();
+                                                if (idToken.split(':').isNotEmpty) {
+                                                  await _webViewController?.clearCache();
+                                                  await _webViewController?.clearFocus();
+                                                  await _webViewController?.clearMatches();
+                                                  await _webViewController?.removeAllUserScripts();
+                                                  Navigator.of(context).pop(idToken);
+                                                }
+                                              }
+                                            },
+                                            onWebViewCreated: (InAppWebViewController? value) {
+                                              _webViewController = value;
+                                            },
+                                          );
+                                        },
+                                      );
+                                      final result = await Navigator.of(context).push(route);
+                                      if (result is String) {
+                                        String token = result.split(':').first;
+                                        String id = result.split(':').last;
+                                        await signUpViewModel.signInWithInstagram(context, id);
+                                      }
+                                    },
+                                  ),
+                                  Custom.signInButton(
+                                    label: 'Wallet connect',
+                                    icon: 'assets/algo_logo.png',
+                                    onPressed: () async {
+                                      await onTapSignInWithAlgorand(signUpViewModel, context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Custom.signInButton(
+                                    label: 'Apple',
+                                    icon: 'assets/apple.png',
+                                    isVisibleIf: !kIsWeb && Platform.isIOS,
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInWithApple(context);
+                                    },
+                                  ),
+                                  Custom.signInButton(
+                                    label: 'As Guest',
+                                    icon: 'assets/icons/guest.png',
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInAnonymously(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: kToolbarHeight * 1.25),
@@ -292,7 +241,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication)) throw 'Could not launch https://about.2i2i.app/';
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication))
+                                          throw 'Could not launch https://about.2i2i.app/';
                                       },
                                     style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],

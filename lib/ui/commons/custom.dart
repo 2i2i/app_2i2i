@@ -29,8 +29,10 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(BuildContext context,
-      bool mounted,) async {
+  static Future<void> deepLinks(
+    BuildContext context,
+    bool mounted,
+  ) async {
     if (!kIsWeb) {
       try {
         if (!_initialUriIsHandled) {
@@ -135,6 +137,24 @@ class Custom {
     }
   }
 
+  static Widget signInButton({VoidCallback? onPressed, required String label, required String icon, bool isVisibleIf = true}) {
+    if (!isVisibleIf) {
+      return Container();
+    }
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FloatingActionButton.extended(
+          onPressed: onPressed,
+          label: Padding(
+            padding: const EdgeInsets.only(left: 6.0),
+            child: Text(label),
+          ),
+          icon: Image.asset(icon, height: 35, width: 30),
+        ),
+      ),
+    );
+  }
 // static void navigatePage(String userId, BuildContext context) {
 //   return;
 //   if (userId.isNotEmpty) {
