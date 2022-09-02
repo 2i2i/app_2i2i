@@ -155,6 +155,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
             children: [
               Expanded(
                 child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   inputFormatters: [LengthLimitingTextInputFormatter(1000)],
                   controller: commentController,
                   style: TextStyle(color: AppTheme().cardDarkColor),

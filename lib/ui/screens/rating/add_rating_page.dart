@@ -81,6 +81,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                   ),
                 ),
                 TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   controller: feedbackController,
                   minLines: 5,
                   maxLines: 5,

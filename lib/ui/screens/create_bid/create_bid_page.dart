@@ -186,6 +186,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: CustomTextField(
+                      capitalization: TextCapitalization.sentences,
                       title: Keys.note.tr(context),
                       hintText: Keys.bidNote.tr(context),
                       onChanged: (String value) {

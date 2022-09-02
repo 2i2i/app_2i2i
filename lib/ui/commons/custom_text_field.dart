@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final bool autofocus;
+  final TextCapitalization capitalization;
 
   const CustomTextField(
       {Key? key,
@@ -29,7 +30,8 @@ class CustomTextField extends StatelessWidget {
       this.autofocus = false,
       this.keyboardType,
       this.onChanged,
-      this.focusNode})
+      this.focusNode,
+      this.capitalization = TextCapitalization.none})
       : super(key: key);
 
   @override
@@ -49,6 +51,7 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           autofocus: autofocus,
           keyboardType: keyboardType,
+          textCapitalization: capitalization,
           style: TextStyle(color: AppTheme().cardDarkColor),
           onChanged: onChanged,
           inputFormatters: inputFormatters,
