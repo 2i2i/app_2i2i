@@ -166,6 +166,11 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       }
                       if (camera && microphone) {
                         context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
+                      } else {
+                        Map<Permission, PermissionStatus> statuses = await [
+                          Permission.camera,
+                          Permission.microphone,
+                        ].request();
                       }
                     },
                   ),

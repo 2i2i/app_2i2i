@@ -137,22 +137,26 @@ class Custom {
     }
   }
 
-  static Widget signInButton({VoidCallback? onPressed, required String label, required String icon, bool isVisibleIf = true}) {
+  static Widget signInButton({VoidCallback? onPressed, required String label, required String icon, bool isVisibleIf = true, bool noFlex = false}) {
+    Widget buttonWidget = Card(
+      margin: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      child: ListTile(
+        onTap: onPressed,
+        minLeadingWidth: 10,
+        title: Text(label),
+        leading: Image.asset(icon, height: 35, width: 30),
+      ),
+    );
     if (!isVisibleIf) {
       return Container();
     }
+
+    if (noFlex) {
+      return buttonWidget;
+    }
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FloatingActionButton.extended(
-          onPressed: onPressed,
-          label: Padding(
-            padding: const EdgeInsets.only(left: 6.0),
-            child: Text(label),
-          ),
-          icon: Image.asset(icon, height: 35, width: 30),
-        ),
-      ),
+      child: buttonWidget,
     );
   }
 // static void navigatePage(String userId, BuildContext context) {
