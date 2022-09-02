@@ -31,7 +31,8 @@ class CustomTextField extends StatelessWidget {
       this.keyboardType,
       this.onChanged,
       this.focusNode,
-      this.capitalization = TextCapitalization.none})
+      this.capitalization = TextCapitalization.none,
+      })
       : super(key: key);
 
   @override
