@@ -34,9 +34,9 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future? updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
 
-  Future updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+  Future? updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
 
   Future updateSettings(UserModel user) => database.updateUser(user);
 

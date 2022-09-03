@@ -20,7 +20,6 @@ import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
-import '../../../infrastructure/models/signIn_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
@@ -43,15 +42,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   InstagramService instagram = InstagramService();
   InAppWebViewController? _webViewController;
-
-  List<SignInModel> socialList = [
-    SignInModel(icon: "assets/google.png", label: 'Google'),
-    if (!kIsWeb && Platform.isIOS) SignInModel(icon: "assets/apple.png", label: 'Apple'),
-    if (!kIsWeb) SignInModel(icon: "assets/twitter.png", label: 'Twitter'),
-    SignInModel(icon: "assets/algo_logo.png", label: 'Wallet connect'),
-    SignInModel(icon: "assets/icons/instagram_logo.png", label: 'Instagram'),
-    SignInModel(icon: "assets/icons/guest.png", label: 'As Guest'),
-  ];
 
   @override
   void initState() {
@@ -104,7 +94,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
+                          flex: 3,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -132,7 +124,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                         ),
                         Expanded(
+                          flex: 4,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(height: kToolbarHeight * 0.55),
@@ -143,14 +137,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   Expanded(child: Divider()),
                                 ],
                               ),
-                              SizedBox(height: kToolbarHeight * 0.55),
+                              SizedBox(height: kToolbarHeight * 0.25),
                               Row(
                                 children: [
                                   Custom.signInButton(
                                     label: 'Google',
                                     icon: 'assets/google.png',
                                     onPressed: () async {
-                                      await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
+                                      await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
                                     },
                                   ),
                                   Custom.signInButton(
@@ -158,7 +152,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     icon: 'assets/twitter.png',
                                     isVisibleIf: !kIsWeb,
                                     onPressed: () async {
-                                      await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
+                                      await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
                                     },
                                   ),
                                 ],
@@ -208,29 +202,40 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   ),
                                 ],
                               ),
-                              Row(
-                                children: [
-                                  Custom.signInButton(
-                                    label: 'Apple',
-                                    icon: 'assets/apple.png',
-                                    isVisibleIf: !kIsWeb && Platform.isIOS,
-                                    onPressed: () async {
-                                      await ref.read(setupUserViewModelProvider).signInWithApple(context);
-                                    },
-                                  ),
-                                  Custom.signInButton(
-                                    label: 'As Guest',
-                                    icon: 'assets/icons/guest.png',
-                                    onPressed: () async {
-                                      await ref.read(setupUserViewModelProvider).signInAnonymously(context);
-                                    },
-                                  ),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: kToolbarHeight * 1.55),
+                                child: Custom.signInButton(
+                                  label: 'Apple',
+                                  icon: 'assets/apple.png',
+                                  noFlex: true,
+                                  isVisibleIf: !kIsWeb && Platform.isIOS,
+                                  onPressed: () async {
+                                    await ref.read(setupUserViewModelProvider).signInWithApple(context);
+                                  },
+                                ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: kToolbarHeight * 0.35),
+                                child: Row(
+                                  children: [
+                                    Expanded(child: Divider()),
+                                    Text('Sign in with Guest', style: Theme.of(context).textTheme.caption),
+                                    Expanded(child: Divider()),
+                                  ],
+                                ),
+                              ),
+                              Custom.signInButton(
+                                noFlex: true,
+                                label: Keys.signInAnonymously.tr(context),
+                                icon: 'assets/icons/guest.png',
+                                onPressed: () async {
+                                  await ref.read(setupUserViewModelProvider).signInAnonymously(context);
+                                },
+                              )
                             ],
                           ),
                         ),
-                        SizedBox(height: kToolbarHeight * 1.25),
+                        SizedBox(height: kToolbarHeight * 0.25),
                         Center(
                           child: RichText(
                             text: TextSpan(
