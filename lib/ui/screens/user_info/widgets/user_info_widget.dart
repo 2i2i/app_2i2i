@@ -124,7 +124,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                        padding: const EdgeInsets.only(right: 4),
                         child: Icon(Icons.chat_outlined, size: 25),
                       ),
                     ),

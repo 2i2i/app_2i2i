@@ -198,16 +198,18 @@ class RingingPageState extends ConsumerState<RingingPage> {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
                     ),
-                    SizedBox(height: 14),
                     Visibility(
                       visible: !amA && bidComment.isNotEmpty,
-                      child: Text(
-                        '${Keys.Note.tr(context)}: $bidComment',
-                        maxLines: 2,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          '${Keys.Note.tr(context)}: $bidComment',
+                          maxLines: 3,
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).primaryColorDark),
+                        ),
                       ),
                     ),
                     SizedBox(height: 14),
