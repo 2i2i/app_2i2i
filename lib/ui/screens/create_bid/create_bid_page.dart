@@ -101,10 +101,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null) {
       return WaitPage(
         isCupertino: true,
-        height: MediaQuery
-            .of(context)
-            .size
-            .height / 2,
+        height: MediaQuery.of(context).size.height / 2,
       );
     }
 
@@ -114,9 +111,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .cardColor,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
       ),
       body: Column(
@@ -137,39 +132,26 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                       SizedBox(height: 10),
                       Text(
                         Keys.estMaxDuration.tr(context),
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .caption,
+                        style: Theme.of(context).textTheme.caption,
                       ),
                       SizedBox(height: 4),
                       Container(
-                        decoration: BoxDecoration(color: Theme
-                            .of(context)
-                            .shadowColor
-                            .withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                         padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
                           children: [
                             SizedBox(width: 6),
                             Text(
                               '$minMaxDuration ${Keys.secs.tr(context)}',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .subtitle1,
+                              style: Theme.of(context).textTheme.subtitle1,
                             ),
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: SliderTheme(
                                   data: SliderTheme.of(context).copyWith(
-                                    activeTrackColor: Theme
-                                        .of(context)
-                                        .cardColor,
-                                    inactiveTrackColor: Theme
-                                        .of(context)
-                                        .disabledColor,
+                                    activeTrackColor: Theme.of(context).cardColor,
+                                    inactiveTrackColor: Theme.of(context).disabledColor,
                                     thumbShape: CustomSliderThumbRect(
                                       mainContext: context,
                                       thumbRadius: 15,
@@ -192,10 +174,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 ),
                               ),
                             ),
-                            Text('$maxMaxDuration ${Keys.secs.tr(context)}', style: Theme
-                                .of(context)
-                                .textTheme
-                                .subtitle1),
+                            Text('$maxMaxDuration ${Keys.secs.tr(context)}', style: Theme.of(context).textTheme.subtitle1),
                             SizedBox(width: 6),
                           ],
                         ),
@@ -218,13 +197,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   ),
                   Container(
                     constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
-                        ? BoxConstraints(
-                      minHeight: 150,
-                      maxHeight: MediaQuery
-                          .of(context)
-                          .size
-                          .width / 1.6,
-                    )
+                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6)
                         : null,
                     child: Builder(
                       builder: (BuildContext context) {
@@ -267,10 +240,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                           padding: EdgeInsets.all(12),
                           margin: EdgeInsets.only(top: 12),
                           decoration: BoxDecoration(
-                            color: Theme
-                                .of(context)
-                                .shadowColor
-                                .withOpacity(0.2),
+                            color: Theme.of(context).shadowColor.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -281,10 +251,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               Text(
                                 Keys.noAccountAdded.tr(context),
                                 textAlign: TextAlign.center,
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .subtitle1,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                               SizedBox(height: 8),
                               Padding(
@@ -297,10 +264,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                   iconSize: 30,
                                   icon: Icon(
                                     Icons.add_circle_rounded,
-                                    color: Theme
-                                        .of(context)
-                                        .colorScheme
-                                        .secondary,
+                                    color: Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                               )
@@ -321,17 +285,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             Keys.swipeAndChangeAccount.tr(context),
                             maxLines: 2,
                             textAlign: TextAlign.start,
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .caption,
+                            style: Theme.of(context).textTheme.caption,
                           ),
                         ),
                         TextButton(
-                          style: TextButton.styleFrom(primary: Theme
-                              .of(context)
-                              .colorScheme
-                              .secondary),
+                          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
                           // onPressed: () => showBidAlert(myAccountPageViewModel),
                           onPressed: () async {
                             await addWalletAccount(context, myAccountPageViewModel);
@@ -371,14 +329,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                   Center(
                                     child: Text(
                                       '${Keys.algoPerSec.tr(context)}',
-                                      style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .subtitle2
-                                          ?.copyWith(
-                                        color: AppTheme().black,
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                                            color: AppTheme().black,
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                     ),
                                   ),
                                   SizedBox(width: 8),
@@ -432,23 +386,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
               child: ElevatedButton(
                 onPressed: isInsufficient() ? null : () => onAddBid(),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme
-                      .of(context)
-                      .errorColor : Theme
-                      .of(context)
-                      .colorScheme
-                      .secondary),
+                  backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme
-                        .of(context)
+                    style: Theme.of(context)
                         .textTheme
                         .bodyText1
-                        ?.copyWith(color: isInsufficient() ? Theme
-                        .of(context)
-                        .primaryColorDark : Theme
-                        .of(context)
-                        .primaryColor)),
+                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -460,10 +404,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     padding: const EdgeInsets.only(left: 10.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Theme
-                            .of(context)
-                            .iconTheme
-                            .color,
+                        primary: Theme.of(context).iconTheme.color,
                       ),
                       onPressed: () {
                         isAddSupportVisible.value = !isAddSupportVisible.value;
@@ -603,10 +544,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   double getWidthForSlider(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width - 200;
+    double width = MediaQuery.of(context).size.width - 200;
     if (width <= 250) {
       return 250;
     }
