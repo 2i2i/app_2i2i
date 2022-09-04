@@ -150,7 +150,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               ),
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
             ),
-            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8),
+            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8, top: 8),
             child: UserInfoWidget(
               user: userB,
               isFav: isFriend,

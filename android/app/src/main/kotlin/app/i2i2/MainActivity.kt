@@ -124,17 +124,16 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun handleIntent(intent: Intent): String {
-        val appLinkAction = intent.action
-        val appLinkData: Uri? = intent.data
-        Log.i("APP LINK C", appLinkData.toString());
-        Log.i("APP LINK dataString ", intent.dataString.toString());
-        Log.i("APP LINK clipData ", intent.clipData.toString());
-        Log.i("APP LINK scheme ", intent.scheme.toString());
+        try {
+            val appLinkAction = intent.action
+            val appLinkData: Uri? = intent.data
 
-        if (appLinkData != null) {
-            initialLink = appLinkData.toString()
-            channel?.invokeMethod("dynamicLink", initialLink)
-//            return appLinkData.toString();
+            if (appLinkData != null) {
+                initialLink = appLinkData.toString()
+                channel?.invokeMethod("dynamicLink", initialLink)
+            }
+        } catch (e: Exception) {
+            Log.e("notification", "onNewIntent Exception: ", e);
         }
         return "";
     }

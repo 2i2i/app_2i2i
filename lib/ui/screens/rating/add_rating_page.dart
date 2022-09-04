@@ -1,11 +1,10 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../../infrastructure/routes/named_routes.dart';
 
@@ -82,9 +81,11 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                   ),
                 ),
                 TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   controller: feedbackController,
                   minLines: 5,
                   maxLines: 5,
+                  inputFormatters: [LengthLimitingTextInputFormatter(1000)],
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Theme.of(context).iconTheme.color?.withAlpha(10),

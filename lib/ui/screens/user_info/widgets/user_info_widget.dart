@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -11,6 +12,7 @@ import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../commons/custom_profile_image_view.dart';
+import '../../home/bottom_nav_bar.dart';
 
 class UserInfoWidget extends StatefulWidget {
   final UserModel user;
@@ -44,6 +46,14 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   final _scrollController = ScrollController();
 
+  bool isCurrentUser = false;
+
+  @override
+  void initState() {
+    isCurrentUser = FirebaseAuth.instance.currentUser?.uid == widget.user.id;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     String shortBio = widget.user.bio;
@@ -70,9 +80,21 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
               imageType: (widget.user.imageUrl?.isNotEmpty ?? false) ? ImageType.NETWORK_IMAGE : ImageType.NAME_IMAGE,
               statusColor: statusColor,
               radius: 80,
+              onTap: isCurrentUser
+                  ? () {
+                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      currentIndex.value = 1;
+                    }
+                  : null,
             ),
             Expanded(
               child: ListTile(
+                onTap: isCurrentUser
+                    ? () {
+                        context.pushNamed(Routes.userSetting.nameFromPath());
+                        currentIndex.value = 1;
+                      }
+                    : null,
                 title: RichText(
                   maxLines: 3,
                   text: new TextSpan(
@@ -102,7 +124,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     InkResponse(
                       onTap: widget.onTapChat,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        padding: const EdgeInsets.only(right: 4),
                         child: Icon(Icons.chat_outlined, size: 25),
                       ),
                     ),
@@ -120,7 +142,10 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       visible: widget.user.url?.isNotEmpty ?? false,
                       child: InkResponse(
                         onTap: widget.onTapQr,
-                        child: Icon(Icons.qr_code, size: 25),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Icon(Icons.qr_code, size: 25),
+                        ),
                       ),
                     ),
                     if (widget.onTapFav != null)

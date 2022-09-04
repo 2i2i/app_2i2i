@@ -216,6 +216,8 @@ class zh {
       Keys.acceptBid: '接受投标',
       Keys.startTalk: '开始谈话',
       Keys.failToConnect: '连接失败。请再试一次。',
+      Keys.cancelBid: '取消投标！',
+      Keys.cancelBidMsg: '您确定要取消出价吗？',
     };
   }
 }

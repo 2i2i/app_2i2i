@@ -242,12 +242,14 @@ class Keys {
 
   static const String walletDesMsg1 =
       'To receive coins, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.';
-  static const String walletDesMsg2 =
-      'You have connected an account. Now you can receive coins. Click Talk to connect with your Guest.';
+  static const String walletDesMsg2 = 'You have connected an account. Now you can receive coins. Click Talk to connect with your Guest.';
 
   static const String acceptBid = 'Accept Bid';
   static const String startTalk = 'Start to Talk';
   static const String failToConnect = 'Failed to connect. Please try again.';
+
+  static const String cancelBid = 'Cancel Bid!';
+  static const String cancelBidMsg = 'Are you sure want to cancel bid?';
 }
 
 extension CustomTranslation on String {

@@ -215,11 +215,12 @@ class es {
       Keys.retry: 'Rever',
       Keys.walletDesMsg1:
           'Para recibir monedas, debe conectar una cuenta. Haga clic en Conectar para conectar una cuenta de WalletConnect en su aplicación de billetera. Luego regresa a 2i2i.',
-      Keys.walletDesMsg2:
-          'Has conectado una cuenta. Ahora puedes recibir monedas. Haga clic en Hablar para conectarse con su Invitado.',
+      Keys.walletDesMsg2: 'Has conectado una cuenta. Ahora puedes recibir monedas. Haga clic en Hablar para conectarse con su Invitado.',
       Keys.acceptBid: 'Aceptar oferta',
       Keys.startTalk: 'Empezar a hablar',
       Keys.failToConnect: 'Error al conectar. Inténtalo de nuevo.',
+      Keys.cancelBid: '¡Cancelar oferta!',
+      Keys.cancelBidMsg: '¿Está seguro de que desea cancelar la oferta?',
     };
   }
 }

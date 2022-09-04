@@ -46,9 +46,9 @@
         <key>LSRequiresIPhoneOS</key>
         <true/>
         <key>NSCameraUsageDescription</key>
-        <string>This app requires access to the camera.</string>
+        <string>${PRODUCT_NAME} requires access to the camera.</string>
         <key>NSMicrophoneUsageDescription</key>
-        <string>This app requires access to the microphone.</string>
+        <string>${PRODUCT_NAME} requires access to the microphone.</string>
         <key>NSPhotoLibraryUsageDescription</key>
         <string>This app requires access to the photo library.</string>
         <key>UIBackgroundModes</key>

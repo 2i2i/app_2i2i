@@ -237,6 +237,7 @@ class FirestoreDatabase {
     return _service
         .collectionStream(
       path: FirestorePath.ratings(uid),
+      queryBuilder: (query) => query.orderBy('rating', descending: true),
       builder: (data, documentId) {
         return RatingModel.fromMap(data, documentId);
       },

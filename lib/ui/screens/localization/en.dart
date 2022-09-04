@@ -183,7 +183,6 @@ class en {
 
       Keys.noInternetTitle: 'No Internet Connection',
       Keys.noInternetMessage: 'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
-      Keys.loading: 'Loading...',
       Keys.noKeyFound: "We can't find account from this keys",
       Keys.no: 'No',
       Keys.yes: 'yes',
@@ -206,7 +205,6 @@ class en {
       Keys.writeComment: 'Write a comment...',
       Keys.connecting: 'Connecting...',
       Keys.muted: 'Muted',
-      Keys.walletConnect: 'Wallet Connect',
       Keys.connect: 'Connect',
       Keys.receiveSendCoin: 'Please first connect an account to send/receive coins.',
       Keys.cantBidUser: 'You can not bid to this user',
@@ -222,6 +220,8 @@ class en {
       Keys.acceptBid: 'Accept Bid',
       Keys.startTalk: 'Start Talk',
       Keys.failToConnect: 'Fail to connect. Please try again.',
+      Keys.cancelBid: 'Cancel Bid!',
+      Keys.cancelBidMsg: 'Are you sure want to cancel bid?',
     };
   }
 }

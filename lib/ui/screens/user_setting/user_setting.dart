@@ -110,7 +110,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
@@ -118,35 +117,35 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                       ),
                       const SizedBox(height: 1),
                       TextFormField(
-                        //maxLength: 30,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(30),
-                          // FilteringTextInputFormatter.deny(' ',),
-                          FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
-                          //WhitelistingTextInputFormatter(RegExp("[a-z A-Z 0-9]")),
-                        ],
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: userNameEditController,
-                        textInputAction: TextInputAction.next,
-                        autofocus: false,
-                        style: TextStyle(color: AppTheme().cardDarkColor),
-                        validator: (value) {
-                          value ??= '';
-                          if (value.trim().isEmpty) {
-                            return Keys.required.tr(context);
-                          } else if (value.trim().length < 3) {
-                            return 'Required min 3 characters';
-                          }
-                          if (value.trim().length < 3) {
-                            return "name must be 3 characters long";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: Keys.yourNameHint.tr(context),
-                        ),
-                      ),
+                          inputFormatters: [
+                            // WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9]")),
+                            LengthLimitingTextInputFormatter(30),
+                            FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                            //FilteringTextInputFormatter.allow(RegExp(r'[-_#€@<>.,]')),
+                          ],
+                          textCapitalization: TextCapitalization.sentences,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: userNameEditController,
+                          textInputAction: TextInputAction.next,
+                          autofocus: false,
+                          style: TextStyle(color: AppTheme().cardDarkColor),
+                          validator: (value) {
+                            value ??= '';
+                            if (value.trim().isEmpty) {
+                              return Keys.required.tr(context);
+                            } else if (value.trim().length < 3) {
+                              return 'Required min 3 characters';
+                            }
+                            if (value.trim().length < 3) {
+                              return "name must be 3 characters long";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: Keys.yourNameHint.tr(context),
+                          ),
+                          keyboardType: TextInputType.name),
                     ],
                   ),
                 ),
@@ -159,6 +158,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              textCapitalization: TextCapitalization.sentences,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(200),
               ],

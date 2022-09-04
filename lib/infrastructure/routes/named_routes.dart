@@ -29,7 +29,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../ui/screens/auth_screen/auth_screen.dart';
-import '../../ui/screens/instagram_login.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
