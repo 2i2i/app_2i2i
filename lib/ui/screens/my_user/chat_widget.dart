@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/theme.dart';
@@ -104,18 +105,27 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                                     hideShadow: true,
                                     style: Theme.of(context).textTheme.bodyText2?.copyWith(fontWeight: FontWeight.w800));
                               }),
-                          title: Row(
+                          title: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(chat.writerName, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColorLight)),
-                              Visibility(
-                                visible: chat.writerUid == widget.user.id,
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 10),
-                                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-                                  decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(6)),
-                                  child: Text('Host', style: Theme.of(context).textTheme.caption),
-                                ),
-                              )
+                              Row(
+                                children: [
+                                  Text(chat.writerName, style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColorLight)),
+                                  Visibility(
+                                    visible: chat.writerUid == widget.user.id,
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 10),
+                                      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                                      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(6)),
+                                      child: Text('Host', style: Theme.of(context).textTheme.caption),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Text(DateFormat().add_yMMMMd().format(chat.ts.toLocal()),
+                                      style: Theme.of(context).textTheme.overline?.copyWith(color: Theme.of(context).primaryColorLight)),
+                                ],
+                              ),
                             ],
                           ),
                           subtitle: Padding(
@@ -145,6 +155,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
             children: [
               Expanded(
                 child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   inputFormatters: [LengthLimitingTextInputFormatter(1000)],
                   controller: commentController,
                   style: TextStyle(color: AppTheme().cardDarkColor),

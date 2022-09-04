@@ -76,6 +76,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int currentAccountIndex = 0;
   UserModel? userB;
   FocusNode focusNode = FocusNode();
+  final dataKey = new GlobalKey();
 
   @override
   void initState() {
@@ -186,6 +187,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: CustomTextField(
+                      capitalization: TextCapitalization.sentences,
                       title: Keys.note.tr(context),
                       hintText: Keys.bidNote.tr(context),
                       onChanged: (String value) {
@@ -195,10 +197,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   ),
                   Container(
                     constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
-                        ? BoxConstraints(
-                            minHeight: 150,
-                            maxHeight: MediaQuery.of(context).size.width / 1.6,
-                          )
+                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6)
                         : null,
                     child: Builder(
                       builder: (BuildContext context) {
@@ -307,8 +306,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     builder: (BuildContext context, bool value, Widget? child) {
                       if (value) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 12, left: 6, right: 6),
+                          padding: const EdgeInsets.only(top: 12, left: 4, right: 4),
                           child: CustomTextField(
+                            key: dataKey,
                             focusNode: focusNode,
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
@@ -331,9 +331,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     child: Text(
                                       '${Keys.algoPerSec.tr(context)}',
                                       style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                                            color: Theme.of(context).iconTheme.color,
-                                            fontWeight: FontWeight.normal,
-                                          ),
+                                        color: AppTheme().black,
+                                        fontWeight: FontWeight.normal,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(width: 8),
@@ -411,6 +411,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                         isAddSupportVisible.value = !isAddSupportVisible.value;
                         FocusScope.of(context).requestFocus(focusNode);
                         focusNode.requestFocus();
+                        setState(() {
+                          WidgetsBinding.instance.addPostFrameCallback((_) => Scrollable.ensureVisible(dataKey.currentContext!));
+                        });
                       },
                       child: Row(
                         children: [

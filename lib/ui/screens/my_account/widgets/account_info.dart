@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -158,15 +157,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                   child: IconButton(
                     icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
                     onPressed: () async {
-                      bool camera = true;
-                      bool microphone = true;
-                      if (!kIsWeb) {
-                        camera = await Permission.camera.request().isGranted;
-                        microphone = await Permission.microphone.request().isGranted;
-                      }
-                      if (camera && microphone) {
-                        context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
-                      }
+                      context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
                     },
                   ),
                 ),
@@ -216,7 +207,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-              /*  Container(
+                /*  Container(
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),

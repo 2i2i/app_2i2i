@@ -7,10 +7,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 
-/**
- * Created by NguyenLinh on 12,March,2019
- */
 class MyApplication : Application(), LifecycleObserver {
+
     companion object {
         var isBackground = true
     }

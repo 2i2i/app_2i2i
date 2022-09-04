@@ -214,11 +214,12 @@ class de {
       Keys.retry: 'Wiederholen',
       Keys.walletDesMsg1:
           'Um Münzen zu erhalten, müssen Sie ein Konto verbinden. Klicken Sie auf Verbinden mit, um ein WalletConnect-Konto in Ihrer Wallet-App zu verbinden. Danach zurück zu 2i2i.',
-      Keys.walletDesMsg2:
-          'Sie haben ein Konto verbunden. Jetzt können Sie Münzen erhalten. Klicken Sie auf Sprechen, um sich mit Ihrem Gast zu verbinden.',
+      Keys.walletDesMsg2: 'Sie haben ein Konto verbunden. Jetzt können Sie Münzen erhalten. Klicken Sie auf Sprechen, um sich mit Ihrem Gast zu verbinden.',
       Keys.acceptBid: 'Gebot annehmen',
       Keys.startTalk: 'Gespräch beginnen',
       Keys.failToConnect: 'Verbindung fehlgeschlagen. Bitte versuche es erneut.',
+      Keys.cancelBid: 'Gebot stornieren!',
+      Keys.cancelBidMsg: 'Möchten Sie das Gebot wirklich stornieren?',
     };
   }
 }
