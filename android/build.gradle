@@ -3,6 +3,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://maven.testfairy.com' }
     }
 
     dependencies {
@@ -15,6 +16,7 @@ buildscript {
 allprojects {
     repositories {
         google()
+        maven { url 'https://maven.testfairy.com' }
         mavenCentral()
     }
 }
