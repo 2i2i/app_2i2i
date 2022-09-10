@@ -39,6 +39,8 @@
             android:name="app.i2i2.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
+            android:allowBackup="false"
+            android:fullBackupContent="false"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -77,7 +79,7 @@
             </intent-filter>
 
         </activity>
-
+        <activity android:name="com.testfairy.activities.ProvideFeedbackActivity" />
         <provider
             android:name="com.pichillilorenzo.flutter_inappwebview.InAppWebViewFileProvider"
             android:authorities="${applicationId}.flutter_inappwebview.fileprovider"
