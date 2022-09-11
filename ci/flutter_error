@@ -1,0 +1,71 @@
+flutter@3891c925e57e:~$ flutter
+Downloading Linux x64 Dart SDK from Flutter engine 3efdf03e73dd352873fc5a7e1c0de04e52863b3a...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  204M  100  204M    0     0  30.6M      0  0:00:06  0:00:06 --:--:-- 33.6M
+Building flutter tool...
+
+===== CRASH =====
+si_signo=Segmentation fault(11), si_code=1, si_addr=0x10006
+version=2.18.0 (stable) (Fri Aug 26 10:22:54 2022 +0000) on "linux_x64"
+pid=471, thread=479, isolate_group=dartdev(0x400305f000), isolate=dartdev(0x40030c6000)
+isolate_instructions=ffffb164d000, vm_instructions=4001ece300
+  pc 0x0000ffffb180472b fp 0x0000004009d6e370 Unknown symbol
+  pc 0x0000ffffb144d41d fp 0x0000004009d6e3e0 Unknown symbol
+  pc 0x0000ffffb144d0a0 fp 0x0000004009d6e418 Unknown symbol
+  pc 0x0000ffffb1444a74 fp 0x0000004009d6e468 Unknown symbol
+  pc 0x0000ffffb1442ed5 fp 0x0000004009d6e4a8 Unknown symbol
+  pc 0x0000ffffb1449d9e fp 0x0000004009d6e4e0 Unknown symbol
+  pc 0x0000ffffb145b05f fp 0x0000004009d6e530 Unknown symbol
+  pc 0x0000ffffb1441f95 fp 0x0000004009d6e570 Unknown symbol
+  pc 0x0000ffffb14415b9 fp 0x0000004009d6e5c8 Unknown symbol
+  pc 0x0000ffffb1458c38 fp 0x0000004009d6e630 Unknown symbol
+  pc 0x0000ffffb145857a fp 0x0000004009d6e678 Unknown symbol
+  pc 0x0000ffffb1458b35 fp 0x0000004009d6e6e8 Unknown symbol
+  pc 0x0000ffffb145857a fp 0x0000004009d6e730 Unknown symbol
+  pc 0x0000ffffb1455632 fp 0x0000004009d6e780 Unknown symbol
+  pc 0x0000ffffb144915a fp 0x0000004009d6e7d0 Unknown symbol
+  pc 0x0000ffffb143bd2e fp 0x0000004009d6e848 Unknown symbol
+  pc 0x0000ffffb143b9e9 fp 0x0000004009d6e8c0 Unknown symbol
+  pc 0x0000ffffb143b4c8 fp 0x0000004009d6e970 Unknown symbol
+  pc 0x0000ffffb1438d19 fp 0x0000004009d6ea20 Unknown symbol
+  pc 0x0000ffffb143880d fp 0x0000004009d6eab0 Unknown symbol
+  pc 0x0000ffffb1438466 fp 0x0000004009d6eb38 Unknown symbol
+  pc 0x0000ffffb1436387 fp 0x0000004009d6eb90 Unknown symbol
+  pc 0x0000ffffb1805e2e fp 0x0000004009d6ebc8 Unknown symbol
+  pc 0x0000ffffb14362b8 fp 0x0000004009d6ebf8 Unknown symbol
+  pc 0x0000ffffb14359d8 fp 0x0000004009d6ec58 Unknown symbol
+  pc 0x0000ffffb1435123 fp 0x0000004009d6eca0 Unknown symbol
+  pc 0x0000ffffb16e4af5 fp 0x0000004009d6ed10 Unknown symbol
+  pc 0x0000ffffb1434f88 fp 0x0000004009d6ed60 Unknown symbol
+  pc 0x0000ffffb1434d61 fp 0x0000004009d6edd0 Unknown symbol
+  pc 0x0000ffffb1434ac9 fp 0x0000004009d6ee30 Unknown symbol
+  pc 0x0000ffffb14343d3 fp 0x0000004009d6eec0 Unknown symbol
+  pc 0x0000ffffb142f11d fp 0x0000004009d6ef10 Unknown symbol
+  pc 0x0000ffffb142dba6 fp 0x0000004009d6efc8 Unknown symbol
+  pc 0x0000ffffb142d677 fp 0x0000004009d6f040 Unknown symbol
+  pc 0x0000ffffb1419d4a fp 0x0000004009d6f100 Unknown symbol
+  pc 0x0000ffffb16e9099 fp 0x0000004009d6f188 Unknown symbol
+  pc 0x0000ffffb140dadb fp 0x0000004009d6f1e0 Unknown symbol
+  pc 0x0000ffffb140c2ac fp 0x0000004009d6f268 Unknown symbol
+  pc 0x0000ffffb16ee4f0 fp 0x0000004009d6f2f8 Unknown symbol
+  pc 0x0000ffffb16fab3b fp 0x0000004009d6f348 Unknown symbol
+  pc 0x0000ffffb16fac0f fp 0x0000004009d6f380 Unknown symbol
+  pc 0x0000ffffb16f9802 fp 0x0000004009d6f3f0 Unknown symbol
+  pc 0x0000ffffb16f99b3 fp 0x0000004009d6f430 Unknown symbol
+  pc 0x0000ffffb16fb41f fp 0x0000004009d6f498 Unknown symbol
+  pc 0x0000ffffb16fb5e3 fp 0x0000004009d6f4e8 Unknown symbol
+  pc 0x0000ffffb1802a0c fp 0x0000004009d6f560 Unknown symbol
+  pc 0x00000040020464bd fp 0x0000004009d6f600 dart::DartEntry::InvokeCode(dart::Code const&, unsigned long, dart::Array const&, dart::Array const&, dart::Thread*)+0x14d
+  pc 0x00000040020462fc fp 0x0000004009d6f660 dart::DartEntry::InvokeFunction(dart::Function const&, dart::Array const&, dart::Array const&, unsigned long)+0x14c
+  pc 0x000000400204872c fp 0x0000004009d6f6b0 dart::DartLibraryCalls::HandleMessage(long, dart::Instance const&)+0x14c
+  pc 0x000000400206fda0 fp 0x0000004009d6fc40 dart::IsolateMessageHandler::HandleMessage(std::__2::unique_ptr<dart::Message, std::__2::default_delete<dart::Message> >)+0x350
+  pc 0x00000040020992cd fp 0x0000004009d6fcb0 dart::MessageHandler::HandleMessages(dart::MonitorLocker*, bool, bool)+0x14d
+  pc 0x00000040020999af fp 0x0000004009d6fd00 dart::MessageHandler::TaskCallback()+0x1df
+  pc 0x00000040021bc868 fp 0x0000004009d6fd80 dart::ThreadPool::WorkerLoop(dart::ThreadPool::Worker*)+0x148
+  pc 0x00000040021bccbd fp 0x0000004009d6fdb0 dart::ThreadPool::Worker::Main(unsigned long)+0x6d
+  pc 0x000000400212f488 fp 0x0000004009d6fe70 /home/flutter/flutter-sdk/bin/cache/dart-sdk/bin/dart+0x212f488
+-- End of DumpStackTrace
+qemu: uncaught target signal 6 (Aborted) - core dumped
+/home/flutter/flutter-sdk/bin/internal/shared.sh: line 24:   471 Aborted                 "$DART" __deprecated_pub upgrade "$VERBOSITY" --no-precompile
+Error: Unable to 'pub upgrade' flutter tool. Retrying in five seconds... (9 tries left)
