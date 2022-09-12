@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "347734179578-pack539ulqgoo7nbhhi4k2gnnr3s1qjg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "e4d8cbe9576354a8967d0009dfbd30fee09310df"
+          }
+        },
+        {
+          "client_id": "347734179578-pu2nkqql52oqkur8rcs5q0gc9r43g7cn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.i2i2",
+            "certificate_hash": "4bca146ae191cea0fa8c4a4aaee8aab8abe1999c"
+          }
+        },
+        {
           "client_id": "347734179578-og5iqc4mabrs51uhk7833tm6chr6297h.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -44,4 +60,3 @@
   ],
   "configuration_version": "1"
 }
-

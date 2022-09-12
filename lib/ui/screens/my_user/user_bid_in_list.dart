@@ -7,7 +7,6 @@ import 'package:app_2i2i/ui/screens/app/no_bid_page_holder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/models/bid_model.dart';
@@ -16,7 +15,7 @@ import '../../../infrastructure/providers/my_user_provider/my_user_page_view_mod
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
 
-class UserBidInsList extends ConsumerWidget {
+class UserBidInsList extends ConsumerStatefulWidget {
   UserBidInsList({
     required this.titleWidget,
     required this.onTap,
@@ -28,13 +27,17 @@ class UserBidInsList extends ConsumerWidget {
 
   final void Function(BidIn bidIn) onTap;
 
+  @override
+  ConsumerState<UserBidInsList> createState() => _UserBidInsListState();
+}
+
+class _UserBidInsListState extends ConsumerState<UserBidInsList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel.user.id));
+  Widget build(BuildContext context) {
+    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(widget.myHangoutPageViewModel.user.id));
     if (bidInsWithUsers == null) return WaitPage();
-
     // store for notification
     markAsRead(bidInsWithUsers);
     List<BidIn> bidIns = bidInsWithUsers.toList();
@@ -45,26 +48,9 @@ class UserBidInsList extends ConsumerWidget {
         visible: bidInsWithUsers.isNotEmpty,
         child: InkResponse(
           onTap: () async {
-            bool camera = true;
-            bool microphone = true;
-
-            if (!kIsWeb) {
-              camera = await Permission.camera.request().isGranted;
-              microphone = await Permission.microphone.request().isGranted;
-            }
-
-            if (camera && microphone && bidIns.isNotEmpty) {
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(true, _scaffoldKey.currentContext!);
-              }
-              bool hostStatus = await myHangoutPageViewModel.acceptBid(bidIns);
-              if (!hostStatus) {
-                CustomDialogs.showToastMessage(context, 'Looks like user offline or not available right now');
-              }
-              if (_scaffoldKey.currentContext != null) {
-                CustomDialogs.loader(false, _scaffoldKey.currentContext!);
-              }
-            }
+            // CustomAlertWidget.loader(true, context);
+            await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
+            // CustomAlertWidget.loader(false, context);
           },
           child: Container(
             width: kToolbarHeight * 1.15,
@@ -73,8 +59,7 @@ class UserBidInsList extends ConsumerWidget {
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
-                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary // changes position of shadow
-                    ),
+                BoxShadow(offset: Offset(2, 2), blurRadius: 8, color: Theme.of(context).colorScheme.secondary),
               ],
             ),
             alignment: Alignment.center,

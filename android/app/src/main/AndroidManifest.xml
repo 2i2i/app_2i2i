@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="app.i2i2">
 
     <uses-feature android:name="android.hardware.camera" />
@@ -18,6 +19,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
 
 
     <queries>
@@ -44,8 +48,14 @@
             android:windowSoftInputMode="adjustResize">
 
             <meta-data
+                android:name="google_analytics_adid_collection_enabled"
+                android:value="false" />
+            <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,23 +65,15 @@
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <meta-data
-                android:name="flutter_deeplinking_enabled"
-                android:value="true" />
-
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:scheme="test" />
-
-                <data android:host="test.2i2i.app" />
-                <data android:host="twoitwoi.com" />
+                <data
+                    android:host="twoitwoi.com"
+                    android:scheme="test" />
             </intent-filter>
 
         </activity>
@@ -90,12 +92,24 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_baseline_notifications" />
+        <!--
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/alert_color" />-->
 
         <activity
             android:name="com.app.i2i2.NotificationActivity"
             android:screenOrientation="portrait" />
+
         <service
             android:name="com.app.i2i2.FirebaseService"
             android:enabled="true"
@@ -105,9 +119,6 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/alert_color" />
 
         <service android:name="com.app.i2i2.HeadsUpNotificationService" />
 

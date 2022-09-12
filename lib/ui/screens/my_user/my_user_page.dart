@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
@@ -49,7 +48,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
     }
 
     UserModel user = myHangoutPageViewModel!.user;
-    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
 
     return Scaffold(
       body: Column(
@@ -86,23 +84,20 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                     currentIndex.value = 1;
                   },
                   onTapQr: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Container(
-                          decoration: Custom.getBoxDecoration(context, color: Colors.white),
-                          height: 400,
-                          width: 350,
-                          child: QrCodeWidget(message: 'https://$domain/user/${user.id}'),
+                    if (user.url?.isNotEmpty ?? false) {
+                      CustomAlertWidget.showBottomSheet(
+                        context,
+                        child: QrCodeWidget(
+                          userUrl: user.url!,
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
-                  onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidgetHolder(user: user), backgroundColor: Colors.transparent),
+                  onTapChat: () =>
+                      CustomAlertWidget.showBottomSheet(context, child: ChatWidgetHolder(user: user), backgroundColor: Colors.transparent, isDismissible: true),
                   isFav: true,
                 ),
               ],

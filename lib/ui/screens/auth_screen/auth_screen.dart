@@ -5,7 +5,6 @@ import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
 import '../../../infrastructure/models/user_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/routes/named_routes.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar_holder_.dart';
 import '../rating/add_rating_page.dart';
@@ -24,36 +23,33 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final uid = ref.read(myUIDProvider);
-      if (uid is String) {
-        UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
-        if (userModel == null) {
-          final database = ref.read(databaseProvider);
-          await database.createUser(uid);
-          CustomAlertWidget.showBottomSheet(context,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-              enableDrag: false,
-              isDismissible: false);
-        } else if (userModel.name.isEmpty) {
-          CustomAlertWidget.showBottomSheet(context,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(
-                  fromBottomSheet: true,
-                ),
-              ),
-              enableDrag: false,
-              isDismissible: false);
-        }
-      }
-    });
+    createUserBottomSheet();
     super.initState();
+  }
+
+  Future<void> createUserBottomSheet() async {
+    bool showUserSetting = false;
+    ref.read(appSettingProvider).getTappedOnKey(isNotify: false);
+    final uid = ref.read(myUIDProvider);
+    if (uid is String) {
+      UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
+      if (userModel == null) {
+        final database = ref.read(databaseProvider);
+        await database.createUser(uid);
+        showUserSetting = true;
+      }
+      if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
+        CustomAlertWidget.showBottomSheet(context,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: UserSetting(
+                fromBottomSheet: true,
+              ),
+            ),
+            enableDrag: false,
+            isDismissible: false);
+      }
+    }
   }
 
   @override
@@ -70,10 +66,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       body: SafeArea(child: widget.pageChild),
-      bottomSheet: Visibility(
-        visible: (NamedRoutes.showRating.value['show'] ?? false),
-        child: AddRatingPage(showRating: NamedRoutes.showRating),
-      ),
+      bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBarHolder(),
     );
   }

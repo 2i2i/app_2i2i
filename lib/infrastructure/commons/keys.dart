@@ -43,6 +43,7 @@ class Keys {
   static const String numberZeroHint = 'numberZeroHint';
   static const String noRatingsFound = 'noRatingsFound';
   static const String algoPerSec = 'algoPerSec';
+  static const String algoPerHr = 'algoPerHr';
   static const String hh = 'hh';
   static const String mm = 'mm';
   static const String ss = 'ss';
@@ -110,7 +111,7 @@ class Keys {
   static const String recoverPassPhaseMsg = 'recoverPassPhaseMsg';
   static const String addLocalAccount = 'addLocalAccount';
   static const String addLocalAccountMsg = 'addLocalAccountMsg';
-  static const String estMaxDuration = 'Max Duration';
+  static const String estMaxDuration = 'estMaxDuration';
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
   static const String addBid = 'addBid';
@@ -180,31 +181,79 @@ class Keys {
   static const String appVersion = 'appVersion';
   static const String logOut = 'logOut';
 
-  static const String connectAccount ='connectAccount';
-  static const String updateAvailable ='updateAvailable';
-  static const String loginMsg ='loginMsg';
-  static const String loginMsg2 ='loginMsg2';
-  static const String loginMsg3 ='loginMsg3';
-  static const String signInWithGoogle ='signInWithGoogle';
-  static const String signInWithApple ='signInWithApple';
-  static const String signInWithTwitter ='signInWithTwitter';
-  static const String signInAnonymously ='signInAnonymously';
+  static const String connectAccount = 'connectAccount';
+  static const String updateAvailable = 'updateAvailable';
+  static const String loginMsg = 'loginMsg';
+  static const String loginMsg2 = 'loginMsg2';
+  static const String loginMsg3 = 'loginMsg3';
+  static const String signInWithGoogle = 'signInWithGoogle';
+  static const String signInWithApple = 'signInWithApple';
+  static const String signInWithTwitter = 'signInWithTwitter';
+  static const String signInAnonymously = 'signInAnonymously';
+  static const String signInWithWalletConnect ='Wallet Connect';
 
-  static const String searchFaq ='searchFaq';
-  static const String noInternetTitle ='noInternetTitle';
-  static const String noInternetMessage ='noInternetMessage';
-  static const String loading ='loading';
-  static const String noKeyFound ='noKeyFound';
-  static const String no ='no';
-  static const String yes ='Yes';
-  static const String transactionConfirmMsg ='Are you sure to do the transaction from your wallet?';
-  static const String pleaseConfirm ='Please Confirm';
-  static const String okay ='Okay';
+  static const String searchFaq = 'searchFaq';
+  static const String noInternetTitle = 'noInternetTitle';
+  static const String noInternetMessage = 'noInternetMessage';
+  static const String loading = 'loading';
+  static const String noKeyFound = 'noKeyFound';
+  static const String no = 'no';
+  static const String yes = 'Yes';
+  static const String transactionConfirmMsg =
+      'Are you sure to do the transaction from your wallet?';
+  static const String pleaseConfirm = 'Please Confirm';
+  static const String okay = 'Okay';
 
+  static const String connectedSocialAccount = 'connectedSocialAccount';
+
+  static const String zero = 'zero';
+  static const String minutes = 'minutes';
+  static const String hours = 'hours';
+  static const String days = 'days';
+  static const String weeks = 'weeks';
+  static const String months = 'months';
+  static const String years = 'years';
+
+  static const String thisIsYou = 'thisIsYou';
+
+  static const String deleteAccount = 'deleteAccount';
+  static const String deleteAccountMessage = 'deleteAccountMessage';
+  static const String waitTimeMsg = 'waitTimeMsg';
+  static const String writeComment = 'writeComment';
+  static const String connecting = 'connecting';
+  static const String muted = 'muted';
+  static const String walletConnect = 'Wallet Connect';
+  static const String connect = 'Connect';
+  static const String receiveSendCoin =
+      'Please first connect an account to send/receive coins.';
+  static const String cantBidUser = 'You can not bid to this user';
+  static const String miniSupport =
+      'Minimum speed is greater then Maximum Support';
+  static const String noWalletFound = 'No wallet account found.';
+  static const String someOneTalk = 'Someone wants to talk with you';
+
+  static const String openApp = 'Open';
+
+  static const String connectWallet = 'Connect Wallet';
+
+  static const String retry = 'Retry';
+
+  static const String signInWithInstagram = 'Sign in with Instagram';
+
+  static const String walletDesMsg1 =
+      'To receive coins, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.';
+  static const String walletDesMsg2 = 'You have connected an account. Now you can receive coins. Click Talk to connect with your Guest.';
+
+  static const String acceptBid = 'Accept Bid';
+  static const String startTalk = 'Start to Talk';
+  static const String failToConnect = 'Failed to connect. Please try again.';
+
+  static const String cancelBid = 'Cancel Bid!';
+  static const String cancelBidMsg = 'Are you sure want to cancel bid?';
 }
 
 extension CustomTranslation on String {
   String tr(BuildContext context) {
-    return ApplicationLocalizations.of(context)?.translate(this)??'';
+    return ApplicationLocalizations.of(context)?.translate(this) ?? '';
   }
 }

@@ -1,14 +1,22 @@
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
+import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
+import 'package:app_2i2i/ui/screens/instagram_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
@@ -17,6 +25,7 @@ import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom.dart';
 import '../app/no_internet_screen.dart';
 import '../app/wait_page.dart';
+import '../home/bottom_nav_bar.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final Widget homePageBuilder;
@@ -28,6 +37,12 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
+  String _displayUri = '';
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
+
+  InstagramService instagram = InstagramService();
+  InAppWebViewController? _webViewController;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -42,19 +57,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         });
       }
     });
-
-    userIdNav.addListener(() {
-      if (userIdNav.value.isNotEmpty) {
-        context.pushNamed(Routes.user.nameFromPath(), params: {'uid': userIdNav.value});
-        userIdNav.value = '';
-      }
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final signUpViewModel = ref.watch(setupUserViewModelProvider);
+    final signUpViewModel = ref.watch(setupUserViewModelProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if (!appSettingModel.isInternetAvailable) {
@@ -73,6 +81,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   if (firebaseUser != null) {
                     // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
                     return widget.homePageBuilder;
+                  } else {
+                    Future.delayed(Duration(milliseconds: 500)).then((value) {
+                      currentIndex.value = 1;
+                      context.go(Routes.myUser);
+                    });
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -81,8 +94,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
+                          flex: 3,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.asset(
@@ -108,75 +123,119 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ],
                           ),
                         ),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          child: ListTile(
-                            onTap: () async {
-                              await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
-                            },
-                            dense: true,
-                            leading: Image.asset('assets/google.png', height: 25, width: 25),
-                            title: Text(Keys.signInWithGoogle.tr(context), style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500)),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !kIsWeb && Platform.isIOS,
-                          child: Card(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            color: Theme.of(context).iconTheme.color,
-                            child: ListTile(
-                              onTap: () async {
-                                await ref.read(setupUserViewModelProvider).signInWithApple(context);
-                              },
-                              dense: true,
-                              leading: Image.asset('assets/apple.png', height: 30, width: 30, color: Theme.of(context).cardColor),
-                              title: Text(Keys.signInWithApple.tr(context),
-                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(color: Theme.of(context).cardColor, fontWeight: FontWeight.w500)),
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: !kIsWeb,
-                          child: Card(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            child: ListTile(
-                                onTap: () async {
-                                  await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
+                        Expanded(
+                          flex: 4,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: kToolbarHeight * 0.55),
+                              Row(
+                                children: [
+                                  Expanded(child: Divider()),
+                                  Text('Sign in with social media', style: Theme.of(context).textTheme.caption),
+                                  Expanded(child: Divider()),
+                                ],
+                              ),
+                              SizedBox(height: kToolbarHeight * 0.25),
+                              Row(
+                                children: [
+                                  Custom.signInButton(
+                                    label: 'Google',
+                                    icon: 'assets/google.png',
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
+                                    },
+                                  ),
+                                  Custom.signInButton(
+                                    label: 'Twitter',
+                                    icon: 'assets/twitter.png',
+                                    isVisibleIf: !kIsWeb,
+                                    onPressed: () async {
+                                      await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Custom.signInButton(
+                                    label: 'Instagram',
+                                    icon: 'assets/icons/instagram_logo.png',
+                                    onPressed: () async {
+                                      MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (context) {
+                                          return InstagramLogin(
+                                            onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                              instagram.getAuthorizationCode(url.toString());
+                                              if (url?.host == InstagramConfig.redirectUriHost) {
+                                                String idToken = await instagram.getTokenAndUserID();
+                                                if (idToken.split(':').isNotEmpty) {
+                                                  await _webViewController?.clearCache();
+                                                  await _webViewController?.clearFocus();
+                                                  await _webViewController?.clearMatches();
+                                                  await _webViewController?.removeAllUserScripts();
+                                                  Navigator.of(context).pop(idToken);
+                                                }
+                                              }
+                                            },
+                                            onWebViewCreated: (InAppWebViewController? value) {
+                                              _webViewController = value;
+                                            },
+                                          );
+                                        },
+                                      );
+                                      final result = await Navigator.of(context).push(route);
+                                      if (result is String) {
+                                        String token = result.split(':').first;
+                                        String id = result.split(':').last;
+                                        await signUpViewModel.signInWithInstagram(context, id);
+                                      }
+                                    },
+                                  ),
+                                  Custom.signInButton(
+                                    label: 'Wallet connect',
+                                    icon: 'assets/algo_logo.png',
+                                    onPressed: () async {
+                                      await onTapSignInWithAlgorand(signUpViewModel, context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: kToolbarHeight * 1.55),
+                                child: Custom.signInButton(
+                                  label: 'Apple',
+                                  icon: 'assets/apple.png',
+                                  noFlex: true,
+                                  isVisibleIf: !kIsWeb && Platform.isIOS,
+                                  onPressed: () async {
+                                    await ref.read(setupUserViewModelProvider).signInWithApple(context);
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: kToolbarHeight * 0.35),
+                                child: Row(
+                                  children: [
+                                    Expanded(child: Divider()),
+                                    Text('Sign in with Guest', style: Theme.of(context).textTheme.caption),
+                                    Expanded(child: Divider()),
+                                  ],
+                                ),
+                              ),
+                              Custom.signInButton(
+                                noFlex: true,
+                                label: Keys.signInAnonymously.tr(context),
+                                icon: 'assets/icons/guest.png',
+                                onPressed: () async {
+                                  await ref.read(setupUserViewModelProvider).signInAnonymously(context);
                                 },
-                                dense: true,
-                                leading: Image.asset('assets/twitter.png', height: 30, width: 30),
-                                title: Text(
-                                  Keys.signInWithTwitter.tr(context),
-                                  style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500),
-                                )),
+                              )
+                            ],
                           ),
                         ),
-                        Card(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: Theme.of(context).colorScheme.secondary,
-                          child: ListTile(
-                              onTap: () async {
-                                await ref.read(setupUserViewModelProvider).signInAnonymously();
-                              },
-                              dense: true,
-                              leading: Icon(Icons.account_circle_rounded, color: Theme.of(context).cardColor),
-                              title: Text(
-                                Keys.signInAnonymously.tr(context),
-                                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.w500),
-                              )),
-                        ),
-                        SizedBox(height: kToolbarHeight * 1.25),
+                        SizedBox(height: kToolbarHeight * 0.25),
                         Center(
                           child: RichText(
                             text: TextSpan(
@@ -213,5 +272,31 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         ),
       ),
     );
+  }
+
+  Future<void> onTapSignInWithAlgorand(SetupUserViewModel signUpViewModel, BuildContext context) async {
+    var accountService = await ref.watch(accountServiceProvider);
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+    final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
+    String? address = await _createSession(accountService, account);
+    if (address is String) {
+      await signUpViewModel.signInWithWalletConnect(context, address, account, id, myAccountPageViewModel);
+    }
+  }
+
+  Future<String?> _createSession(AccountService accountService, WalletConnectAccount account) async {
+    if (!account.connector.connected) {
+      SessionStatus sessionStatus = await account.connector.createSession(
+        chainId: 4160,
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
+      );
+      isDialogOpen.value = false;
+      if (sessionStatus.accounts.isNotEmpty) {
+        return sessionStatus.accounts.first;
+      }
+    }
+    return account.address;
   }
 }

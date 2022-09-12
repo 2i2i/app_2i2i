@@ -1,24 +1,32 @@
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 
 // ignore: unused_import
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
+import 'package:app_2i2i/ui/screens/instagram_login.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/routes/app_routes.dart';
 import '../../commons/custom_app_bar_holder.dart';
+import '../../commons/custom_alert_widget.dart';
 import '../home/bottom_nav_bar.dart';
 
 class AppSettingPage extends ConsumerStatefulWidget {
@@ -28,11 +36,15 @@ class AppSettingPage extends ConsumerStatefulWidget {
 
 class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProviderStateMixin {
   List<String> networkList = ["Main", "Test", "Both"];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  InstagramService instagram = InstagramService();
+  InAppWebViewController? _webViewController;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).getAuthList();
+      ref.read(myAccountPageViewModelProvider).initMethod();
     });
     super.initState();
   }
@@ -50,6 +62,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
     }
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CustomAppbarHolder(
         backgroundColor: Colors.transparent,
         title: Text(
@@ -113,12 +126,21 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     trailing: Icon(Icons.navigate_next),
                   ),
                   ListTile(
-                    onTap: () {
-                      context.pushNamed(Routes.account.nameFromPath());
-                    },
-                    title: Text(
-                      Keys.wallet.tr(context),
-                      style: Theme.of(context).textTheme.subtitle1,
+                    onTap: () => context.pushNamed(Routes.account.nameFromPath()),
+                    title: Row(
+                      children: [
+                        Text(
+                          Keys.wallet.tr(context),
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                        Visibility(
+                          visible: !(appSettingModel.isTappedOnKey),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
                     ),
                     trailing: Icon(
                       Icons.navigate_next,
@@ -223,8 +245,6 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
               },
             ),
             SizedBox(height: 20),
-
-            //link
             Text(
               Keys.more.tr(context),
               style: Theme.of(context).textTheme.subtitle1,
@@ -269,12 +289,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () {
-                      if (appSettingModel.updateRequired) {
-                        StoreRedirect.redirect(
-                          androidAppId: "app.i2i2",
-                          iOSAppId: "app.2i2i",
-                        );
+                    onTap: () async {
+                      if (appSettingModel.updateRequired && !Platform.isIOS) {
+                        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
                       }
                     },
                     title: Text(
@@ -295,11 +312,16 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                         : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
-                    onTap: () async {
-                      await signUpViewModel.signOutFromAuth();
-                      currentIndex.value = 1;
-                      context.go(Routes.myUser);
-                    },
+                    onTap: () => CustomAlertWidget.confirmDialog(
+                      context,
+                      title: Keys.logout.tr(context),
+                      description: Keys.logoutAreYouSure.tr(context),
+                      onPressed: () async {
+                        await signUpViewModel.signOutFromAuth();
+                      },
+                      yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+                      noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                     title: Text(Keys.logOut.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor)),
                   ),
                 ],
@@ -316,10 +338,15 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
             ),
             SizedBox(height: 12),
             Container(
-              child: Row(
-                children: [
-                  Visibility(
-                    visible: !signUpViewModel.authList.contains('google.com'),
+              child: FutureBuilder(
+                future: ref.read(setupUserViewModelProvider).getAuthList(),
+                builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                  if (snapshot.data is List<String>) {
+                    List<String> list = snapshot.data!;
+                    return Row(
+                      children: [
+                        Visibility(
+                          visible: !list.contains('google.com'),
                     child: FloatingActionButton.small(
                       onPressed: () async {
                         await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);
@@ -344,7 +371,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       ),
                       child: Image.asset('assets/twitter.png', height: 25, width: 25),
                     ),
-                    visible: !kIsWeb && !signUpViewModel.authList.contains('twitter.com'),
+                    visible: !kIsWeb && !list.contains('twitter.com'),
                   ),
                   Visibility(
                     child: FloatingActionButton.small(
@@ -358,24 +385,126 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       ),
                       child: Image.asset('assets/apple.png', height: 25, width: 25),
                     ),
-                    visible: !kIsWeb && Platform.isIOS && !signUpViewModel.authList.contains('apple.com'),
-                  ),
-                ],
+                    visible: !kIsWeb && Platform.isIOS && !list.contains('apple.com'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'instagram',
+                            onPressed: () async {
+                              MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) {
+                                  return InstagramLogin(
+                                    onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                      instagram.getAuthorizationCode(url.toString());
+                                      if (url?.host == InstagramConfig.redirectUriHost) {
+                                        String idToken = await instagram.getTokenAndUserID();
+                                        if (idToken.split(':').isNotEmpty) {
+                                          // _webViewController?.reload();
+                                          await _webViewController?.clearCache();
+                                          await _webViewController?.clearFocus();
+                                          await _webViewController?.clearMatches();
+                                          await _webViewController?.removeAllUserScripts();
+                                          Navigator.of(context).pop(idToken);
+                                        }
+                                      }
+                                    },
+                                    onWebViewCreated: (InAppWebViewController? value) {
+                                      _webViewController = value;
+                                    },
+                                  );
+                                },
+                              );
+                              final result = await Navigator.of(context).push(route);
+                              if (result is String) {
+                                String token = result.split(':').first;
+                                String id = result.split(':').last;
+                                await signUpViewModel.signInWithInstagram(context, id, true);
+                                await ref.read(setupUserViewModelProvider).getAuthList();
+                              }
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: SvgPicture.asset('assets/instagram.svg', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && !list.contains('Instagram'),
+                        ),
+                        Visibility(
+                          child: FloatingActionButton.small(
+                            heroTag: 'algorand',
+                            onPressed: () async {
+                              await _createSession();
+                              await ref.read(setupUserViewModelProvider).getAuthList();
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Image.asset('assets/algo_logo.png', height: 25, width: 25),
+                          ),
+                          visible: !kIsWeb && !list.contains('WalletConnect'),
+                        ),
+                      ],
+                    );
+                  }
+                  return Container();
+                },
               ),
             ),
             SizedBox(height: 16),
             TextButton(
                 onPressed: () async {
                   await signUpViewModel.deleteUser(
-                      title: "Delete account!", description: "Are you sure want to delete your account permanently from 2i2i?", mainContext: context);
+                      title: "${Keys.deleteAccount.tr(context)}!", description: Keys.deleteAccountMessage.tr(context), mainContext: _scaffoldKey.currentContext ?? context);
                 },
                 child: Text(
-                  'Delete Account',
+                  Keys.deleteAccount.tr(context),
                   style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
                 ))
           ],
         ),
       ),
     );
+  }
+
+  ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
+
+  Future<String?> _createSession() async {
+    var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+
+    final account = WalletConnectAccount.fromNewConnector(
+      accountService: myAccountPageViewModel.accountService!,
+      connector: connector,
+    );
+    // Create a new session
+    if (!account.connector.connected) {
+      SessionStatus sessionStatus = await account.connector.createSession(
+        chainId: 4160,
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
+      );
+      if (sessionStatus.accounts.isNotEmpty) {
+        var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+        String userId = ref.read(myUIDProvider) ?? '';
+
+        isDialogOpen.value = false;
+        CustomAlertWidget.loader(true, context, rootNavigator: true);
+
+        await account.save(id);
+        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address, userName: setupUserViewModel.userInfoModel!.name);
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+        await myAccountPageViewModel.updateAccounts();
+        await account.setMainAccount();
+        await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
+
+        CustomAlertWidget.loader(false, context, rootNavigator: true);
+
+        return account.address;
+      }
+      return null;
+    } else {
+      log('_MyAccountPageState - _createSession - connector already connected');
+      return null;
+    }
   }
 }

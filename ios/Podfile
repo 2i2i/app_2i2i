@@ -9,7 +9,6 @@ project 'Runner', {
   'Profile' => :release,
   'Release' => :release,
 }
-
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
@@ -28,10 +27,9 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-
-  pod 'Firebase/AppCheck'
   use_frameworks!
   use_modular_headers!
+  pod 'Firebase/AppCheck'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
@@ -39,6 +37,7 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
     target.build_configurations.each do |config|
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
       '$(inherited)',
@@ -84,8 +83,8 @@ post_install do |installer|
         ## dart: PermissionGroup.criticalAlerts
         # 'PERMISSION_CRITICAL_ALERTS=1'
       ]
-      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='10.0'
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulators*]']='arm64 i386'
+      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='11.0'
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulators*]']='arm64'
       config.build_settings['ONLY_ACTIVE_ARCH']='YES'
     end
   end

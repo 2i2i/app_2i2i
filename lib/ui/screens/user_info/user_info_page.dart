@@ -1,9 +1,6 @@
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
-import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
 import 'package:app_2i2i/ui/screens/my_user/chat_widget_holder.dart';
 import 'package:app_2i2i/ui/screens/user_info/other_bid_list_holder.dart';
@@ -80,8 +77,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
       }
     }
 
-    final domain = AppConfig().ALGORAND_NET == AlgorandNet.mainnet ? '2i2i.app' : 'test.2i2i.app';
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -155,24 +150,20 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
               ),
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
             ),
-            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8),
+            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8, top: 8),
             child: UserInfoWidgetHolder(
               user: userB,
               isFav: isFriend,
               estWaitTime: estWaitTime,
               onTapQr: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Container(
-                      height: 400,
-                      width: 350,
-                      decoration: Custom.getBoxDecoration(context, color: Colors.white),
-                      child: QrCodeWidget(message: 'https://$domain/user/${userB.id}'),
+                if (userB.url?.isNotEmpty ?? false) {
+                  CustomAlertWidget.showBottomSheet(
+                    context,
+                    child: QrCodeWidget(
+                      userUrl: userB.url!,
                     ),
-                  ),
-                );
+                  );
+                }
               },
               onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidgetHolder(user: userB), backgroundColor: Colors.transparent),
               onTapFav: () {

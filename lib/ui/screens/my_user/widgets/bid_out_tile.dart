@@ -8,6 +8,7 @@ import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../commons/custom_alert_widget.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
 ValueNotifier<List> showLoaderIds = ValueNotifier([]);
@@ -15,7 +16,7 @@ ValueNotifier<List> showLoaderIds = ValueNotifier([]);
 class BidOutTile extends ConsumerWidget {
   final BidOut bidOut;
 
-   BidOutTile({Key? key, required this.bidOut}) : super(key: key);
+  BidOutTile({Key? key, required this.bidOut}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,13 +103,22 @@ class BidOutTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  IconButton(onPressed: () async {
-                      if(!showLoaderIds.value.contains(bidOut.id)) {
-                        showLoaderIds.value.add(bidOut.id);
-                        showLoaderIds.value = List.from(showLoaderIds.value);
-                        await ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
-                      }
-                    }, icon: ValueListenableBuilder(
+                  IconButton(
+                    onPressed: () => CustomAlertWidget.confirmDialog(
+                      context,
+                      title: Keys.cancelBid.tr(context),
+                      description: Keys.cancelBidMsg.tr(context),
+                      onPressed: () async {
+                        if (!showLoaderIds.value.contains(bidOut.id)) {
+                          showLoaderIds.value.add(bidOut.id);
+                          showLoaderIds.value = List.from(showLoaderIds.value);
+                          await ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
+                        }
+                      },
+                      yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
+                      noButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    icon: ValueListenableBuilder(
                       valueListenable: showLoaderIds,
                       builder: (BuildContext context, List<dynamic> value, Widget? child) {
                         bool showLoader = value.contains(bidOut.id);

@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
@@ -11,9 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:walletconnect_dart/walletconnect_dart.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
+import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
@@ -84,27 +85,25 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             subtitle: Text(Keys.walletAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
-          ),
-          ListTile(
-            onTap: () {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.recover.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  spreadRadius: 0.5,
-                ),
-              ],
-            ),
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.recover.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  ),
+                ],
+              ),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 'assets/icons/recover.svg',
@@ -117,37 +116,38 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 85),
-            child: Divider(),
+
           ),
-          ListTile(
-            onTap: () async {
-              widget.showBottom?.value = false;
-              context.pushNamed(Routes.createLocalAccount.nameFromPath());
-            },
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  spreadRadius: 0.5,
-                )
-              ]),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/wallet.svg',
-                height: 15,
-                width: 15,
-                color: Theme.of(context).colorScheme.secondary,
+          Visibility(
+            visible: false,
+            child: ListTile(
+              onTap: () async {
+                widget.showBottom?.value = false;
+                context.pushNamed(Routes.createLocalAccount.nameFromPath());
+              },
+              leading: Container(
+                height: 50,
+                width: 50,
+                decoration:
+                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 0.5,
+                  )
+                ]),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  'assets/icons/wallet.svg',
+                  height: 15,
+                  width: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
+              title: Text(Keys.addLocalAccount.tr(context)),
+              subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
+              trailing: Icon(Icons.navigate_next),
             ),
-            title: Text(Keys.addLocalAccount.tr(context)),
-            subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
-            trailing: Icon(Icons.navigate_next),
           ),
         ],
       ),
@@ -155,24 +155,37 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
   }
 
   Future<String?> _createSession(MyAccountPageViewModel myAccountPageViewModel, AccountService accountService) async {
+    String id = DateTime.now().toString();
+    final connector = await WalletConnectAccount.newConnector(id);
+
+    var setupUserViewModel = ref.watch(setupUserViewModelProvider);
+    String userId = ref.read(myUIDProvider)??'';
+
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
+      connector: connector,
     );
+
     // Create a new session
     if (!account.connector.connected) {
-      SessionStatus sessionStatus = await account.connector.connect(
+      await account.connector.connect(
         chainId: 4160,
         onDisplayUri: (uri) => _changeDisplayUri(uri),
       );
 
       isDialogOpen.value = false;
-      CustomDialogs.loader(true, context, rootNavigator: true);
-      log("$sessionStatus");
-      await account.save();
-      if (account.address.isNotEmpty) await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
+      await account.save(id);
+
+      var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
+      if (account.address.isNotEmpty) {
+        await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
+      }
       await myAccountPageViewModel.updateAccounts();
       await account.setMainAccount();
-      CustomDialogs.loader(false, context, rootNavigator: true);
+      await myAccountPageViewModel.getWalletAccount();
+      await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       _displayUri = '';
       return account.address;
     } else {
@@ -203,12 +216,13 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
         barrierDismissible: true,
       );
     } else {
+      final bridge = await getWCBridge();
       var launchUri;
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         launchUri = Uri(
           scheme: 'algorand-wc',
           host: 'wc',
-          queryParameters: {'uri': _displayUri, 'bridge': "https://wallet-connect-d.perawallet.app"},
+          queryParameters: {'uri': _displayUri, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"
         );
       } else {
         launchUri = Uri.parse(_displayUri);

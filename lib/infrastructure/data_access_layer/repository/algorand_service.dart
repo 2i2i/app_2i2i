@@ -1,9 +1,11 @@
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
-import 'package:dio/dio.dart' as dio;
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import '../../models/meeting_model.dart';
 import '../accounts/abstract_account.dart';
 import '../services/logging.dart';
@@ -33,6 +35,7 @@ class AlgorandLib {
     AlgorandNet.testnet: '',
     AlgorandNet.betanet: '',
   };
+
   // static const Map<AlgorandNet, String> API_KEY = {
   //   AlgorandNet.mainnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   //   AlgorandNet.testnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
@@ -40,12 +43,10 @@ class AlgorandLib {
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
-        algodClient: AlgodClient(
-            apiUrl: API_URL[AppConfig().ALGORAND_NET]!,
-            apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
-        indexerClient:
-            IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
+        algodClient: AlgodClient(apiUrl: API_URL[AppConfig().ALGORAND_NET]!, apiKey: API_KEY[AppConfig().ALGORAND_NET]!),
+        indexerClient: IndexerClient(apiUrl: INDEXER_URL[AppConfig().ALGORAND_NET]!));
   }
+
   final Map<AlgorandNet, Algorand> client = {};
 }
 
@@ -62,45 +63,39 @@ class AlgorandService {
   };
   static const int MIN_TXN_FEE = 1000;
 
-  AlgorandService(
-      {required this.storage,
-      required this.functions,
-      required this.accountService,
-      required this.algorandLib,
-      required this.meetingChanger});
+  AlgorandService({required this.storage, required this.functions, required this.accountService, required this.algorandLib, required this.meetingChanger});
+
   final MeetingChanger meetingChanger;
   final FirebaseFunctions functions;
   final SecureStorage storage;
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
-  // TODO: needs a try-catch
+  // TODO: needs a try-catch ==> Removed
   // Future<TransactionResponse> getTransactionResponse(
   //         String transactionId, AlgorandNet net) =>
   //     algorandLib.client[net]!.indexer().getTransactionById(transactionId);
 
   // not using this method in the other methods due to naming clash
-  Future<PendingTransaction> waitForConfirmation(
-      {required String txId, required AlgorandNet net}) {
+  Future<PendingTransaction> waitForConfirmation({required String txId, required AlgorandNet net}) {
     log('AlgorandService - waitForConfirmation - txId=$txId');
     return algorandLib.client[net]!.waitForConfirmation(txId);
   }
 
   Future<Map<String, String>> lockCoins({
-    required AbstractAccount account,
+    required String sessionId,
+    required String address,
     required AlgorandNet net,
     required Quantity amount,
     required String note,
   }) async {
     final List<RawTransaction> txns = [];
 
-    final params =
-        await algorandLib.client[net]!.getSuggestedTransactionParams();
+    final params = await algorandLib.client[net]!.getSuggestedTransactionParams();
 
     final lockTxn = await (PaymentTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
-          ..receiver =
-              Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..sender = Address.fromAlgorandAddress(address: address)
+          ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
           ..amount = amount.num + 4 * MIN_TXN_FEE
           ..suggestedParams = params
           ..noteText = note)
@@ -109,7 +104,7 @@ class AlgorandService {
 
     final arguments = 'str:LOCK'.toApplicationArguments();
     final appCallTxn = await (ApplicationCallTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: account.address)
+          ..sender = Address.fromAlgorandAddress(address: address)
           ..applicationId = SYSTEM_ID[net]!
           ..arguments = arguments
           ..suggestedParams = params)
@@ -118,14 +113,15 @@ class AlgorandService {
 
     AtomicTransfer.group(txns);
     log('lockALGO - grouped');
+    var connector = await WalletConnectAccount.newConnector(sessionId);
+    var account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
 
     final signedTxnsBytes = await account.sign(txns);
-    log('lockALGO - signed');
+    log('lockALGO - signed $signedTxnsBytes');
 
     try {
-      final groupTxId =
-          await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-
+      final groupTxId = await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
+      log('lockALGO - groupTxId $groupTxId');
       return {
         'group': groupTxId,
         'pay': lockTxn.id,

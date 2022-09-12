@@ -18,6 +18,7 @@ import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
 import '../data_access_layer/repository/secure_storage_service.dart';
 import '../models/meeting_history_model.dart';
+import '../models/wallet_status_model.dart';
 import 'add_bid_provider/add_bid_page_view_model.dart';
 import 'app_settings_provider/app_setting_model.dart';
 import 'faq_cv_provider/faq_provider.dart';
@@ -180,6 +181,10 @@ final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
 final meetingHistory = ChangeNotifierProvider.autoDispose<MeetingHistoryModel>((ref) {
   final database = ref.watch(databaseProvider);
   return MeetingHistoryModel(database: database);
+});
+
+final walletStatusProvider = ChangeNotifierProvider.autoDispose<WalletStatusModel>((ref) {
+  return WalletStatusModel();
 });
 
 final bidOutProvider = StreamProvider.family<BidOut?, String>((ref, bidIn) {
@@ -364,15 +369,15 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
       meeting: meeting.asData!.value);
 });
 
-final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, UserModel>((ref, B) {
+final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, String>((ref, B) {
   // log('addBidPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('addBidPageViewModelProvider - functions=$functions');
   final algorand = ref.watch(algorandProvider);
   // log('addBidPageViewModelProvider - algorandTestnet=$algorand');
 
-  final accounts = ref.watch(accountsProvider);
-  if (accounts is AsyncLoading) return null;
+  // final accounts = ref.watch(accountsProvider);
+  // if (accounts is AsyncLoading) return null;
 
   final accountService = ref.watch(accountServiceProvider);
 
@@ -381,14 +386,23 @@ final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, U
   final myUid = ref.watch(myUIDProvider);
   if (myUid == null) return null;
 
+  final userModelB = ref.watch(userProvider(B));
+  if (userModelB is AsyncLoading || userModelB is AsyncError) return null;
+
   return AddBidPageViewModel(
-      A: myUid, database: database, functions: functions, algorand: algorand, accounts: accounts.value!, accountService: accountService, B: B);
+      A: myUid,
+      database: database,
+      functions: functions,
+      algorand: algorand,
+      /*accounts: accounts.value!,*/
+      accountService: accountService,
+      B: userModelB.value!);
 });
 
-final accountsProvider = FutureProvider((ref) {
-  final accountService = ref.watch(accountServiceProvider);
-  return accountService.getAllAccounts();
-});
+// final accountsProvider = FutureProvider((ref) {
+//   final accountService = ref.watch(accountServiceProvider);
+//   return accountService.getAllAccounts();
+// });
 
 final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewModel>((ref) {
   final database = ref.watch(databaseProvider);

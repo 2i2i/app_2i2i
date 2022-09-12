@@ -23,6 +23,7 @@ class MainActivity : FlutterActivity() {
     private var notificationManager: NotificationManager? = null
     private var incomingCallNotificationBuilder: NotificationBuilder? = null
     var places: HashMap<String, String>? = null
+    private var initialLink: String = "";
 
     companion object {
         var channel: MethodChannel? = null
@@ -35,6 +36,7 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "app.2i2i/notification"
         )
+
 
         channel?.setMethodCallHandler { call, result ->
             if (call.method == "ANSWER") {
@@ -54,6 +56,8 @@ class MainActivity : FlutterActivity() {
                     }
                 }
 //                result.success(places)
+            } else if (call.method == "getInitialUri") {
+                handleIntent(intent);
             } else {
                 result.notImplemented()
             }
@@ -77,6 +81,7 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             Log.e("notification", "onCreate Exception: ${e.message}")
         }
+        handleIntent(intent);
         super.onCreate(savedInstanceState)
     }
 
@@ -96,6 +101,7 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onNewIntent(intent: Intent) {
+        handleIntent(intent);
         places = intent.getSerializableExtra("CALL_ACCEPT_DATA") as HashMap<String, String>?
         if (intent.action != null && intent.action.equals(ConfigKey.CALL_ACCEPT)) {
             try {
@@ -110,8 +116,26 @@ class MainActivity : FlutterActivity() {
             } catch (e: Exception) {
                 Log.e("notification", "onNewIntent Exception: ", e);
             }
+        } else if (intent.getAction().equals("org.chromium.arc.intent.action.VIEW")) {
+            super.onNewIntent(Intent(intent).setAction(Intent.ACTION_VIEW));
         } else {
             super.onNewIntent(intent);
         }
     }
+
+    private fun handleIntent(intent: Intent): String {
+        try {
+            val appLinkAction = intent.action
+            val appLinkData: Uri? = intent.data
+
+            if (appLinkData != null) {
+                initialLink = appLinkData.toString()
+                channel?.invokeMethod("dynamicLink", initialLink)
+            }
+        } catch (e: Exception) {
+            Log.e("notification", "onNewIntent Exception: ", e);
+        }
+        return "";
+    }
+
 }

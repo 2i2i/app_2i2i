@@ -40,9 +40,6 @@ Future<void> main() async {
   if (!kIsWeb) {
     await Firebase.initializeApp();
     await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
-
-    String? token = await FirebaseAppCheck.instance.getToken(true);
-    log("$token");
   } else {
     await Firebase.initializeApp();
   }
@@ -110,57 +107,16 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateHeartbeat(Status.ONLINE);
-      ref.watch(appSettingProvider).getTheme(widget.themeMode);
-      ref.watch(appSettingProvider).getLocal(widget.local);
-      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
-
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-
-      // TODO the following is not working yet
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        log('Got a message whilst in the foreground!');
-        log('Message data: ${message.data}');
-
-        if (message.notification != null) {
-          log('Message also contained a notification: ${message.notification}');
-        }
-
-        if (message.data['action'] == 'update') {
-          NamedRoutes.updateAvailable = true;
-        }
-      });
-      // if (kIsWeb) {
-      //   html.document.addEventListener('visibilitychange', (event) {
-      //     if (html.document.visibilityState != 'visible') {
-      //       //check after for 2 sec that is it still in background
-      //       Future.delayed(Duration(seconds: 2)).then((value) async {
-      //         if (html.document.visibilityState != 'visible') {
-      //           await updateHeartbeat(Status.IDLE);
-      //         }
-      //       });
-      //     } else {
-      //       updateHeartbeat(Status.ONLINE);
-      //     }
-      //   });
-      //}
+      ref.read(appSettingProvider).getTheme(widget.themeMode);
+      ref.read(appSettingProvider).getLocal(widget.local);
+      await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
-        log("methodCall.method=============> setMethodCallHandler");
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
             Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.watch(meetingChangerProvider);
-            log("methodCall.method=============> ${methodCall.method}");
             switch (methodCall.method) {
               case 'CUT':
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
@@ -179,9 +135,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
           log("$e");
         }
       });
-
-      await Custom.deepLinks(context, mounted);
     });
+    Custom.deepLinks(context, mounted);
   }
 
   Future<void> initConnectivity() async {
@@ -267,10 +222,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       title: '2i2i',
       debugShowCheckedModeBanner: false,
       builder: (context, widget) {
-        /*return MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.2),
-            child: widget??Container(),
-        );*/
         return ScrollConfiguration(
           behavior: MyBehavior(),
           child: ResponsiveLayoutBuilder(

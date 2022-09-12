@@ -15,7 +15,7 @@ class TopCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: Custom.getBoxDecoration(context),
+      decoration: Custom.getBoxDecoration(context, borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10))),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -35,11 +35,8 @@ class TopCard extends StatelessWidget {
               ),
               SizedBox(width: 2),
               Text(
-                'Est. Wait Time is $minWait',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    ?.copyWith(color: Theme.of(context).errorColor),
+                '${Keys.estWaitTime.tr(context)} $minWait',
+                style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
               ),
             ],
           ),

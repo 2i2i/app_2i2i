@@ -303,10 +303,10 @@ class Meeting extends Equatable {
       final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
       var timeFromMap = item['ts'];
       DateTime ts;
-      if(timeFromMap is Timestamp){
+      if (timeFromMap is Timestamp) {
         ts = timeFromMap.toDate();
-      }else {
-        var strTime = item['ts']?.toString()??'';
+      } else {
+        var strTime = item['ts']?.toString() ?? '';
         ts = DateTime.tryParse(strTime)?.toLocal() ?? DateTime.now();
       }
       return MeetingStatusWithTS(value: value, ts: ts);
@@ -316,10 +316,8 @@ class Meeting extends Equatable {
     final Quantity speed = Quantity.fromMap(data['speed']);
     final String? room = data['room'];
 
-    final List<Quantity> coinFlowsA =
-        List<Quantity>.from(data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
-    final List<Quantity> coinFlowsB =
-        List<Quantity>.from(data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
+    final List<Quantity> coinFlowsA = List<Quantity>.from(data['coinFlowsA'].map((item) => Quantity.fromMap(data['coinFlowsA'])));
+    final List<Quantity> coinFlowsB = List<Quantity>.from(data['coinFlowsB'].map((item) => Quantity.fromMap(data['coinFlowsB'])));
 
     final Lounge lounge = Lounge.values.firstWhere((e) => e.toStringEnum() == data['lounge']);
 
@@ -430,8 +428,9 @@ class Meeting extends Equatable {
 class RatingModel {
   final double rating;
   final String? comment;
+  final int? createdAt;
 
-  RatingModel({required this.rating, this.comment});
+  RatingModel({required this.rating, this.comment, required this.createdAt});
 
   factory RatingModel.fromMap(Map<String, dynamic>? data, String documentId) {
     if (data == null) {
@@ -441,17 +440,16 @@ class RatingModel {
 
     final double rating = double.parse(data['rating'].toString());
     final String? comment = data['comment'];
+    final int createdAt = (data.containsKey('createdAt') && data['createdAt'] != null) ? data['createdAt'] : 0;
 
-    return RatingModel(
-      rating: rating,
-      comment: comment,
-    );
+    return RatingModel(rating: rating, comment: comment, createdAt: createdAt);
   }
 
   Map<String, dynamic> toMap() {
     return {
       'rating': rating,
       'comment': comment,
+      'createdAt': createdAt,
     };
   }
 }

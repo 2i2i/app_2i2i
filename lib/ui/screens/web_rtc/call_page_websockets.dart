@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../common_main.dart';
+import '../../../infrastructure/commons/keys.dart';
 import '../../commons/custom_profile_image_view.dart';
 
 class CallPageWebsockets extends ConsumerStatefulWidget {
@@ -75,7 +76,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     localId = amA ? widget.meeting.A : widget.meeting.B;
     remoteId = amA ? widget.meeting.B : widget.meeting.A;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(appSettingProvider).appInit();
       initRenderers();
       _connect();
     });
@@ -262,7 +262,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
                     alignment: Alignment.center,
                     color: Colors.transparent,
                     child: Center(
-                      child: Text('Connecting...', style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
+                      child: Text(Keys.connecting.tr(context), style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -307,80 +307,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
         }),
       ),
     );
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text('P2P Call Sample' +
-    //         (_selfId != null ? ' [Your ID ($_selfId)] ' : '')),
-    //     actions: <Widget>[
-    //       IconButton(
-    //         icon: const Icon(Icons.settings),
-    //         onPressed: null,
-    //         tooltip: 'setup',
-    //       ),
-    //     ],
-    //   ),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    //   floatingActionButton: _inCalling
-    //       ? SizedBox(
-    //           width: 200.0,
-    //           child: Row(
-    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //               children: <Widget>[
-    //                 FloatingActionButton(
-    //                   child: const Icon(Icons.switch_camera),
-    //                   onPressed: _switchCamera,
-    //                 ),
-    //                 FloatingActionButton(
-    //                   onPressed: _hangUp,
-    //                   tooltip: 'Hangup',
-    //                   child: Icon(Icons.call_end),
-    //                   backgroundColor: Colors.pink,
-    //                 ),
-    //                 FloatingActionButton(
-    //                   child: const Icon(Icons.mic_off),
-    //                   onPressed: _muteMic,
-    //                 )
-    //               ]))
-    //       : null,
-    //   body: _inCalling
-    //       ? OrientationBuilder(builder: (context, orientation) {
-    //           return Container(
-    //             child: Stack(children: <Widget>[
-    //               Positioned(
-    //                   left: 0.0,
-    //                   right: 0.0,
-    //                   top: 0.0,
-    //                   bottom: 0.0,
-    //                   child: Container(
-    //                     margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-    //                     width: MediaQuery.of(context).size.width,
-    //                     height: MediaQuery.of(context).size.height,
-    //                     child: RTCVideoView(_remoteRenderer),
-    //                     decoration: BoxDecoration(color: Colors.black54),
-    //                   )),
-    //               Positioned(
-    //                 left: 20.0,
-    //                 top: 20.0,
-    //                 child: Container(
-    //                   width: orientation == Orientation.portrait ? 90.0 : 120.0,
-    //                   height:
-    //                       orientation == Orientation.portrait ? 120.0 : 90.0,
-    //                   child: RTCVideoView(_localRenderer, mirror: true),
-    //                   decoration: BoxDecoration(color: Colors.black54),
-    //                 ),
-    //               ),
-    //             ]),
-    //           );
-    //         })
-    //       : ListView.builder(
-    //           shrinkWrap: true,
-    //           padding: const EdgeInsets.all(0.0),
-    //           itemCount: (_peers != null ? _peers.length : 0),
-    //           itemBuilder: (context, i) {
-    //             return _buildRow(context, _peers[i]);
-    //           }),
-    // );
   }
 
   bool checkIfAmA(String userId, {bool? forVideo, bool? forAudio}) {
@@ -437,7 +363,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
               SizedBox(width: 4),
               Visibility(
                 visible: (fullView && isAudioMuted),
-                child: Text("Muted", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
+                child: Text(Keys.muted.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -450,7 +376,8 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
   @override
   void dispose() {
-    // outInit();
+    outInit();
+    widget.onHangPhone(remoteId, widget.meeting.id);
     super.dispose();
   }
 
@@ -495,8 +422,6 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
-    widget.onHangPhone(remoteId, widget.meeting.id);
-
     if (Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');
     }
@@ -534,7 +459,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
           if (mounted) {
             setState(() {});
           }
-
+          if (!(appSettingModel?.isVideoEnabled ?? false)) {
+            _muteVideo();
+          }
+          if (!(appSettingModel?.isAudioEnabled ?? false)) {
+            _muteAudio();
+          }
           log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
           if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
             return widget.meetingChanger.roomCreatedMeeting(widget.meeting.id, _session!.sid + '-' + _session!.pid);

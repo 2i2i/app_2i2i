@@ -1,16 +1,24 @@
+import 'dart:io';
+
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../infrastructure/commons/utils.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
+import '../../infrastructure/providers/all_providers.dart';
+import '../screens/my_account/widgets/qr_image_widget.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
+bool _initialUriIsHandled = false;
+
 class Custom {
-  static getBoxDecoration(BuildContext context,
-      {Color? color, double radius = 10}) {
+  static getBoxDecoration(BuildContext context, {Color? color, double radius = 10, BorderRadiusGeometry? borderRadius}) {
     return BoxDecoration(
       color: color ?? Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: borderRadius ?? BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
           offset: Offset(2, 4),
@@ -21,32 +29,40 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(BuildContext context, bool mounted) async {
+  static Future<void> deepLinks(
+    BuildContext context,
+    bool mounted,
+  ) async {
     if (!kIsWeb) {
       try {
-        // String mainUrl = '';
-
-        bool _initialUriIsHandled = false;
         if (!_initialUriIsHandled) {
           _initialUriIsHandled = true;
-          Uri? uri = await getInitialUri();
-          if(uri?.pathSegments.contains('user')??false) {
-            log( "user");
-            String userId = '';
-            if(uri!.pathSegments.contains('user')){
-              log( "userId");
-              userId = uri.pathSegments.last;
-              userIdNav.value = userId;
-            }
+          String userId = '';
+          PendingDynamicLinkData? pendingDynamicLinkData = await FirebaseDynamicLinks.instance.getInitialLink();
+          if (pendingDynamicLinkData != null) {
+            handleURI(pendingDynamicLinkData.link, userId);
           }
         }
-        uriLinkStream.listen((Uri? uri) {
+
+        FirebaseDynamicLinks.instance.onLink.listen((event) {
+          print(event.link);
+          Uri uri = event.link;
           if (!mounted) return;
           String userId = '';
-          if(uri!.pathSegments.contains('user')){
-            log( "user go");
-            userId = uri.pathSegments.last;
+          if (uri.queryParameters['link'] is String) {
+            var link = uri.queryParameters['link'];
+            if (link?.isNotEmpty ?? false) {
+              uri = Uri.parse(link!);
+            }
+          }
+          if (uri.queryParameters['uid'] is String) {
+            userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
+            isUserLocked.notifyListeners();
+          } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
+            String userId = uri.pathSegments.last;
+            userIdNav.value = userId;
+            isUserLocked.notifyListeners();
           }
         });
       } catch (e) {
@@ -55,18 +71,106 @@ class Custom {
     }
   }
 
-  // static void navigatePage(String userId, BuildContext context) {
-  //   return;
-  //   if (userId.isNotEmpty) {
-  //     Future.delayed(Duration(seconds: 1)).then((value) {
-  //       try {
-  //         context.pushNamed(Routes.user.nameFromPath(), params: {
-  //           'uid': userId,
-  //         });
-  //       } catch (e) {
-  //         print(e);
-  //       }
-  //     });
-  //   }
-  // }
+  static void handleURI(Uri? uri, String userId) {
+    if (uri?.queryParameters['link'] is String) {
+      var link = uri!.queryParameters['link'];
+      if (link?.isNotEmpty ?? false) {
+        uri = Uri.parse(link!);
+      }
+    }
+    if (uri != null) {
+      print('uri init ${uri.pathSegments}');
+      if (uri.queryParameters['uid'] is String) {
+        userId = uri.queryParameters['uid'] as String;
+        userIdNav.value = userId;
+        isUserLocked.notifyListeners();
+      } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
+        String userId = uri.pathSegments.last;
+        print(userId);
+        userIdNav.value = userId;
+        isUserLocked.notifyListeners();
+      }
+    }
+  }
+
+  static Future changeDisplayUri(BuildContext context, String url, {required ValueNotifier<bool> isDialogOpen}) async {
+    bool isAvailable = false;
+    if (kIsWeb) {
+      isDialogOpen.value = true;
+      await showDialog(
+        context: context,
+        builder: (context) => ValueListenableBuilder(
+          valueListenable: isDialogOpen,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (!value) {
+              Navigator.of(context).pop();
+            }
+            return QrImagePage(imageUrl: url);
+          },
+        ),
+        barrierDismissible: true,
+      );
+    } else {
+      var launchUri;
+      try {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          final bridge = await getWCBridge();
+          launchUri = Uri(
+            scheme: 'algorand-wc',
+            host: 'wc',
+            queryParameters: {'uri': url, 'bridge': bridge}, //"https://wallet-connect-d.perawallet.app"},
+          );
+        } else {
+          launchUri = Uri.parse(url);
+        }
+        isAvailable = await launchUrl(launchUri);
+      } on PlatformException catch (err) {
+        print(err);
+      }
+      if (!isAvailable) {
+        await launchUrl(
+            Uri.parse(Platform.isAndroid
+                ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
+                : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
+            mode: LaunchMode.externalApplication);
+      }
+    }
+  }
+
+  static Widget signInButton({VoidCallback? onPressed, required String label, required String icon, bool isVisibleIf = true, bool noFlex = false}) {
+    Widget buttonWidget = Card(
+      margin: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      child: ListTile(
+        onTap: onPressed,
+        minLeadingWidth: 10,
+        title: Text(label),
+        leading: Image.asset(icon, height: 35, width: 30),
+      ),
+    );
+    if (!isVisibleIf) {
+      return Container();
+    }
+
+    if (noFlex) {
+      return buttonWidget;
+    }
+    return Expanded(
+      child: buttonWidget,
+    );
+  }
+// static void navigatePage(String userId, BuildContext context) {
+//   return;
+//   if (userId.isNotEmpty) {
+//     Future.delayed(Duration(seconds: 1)).then((value) {
+//       try {
+//         context.pushNamed(Routes.user.nameFromPath(), params: {
+//           'uid': userId,
+//         });
+//       } catch (e) {
+//         print(e);
+//       }
+//     });
+//   }
+// }
 }

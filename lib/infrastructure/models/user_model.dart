@@ -34,9 +34,9 @@ class UserModelChanger {
   final FirestoreDatabase database;
   final String uid;
 
-  Future updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future? updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
 
-  Future updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+  Future? updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
 
   Future updateSettings(UserModel user) => database.updateUser(user);
 
@@ -113,6 +113,7 @@ class UserModel extends Equatable {
 
   UserModel({
     required this.id,
+    this.url,
     this.status = Status.ONLINE,
     this.socialLinks = const <SocialLinksModel>[],
     this.meeting,
@@ -139,9 +140,10 @@ class UserModel extends Equatable {
   final DateTime? heartbeatForeground;
   final Status status;
   List<SocialLinksModel> socialLinks;
-
   final String? meeting;
+
   Rule rule;
+  String? url;
 
   String name;
   String? imageUrl;
@@ -208,7 +210,7 @@ class UserModel extends Equatable {
     }
 
     final Status status =
-        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status']) : Status.ONLINE;
+        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'],orElse: ()=>Status.ONLINE) : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];
@@ -232,6 +234,7 @@ class UserModel extends Equatable {
 
     return UserModel(
         id: documentId,
+        url: data['url']?.toString(),
         status: status,
         meeting: meeting,
         name: name,
@@ -251,6 +254,7 @@ class UserModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
+      'url': url,
       'status': status.toStringEnum(),
       'meeting': meeting,
       'bio': bio,

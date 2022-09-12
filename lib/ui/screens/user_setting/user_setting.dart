@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
@@ -87,6 +89,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
                           context,
+                          backgroundColor: Theme.of(context).cardColor,
                           child: ImagePickOptionWidget(
                             imageCallBack: (ImageType imageType, String imagePath) {
                               if (imagePath.isNotEmpty) {
@@ -108,7 +111,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         Keys.name.tr(context),
@@ -116,35 +118,35 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                       ),
                       const SizedBox(height: 1),
                       TextFormField(
-                        //maxLength: 30,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(30),
-                          //FilteringTextInputFormatter.deny(' ',),
-                          FilteringTextInputFormatter.deny(RegExp(r'[/\\.,?!£$%^&*()+=.]')),
-                          FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]")),
-                        ],
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: userNameEditController,
-                        textInputAction: TextInputAction.next,
-                        autofocus: false,
-                        style: TextStyle(color: AppTheme().cardDarkColor),
-                        validator: (value) {
-                          value ??= '';
-                          if (value.trim().isEmpty) {
-                            return Keys.required.tr(context);
-                          } else if (value.trim().length < 3) {
-                            return 'Required min 3 characters';
-                          }
-                          if (value.trim().length < 3) {
-                            return "name must be 3 characters long";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: Keys.yourNameHint.tr(context),
-                        ),
-                      ),
+                          inputFormatters: [
+                            // WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9]")),
+                            LengthLimitingTextInputFormatter(30),
+                            FilteringTextInputFormatter.deny(RegExp(r'[/\\]')),
+                            //FilteringTextInputFormatter.allow(RegExp(r'[-_#€@<>.,]')),
+                          ],
+                          textCapitalization: TextCapitalization.sentences,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: userNameEditController,
+                          textInputAction: TextInputAction.next,
+                          autofocus: false,
+                          style: TextStyle(color: AppTheme().cardDarkColor),
+                          validator: (value) {
+                            value ??= '';
+                            if (value.trim().isEmpty) {
+                              return Keys.required.tr(context);
+                            } else if (value.trim().length < 3) {
+                              return 'Required min 3 characters';
+                            }
+                            if (value.trim().length < 3) {
+                              return "name must be 3 characters long";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: Keys.yourNameHint.tr(context),
+                          ),
+                          keyboardType: TextInputType.name),
                     ],
                   ),
                 ),
@@ -157,6 +159,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              textCapitalization: TextCapitalization.sentences,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(200),
               ],
@@ -181,7 +184,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '${Keys.minSpeed.tr(context)}: ${minSpeedString()}',
+                    '${Keys.minSpeed.tr(context)}: ${minSpeedString(context)}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
@@ -432,7 +435,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 15),
                 child: ElevatedButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -444,17 +447,14 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   onPressed: () async {
                     widget.key?.currentState?.closeEndDrawer();
-                    if (!(widget.fromBottomSheet ?? false)) {
-                      CustomDialogs.loader(true, context);
+                    if (formKey.currentState?.validate() ?? false) {
+                      CustomAlertWidget.loader(true, context);
+                      await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                      CustomAlertWidget.loader(false, context);
                     }
-                    await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                    if (!(widget.fromBottomSheet ?? false)) {
-                      CustomDialogs.loader(false, context);
-                    }
-                    // await Navigator.of(context).maybePop();
                   },
                   child: Text(
-                    'Save',
+                    Keys.save.tr(context),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ),
@@ -578,13 +578,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
-  String minSpeedString() {
+  String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
     final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
     // final s = microALGOToLargerUnit(minSpeedPerHour);
-    return '$minSpeedPerHourinALGO ALGO/hour';
+    return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
   int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
@@ -619,16 +619,24 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave(
-      {required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel, required BuildContext context}) async {
+  Future<void> onClickSave({required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel}) async {
     try {
       FocusScope.of(context).requestFocus(FocusNode());
-      bool validate = formKey.currentState?.validate() ?? false;
+
       UserModel? user = myUserPageViewModel?.user;
       if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
-        user?.socialLinks = [setupUserViewModel!.socialLinksModel!];
+        String userName;
+      SocialLinksModel? socialLinksModel;
+      if (setupUserViewModel!.socialLinksModel?.userName?.isNotEmpty ?? false) {
+        userName = setupUserViewModel.socialLinksModel!.userName!;
+      } else {
+        userName = userNameEditController.text;
       }
-      if ((validate && !invalidTime.value) || (widget.fromBottomSheet ?? false)) {
+      socialLinksModel = setupUserViewModel.socialLinksModel!;
+      socialLinksModel.userName = userName;
+      user?.socialLinks = [socialLinksModel];
+      }
+      if (!invalidTime.value || (widget.fromBottomSheet ?? false)) {
         if (!(widget.fromBottomSheet ?? false)) {
           int seconds = int.tryParse(secondEditController.text) ?? 0;
           seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
@@ -651,17 +659,51 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         } else {
           user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
         }
-        if (imageType == ImageType.ASSENT_IMAGE) {
+  FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);      if (imageType == ImageType.ASSENT_IMAGE) {
           String? firebaseImageUrl = await uploadImage();
           if ((firebaseImageUrl ?? "").isNotEmpty) {
             user.imageUrl = firebaseImageUrl;
           }
-        }
-        await myUserPageViewModel?.updateHangout(user);
+        }user.url = await createDeepLinkUrl(user.id);
+        await myUserPageViewModel?.database.updateUser(user).then((value) {
+        CustomAlertWidget.showToastMessage(context, "User saved successfully");
+      });
       }
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: link,
+        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
+        androidParameters: AndroidParameters(
+          packageName: 'app.i2i2',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+        ),
+        iosParameters: IOSParameters(
+            bundleId: 'app.2i2i',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadBundleId: 'app.2i2i',
+            appStoreId: '1609689141'),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
   }
 
   Future<String?> uploadImage() async {
