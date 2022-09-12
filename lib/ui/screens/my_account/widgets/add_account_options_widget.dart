@@ -1,9 +1,8 @@
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/my_account/widgets/qr_image_widget_holder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar_holder.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
+import '../../commons/custom_alert_widget.dart';
 
 class VerifyPerhapsPageWeb extends ConsumerStatefulWidget {
   final List perhaps;
@@ -109,7 +109,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPageWeb> {
                 child: ElevatedButton(
                   onPressed: isValid()
                       ? () async {
-                          CustomDialogs.loader(true, context);
+                    CustomAlertWidget.loader(true, context);
                           try {
                             final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
                             await myAccountPageViewModel.saveLocalAccount(widget.account);
@@ -117,7 +117,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPageWeb> {
                           } catch (e) {
                             log("$e");
                           }
-                          CustomDialogs.loader(false, context);
+                          CustomAlertWidget.loader(false, context);
                           Navigator.of(context).pop();
                         }
                       : null,

@@ -1,6 +1,7 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../infrastructure/providers/all_providers.dart';
 import '../app/wait_page.dart';
 import 'widgets/account_info.dart';
@@ -58,7 +59,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPageWeb> {
                     height: kRadialReactionRadius * 2,
                   ),
                   Visibility(
-                    visible: (myAccountPageViewModel.accounts?.length ?? 0) > 0,
+                    visible: myAccountPageViewModel.addresses.length > 0,
                     child: ValueListenableBuilder(
                       valueListenable: showBottomSheet,
                       builder: (BuildContext context, bool value, Widget? child) {
@@ -85,20 +86,22 @@ class _MyAccountPageState extends ConsumerState<MyAccountPageWeb> {
                       }
                       return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: myAccountPageViewModel.accounts?.length ?? 0,
+                        itemCount: myAccountPageViewModel.addresses.length,
                         padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 30, vertical: MediaQuery.of(context).size.height / 50),
                         itemBuilder: (BuildContext context, int index) {
+                          String address = myAccountPageViewModel.addresses[index];
                           return AccountInfo(
                             true,
-                            key: ObjectKey(myAccountPageViewModel.accounts![index].address),
-                            account: myAccountPageViewModel.accounts![index],
+                            index: index,
+                            key: ObjectKey(myAccountPageViewModel.addresses[index]),
+                            address: address,
                           );
                         },
                       );
                     },
                   ),
                   Visibility(
-                    visible: (myAccountPageViewModel.accounts?.length ?? 0) == 0 /* (myAccountPageViewModel.isLoading =! true) &&*/,
+                    visible: myAccountPageViewModel.addresses.length == 0 /* (myAccountPageViewModel.isLoading =! true) &&*/,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

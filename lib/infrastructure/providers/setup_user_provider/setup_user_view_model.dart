@@ -52,12 +52,8 @@ class SetupUserViewModel with ChangeNotifier {
 
   List<String> authList = [];
 
-  Future<UserModel?> getUserInfoModel(String uid) async {
-    userInfoModel = await database.getUser(uid);
-    return userInfoModel;
-  }
 
-  Future startAlgoRand(String uid) async {
+  /*Future startAlgoRand(String uid) async {
     if (signUpInProcess) return;
     signUpInProcess = true;
     notifyListeners();
@@ -66,44 +62,8 @@ class SetupUserViewModel with ChangeNotifier {
     signUpInProcess = false;
 
     notifyListeners();
-  }
+  }*/
 
-  Future updateFirebaseMessagingToken(String uid) async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging
-        .getToken(
-      vapidKey: dotenv.env['TOKEN_KEY'].toString(),
-    )
-        .then((String? token) {
-      if (token is String) return database.updateToken(uid, token);
-    });
-    // log(X + 'token=$token');
-    // ref.read(firebaseMessagingTokenProvider.notifier).state = token ?? '';
-  }
-
-  Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
-    userInfoModel = await getUserInfoModel(uid);
-    if (socialLinkModel is SocialLinksModel) {
-      userInfoModel?.socialLinks.add(socialLinkModel);
-      if ((userInfoModel?.name ?? "").isNotEmpty) {
-        await database.updateUser(userInfoModel!);
-      }
-    } else {
-      userInfoModel?.socialLinks = [];
-    }
-    final f2 = updateFirebaseMessagingToken(uid);
-    // final f3 = startAlgoRand(uid);
-    final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, /*f3,*/ f4]);
-  }
-
-  Future<void> signInAnonymously() async {
-    UserCredential firebaseUser = await FirebaseAuth.instance.signInAnonymously();
-    String? uid = firebaseUser.user?.uid;
-    if (uid is String) await signInProcess(uid, socialLinkModel: null);
-  }
-
-  Future<void> getAuthList() async {
   Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];

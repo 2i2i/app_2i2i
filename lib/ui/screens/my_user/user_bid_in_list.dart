@@ -2,9 +2,7 @@
 // do not show bid ins of blocked users
 
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/secure_storage_service.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app/no_bid_page_holder.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

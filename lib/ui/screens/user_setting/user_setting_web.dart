@@ -4,7 +4,6 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar_web.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -437,9 +436,9 @@ class _UserSettingState extends ConsumerState<UserSettingWeb> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (formKey.currentState?.validate() ?? false) {
-                          CustomDialogs.loader(true, context);
+                          CustomAlertWidget.loader(true, context);
                           await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
-                          CustomDialogs.loader(false, context);
+                          CustomAlertWidget.loader(false, context);
                           Navigator.of(context).pop();
                         }
                       },

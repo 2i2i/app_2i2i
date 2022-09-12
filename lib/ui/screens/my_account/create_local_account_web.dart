@@ -3,12 +3,13 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar_holder.dart';
-import 'package:app_2i2i/ui/commons/custom_dialogs.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../commons/custom_alert_widget.dart';
 
 class CreateLocalAccountWeb extends ConsumerStatefulWidget {
   const CreateLocalAccountWeb({Key? key}) : super(key: key);
@@ -116,7 +117,7 @@ class _CreateLocalAccountState extends ConsumerState<CreateLocalAccountWeb> {
                                                 onPressed: () {
                                                   if (perhaps.isNotEmpty) {
                                                     Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
-                                                    CustomDialogs.showToastMessage(context, Keys.copyMessage.tr(context));
+                                                    CustomAlertWidget.showToastMessage(context, Keys.copyMessage.tr(context));
                                                   }
                                                 },
                                                 label: Text(Keys.copy.tr(context)),

@@ -405,11 +405,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   try {
                     if (formKey.currentState?.validate() ?? false) {
                       widget.key?.currentState?.closeEndDrawer();
-                      CustomDialogs.loader(true, context);
+                      CustomAlertWidget.loader(true, context);
 
-                      await onClickSave(context: context, myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                      await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
 
-                      CustomDialogs.loader(false, context);
+                      CustomAlertWidget.loader(false, context);
                       Navigator.of(context).pop();
                     }
                   } catch (e) {

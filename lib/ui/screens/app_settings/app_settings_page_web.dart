@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/keys.dart';
@@ -345,12 +344,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPageWeb> with TickerP
                           ),
                         ),
                         ListTile(
-                          onTap: () {
-                            if (appSettingModel.updateRequired) {
-                              StoreRedirect.redirect(
-                                androidAppId: "app.i2i2",
-                                iOSAppId: "app.2i2i",
-                              );
+                          onTap: () async {
+                            if (appSettingModel.updateRequired && !Platform.isIOS) {
+                              await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
                             }
                           },
                           title: Text(

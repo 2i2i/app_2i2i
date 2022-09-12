@@ -110,12 +110,7 @@ class _AuthScreenWebState extends ConsumerState<AuthScreenWeb> {
           ),
         ],
       ),
-      bottomSheet: Visibility(
-        visible: (NamedRoutes.showRating.value['show'] ?? false),
-        child: AddRatingPage(
-          showRating: NamedRoutes.showRating,
-        ),
-      ),
+      bottomSheet: AddRatingPage(),
     );
   }
 }

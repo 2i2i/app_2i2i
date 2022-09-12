@@ -257,7 +257,7 @@ class _UserInfoWidgetWebState extends State<UserInfoWidgetWeb> {
                   ),
                   SizedBox(width: 2),
                   Text(
-                    '${Keys.estWaitTime.tr(context)} ${secondsToSensibleTimePeriod(widget.estWaitTime!)}',
+                    '${Keys.estWaitTime.tr(context)} ${secondsToSensibleTimePeriod(widget.estWaitTime!, context)}',
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ],
@@ -340,7 +340,7 @@ class UserRulesWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  secondsToSensibleTimePeriod(user.rule.maxMeetingDuration),
+                  secondsToSensibleTimePeriod(user.rule.maxMeetingDuration, context),
                   style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
                 ),
                 SizedBox(height: 5),

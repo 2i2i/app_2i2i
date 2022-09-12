@@ -124,7 +124,6 @@ class UserModel extends Equatable {
     this.heartbeatBackground,
     this.tags = const <String>[],
     this.imageUrl,
-    this.url = "",
     this.heartbeatForeground,
     this.rule = const Rule(),
     this.loungeHistory = const <Lounge>[],
@@ -148,7 +147,6 @@ class UserModel extends Equatable {
   String name;
   String? imageUrl;
   String bio;
-  String url = "";
   List<String> tags;
 
   void setTags() {
@@ -270,7 +268,6 @@ class UserModel extends Equatable {
       'loungeHistoryIndex': loungeHistoryIndex,
       'blocked': blocked,
       'friends': friends,
-      'url': url,
       'socialLinks': FieldValue.arrayUnion(socialLinks.map((e) => e.toJson()).toList()),
     };
   }

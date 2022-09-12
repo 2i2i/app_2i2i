@@ -159,7 +159,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPageWeb> {
                             height: 400,
                             width: 350,
                             decoration: Custom.getBoxDecoration(context, color: Colors.white),
-                            child: QrCodeWidget(message: 'https://$domain/user/${userB.id}'),
+                            child: QrCodeWidget(userUrl: 'https://$domain/user/${userB.id}'),
                           ),
                         ),
                       );

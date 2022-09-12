@@ -75,7 +75,7 @@ class _MyUserPageState extends ConsumerState<MyUserPageWeb> with SingleTickerPro
                             decoration: Custom.getBoxDecoration(context, color: Colors.white),
                             height: 400,
                             width: 350,
-                            child: QrCodeWidget(message: 'https://$domain/user/${user.id}'),
+                            child: QrCodeWidget(userUrl: 'https://$domain/user/${user.id}'),
                           ),
                         ),
                       );

@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'create_bid_page.dart';
-import 'create_bid_page_web.dart';
 
 class CreateBidPageRouterObject {
   CreateBidPageRouterObject({required this.bidIns, required this.B, this.sliderHeight, this.min, this.max, this.fullWidth});
@@ -61,9 +60,18 @@ class _CreateBidPageHolderState extends ConsumerState<CreateBidPageHolder> with 
   @override
   Widget build(BuildContext context) {
     return ScreenTypeLayout.builder(
-      mobile: (BuildContext context) => CreateBidPage(B: widget.B, bidIns: [],),
-      tablet: (BuildContext context) => CreateBidPage(B: widget.B, bidIns: [],),
-      desktop: (BuildContext context) => CreateBidPageWeb(B: widget.B, bidIns: [],),
+      mobile: (BuildContext context) => CreateBidPage(
+        B: widget.B,
+        bidIns: [],
+      ),
+      tablet: (BuildContext context) => CreateBidPage(
+        B: widget.B,
+        bidIns: [],
+      ),
+      desktop: (BuildContext context) => CreateBidPage(
+        B: widget.B,
+        bidIns: [],
+      ),
     );
   }
 }
