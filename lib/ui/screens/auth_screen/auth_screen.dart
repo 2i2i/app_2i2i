@@ -60,7 +60,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           : AppBar(
               leading: Container(),
               toolbarHeight: 20,
-              title: Text(AlgorandNet.testnet.name + ' - v41' + (widget.updateAvailable ? ' - update: reload page' : '')),
+              title: Text(AlgorandNet.testnet.name + ' - v45' + (widget.updateAvailable ? ' - update: reload page' : '')),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
               centerTitle: true,
               backgroundColor: Colors.green,

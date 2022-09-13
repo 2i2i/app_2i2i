@@ -290,6 +290,9 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       if (appSettingModel.updateRequired && !Platform.isIOS) {
                         await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
                       }
+                      if (Platform.isIOS) {
+                        await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
+                      }
                     },
                     title: Text(
                       Keys.appVersion.tr(context),
