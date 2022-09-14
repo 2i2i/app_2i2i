@@ -8,6 +8,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_admin/firebase_admin.dart' as admin;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -239,6 +240,10 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
     userInfoModel = await getUserInfoModel(uid);
+    if (userInfoModel?.url == null) {
+      String url = await createDeepLinkUrl(userInfoModel!.id);
+      userInfoModel!.url = url;
+    }
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
       if ((userInfoModel?.name ?? "").isNotEmpty) {
@@ -416,6 +421,38 @@ class SetupUserViewModel with ChangeNotifier {
       yesButtonTextStyle: TextStyle(color: Theme.of(mainContext).errorColor),
       noButtonTextStyle: TextStyle(color: Theme.of(mainContext).colorScheme.secondary),
     );
+  }
+
+  Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: link,
+        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
+        androidParameters: AndroidParameters(
+          packageName: 'app.i2i2',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+        ),
+        iosParameters: IOSParameters(
+            bundleId: 'app.2i2i',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadBundleId: 'app.2i2i',
+            appStoreId: '1609689141'),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
   }
 
   Future<void> unLink(BuildContext context) async {
