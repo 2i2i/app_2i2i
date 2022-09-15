@@ -170,7 +170,7 @@ class zh {
       Keys.updateAvailable: '更新可用',
       Keys.loginMsg: '说话赚金币',
       Keys.loginMsg2: '2i2i 以視頻通話的形式為客人和主人提供安全私密的會面空間',
-      Keys.loginMsg3: '>自啟動以來的 501 次會議',
+      Keys.loginMsg3: '>自啟動以來的 654 次會議',
       Keys.signInWithGoogle: '用谷歌登錄',
       Keys.signInWithApple: '使用 Apple 登錄”',
       Keys.signInWithTwitter: '用 Twitter 登錄',

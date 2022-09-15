@@ -1,4 +1,4 @@
-// change version in build.gradle and pubspec.yaml and app_setting_model
+// change version in build.gradle and pubspec.yaml and app_setting_model and auth_screen.dart
 // flutter build appbundle --flavor production -t lib/main.dart
 // flutter build ipa --flavor production -t lib/main.dart
 // flutter config --android-sdk /Users/1m1/Documents/android-sdk

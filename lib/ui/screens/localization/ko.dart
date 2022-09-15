@@ -171,7 +171,7 @@ class ko {
       Keys.updateAvailable: '업데이트 가능',
       Keys.loginMsg: '대화로 코인을 벌다',
       Keys.loginMsg2: '2i2i\'는 게스트와 호스트가 영상통화 형태로 만날 수 있는 안전하고 프라이빗한 공간을 제공하며',
-      Keys.loginMsg3: '>출시 이후 501회 회의',
+      Keys.loginMsg3: '>출시 이후 654회 회의',
       Keys.signInWithGoogle: '구글로 로그인',
       Keys.signInWithApple: 'Apple로 로그인',
       Keys.signInWithTwitter: '트위터로 로그인',

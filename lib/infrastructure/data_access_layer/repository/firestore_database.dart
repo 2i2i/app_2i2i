@@ -307,11 +307,15 @@ class FirestoreDatabase {
   }
 
   Future<void> updateUser(UserModel user) {
-    return _service.setData(
+    return _service
+        .setData(
       path: FirestorePath.user(user.id),
       data: user.toMap(),
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      print(onError);
+    });
   }
 
   Future<AppVersionModel?> getAppVersion() async {
@@ -375,17 +379,17 @@ class FirestoreDatabase {
 
   Stream<List<UserModel>> usersStream({List<String> tags = const <String>[]}) {
     log(I + 'usersStream - tags=$tags');
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.users(),
       builder: (data, documentId) {
         return UserModel.fromMap(data, documentId);
       },
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
-    ).handleError(
-      (error) {
-        log(error);
-      }
-    );
+    )
+        .handleError((error) {
+      log(error);
+    });
   }
 
   Stream<Room> roomStream({required String meetingId}) => _service.documentStream(
