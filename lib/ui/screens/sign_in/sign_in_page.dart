@@ -219,7 +219,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 child: Row(
                                   children: [
                                     Expanded(child: Divider()),
-                                    Text('Sign in with Guest', style: Theme.of(context).textTheme.caption),
+                                    Text('Sign in anonymously', style: Theme.of(context).textTheme.caption),
                                     Expanded(child: Divider()),
                                   ],
                                 ),

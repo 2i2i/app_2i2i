@@ -170,7 +170,7 @@ class de {
       Keys.updateAvailable: 'Update verfügbar',
       Keys.loginMsg: 'verdiene Münzen durch Reden',
       Keys.loginMsg2: '2i2i bietet Gästen und Gastgebern einen sicheren und privaten Ort, an dem sie sich in Form von Videoanrufen treffen können',
-      Keys.loginMsg3: '>501 MEETINGS SEIT DEM START',
+      Keys.loginMsg3: '>654 MEETINGS SEIT DEM START',
       Keys.signInWithGoogle: 'Anmeldung mit Google',
       Keys.signInWithApple: 'Mit Apple anmelden',
       Keys.signInWithTwitter:   'Mit Twitter anmelden',

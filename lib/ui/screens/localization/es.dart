@@ -172,7 +172,7 @@ class es {
       Keys.loginMsg: 'gana monedas hablando',
       Keys.loginMsg2:
           '2i2i proporciona un espacio seguro y privado para que los Huéspedes y el Anfitrión se reúnan en forma de videollamadas',
-      Keys.loginMsg3: '>501 REUNIONES DESDE EL LANZAMIENTO',
+      Keys.loginMsg3: '>654 REUNIONES DESDE EL LANZAMIENTO',
       Keys.signInWithGoogle: 'Inicia sesión con Google',
       Keys.signInWithApple: 'Iniciar sesión con Apple',
       Keys.signInWithTwitter: 'Registrate con Twitter',
