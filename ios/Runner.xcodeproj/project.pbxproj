@@ -396,7 +396,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerProfile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
@@ -538,7 +538,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
@@ -569,7 +569,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff";
@@ -657,7 +657,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -743,7 +743,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo";
@@ -825,7 +825,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 73Z7YM6C24;
 				ENABLE_BITCODE = NO;
 				FIREBASE_PROJECT_ID = "com.googleusercontent.apps.453884442411-a1veje6lhghiv9jov29eeqag6kg4mkgo";
