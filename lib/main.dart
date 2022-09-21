@@ -124,5 +124,6 @@ Future<admin.App> _initializeAdmin() async {
       credential: cert,
     ),
   );
+
   return app;
 }
