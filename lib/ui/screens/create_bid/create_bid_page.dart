@@ -289,7 +289,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                           ),
                         ),
                         TextButton(
-                          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+                          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
                           // onPressed: () => showBidAlert(myAccountPageViewModel),
                           onPressed: () async {
                             await addWalletAccount(context, myAccountPageViewModel);
@@ -405,7 +405,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     padding: const EdgeInsets.only(left: 10.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).iconTheme.color,
+                        foregroundColor: Theme.of(context).iconTheme.color,
                       ),
                       onPressed: () {
                         isAddSupportVisible.value = !isAddSupportVisible.value;

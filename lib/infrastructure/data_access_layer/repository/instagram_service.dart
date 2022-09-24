@@ -38,12 +38,14 @@ class InstagramService {
   Future<bool> getUserProfile() async {
     final fields = userFields.join(',');
     final responseNode = await http.get(Uri.parse('https://graph.instagram.com/$userID?fields=$fields&access_token=$accessToken'));
-    var instaProfile = {
-      'id': json.decode(responseNode.body)['id'].toString(),
-      'username': json.decode(responseNode.body)['username'],
-    };
+    // instaProfile not used
+    // var instaProfile = {
+    //   'id': json.decode(responseNode.body)['id'].toString(),
+    //   'username': json.decode(responseNode.body)['username'],
+    // };
     username = json.decode(responseNode.body)['username'];
     print('username: $username');
-    return instaProfile != null ? true : false;
+    return true;
+    // return instaProfile != null ? true : false; // instaProfile is never null
   }
 }

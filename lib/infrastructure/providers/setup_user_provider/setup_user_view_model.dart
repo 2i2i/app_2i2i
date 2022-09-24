@@ -6,7 +6,6 @@ import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_admin/firebase_admin.dart' as admin;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -241,8 +240,8 @@ class SetupUserViewModel with ChangeNotifier {
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
     userInfoModel = await getUserInfoModel(uid);
     if (userInfoModel?.url == null) {
-      String url = await createDeepLinkUrl(userInfoModel!.id);
-      userInfoModel!.url = url;
+      String url = await createDeepLinkUrl(uid);
+      userInfoModel?.url = url;
     }
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
@@ -268,10 +267,9 @@ class SetupUserViewModel with ChangeNotifier {
     String? uid;
 
     try {
-      final app = admin.FirebaseAdmin.instance.app();
-      if (app is admin.App) {
-        CustomAlertWidget.loader(true, context, rootNavigator: true);
-        var result = await app.auth().createCustomToken(address);
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
+      var result = await getToken(address);
+      if (result.isNotEmpty) {
         List ids = await database.checkAddressAvailable(address);
         if (ids.length > 1) {
           final id = await showDialog(
@@ -295,7 +293,7 @@ class SetupUserViewModel with ChangeNotifier {
         }
 
         if (uid?.isNotEmpty ?? false) {
-          result = await app.auth().createCustomToken(uid!);
+          result = await getToken(uid!);
           var firebaseUser = await auth.signInWithCustomToken(result);
           CustomAlertWidget.loader(false, context, rootNavigator: true);
           if (firebaseUser.user is User) {
@@ -320,9 +318,24 @@ class SetupUserViewModel with ChangeNotifier {
       CustomAlertWidget.showToastMessage(context, "${e.message}");
       CustomAlertWidget.loader(false, context, rootNavigator: true);
       throw e;
-    } catch (e) {
+    } catch (exeption) {
+      print(exeption);
       CustomAlertWidget.loader(false, context, rootNavigator: true);
     }
+  }
+
+  Future<String> getToken(String address) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+      'createToken',
+    );
+    final result = await callable.call({'token': address});
+    if (result.data is Map) {
+      bool isFail = result.data['result']?.toString().contains('Fail') ?? true;
+      if (!isFail) {
+        return result.data['result'];
+      }
+    }
+    return '';
   }
 
   Future<void> signInWithInstagram(context, id, [bool forLink = false]) async {
@@ -335,10 +348,9 @@ class SetupUserViewModel with ChangeNotifier {
         socialLinksModel = SocialLinksModel(accountName: 'Instagram', userId: id, userName: user!.displayName);
         await signInProcess(user.uid, socialLinkModel: socialLinksModel);
       } else {
-        final app = admin.FirebaseAdmin.instance.app();
-        if (app is admin.App) {
-          CustomAlertWidget.loader(true, context, rootNavigator: true);
-          var result = await app.auth().createCustomToken(id);
+        CustomAlertWidget.loader(true, context, rootNavigator: true);
+        var result = await getToken(id);
+        if (result.isNotEmpty) {
           // var firebaseUser = await auth.signInWithCustomToken(result);
           List ids = await database.checkInstaUserAvailable(socialLinksModel!);
           if (ids.length > 1) {
@@ -364,7 +376,7 @@ class SetupUserViewModel with ChangeNotifier {
 
           if (uid?.isNotEmpty ?? false) {
             // await FirebaseAuth.instance.signOut();
-            result = await app.auth().createCustomToken(uid!);
+            result = await getToken(uid!);
             var firebaseUser = await auth.signInWithCustomToken(result);
             CustomAlertWidget.loader(false, context, rootNavigator: true);
             if (firebaseUser.user is User) {

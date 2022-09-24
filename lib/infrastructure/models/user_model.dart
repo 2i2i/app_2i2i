@@ -29,14 +29,21 @@ extension ParseToStringStatus on Status {
 }
 
 class UserModelChanger {
-  UserModelChanger(this.database, this.uid);
+  UserModelChanger(this.database, this.uid, this.userModel);
 
   final FirestoreDatabase database;
   final String uid;
+  final UserModel? userModel;
 
-  Future? updateHeartbeatBackground({bool setStatus = false}) => database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+  Future? updateHeartbeatBackground({bool setStatus = false}) {
+    if (userModel?.name.isNotEmpty ?? false) return database.updateUserHeartbeatFromBackground(uid, setStatus: setStatus);
+    return null;
+  }
 
-  Future? updateHeartbeatForeground({bool setStatus = false}) => database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+  Future? updateHeartbeatForeground({bool setStatus = false}) {
+    if (userModel?.name.isNotEmpty ?? false) database.updateUserHeartbeatFromForeground(uid, setStatus: setStatus);
+    return null;
+  }
 
   Future updateSettings(UserModel user) => database.updateUser(user);
 
@@ -207,8 +214,9 @@ class UserModel extends Equatable {
       throw StateError('missing data for uid: $documentId');
     }
 
-    final Status status =
-        data.containsKey('status') && data['status'] != null ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'],orElse: ()=>Status.ONLINE) : Status.ONLINE;
+    final Status status = data.containsKey('status') && data['status'] != null
+        ? Status.values.firstWhere((e) => e.toStringEnum() == data['status'], orElse: () => Status.ONLINE)
+        : Status.ONLINE;
     final List<SocialLinksModel> socialLinksList = data.containsKey('socialLinks') && data['socialLinks'] != null
         ? List<SocialLinksModel>.from(data['socialLinks'].map((item) => SocialLinksModel.fromJson(item)))
         : [];

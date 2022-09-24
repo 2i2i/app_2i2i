@@ -157,13 +157,13 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE') : _updateUserHeartbeat(uid, 'heartbeatForeground');
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
-  Future<void> _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
+  Future<void>? _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
     final data = <String, dynamic>{
       field: FieldValue.serverTimestamp(),
     };

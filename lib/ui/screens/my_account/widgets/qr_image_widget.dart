@@ -47,7 +47,7 @@ class QrImagePage extends StatelessWidget {
             TextButton(
               style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
-                  primary: Colors.black
+                  foregroundColor: Colors.black
               ),
               onPressed: (){
                 Navigator.of(context,rootNavigator: true).pop();
