@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
@@ -157,13 +158,13 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE') : _updateUserHeartbeat(uid, 'heartbeatForeground');
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
-  Future<void> _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
+  Future<void>? _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
     final data = <String, dynamic>{
       field: FieldValue.serverTimestamp(),
     };

@@ -125,31 +125,20 @@ final faqProvider = ChangeNotifierProvider<FAQProviderModel>((ref) {
 final algorandLibProvider = Provider((ref) => AlgorandLib());
 
 final myUserPageViewModelProvider = Provider((ref) {
-  // log('myUserPageViewModelProvider');
   final functions = ref.watch(firebaseFunctionsProvider);
-  // log('myUserPageViewModelProvider - functions=$functions');
   final database = ref.watch(databaseProvider);
-  // log('myUserPageViewModelProvider - database=$database');
   final uid = ref.watch(myUIDProvider);
-  // log('myUserPageViewModelProvider - uid=$uid');
   if (uid?.isNotEmpty ?? false) {
     final user = ref.watch(userProvider(uid!));
     if (user is AsyncError || user is AsyncLoading) {
       return null;
     }
-    // log('myUserPageViewModelProvider - user=$user');
     final userChanger = ref.watch(userChangerProvider);
     if (userChanger == null) return null;
-
     if (userChanger is AsyncError || userChanger is AsyncLoading) {
       return null;
     }
-
     final accountService = ref.watch(accountServiceProvider);
-
-    if (accountService is AsyncError || accountService is AsyncLoading) {
-      return null;
-    }
 
     return MyUserPageViewModel(
       database: database,
@@ -422,7 +411,10 @@ final userChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);
   final uid = ref.watch(myUIDProvider);
   if (uid == null) return null;
-  return UserModelChanger(database, uid);
+  final userModel = ref.watch(userProvider(uid));
+  if (userModel is AsyncLoading || userModel is AsyncError) return null;
+
+  return UserModelChanger(database, uid, userModel.value);
 });
 final meetingChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);

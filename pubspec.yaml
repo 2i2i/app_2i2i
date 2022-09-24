@@ -58,9 +58,8 @@ dependencies:
   firebase_core: ^1.21.1
   cloud_functions: ^3.3.6
   firebase_storage: ^10.3.7
-  firebase_auth: ^3.7.0
+  firebase_auth: ^3.10.0
   firebase_dynamic_links: ^4.3.6
-  firebase_admin: ^0.2.0-dev.7
   path_provider: ^2.0.11
   http: ^0.13.4
 
