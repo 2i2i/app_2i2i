@@ -37,8 +37,7 @@ class SimpleWebSocket {
     }
   }
 
-  closeSocket() async {
-    log('code ==> : ${(_socket?.closeCode ?? 0)}');
+  Future closeSocket() async {
     if (_socket != null && ((_socket?.closeCode ?? 0) != closeSocketCode)) {
       await _socket?.close(closeSocketCode);
     }

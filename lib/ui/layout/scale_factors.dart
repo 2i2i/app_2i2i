@@ -14,6 +14,6 @@ abstract class DeviceScaleFactors {
   // static const double largeScaleFactor = 0.8;
 
   /// Scale factor for extra large screens
-  static const double xLargeScaleFactor = 1.8;
+  static const double xLargeScaleFactor = 1.2;
 // static const double xLargeScaleFactor = 0.8;
 }

@@ -14,6 +14,7 @@ import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_animated_progress_bar.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/signaling_websockets.dart';
 import 'package:app_2i2i/ui/screens/web_rtc/widgets/circle_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -422,7 +423,7 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
 
     if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
 
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');
     }
   }

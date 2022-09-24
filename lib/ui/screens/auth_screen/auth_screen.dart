@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,7 +41,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
       if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
         CustomAlertWidget.showBottomSheet(context,
-            child: Padding(
+            child: Container(
+              width: kIsWeb ? 500 : double.infinity,
               padding: const EdgeInsets.all(8.0),
               child: UserSetting(
                 fromBottomSheet: true,
@@ -58,13 +60,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
           ? null
           : AppBar(
-              leading: Container(),
-              toolbarHeight: 20,
-              title: Text(AlgorandNet.testnet.name + ' - v51' + (widget.updateAvailable ? ' - update: reload page' : '')),
-              titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
-              centerTitle: true,
-              backgroundColor: Colors.green,
-            ),
+        leading: Container(),
+        toolbarHeight: 20,
+        title: Text(AlgorandNet.testnet.name + ' - v51' + (widget.updateAvailable ? ' - update: reload page' : '')),
+        titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
+        centerTitle: true,
+        backgroundColor: Colors.green,
+      ),
       body: SafeArea(child: widget.pageChild),
       bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBar(),

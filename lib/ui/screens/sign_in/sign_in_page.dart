@@ -163,33 +163,37 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     label: 'Instagram',
                                     icon: 'assets/icons/instagram_logo.png',
                                     onPressed: () async {
-                                      MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) {
-                                          return InstagramLogin(
-                                            onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
-                                              instagram.getAuthorizationCode(url.toString());
-                                              if (url?.host == InstagramConfig.redirectUriHost) {
-                                                String idToken = await instagram.getTokenAndUserID();
-                                                if (idToken.split(':').isNotEmpty) {
-                                                  await _webViewController?.clearCache();
-                                                  await _webViewController?.clearFocus();
-                                                  await _webViewController?.clearMatches();
-                                                  await _webViewController?.removeAllUserScripts();
-                                                  Navigator.of(context).pop(idToken);
+                                      if (kIsWeb) {
+                                        await launchUrl(Uri.parse(InstagramConfig.url));
+                                      } else {
+                                        MaterialPageRoute route = MaterialPageRoute(
+                                          builder: (context) {
+                                            return InstagramLogin(
+                                              onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                                instagram.getAuthorizationCode(url.toString());
+                                                if (url?.host == InstagramConfig.redirectUriHost) {
+                                                  String idToken = await instagram.getTokenAndUserID();
+                                                  if (idToken.split(':').isNotEmpty) {
+                                                    await _webViewController?.clearCache();
+                                                    await _webViewController?.clearFocus();
+                                                    await _webViewController?.clearMatches();
+                                                    await _webViewController?.removeAllUserScripts();
+                                                    Navigator.of(context).pop(idToken);
+                                                  }
                                                 }
-                                              }
-                                            },
-                                            onWebViewCreated: (InAppWebViewController? value) {
-                                              _webViewController = value;
-                                            },
-                                          );
-                                        },
-                                      );
-                                      final result = await Navigator.of(context).push(route);
-                                      if (result is String) {
-                                        String token = result.split(':').first;
-                                        String id = result.split(':').last;
-                                        await signUpViewModel.signInWithInstagram(context, id);
+                                              },
+                                              onWebViewCreated: (InAppWebViewController? value) {
+                                                _webViewController = value;
+                                              },
+                                            );
+                                          },
+                                        );
+                                        final result = await Navigator.of(context).push(route);
+                                        if (result is String) {
+                                          String token = result.split(':').first;
+                                          String id = result.split(':').last;
+                                          await signUpViewModel.signInWithInstagram(context, id);
+                                        }
                                       }
                                     },
                                   ),

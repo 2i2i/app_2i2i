@@ -29,13 +29,12 @@ class QrImagePage extends StatelessWidget {
             Text(
               Keys.scanInWalletConnect.tr(context),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                color: Colors.black,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).iconTheme.color,
+                  ),
             ),
-            SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
               child: QrWidget(
                 message: imageUrl,
                 logoSize: 60,
@@ -44,14 +43,12 @@ class QrImagePage extends StatelessWidget {
                 lightOnly: true,
               ),
             ),
-            TextButton(
-              style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  primary: Colors.black
+            Container(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(Keys.close.tr(context)),
               ),
-              onPressed: (){
-                Navigator.of(context,rootNavigator: true).pop();
-              }, child: Text(Keys.close.tr(context).toUpperCase()),
             )
           ],
         ),

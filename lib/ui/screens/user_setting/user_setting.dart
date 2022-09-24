@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -660,7 +661,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         }
       }
 
-      user.url = await createDeepLinkUrl(user.id);
+      if (!kIsWeb) user.url = await createDeepLinkUrl(user.id);
       await myUserPageViewModel?.database.updateUser(user).then((value) {
         CustomAlertWidget.showToastMessage(context, "User saved successfully");
       });

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
@@ -104,7 +106,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      // log(onError);
+      log("here is issue bro ${onError}");
     });
   }
 
@@ -149,7 +151,7 @@ class FirestoreDatabase {
       path: FirestorePath.token(uid),
       data: {
         'token': token,
-        'isIos': Platform.isIOS,
+        'isIos': !kIsWeb && Platform.isIOS,
         'ts': FieldValue.serverTimestamp(),
       },
       merge: true,
@@ -157,27 +159,30 @@ class FirestoreDatabase {
     return Future.value();
   }
 
-  Future<void> updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatForeground', newStatus: 'ONLINE') : _updateUserHeartbeat(uid, 'heartbeatForeground');
 
-  Future<void> updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
+  Future<void>? updateUserHeartbeatFromBackground(String uid, {bool setStatus = false}) =>
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
-  Future<void> _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
-    final data = <String, dynamic>{
-      field: FieldValue.serverTimestamp(),
-    };
-    if (newStatus != null) data['status'] = newStatus;
+  Future<void>? _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
+    if (FirebaseAuth.instance.currentUser != null) {
+      final data = <String, dynamic>{
+        field: FieldValue.serverTimestamp(),
+      };
+      if (newStatus != null) data['status'] = newStatus;
 
-    return _service
-        .setData(
-      path: FirestorePath.user(uid),
-      data: data,
-      merge: true,
-    )
-        .catchError((onError) {
-      log('_updateUserHeartbeat $onError');
-    });
+      return _service
+          .setData(
+        path: FirestorePath.user(uid),
+        data: data,
+        merge: true,
+      )
+          .catchError((onError) {
+        log('_updateUserHeartbeat $onError');
+      });
+    }
+    return null;
   }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {

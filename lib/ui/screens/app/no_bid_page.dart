@@ -1,5 +1,6 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/layout/spacings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -67,7 +68,7 @@ class NoBidPage extends ConsumerWidget {
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(decoration: TextDecoration.underline),
                       ),
                     ),
-                  if (message?.isEmpty ?? true)
+                  if (message?.isEmpty ?? true && !kIsWeb)
                     Flexible(
                       flex: 2,
                       child: Padding(

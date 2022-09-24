@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,6 @@ import '../../../infrastructure/providers/ringing_provider/ringing_page_view_mod
 import '../../commons/custom_profile_image_view.dart';
 import '../app/wait_page.dart';
 import '../web_rtc/widgets/circle_button.dart';
-import 'ripples_animation.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
   const RingingPage({Key? key}) : super(key: key);
@@ -99,7 +99,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
     await stopRingAudio();
 
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');
     }
   }
