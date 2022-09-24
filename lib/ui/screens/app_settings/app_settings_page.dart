@@ -417,7 +417,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               );
                               final result = await Navigator.of(context).push(route);
                               if (result is String) {
-                                String token = result.split(':').first;
+                                // String token = result.split(':').first; // never used
                                 String id = result.split(':').last;
                                 await signUpViewModel.signInWithInstagram(context, id, true);
                                 await ref.read(setupUserViewModelProvider).getAuthList();

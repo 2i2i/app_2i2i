@@ -129,7 +129,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                         Keys.appRatingSubmitButton.tr(context),
                       ),
                       style: TextButton.styleFrom(
-                        primary: Theme.of(context).colorScheme.secondary,
+                        foregroundColor: Theme.of(context).colorScheme.secondary,
                       ),
                     )
                   ],

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
+import '../../../infrastructure/commons/utils.dart';
 import '../../../infrastructure/models/bid_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import '../app/no_bid_page.dart';
 import '../app/wait_page.dart';
 import 'widgets/bid_in_tile.dart';
@@ -17,11 +17,9 @@ class UserBidInsList extends ConsumerStatefulWidget {
   UserBidInsList({
     required this.titleWidget,
     required this.onTap,
-    required this.myHangoutPageViewModel,
   });
 
   final Widget titleWidget;
-  final MyUserPageViewModel myHangoutPageViewModel;
 
   final void Function(BidIn bidIn) onTap;
 
@@ -34,7 +32,13 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
 
   @override
   Widget build(BuildContext context) {
-    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(widget.myHangoutPageViewModel.user.id));
+    final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
+
+    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.user == null) {
+      return WaitPage();
+    }
+
+    final bidInsWithUsers = ref.watch(bidInsWithUsersProvider(myHangoutPageViewModel!.user.id));
     if (bidInsWithUsers == null) return WaitPage();
     // store for notification
     markAsRead(bidInsWithUsers);
@@ -46,7 +50,7 @@ class _UserBidInsListState extends ConsumerState<UserBidInsList> {
         child: InkResponse(
           onTap: () async {
             // CustomAlertWidget.loader(true, context);
-            await widget.myHangoutPageViewModel.acceptBid(bidIns, context);
+            await myHangoutPageViewModel.acceptBid(bidIns, context);
             // CustomAlertWidget.loader(false, context);
           },
           child: Container(

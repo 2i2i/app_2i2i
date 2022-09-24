@@ -150,7 +150,7 @@ class KeysWidget extends StatelessWidget {
                             Navigator.of(context, rootNavigator: true).pop(),
                         child: Text(Keys.close.tr(context)),
                         style: ElevatedButton.styleFrom(
-                            primary: AppTheme().redColor),
+                            foregroundColor: AppTheme().redColor),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -166,7 +166,7 @@ class KeysWidget extends StatelessWidget {
                         },
                         child: Text(Keys.copy.tr(context)),
                         style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).shadowColor),
+                            foregroundColor: Theme.of(context).shadowColor),
                       ),
                     ),
                   ],

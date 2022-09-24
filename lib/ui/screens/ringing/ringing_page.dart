@@ -19,7 +19,6 @@ import '../../../infrastructure/providers/ringing_provider/ringing_page_view_mod
 import '../../commons/custom_profile_image_view.dart';
 import '../app/wait_page.dart';
 import '../web_rtc/widgets/circle_button.dart';
-import 'ripples_animation.dart';
 
 class RingingPage extends ConsumerStatefulWidget {
   const RingingPage({Key? key}) : super(key: key);

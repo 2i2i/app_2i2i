@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/screens/user_info/widgets/qr_card_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +39,13 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final myHangoutPageViewModel = ref.watch(myUserPageViewModelProvider);
-    if (haveToWait(myHangoutPageViewModel) || myHangoutPageViewModel?.user == null) {
+    final uid = ref.watch(myUIDProvider);
+    final userProviderRef = ref.watch(userProvider(uid!));
+    if (userProviderRef is AsyncError || userProviderRef is AsyncLoading) {
       return WaitPage();
     }
 
-    UserModel user = myHangoutPageViewModel!.user;
+    UserModel user = userProviderRef.value!;
 
     return Scaffold(
       body: Column(
@@ -105,7 +105,6 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: UserBidInsList(
-                myHangoutPageViewModel: myHangoutPageViewModel,
                 titleWidget: Text(
                   Keys.bidsIn.tr(context),
                   style: Theme.of(context).textTheme.headline6,

@@ -6,8 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-
-import '../../infrastructure/commons/keys.dart';
 import '../../infrastructure/commons/theme.dart';
 
 class CustomAlertWidget {
@@ -68,7 +66,7 @@ class CustomAlertWidget {
       content: messageWidget,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
@@ -84,7 +82,7 @@ class CustomAlertWidget {
       content: messageWidget,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
@@ -276,7 +274,7 @@ class CustomAlertWidget {
         ),
         TextButton(
           style: TextButton.styleFrom(
-            primary: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.secondary,
           ),
           onPressed: () {
             Navigator.of(context, rootNavigator: rootNavigator).pop();
@@ -394,7 +392,7 @@ class CustomAlertWidget {
         ),
         TextButton(
           style: TextButton.styleFrom(
-            primary: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.secondary,
           ),
           onPressed: onPressed,
           child: Text(Keys.openApp.tr(context)),
