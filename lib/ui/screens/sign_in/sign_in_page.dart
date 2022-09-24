@@ -37,7 +37,7 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
-  String _displayUri = '';
+  // String _displayUri = ''; // never used
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   InstagramService instagram = InstagramService();
@@ -187,7 +187,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                       );
                                       final result = await Navigator.of(context).push(route);
                                       if (result is String) {
-                                        String token = result.split(':').first;
+                                        // String token = result.split(':').first; // never used
                                         String id = result.split(':').last;
                                         await signUpViewModel.signInWithInstagram(context, id);
                                       }

@@ -12,9 +12,6 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -26,7 +23,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // DEBUG

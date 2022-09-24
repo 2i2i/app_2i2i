@@ -23,7 +23,7 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
   String walletConnectAddress = '';
   bool isFailed = false;
 
-  String _displayUri = '';
+  // String _displayUri = ''; // never used
   ValueNotifier<bool> isDialogOpen = ValueNotifier(false);
 
   @override
@@ -201,7 +201,7 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
       await account.setMainAccount();
       await myAccountPageViewModel.getWalletAccount();
       CustomAlertWidget.loader(false, context, rootNavigator: true);
-      _displayUri = '';
+      // _displayUri = ''; // never used
       return account.address;
     } else {
       log('_MyAccountPageState - _createSession - connector already connected');

@@ -65,7 +65,7 @@ class AppTheme{
       ),
       appBarTheme: appBarTheme(false,context),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(primary: primaryTextColor),
+        style: TextButton.styleFrom(foregroundColor: primaryTextColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 0,
@@ -76,13 +76,13 @@ class AppTheme{
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: secondaryColor,
+          foregroundColor: secondaryColor,
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-            primary: secondaryColor,
+            foregroundColor: secondaryColor,
             padding: EdgeInsets.all(kIsWeb?22:14),
             side:BorderSide(color: secondaryColor),
             shape:RoundedRectangleBorder(
@@ -207,13 +207,13 @@ class AppTheme{
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: secondaryDarkColor,
+          foregroundColor: secondaryDarkColor,
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-              primary: secondaryDarkColor,
+              foregroundColor: secondaryDarkColor,
               padding: EdgeInsets.all(kIsWeb?22:14),
               side:BorderSide(color: secondaryDarkColor),
               shape:RoundedRectangleBorder(
@@ -223,7 +223,7 @@ class AppTheme{
         ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          primary: secondaryDarkColor,
+          foregroundColor: secondaryDarkColor,
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),
