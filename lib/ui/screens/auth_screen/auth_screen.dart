@@ -41,8 +41,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
       if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
         CustomAlertWidget.showBottomSheet(context,
-            child: Container(
-              width: kIsWeb ? 500 : double.infinity,
+            constraints: BoxConstraints(maxWidth: kIsWeb ? 475 : double.infinity),
+            child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: UserSetting(
                 fromBottomSheet: true,
@@ -63,7 +63,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         leading: Container(),
         toolbarHeight: 20,
         title: Text(AlgorandNet.testnet.name + ' - v51' + (widget.updateAvailable ? ' - update: reload page' : '')),
-        titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
+        titleTextStyle: Theme
+            .of(context)
+            .textTheme
+            .bodyText2
+            ?.copyWith(color: Theme
+            .of(context)
+            .cardColor),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),

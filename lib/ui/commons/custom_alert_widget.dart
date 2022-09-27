@@ -11,7 +11,8 @@ import '../../infrastructure/commons/keys.dart';
 import '../../infrastructure/commons/theme.dart';
 
 class CustomAlertWidget {
-  static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
+  static showBottomSheet(BuildContext context,
+      {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor, BoxConstraints? constraints}) {
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -22,6 +23,7 @@ class CustomAlertWidget {
       context: context,
       useRootNavigator: false,
       enableDrag: enableDrag,
+      constraints: constraints,
       isScrollControlled: true,
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,
       builder: (BuildContext context) => WillPopScope(
