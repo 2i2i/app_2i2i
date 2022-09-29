@@ -131,10 +131,12 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Visibility(
-                          visible: !(appSettingModel.isTappedOnKey),
+                          // visible: !(appSettingModel.isTappedOnKey),
+                          visible: false,
                           child: Padding(
                             padding: EdgeInsets.only(left: 12),
-                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+                            child: new Icon(Icons.brightness_1,
+                                size: 12.0, color: Colors.redAccent),
                           ),
                         ),
                       ],

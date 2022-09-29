@@ -106,10 +106,10 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                     BottomNavigationBarItem(
                       label: Keys.settings.tr(context),
                       activeIcon: settingIcons(
-                          isTappedOnKey: appSettingModel.isTappedOnKey,
                           updateRequired: appSettingModel.updateRequired,
                           color: Theme.of(context).colorScheme.secondary),
-                      icon: settingIcons(isTappedOnKey: appSettingModel.isTappedOnKey, updateRequired: appSettingModel.updateRequired),
+                      icon: settingIcons(
+                          updateRequired: appSettingModel.updateRequired),
                     ),
                   ],
                 );
@@ -124,7 +124,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
     );
   }
 
-  Widget settingIcons({required bool isTappedOnKey, required bool updateRequired, Color? color}) {
+  Widget settingIcons({required bool updateRequired, Color? color}) {
     return Stack(
       children: [
         Padding(
@@ -140,11 +140,13 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
               : SvgPicture.asset('assets/icons/setting.svg', color: color),
         ),
         Visibility(
-          visible: !isTappedOnKey,
+          // visible: !isTappedOnKey,
+          visible: false,
           child: Positioned(
             top: 0.0,
             right: 0.0,
-            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
+            child: new Icon(Icons.brightness_1,
+                size: 12.0, color: Colors.redAccent),
           ),
         )
       ],
