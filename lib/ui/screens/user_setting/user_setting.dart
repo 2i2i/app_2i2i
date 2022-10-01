@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,7 +17,6 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../create_bid/top_card_widget.dart';
@@ -26,8 +24,10 @@ import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
+  UserModel? userModel;
 
-  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet, this.userModel})
+      : super(key: key);
 
   @override
   _UserSettingState createState() => _UserSettingState();
@@ -40,7 +40,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
   RichTextController bioTextController = RichTextController(
-    patternMatchMap: {RegExp(r"(?:#)[a-zA-Z0-9]+"): TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)},
+    patternMatchMap: {
+      RegExp(r"(?:#)[a-zA-Z0-9]+"):
+          TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)
+    },
     onMatch: (List<String> match) {},
   );
 
@@ -58,16 +61,45 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   @override
   void initState() {
+    if (widget.userModel is UserModel) {
+      userNameEditController.text = widget.userModel?.name ?? "";
+      bioTextController.text = widget.userModel?.bio ?? "";
+
+      speedEditController.text =
+          ((widget.userModel?.rule.minSpeed ?? 0) / MILLION).toString();
+      secondEditController.text =
+          getSec(widget.userModel?.rule.maxMeetingDuration ?? 0);
+      minuteEditController.text =
+          getMin(widget.userModel?.rule.maxMeetingDuration ?? 0);
+      hourEditController.text =
+          getHour(widget.userModel?.rule.maxMeetingDuration ?? 0);
+
+      if (widget.userModel?.imageUrl?.isNotEmpty ?? false) {
+        imageUrl = widget.userModel!.imageUrl!;
+        imageType = ImageType.NETWORK_IMAGE;
+      } else {
+        imageUrl = widget.userModel?.name ?? "";
+      }
+
+      // importance
+      final c = widget.userModel?.rule.importance[Lounge.chrony] ?? 0;
+      final h = widget.userModel?.rule.importance[Lounge.highroller] ?? 0;
+      final N = c + h;
+      _importanceRatioValue = N / c;
+      double x = _importanceRatioValue! - 2.0;
+      if (h < c) {
+        _importanceRatioValue = N / h;
+        x = 2.0 - _importanceRatioValue!;
+      }
+      _importanceSliderValue =
+          (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) *
+              _importanceSliderMaxHalf;
+    }
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setData();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
-    final signUpViewModel = ref.watch(setupUserViewModelProvider);
     Widget body = SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Form(
@@ -78,7 +110,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
           children: [
             const SizedBox(height: 20),
             Text(
-              widget.fromBottomSheet ?? false ? Keys.setUpAccount.tr(context) : Keys.userSettings.tr(context),
+              widget.fromBottomSheet ?? false
+                  ? Keys.setUpAccount.tr(context)
+                  : Keys.userSettings.tr(context),
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 28),
@@ -90,7 +124,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           context,
                           backgroundColor: Theme.of(context).cardColor,
                           child: ImagePickOptionWidget(
-                            imageCallBack: (ImageType imageType, String imagePath) {
+                            imageCallBack:
+                                (ImageType imageType, String imagePath) {
                               if (imagePath.isNotEmpty) {
                                 Navigator.of(context).pop();
                                 imageUrl = imagePath;
@@ -193,9 +228,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     textInputAction: TextInputAction.next,
                     style: TextStyle(color: AppTheme().cardDarkColor),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d{0,6}')),
                     ],
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     autofocus: false,
                     validator: (value) {
                       value ??= '';
@@ -239,7 +276,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               autofocus: false,
                               validator: (value) {
                                 value ??= '';
-                                if (value.isEmpty || (int.tryParse(value) ?? 0) > 24) {
+                                if (value.isEmpty ||
+                                    (int.tryParse(value) ?? 0) > 24) {
                                   invalidTime.value = true;
                                 } else {
                                   invalidTime.value = false;
@@ -330,7 +368,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).shadowColor.withOpacity(0.20),
+                        borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
                       children: [
@@ -345,9 +385,15 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                             child: SliderTheme(
                               data: SliderTheme.of(context).copyWith(
                                 activeTrackColor: Theme.of(context).cardColor,
-                                inactiveTrackColor: Theme.of(context).disabledColor,
+                                inactiveTrackColor:
+                                    Theme.of(context).disabledColor,
                                 thumbShape: CustomSliderThumbRect(
-                                    mainContext: context, thumbRadius: 15, showValue: true, valueMain: (_importanceRatioValue?.round() ?? 0).toString()),
+                                    mainContext: context,
+                                    thumbRadius: 15,
+                                    showValue: true,
+                                    valueMain:
+                                        (_importanceRatioValue?.round() ?? 0)
+                                            .toString()),
                               ),
                               child: _importanceSliderValue == null
                                   ? Container()
@@ -358,10 +404,15 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                                       onChanged: (value) {
                                         setState(() {
                                           _importanceSliderValue = value;
-                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                  _importanceSliderMaxHalf +
-                                              2.0;
+                                          _importanceRatioValue =
+                                              (_importanceSliderValue! -
+                                                              _importanceSliderMaxHalf)
+                                                          .abs() *
+                                                      (_importanceSliderMaxHalf *
+                                                              2.0 -
+                                                          2.0) /
+                                                      _importanceSliderMaxHalf +
+                                                  2.0;
                                           // log(X +
                                           //     '_importanceSliderValue=$_importanceSliderValue');
                                           // log(X +
@@ -372,7 +423,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                             ),
                           ),
                         ),
-                        Text('${Keys.highRoller.tr(context)}', style: Theme.of(context).textTheme.subtitle1),
+                        Text('${Keys.highRoller.tr(context)}',
+                            style: Theme.of(context).textTheme.subtitle1),
                         SizedBox(width: 6),
                       ],
                     ),
@@ -386,7 +438,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           padding: EdgeInsets.only(left: 12, top: 8),
                           child: Text(
                             Keys.enterValidData.tr(context),
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).errorColor),
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption
+                                ?.copyWith(color: Theme.of(context).errorColor),
                           ),
                         ),
                       );
@@ -400,15 +455,25 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             Visibility(
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.secondary),
+                ),
                 onPressed: () async {
                   if (formKey.currentState?.validate() ?? false) {
                     CustomAlertWidget.loader(true, context);
-                    await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                    await onClickSave();
                     CustomAlertWidget.loader(false, context);
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text(Keys.save.tr(context)),
+                child: Text(
+                  Keys.save.tr(context),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(color: Theme.of(context).primaryColor),
+                ),
               ),
             )
           ],
@@ -440,13 +505,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       CustomAlertWidget.loader(true, context);
-                      await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
+                      await onClickSave();
                       CustomAlertWidget.loader(false, context);
                     }
                   },
                   child: Text(
                     Keys.save.tr(context),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ),
@@ -456,42 +524,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       ),
       body: body,
     );
-  }
-
-  void setData() {
-    final uid = ref.watch(myUIDProvider)!;
-    final userAsyncValue = ref.watch(userProvider(uid));
-    bool isLoaded = !(haveToWait(userAsyncValue));
-    if (isLoaded) {
-      UserModel user = userAsyncValue.value!;
-      userNameEditController.text = user.name;
-      bioTextController.text = user.bio;
-
-      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
-      secondEditController.text = getSec(user.rule.maxMeetingDuration);
-      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
-      hourEditController.text = getHour(user.rule.maxMeetingDuration);
-
-      if (user.imageUrl is String && user.imageUrl!.isNotEmpty) {
-        imageUrl = user.imageUrl!;
-        imageType = ImageType.NETWORK_IMAGE;
-      } else {
-        imageUrl = user.name;
-      }
-
-      // importance
-      final c = user.rule.importance[Lounge.chrony]!;
-      final h = user.rule.importance[Lounge.highroller]!;
-      final N = c + h;
-      _importanceRatioValue = N / c;
-      double x = _importanceRatioValue! - 2.0;
-      if (h < c) {
-        _importanceRatioValue = N / h;
-        x = 2.0 - _importanceRatioValue!;
-      }
-      _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
-    }
-    setState(() {});
   }
 
   // Map<Lounge, int> oldFindImportances(double ratio, Lounge lounge) {
@@ -562,10 +594,13 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   }
 
   String importanceString() {
-    if (_importanceRatioValue == null || _importanceSliderValue == null) return '';
+    if (_importanceRatioValue == null || _importanceSliderValue == null)
+      return '';
     final ratio = _importanceRatioValue!.round();
     final postfix = ordinalIndicator(ratio);
-    final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
+    final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
+        ? Lounge.chrony
+        : Lounge.highroller;
     return 'every $ratio$postfix is a ${lounge.name()}';
   }
 
@@ -578,7 +613,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
+  int getSpeedFromText() =>
+      ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -610,21 +646,20 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave({required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel}) async {
+  Future<void> onClickSave() async {
+    final setupUserViewModel = ref.watch(setupUserViewModelProvider);
     FocusScope.of(context).requestFocus(FocusNode());
-    UserModel? user = myUserPageViewModel?.user;
-
-    if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
+    if (setupUserViewModel.socialLinksModel is SocialLinksModel) {
       String userName;
       SocialLinksModel? socialLinksModel;
-      if (setupUserViewModel!.socialLinksModel?.userName?.isNotEmpty ?? false) {
+      if (setupUserViewModel.socialLinksModel?.userName?.isNotEmpty ?? false) {
         userName = setupUserViewModel.socialLinksModel!.userName!;
       } else {
         userName = userNameEditController.text;
       }
       socialLinksModel = setupUserViewModel.socialLinksModel!;
       socialLinksModel.userName = userName;
-      user?.socialLinks = [socialLinksModel];
+      widget.userModel?.socialLinks = [socialLinksModel];
     }
 
     if (!invalidTime.value || (widget.fromBottomSheet ?? false)) {
@@ -633,9 +668,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
-        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+        widget.userModel?.setNameOrBio(
+            name: userNameEditController.text, bio: bioTextController.text);
 
-        final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
+        final lounge = _importanceSliderMaxHalf <= _importanceSliderValue!
+            ? Lounge.chrony
+            : Lounge.highroller;
         final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
@@ -646,22 +684,26 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             Lounge.highroller: importance[Lounge.highroller]!,
           },
         );
-        user.rule = rule;
+        widget.userModel?.rule = rule;
       } else {
-        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+        widget.userModel?.setNameOrBio(
+            name: userNameEditController.text, bio: bioTextController.text);
       }
 
-      FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);
+      FirebaseAuth.instance.currentUser
+          ?.updateDisplayName(userNameEditController.text);
 
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();
         if ((firebaseImageUrl ?? "").isNotEmpty) {
-          user.imageUrl = firebaseImageUrl;
+          widget.userModel?.imageUrl = firebaseImageUrl;
         }
       }
 
-      user.url = await createDeepLinkUrl(user.id);
-      await myUserPageViewModel?.database.updateUser(user).then((value) {
+      widget.userModel?.url = await createDeepLinkUrl(widget.userModel!.id);
+      await setupUserViewModel.database
+          .updateUser(widget.userModel!)
+          .then((value) {
         CustomAlertWidget.showToastMessage(context, "User saved successfully");
       });
     }
@@ -690,7 +732,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       );
       final shortUri = await dynamicLinks.buildShortLink(parameters);
       if (shortUri.shortUrl.toString().isNotEmpty) {
-        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+        FirebaseAuth.instance.currentUser!
+            .updatePhotoURL(shortUri.shortUrl.toString());
       }
       return shortUri.shortUrl.toString();
     } catch (e) {
@@ -703,7 +746,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     try {
       var datestamp = new DateFormat("yyyyMMdd'T'HHmmss");
       String currentDate = datestamp.format(DateTime.now());
-      Reference reference = FirebaseStorage.instance.ref().child("/FCMImages/$currentDate");
+      Reference reference =
+          FirebaseStorage.instance.ref().child("/FCMImages/$currentDate");
       UploadTask uploadTask = reference.putFile(File(imageUrl));
       TaskSnapshot snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();

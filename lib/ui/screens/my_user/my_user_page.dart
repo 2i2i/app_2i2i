@@ -22,7 +22,8 @@ class MyUserPage extends ConsumerStatefulWidget {
   _MyUserPageState createState() => _MyUserPageState();
 }
 
-class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProviderStateMixin {
+class _MyUserPageState extends ConsumerState<MyUserPage>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
   @override
@@ -69,9 +70,12 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                 stops: [0.0, 1.0],
                 tileMode: TileMode.clamp,
               ),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12)),
             ),
-            padding: EdgeInsets.only(right: 20, left: 20, bottom: 8, top: kIsWeb ? 8 : 31),
+            padding: EdgeInsets.only(
+                right: 20, left: 20, bottom: 8, top: kIsWeb ? 8 : 31),
             child: Column(
               children: [
                 SizedBox(height: 8),
@@ -94,8 +98,10 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
-                  onTapChat: () =>
-                      CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent, isDismissible: true),
+                  onTapChat: () => CustomAlertWidget.showBottomSheet(context,
+                      child: ChatWidget(user: user),
+                      backgroundColor: Colors.transparent,
+                      isDismissible: true),
                   isFav: true,
                 ),
               ],

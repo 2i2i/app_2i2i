@@ -32,28 +32,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> createUserBottomSheet() async {
-    try {
-      bool showUserSetting = false;
-      final uid = ref.read(myUIDProvider);
-      if (uid is String) {
-        final database = ref.watch(databaseProvider);
-        UserModel? userModel = await database.getUser(uid);
-        if (userModel == null) {
-          await database.createUser(uid);
-          showUserSetting = true;
-        }
-        if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
-          CustomAlertWidget.showBottomSheet(context,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UserSetting(fromBottomSheet: true),
-              ),
-              enableDrag: false,
-              isDismissible: false);
-        }
+    final uid = ref.read(myUIDProvider);
+    if (uid is String) {
+      final database = ref.watch(databaseProvider);
+      UserModel? userModel = await database.getUser(uid);
+      if (userModel?.name.isEmpty ?? false) {
+        CustomAlertWidget.showBottomSheet(context,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: UserSetting(fromBottomSheet: true, userModel: userModel),
+            ),
+            enableDrag: false,
+            isDismissible: false);
       }
-    } catch (e) {
-      print(e);
     }
   }
 
