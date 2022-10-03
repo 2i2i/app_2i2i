@@ -43,7 +43,7 @@ class _FavoriteListPageState extends ConsumerState<FavoriteListPage> {
               ),
             )
           : Padding(
-        padding: EdgeInsets.only(right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
+              padding: EdgeInsets.only(right: 20, left: 20, bottom: 10, top: kIsWeb ? 15 : 31),
               child: ListView.separated(
                 itemCount: favList.length,
                 shrinkWrap: true,

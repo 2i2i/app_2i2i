@@ -12,6 +12,7 @@
 // import 'package:http/http.dart' as html;
 // import 'dart:html' as html;
 import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';

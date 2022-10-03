@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-
-import 'package:app_2i2i/ui/screens/localization/en.dart';
-import 'package:app_2i2i/ui/screens/localization/zh.dart';
-import 'package:app_2i2i/ui/screens/localization/es.dart';
 import 'package:app_2i2i/ui/screens/localization/ar.dart';
 import 'package:app_2i2i/ui/screens/localization/de.dart';
+import 'package:app_2i2i/ui/screens/localization/en.dart';
+import 'package:app_2i2i/ui/screens/localization/es.dart';
 import 'package:app_2i2i/ui/screens/localization/ja.dart';
 import 'package:app_2i2i/ui/screens/localization/ko.dart';
+import 'package:app_2i2i/ui/screens/localization/zh.dart';
+import 'package:flutter/material.dart';
 
 class ApplicationLocalizations {
   final Locale appLocale;
@@ -16,8 +15,7 @@ class ApplicationLocalizations {
   ApplicationLocalizations(this.appLocale);
 
   static ApplicationLocalizations? of(BuildContext context) {
-    return Localizations.of<ApplicationLocalizations>(
-        context, ApplicationLocalizations);
+    return Localizations.of<ApplicationLocalizations>(context, ApplicationLocalizations);
   }
 
   Map<String, String>? _localizedStrings;
@@ -56,8 +54,7 @@ class ApplicationLocalizations {
   }
 }
 
-class ApplicationLocalizationsDelegate
-    extends LocalizationsDelegate<ApplicationLocalizations> {
+class ApplicationLocalizationsDelegate extends LocalizationsDelegate<ApplicationLocalizations> {
   @override
   bool isSupported(Locale locale) {
     return ['en', 'zh', 'es', 'ar', 'de', 'ja', 'ko'].contains(locale.languageCode);
@@ -69,8 +66,7 @@ class ApplicationLocalizationsDelegate
   }
 
   @override
-  bool shouldReload(
-      covariant LocalizationsDelegate<ApplicationLocalizations> old) {
+  bool shouldReload(covariant LocalizationsDelegate<ApplicationLocalizations> old) {
     return false;
   }
 }

@@ -11,11 +11,7 @@ import '../../infrastructure/commons/theme.dart';
 
 class CustomAlertWidget {
   static showBottomSheet(BuildContext context,
-      {required Widget child,
-      bool isDismissible = true,
-      bool useRootNavigator = false,
-      bool enableDrag = true,
-      Color? backgroundColor}) {
+      {required Widget child, bool isDismissible = true, bool useRootNavigator = false, bool enableDrag = true, Color? backgroundColor}) {
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -32,15 +28,12 @@ class CustomAlertWidget {
           onWillPop: () {
             return Future.value(isDismissible);
           },
-          child: SafeArea(
-              child: Padding(
-                  padding: MediaQuery.of(context).viewInsets, child: child))),
+          child: SafeArea(child: Padding(padding: MediaQuery.of(context).viewInsets, child: child))),
       isDismissible: isDismissible,
     );
   }
 
-  static Future showErrorDialog(BuildContext context, String errorMessage,
-      {String? title, String? errorStacktrace}) async {
+  static Future showErrorDialog(BuildContext context, String errorMessage, {String? title, String? errorStacktrace}) async {
     Widget messageWidget = Text(
       errorMessage,
     );
@@ -54,9 +47,7 @@ class CustomAlertWidget {
           ),
           SizedBox(height: 8),
           Container(
-              decoration: BoxDecoration(
-                  color: Colors.red.shade200,
-                  borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
               margin: EdgeInsets.only(top: 8),
               padding: EdgeInsets.all(8),
               child: Text(
@@ -77,8 +68,7 @@ class CustomAlertWidget {
       content: messageWidget,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.secondary),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
@@ -94,8 +84,7 @@ class CustomAlertWidget {
       content: messageWidget,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.secondary),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(Keys.okay.tr(context)),
         ),
@@ -176,16 +165,14 @@ class CustomAlertWidget {
     }
   }
 
-  static loader(bool isLoading, BuildContext context,
-      {String title = '', String message = '', bool rootNavigator = false}) {
+  static loader(bool isLoading, BuildContext context, {String title = '', String message = '', bool rootNavigator = false}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       content: Center(
         child: Container(
           padding: EdgeInsets.all(8),
-          decoration:
-              Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
+          decoration: Custom.getBoxDecoration(context, color: Colors.white, radius: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -232,10 +219,7 @@ class CustomAlertWidget {
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
                     message,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6
-                        ?.copyWith(color: AppTheme().black),
+                    style: Theme.of(context).textTheme.headline6?.copyWith(color: AppTheme().black),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -263,8 +247,7 @@ class CustomAlertWidget {
     }
   }
 
-  static inAppRatingDialog(BuildContext context,
-      {required Function onPressed, bool rootNavigator = false}) {
+  static inAppRatingDialog(BuildContext context, {required Function onPressed, bool rootNavigator = false}) {
     double totalRating = 5;
     TextEditingController ratingFeedBack = TextEditingController();
     AlertDialog ratingDialog = AlertDialog(
@@ -288,8 +271,7 @@ class CustomAlertWidget {
       actionsPadding: EdgeInsets.only(bottom: 10, right: 10),
       actions: [
         TextButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          onPressed: () => Navigator.of(context, rootNavigator: rootNavigator).pop(),
           child: Text(Keys.cancel.tr(context)),
         ),
         TextButton(
@@ -357,10 +339,7 @@ class CustomAlertWidget {
   }
 
   static customAlertDialog(bool isLoading, BuildContext context,
-      {String title = '',
-      String message = '',
-      bool rootNavigator = false,
-      required VoidCallback? onPressed}) async {
+      {String title = '', String message = '', bool rootNavigator = false, required VoidCallback? onPressed}) async {
     AlertDialog child = AlertDialog(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -410,8 +389,7 @@ class CustomAlertWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: rootNavigator).pop(),
+          onPressed: () => Navigator.of(context, rootNavigator: rootNavigator).pop(),
           child: Text(Keys.cancel.tr(context)),
         ),
         TextButton(

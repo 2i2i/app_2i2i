@@ -33,7 +33,7 @@ dependencies:
   walletconnect_secure_storage: ^1.0.0
   algorand_dart: ^1.0.3
   image_picker: ^0.8.5+3
-  flutter_webrtc: ^0.9.7
+  flutter_webrtc: ^0.9.8
   just_audio: ^0.9.28
   flutter_riverpod: ^1.0.4
 
@@ -53,13 +53,13 @@ dependencies:
   cached_network_image: ^3.2.1
 
   firebase_messaging: ^13.0.0
-  cloud_firestore: ^3.4.6
-  firebase_app_check: ^0.0.7
-  firebase_core: ^1.21.1
-  cloud_functions: ^3.3.6
-  firebase_storage: ^10.3.7
-  firebase_auth: ^3.10.0
-  firebase_dynamic_links: ^4.3.6
+  cloud_firestore: ^3.5.0
+  firebase_app_check: ^0.0.8
+  firebase_core: ^1.24.0
+  cloud_functions: ^3.3.9
+  firebase_storage: ^10.3.10
+  firebase_auth: ^3.11.0
+  firebase_dynamic_links: ^4.3.9
   path_provider: ^2.0.11
   http: ^0.13.4
 

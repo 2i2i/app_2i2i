@@ -17,23 +17,22 @@ class CustomTextField extends StatelessWidget {
   final bool autofocus;
   final TextCapitalization capitalization;
 
-  const CustomTextField(
-      {Key? key,
-      required this.title,
-      this.hintText,
-      this.prefixIcon,
-      this.validator,
-      this.suffixIcon,
-      this.autovalidateMode,
-      this.controller,
-      this.inputFormatters,
-      this.autofocus = false,
-      this.keyboardType,
-      this.onChanged,
-      this.focusNode,
-      this.capitalization = TextCapitalization.none,
-      })
-      : super(key: key);
+  const CustomTextField({
+    Key? key,
+    required this.title,
+    this.hintText,
+    this.prefixIcon,
+    this.validator,
+    this.suffixIcon,
+    this.autovalidateMode,
+    this.controller,
+    this.inputFormatters,
+    this.autofocus = false,
+    this.keyboardType,
+    this.onChanged,
+    this.focusNode,
+    this.capitalization = TextCapitalization.none,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

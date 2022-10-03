@@ -14,9 +14,7 @@ class AuthScreen extends ConsumerStatefulWidget {
   final Widget pageChild;
   final bool updateAvailable;
 
-  const AuthScreen(
-      {required this.pageChild, required this.updateAvailable, Key? key})
-      : super(key: key);
+  const AuthScreen({required this.pageChild, required this.updateAvailable, Key? key}) : super(key: key);
 
   @override
   ConsumerState<AuthScreen> createState() => _AuthScreenState();
@@ -56,13 +54,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           : AppBar(
         leading: Container(),
               toolbarHeight: 20,
-              title: Text(AlgorandNet.testnet.name +
-                  ' - v52' +
-                  (widget.updateAvailable ? ' - update: reload page' : '')),
-              titleTextStyle: Theme.of(context)
-                  .textTheme
-                  .bodyText2
-                  ?.copyWith(color: Theme.of(context).cardColor),
+              title: Text(AlgorandNet.testnet.name + ' - v52' + (widget.updateAvailable ? ' - update: reload page' : '')),
+              titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
               centerTitle: true,
               backgroundColor: Colors.green,
             ),

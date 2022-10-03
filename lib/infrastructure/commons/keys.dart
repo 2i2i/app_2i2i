@@ -190,7 +190,7 @@ class Keys {
   static const String signInWithApple = 'signInWithApple';
   static const String signInWithTwitter = 'signInWithTwitter';
   static const String signInAnonymously = 'signInAnonymously';
-  static const String signInWithWalletConnect ='Wallet Connect';
+  static const String signInWithWalletConnect = 'Wallet Connect';
 
   static const String searchFaq = 'searchFaq';
   static const String noInternetTitle = 'noInternetTitle';
@@ -199,8 +199,7 @@ class Keys {
   static const String noKeyFound = 'noKeyFound';
   static const String no = 'no';
   static const String yes = 'Yes';
-  static const String transactionConfirmMsg =
-      'Are you sure to do the transaction from your wallet?';
+  static const String transactionConfirmMsg = 'Are you sure to do the transaction from your wallet?';
   static const String pleaseConfirm = 'Please Confirm';
   static const String okay = 'Okay';
 
@@ -224,11 +223,9 @@ class Keys {
   static const String muted = 'muted';
   static const String walletConnect = 'Wallet Connect';
   static const String connect = 'Connect';
-  static const String receiveSendCoin =
-      'Please first connect an account to send/receive coins.';
+  static const String receiveSendCoin = 'Please first connect an account to send/receive coins.';
   static const String cantBidUser = 'You can not bid to this user';
-  static const String miniSupport =
-      'Minimum speed is greater then Maximum Support';
+  static const String miniSupport = 'Minimum speed is greater then Maximum Support';
   static const String noWalletFound = 'No wallet account found.';
   static const String someOneTalk = 'Someone wants to talk with you';
 

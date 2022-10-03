@@ -14,5 +14,6 @@ class InstagramConfig {
   static const String redirectUriHost = 'about.2i2i.app';
   static const String scope = 'user_profile';
   static const String responseType = 'code';
-  static String url = 'https://api.instagram.com/oauth/authorize?client_id=$clientID&redirect_uri=$redirectUri&scope=user_profile,user_media&response_type=$responseType';
+  static String url =
+      'https://api.instagram.com/oauth/authorize?client_id=$clientID&redirect_uri=$redirectUri&scope=user_profile,user_media&response_type=$responseType';
 }

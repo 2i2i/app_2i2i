@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class BGImageWidget extends StatelessWidget {
   final Widget child;
+
   const BGImageWidget({required this.child});
 
   @override

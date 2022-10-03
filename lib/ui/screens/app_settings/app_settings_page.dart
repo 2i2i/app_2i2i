@@ -135,8 +135,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                           visible: false,
                           child: Padding(
                             padding: EdgeInsets.only(left: 12),
-                            child: new Icon(Icons.brightness_1,
-                                size: 12.0, color: Colors.redAccent),
+                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
                           ),
                         ),
                       ],

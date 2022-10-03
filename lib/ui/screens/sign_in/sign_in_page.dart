@@ -53,8 +53,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           vapidKey: dotenv.env['TOKEN_KEY'].toString(),
         )
             .then((String? token) {
-          if (token is String)
-            return FirestoreDatabase().updateToken(uid, token);
+          if (token is String) return FirestoreDatabase().updateToken(uid, token);
         });
       }
     });
@@ -112,20 +111,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               SizedBox(height: 8),
-                              Text(Keys.loginMsg2.tr(context),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.caption),
+                              Text(Keys.loginMsg2.tr(context), textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
                               Text(Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
                                       .overline
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontWeight: FontWeight.bold)),
+                                      ?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -139,9 +132,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               Row(
                                 children: [
                                   Expanded(child: Divider()),
-                                  Text('Sign in with social media',
-                                      style:
-                                          Theme.of(context).textTheme.caption),
+                                  Text('Sign in with social media', style: Theme.of(context).textTheme.caption),
                                   Expanded(child: Divider()),
                                 ],
                               ),
@@ -152,9 +143,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     label: 'Google',
                                     icon: 'assets/google.png',
                                     onPressed: () async {
-                                      await ref
-                                          .read(setupUserViewModelProvider)
-                                          .signInWithGoogle(context);
+                                      await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
                                     },
                                   ),
                                   Custom.signInButton(
@@ -162,9 +151,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     icon: 'assets/twitter.png',
                                     isVisibleIf: !kIsWeb,
                                     onPressed: () async {
-                                      await ref
-                                          .read(setupUserViewModelProvider)
-                                          .signInWithTwitter(context);
+                                      await ref.read(setupUserViewModelProvider).signInWithTwitter(context);
                                     },
                                   ),
                                 ],
@@ -175,54 +162,33 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     label: 'Instagram',
                                     icon: 'assets/icons/instagram_logo.png',
                                     onPressed: () async {
-                                      MaterialPageRoute route =
-                                          MaterialPageRoute(
+                                      MaterialPageRoute route = MaterialPageRoute(
                                         builder: (context) {
                                           return InstagramLogin(
-                                            onUpdateVisitedHistory:
-                                                (InAppWebViewController
-                                                        controller,
-                                                    Uri? url,
-                                                    bool?
-                                                        androidIsReload) async {
-                                              instagram.getAuthorizationCode(
-                                                  url.toString());
-                                              if (url?.host ==
-                                                  InstagramConfig
-                                                      .redirectUriHost) {
-                                                String idToken = await instagram
-                                                    .getTokenAndUserID();
-                                                if (idToken
-                                                    .split(':')
-                                                    .isNotEmpty) {
-                                                  await _webViewController
-                                                      ?.clearCache();
-                                                  await _webViewController
-                                                      ?.clearFocus();
-                                                  await _webViewController
-                                                      ?.clearMatches();
-                                                  await _webViewController
-                                                      ?.removeAllUserScripts();
-                                                  Navigator.of(context)
-                                                      .pop(idToken);
+                                            onUpdateVisitedHistory: (InAppWebViewController controller, Uri? url, bool? androidIsReload) async {
+                                              instagram.getAuthorizationCode(url.toString());
+                                              if (url?.host == InstagramConfig.redirectUriHost) {
+                                                String idToken = await instagram.getTokenAndUserID();
+                                                if (idToken.split(':').isNotEmpty) {
+                                                  await _webViewController?.clearCache();
+                                                  await _webViewController?.clearFocus();
+                                                  await _webViewController?.clearMatches();
+                                                  await _webViewController?.removeAllUserScripts();
+                                                  Navigator.of(context).pop(idToken);
                                                 }
                                               }
                                             },
-                                            onWebViewCreated:
-                                                (InAppWebViewController?
-                                                    value) {
+                                            onWebViewCreated: (InAppWebViewController? value) {
                                               _webViewController = value;
                                             },
                                           );
                                         },
                                       );
-                                      final result = await Navigator.of(context)
-                                          .push(route);
+                                      final result = await Navigator.of(context).push(route);
                                       if (result is String) {
                                         // String token = result.split(':').first; // never used
                                         String id = result.split(':').last;
-                                        await signUpViewModel
-                                            .signInWithInstagram(context, id);
+                                        await signUpViewModel.signInWithInstagram(context, id);
                                       }
                                     },
                                   ),
@@ -230,37 +196,29 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     label: 'Wallet connect',
                                     icon: 'assets/algo_logo.png',
                                     onPressed: () async {
-                                      await onTapSignInWithAlgorand(
-                                          signUpViewModel, context);
+                                      await onTapSignInWithAlgorand(signUpViewModel, context);
                                     },
                                   ),
                                 ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: kToolbarHeight * 1.55),
+                                padding: const EdgeInsets.symmetric(horizontal: kToolbarHeight * 1.55),
                                 child: Custom.signInButton(
                                   label: 'Apple',
                                   icon: 'assets/apple.png',
                                   noFlex: true,
                                   isVisibleIf: !kIsWeb && Platform.isIOS,
                                   onPressed: () async {
-                                    await ref
-                                        .read(setupUserViewModelProvider)
-                                        .signInWithApple(context);
+                                    await ref.read(setupUserViewModelProvider).signInWithApple(context);
                                   },
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: kToolbarHeight * 0.35),
+                                padding: const EdgeInsets.symmetric(vertical: kToolbarHeight * 0.35),
                                 child: Row(
                                   children: [
                                     Expanded(child: Divider()),
-                                    Text('Sign in anonymously',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .caption),
+                                    Text('Sign in anonymously', style: Theme.of(context).textTheme.caption),
                                     Expanded(child: Divider()),
                                   ],
                                 ),
@@ -270,9 +228,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 label: Keys.signInAnonymously.tr(context),
                                 icon: 'assets/icons/guest.png',
                                 onPressed: () async {
-                                  await ref
-                                      .read(setupUserViewModelProvider)
-                                      .signInAnonymously(context);
+                                  await ref.read(setupUserViewModelProvider).signInAnonymously(context);
                                 },
                               )
                             ],
@@ -289,18 +245,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     text: ' 2i2i',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async {
-                                        if (!await launchUrl(
-                                            Uri.parse(
-                                                'https://about.2i2i.app/'),
-                                            mode:
-                                                LaunchMode.externalApplication))
+                                        if (!await launchUrl(Uri.parse('https://about.2i2i.app/'), mode: LaunchMode.externalApplication))
                                           throw 'Could not launch https://about.2i2i.app/';
                                       },
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        decoration: TextDecoration.underline)),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline)),
                               ],
                             ),
                           ),
@@ -313,8 +261,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 }, error: (_, __) {
                   return Scaffold(
                     body: Center(
-                      child: Text(Keys.error.tr(context),
-                          style: Theme.of(context).textTheme.subtitle1),
+                      child: Text(Keys.error.tr(context), style: Theme.of(context).textTheme.subtitle1),
                     ),
                   );
                 });
@@ -331,22 +278,18 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     String id = DateTime.now().toString();
     final connector = await WalletConnectAccount.newConnector(id);
-    final account = WalletConnectAccount.fromNewConnector(
-        accountService: accountService, connector: connector);
+    final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
     String? address = await _createSession(accountService, account);
     if (address is String) {
-      await signUpViewModel.signInWithWalletConnect(
-          context, address, account, id, myAccountPageViewModel);
+      await signUpViewModel.signInWithWalletConnect(context, address, account, id, myAccountPageViewModel);
     }
   }
 
-  Future<String?> _createSession(
-      AccountService accountService, WalletConnectAccount account) async {
+  Future<String?> _createSession(AccountService accountService, WalletConnectAccount account) async {
     if (!account.connector.connected) {
       SessionStatus sessionStatus = await account.connector.createSession(
         chainId: 4160,
-        onDisplayUri: (uri) =>
-            Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
+        onDisplayUri: (uri) => Custom.changeDisplayUri(context, uri, isDialogOpen: isDialogOpen),
       );
       isDialogOpen.value = false;
       if (sessionStatus.accounts.isNotEmpty) {

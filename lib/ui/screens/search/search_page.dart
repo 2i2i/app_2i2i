@@ -48,8 +48,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         onPressed: () {
                           _searchController.text = '';
                           _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state =
-                              <String>[];
+                          ref.watch(searchFilterProvider.state).state = <String>[];
                         },
                         iconSize: 20,
                         icon: Icon(
@@ -58,15 +57,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       )
                     : IconButton(icon: Container(), onPressed: null),
                 filled: true,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 prefixIcon: Icon(Icons.search_rounded),
                 // suffixIcon: Icon(Icons.mic),
               ),
               onChanged: (value) {
                 value = value.trim().toLowerCase();
-                ref.watch(searchFilterProvider.state).state =
-                    value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -127,11 +124,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     if (userListProvider.value?.isEmpty ?? true) {
       return Center(
           child: Text(
-        Keys.noHostsFound.tr(context),
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: Theme.of(context).disabledColor),
+            Keys.noHostsFound.tr(context),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
       ));
     }
 

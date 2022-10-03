@@ -15,7 +15,6 @@ class QrCodeWidget extends StatefulWidget {
 }
 
 class _QrCodeWidgetState extends State<QrCodeWidget> {
-
   @override
   Widget build(BuildContext context) {
     // String userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.id}';

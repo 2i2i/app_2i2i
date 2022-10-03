@@ -104,29 +104,22 @@ class _RecoverAccountPageState extends ConsumerState<RecoverAccountPage> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Expanded(
-                                  child: Text('${index < 9 ? 0 : ""}${(index + 1)}',
-                                      style: Theme.of(context).textTheme.bodyMedium)),
+                              Expanded(child: Text('${index < 9 ? 0 : ""}${(index + 1)}', style: Theme.of(context).textTheme.bodyMedium)),
                               SizedBox(width: 10),
                               Expanded(
                                 flex: 6,
                                 child: TextFormField(
-                                  textInputAction:
-                                      (listOfString.length - 1 == index) ? TextInputAction.done : TextInputAction.next,
+                                  textInputAction: (listOfString.length - 1 == index) ? TextInputAction.done : TextInputAction.next,
                                   controller: listOfString[index],
                                   onChanged: (value) => checkIsInValid(),
                                   // onEditingComplete: () => checkIsInValid(),
                                   cursorColor: Theme.of(context).primaryColorDark,
                                   decoration: new InputDecoration(
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
-                                      border: UnderlineInputBorder(
-                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
-                                      errorBorder: UnderlineInputBorder(
-                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
+                                      focusedBorder: UnderlineInputBorder(borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
+                                      border: UnderlineInputBorder(borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
+                                      errorBorder: UnderlineInputBorder(borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!)),
                                       isDense: true,
-                                      enabledBorder: new UnderlineInputBorder(
-                                          borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!))),
+                                      enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Theme.of(context).iconTheme.color!))),
                                 ),
                               )
                             ],

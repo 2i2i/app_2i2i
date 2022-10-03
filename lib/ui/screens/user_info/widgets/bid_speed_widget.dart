@@ -1,14 +1,11 @@
-import 'package:flutter/material.dart';
-
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:flutter/material.dart';
 
 class BidSpeedWidget extends StatelessWidget {
   final String speed;
   final String unit;
 
-  const BidSpeedWidget(
-      {Key? key, required this.speed, required this.unit})
-      : super(key: key);
+  const BidSpeedWidget({Key? key, required this.speed, required this.unit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +17,7 @@ class BidSpeedWidget extends StatelessWidget {
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColorLight,
               boxShadow: [
-                BoxShadow(
-                    offset: Offset(2, 4),
-                    blurRadius: 8,
-                    color:
-                        Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
+                BoxShadow(offset: Offset(2, 4), blurRadius: 8, color: Color.fromRGBO(0, 0, 0, 0.12) // changes position of shadow
                     ),
               ],
               borderRadius: BorderRadius.circular(72)),
@@ -35,9 +28,7 @@ class BidSpeedWidget extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Text('$speed',
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w800, color: AppTheme().green)),
+                child: Text('$speed', style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.w800, color: AppTheme().green)),
               ),
               Text('$unit',
                   style: Theme.of(context).textTheme.subtitle2!.copyWith(

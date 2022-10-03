@@ -105,11 +105,8 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                     ),
                     BottomNavigationBarItem(
                       label: Keys.settings.tr(context),
-                      activeIcon: settingIcons(
-                          updateRequired: appSettingModel.updateRequired,
-                          color: Theme.of(context).colorScheme.secondary),
-                      icon: settingIcons(
-                          updateRequired: appSettingModel.updateRequired),
+                      activeIcon: settingIcons(updateRequired: appSettingModel.updateRequired, color: Theme.of(context).colorScheme.secondary),
+                      icon: settingIcons(updateRequired: appSettingModel.updateRequired),
                     ),
                   ],
                 );
@@ -145,8 +142,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
           child: Positioned(
             top: 0.0,
             right: 0.0,
-            child: new Icon(Icons.brightness_1,
-                size: 12.0, color: Colors.redAccent),
+            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
           ),
         )
       ],

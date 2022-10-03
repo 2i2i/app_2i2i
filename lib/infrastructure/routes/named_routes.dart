@@ -40,8 +40,7 @@ class NamedRoutes {
     urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (state) {
-      bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' &&
-          previousRouteLocation != Routes.user;
+      bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;
       if (isTrue && userIdNav.value.isNotEmpty) {
         previousRouteLocation = Routes.user;
         return '/user/${userIdNav.value}';
@@ -51,9 +50,7 @@ class NamedRoutes {
       }
       final locked = isUserLocked.value;
       final goingToLocked = state.location == Routes.lock;
-      bool validForPrevious =
-          !goingToLocked /*&& state.location != Routes.root*/ &&
-              state.location != previousRouteLocation;
+      bool validForPrevious = !goingToLocked /*&& state.location != Routes.root*/ && state.location != previousRouteLocation;
       if (validForPrevious && state.location.nameFromPath().isNotEmpty) {
         previousRouteLocation = state.location;
       }
@@ -216,8 +213,7 @@ class NamedRoutes {
           if (state.params['walletAddress'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(
-                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+              child: getView(WebViewScreen(walletAddress: state.params['walletAddress']!)),
             );
           }
           return NoTransitionPage<void>(
@@ -320,8 +316,7 @@ class NamedRoutes {
           if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage.fromObject(
-                  state.extra as CreateBidPageRouterObject)),
+              child: getView(CreateBidPage.fromObject(state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(

@@ -1,4 +1,3 @@
-
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:flutter/material.dart';
 
@@ -30,8 +29,8 @@ class QrImagePage extends StatelessWidget {
               Keys.scanInWalletConnect.tr(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                color: Colors.black,
-              ),
+                    color: Colors.black,
+                  ),
             ),
             SizedBox(height: 15),
             Padding(
@@ -45,13 +44,11 @@ class QrImagePage extends StatelessWidget {
               ),
             ),
             TextButton(
-              style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  foregroundColor: Colors.black
-              ),
-              onPressed: (){
-                Navigator.of(context,rootNavigator: true).pop();
-              }, child: Text(Keys.close.tr(context).toUpperCase()),
+              style: TextButton.styleFrom(padding: EdgeInsets.zero, foregroundColor: Colors.black),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: Text(Keys.close.tr(context).toUpperCase()),
             )
           ],
         ),
