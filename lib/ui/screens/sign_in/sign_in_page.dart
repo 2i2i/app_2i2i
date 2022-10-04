@@ -161,6 +161,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 children: [
                                   Custom.signInButton(
                                     label: 'Instagram',
+                                    isVisibleIf: false,
                                     icon: 'assets/icons/instagram_logo.png',
                                     onPressed: () async {
                                       MaterialPageRoute route = MaterialPageRoute(
