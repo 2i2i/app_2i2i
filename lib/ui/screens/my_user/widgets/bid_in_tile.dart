@@ -15,8 +15,7 @@ class BidInTile extends StatelessWidget {
   final List<BidIn> bidInList;
   final int index;
 
-  const BidInTile({Key? key, required this.bidInList, required this.index})
-      : super(key: key);
+  const BidInTile({Key? key, required this.bidInList, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +31,7 @@ class BidInTile extends StatelessWidget {
       budgetCountInt += bidInList[i].public.energy;
       int thisBidMaxDuration = bidInList[i].public.rule.maxMeetingDuration;
       if (0 < bidInList[i].public.speed.num) {
-        final thisBidMaxDurationTmp =
-            (bidInList[i].public.energy / bidInList[i].public.speed.num)
-                .floor();
+        final thisBidMaxDurationTmp = (bidInList[i].public.energy / bidInList[i].public.speed.num).floor();
         thisBidMaxDuration = min(thisBidMaxDuration, thisBidMaxDurationTmp);
       }
       totalDuration += thisBidMaxDuration;
@@ -92,8 +89,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -102,8 +99,8 @@ class BidInTile extends StatelessWidget {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.caption?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
+                              fontWeight: FontWeight.w400,
+                            ),
                       ),
                     ],
                   ),
@@ -116,21 +113,13 @@ class BidInTile extends StatelessWidget {
                         text: '\nALGO/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
-                        ),
+                              color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                            ),
                       )
                     ],
                     style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.color
-                          ?.withOpacity(0.7),
-                    ),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                        ),
                   ),
                 ),
                 SizedBox(width: 8),
@@ -152,12 +141,7 @@ class BidInTile extends StatelessWidget {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: '${Keys.accumulatedSupport.tr(context)} ',
-                        children: [
-                          TextSpan(
-                              text: ' $budgetCount',
-                              children: [],
-                              style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' $budgetCount', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
@@ -171,10 +155,7 @@ class BidInTile extends StatelessWidget {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: '${Keys.startsIn.tr(context)} ',
-                        children: [
-                          TextSpan(
-                              text: ' ${secondsToSensibleTimePeriod(totalDuration, context)}', style: Theme.of(context).textTheme.bodyText2)
-                        ],
+                        children: [TextSpan(text: ' ${secondsToSensibleTimePeriod(totalDuration, context)}', style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

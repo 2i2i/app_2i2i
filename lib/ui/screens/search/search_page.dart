@@ -116,13 +116,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     userList.removeWhere((element) => element == null);
     userList.removeWhere((element) => element?.id == mainUserID);
     userList.sort((u1, u2) => usersSort(u1!, u2!, filter));
+
     if (userList.isEmpty) {
+      return WaitPage(isCupertino: true);
+    }
+
+    if (userListProvider.value?.isEmpty ?? true) {
       return Center(
           child: Text(
-        Keys.noHostsFound.tr(context),
+            Keys.noHostsFound.tr(context),
         style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor),
       ));
     }
+
     return ScrollConfiguration(
       behavior: MyBehavior(),
       child: ListView.builder(

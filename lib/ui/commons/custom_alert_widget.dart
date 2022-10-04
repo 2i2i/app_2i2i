@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+
 import '../../infrastructure/commons/theme.dart';
 
 class CustomAlertWidget {
-  static showBottomSheet(BuildContext context, {required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
+  static showBottomSheet(BuildContext context,
+      {required Widget child, bool isDismissible = true, bool useRootNavigator = false, bool enableDrag = true, Color? backgroundColor}) {
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -18,7 +20,7 @@ class CustomAlertWidget {
         ),
       ),
       context: context,
-      useRootNavigator: false,
+      useRootNavigator: useRootNavigator,
       enableDrag: enableDrag,
       isScrollControlled: true,
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,

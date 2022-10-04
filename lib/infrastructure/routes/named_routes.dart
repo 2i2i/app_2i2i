@@ -213,8 +213,7 @@ class NamedRoutes {
           if (state.params['walletAddress'] is String) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(
-                  WebViewScreen(walletAddress: state.params['walletAddress']!)),
+              child: getView(WebViewScreen(walletAddress: state.params['walletAddress']!)),
             );
           }
           return NoTransitionPage<void>(
@@ -317,8 +316,7 @@ class NamedRoutes {
           if (state.extra is CreateBidPageRouterObject) {
             return NoTransitionPage<void>(
               key: state.pageKey,
-              child: getView(CreateBidPage.fromObject(
-                  state.extra as CreateBidPageRouterObject)),
+              child: getView(CreateBidPage.fromObject(state.extra as CreateBidPageRouterObject)),
             );
           }
           return NoTransitionPage<void>(

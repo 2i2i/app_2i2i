@@ -45,6 +45,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   void initState() {
+    ref.read(setupUserViewModelProvider).checkLogin();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
       if (uid.isNotEmpty) {
@@ -78,10 +79,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
-                  if (firebaseUser != null) {
-                    // signUpViewModel.updateFirebaseMessagingToken(firebaseUser.uid);
+                  if (signUpViewModel.isLogged) {
                     return widget.homePageBuilder(context);
-                  } else {
+                  } else if (firebaseUser == null) {
                     Future.delayed(Duration(milliseconds: 500)).then((value) {
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
@@ -161,6 +161,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 children: [
                                   Custom.signInButton(
                                     label: 'Instagram',
+                                    isVisibleIf: false,
                                     icon: 'assets/icons/instagram_logo.png',
                                     onPressed: () async {
                                       MaterialPageRoute route = MaterialPageRoute(

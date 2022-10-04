@@ -22,16 +22,16 @@ class Ripples extends StatefulWidget {
 
 class _CirclePainter extends CustomPainter {
   _CirclePainter(
-      this._animation, {
-        required this.color,
-      }) : super(repaint: _animation);
+    this._animation, {
+    required this.color,
+  }) : super(repaint: _animation);
 
   final Color color;
   final Animation<double> _animation;
 
   void circle(Canvas canvas, Rect rect, double value) {
     final double opacity = (1.0 - (value / 2.0)).clamp(0.0, 3);
-    final Color _color = color.withOpacity(opacity*0.3);
+    final Color _color = color.withOpacity(opacity * 0.3);
 
     final double size = rect.height / 1.5;
     final double area = size * size;
@@ -79,10 +79,7 @@ class _RipplesState extends State<Ripples> with TickerProviderStateMixin {
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: RadialGradient(
-              colors: <Color>[
-                widget.color,
-                Color.lerp(widget.color, Colors.black, 0.04)!
-              ],
+              colors: <Color>[widget.color, Color.lerp(widget.color, Colors.black, 0.04)!],
             ),
           ),
           child: ScaleTransition(

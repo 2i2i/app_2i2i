@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../../commons/instagram_config.dart';
 
 class InstagramService {
@@ -26,7 +28,7 @@ class InstagramService {
       });
       accessToken = json.decode(response.body)['access_token'];
       userID = json.decode(response.body)['user_id'].toString();
-      if(accessToken != null && userID != null){
+      if (accessToken != null && userID != null) {
         return '$accessToken:$userID';
       }
     } catch (e) {

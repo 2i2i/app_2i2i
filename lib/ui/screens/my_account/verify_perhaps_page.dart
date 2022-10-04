@@ -102,7 +102,7 @@ class _VerifyPerhapsPageState extends ConsumerState<VerifyPerhapsPage> {
         child: ElevatedButton(
           onPressed: isValid()
               ? () async {
-            CustomAlertWidget.loader(true, context);
+                  CustomAlertWidget.loader(true, context);
                   try {
                     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
                     await myAccountPageViewModel.saveLocalAccount(widget.account);

@@ -9,16 +9,14 @@ class FAQWidget extends StatelessWidget {
     required this.backgroundColor,
     required this.index,
   });
+
   final FAQDataModel data;
   final Color backgroundColor;
   final int index;
 
-
   @override
   Widget build(BuildContext context) {
-    Color bg = index % 2 == 0
-        ? Theme.of(context).colorScheme.secondary.withOpacity(0.5)
-        : Theme.of(context).colorScheme.secondary.withOpacity(0.2);
+    Color bg = index % 2 == 0 ? Theme.of(context).colorScheme.secondary.withOpacity(0.5) : Theme.of(context).colorScheme.secondary.withOpacity(0.2);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 5),
       child: ExpansionTileCard(
@@ -54,25 +52,22 @@ class FAQWidget extends StatelessWidget {
             width: double.infinity,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(data.tags?.length ?? 0, (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).iconTheme.color?.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(30)
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                  child: Text(
-                    "#${data.tags![index]}",
-                    style: Theme.of(context).textTheme.overline?.copyWith(
-                        color: Theme.of(context).cardColor
-                    ),
-                  ),
-                  // backgroundColor: Theme.of(context).iconTheme.color,
-                )),
+                children: List.generate(
+                    data.tags?.length ?? 0,
+                    (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(color: Theme.of(context).iconTheme.color?.withOpacity(0.8), borderRadius: BorderRadius.circular(30)),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          child: Text(
+                            "#${data.tags![index]}",
+                            style: Theme.of(context).textTheme.overline?.copyWith(color: Theme.of(context).cardColor),
+                          ),
+                          // backgroundColor: Theme.of(context).iconTheme.color,
+                        )),
               ),
             ),
           )

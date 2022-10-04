@@ -47,7 +47,7 @@ class StepProgressView extends StatelessWidget {
   List<Widget> _iconViews(BuildContext context) {
     var list = <Widget>[];
     titles.asMap().forEach(
-          (i, icon) {
+      (i, icon) {
         var circleColor = (i == 0 || curStep > (i - 1) || curStep == 2)
             ? titles[i]['isComplete']
                 ? Theme.of(context).colorScheme.secondary

@@ -87,19 +87,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               children: [
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
-                          context,
-                          backgroundColor: Theme.of(context).cardColor,
-                          child: ImagePickOptionWidget(
-                            imageCallBack: (ImageType imageType, String imagePath) {
-                              if (imagePath.isNotEmpty) {
-                                Navigator.of(context).pop();
-                                imageUrl = imagePath;
-                                this.imageType = imageType;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        ),
+                      context,
+                      backgroundColor: Theme.of(context).cardColor,
+                      child: ImagePickOptionWidget(
+                        imageCallBack: (ImageType imageType, String imagePath) {
+                          if (imagePath.isNotEmpty) {
+                            Navigator.of(context).pop();
+                            imageUrl = imagePath;
+                            this.imageType = imageType;
+                            setState(() {});
+                          }
+                        },
+                      ),
+                    ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -352,23 +352,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                      min: 0,
-                                      max: (_importanceSliderMaxHalf * 2.0),
-                                      value: _importanceSliderValue!,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                  _importanceSliderMaxHalf +
-                                              2.0;
-                                          // log(X +
-                                          //     '_importanceSliderValue=$_importanceSliderValue');
-                                          // log(X +
-                                          //     '_importanceRatioValue=$_importanceRatioValue');
-                                        });
-                                      },
-                                    ),
+                                min: 0,
+                                max: (_importanceSliderMaxHalf * 2.0),
+                                value: _importanceSliderValue!,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _importanceSliderValue = value;
+                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                        (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                        _importanceSliderMaxHalf +
+                                        2.0;
+                                    // log(X +
+                                    //     '_importanceSliderValue=$_importanceSliderValue');
+                                    // log(X +
+                                    //     '_importanceRatioValue=$_importanceRatioValue');
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -400,6 +400,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             Visibility(
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                ),
                 onPressed: () async {
                   if (formKey.currentState?.validate() ?? false) {
                     CustomAlertWidget.loader(true, context);
@@ -408,7 +411,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text(Keys.save.tr(context)),
+                child: Text(
+                  Keys.save.tr(context),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                ),
               ),
             )
           ],
@@ -430,6 +436,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 padding: const EdgeInsets.only(right: 15),
                 child: ElevatedButton(
                   style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(

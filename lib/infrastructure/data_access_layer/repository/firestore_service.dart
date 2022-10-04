@@ -31,9 +31,13 @@ class FirestoreService {
     await reference.set(data, SetOptions(merge: merge));
   }
 
-  Future<DocumentSnapshot> getData({required String path}) async {
+  Future<DocumentSnapshot?> getData({required String path}) async {
     final reference = firestore.doc(path);
-    return await reference.get(GetOptions(source: Source.serverAndCache));
+    return await reference.get(GetOptions(source: Source.serverAndCache)).catchError(
+      (onError) {
+        print(onError);
+      },
+    );
   }
 
   Future<Iterable<T>> getCollectionData<T>({

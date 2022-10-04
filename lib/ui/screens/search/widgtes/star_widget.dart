@@ -7,7 +7,7 @@ class StarWidget extends ProgressIndicator {
   final double height;
   final Color startColor;
 
-  StarWidget( {
+  StarWidget({
     Key? key,
     this.startColor = Colors.yellow,
     required this.width,
@@ -81,13 +81,12 @@ class _CustomPathPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
-    
+
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(_CustomPathPainter oldDelegate) =>
-      color != oldDelegate.color || path != oldDelegate.path;
+  bool shouldRepaint(_CustomPathPainter oldDelegate) => color != oldDelegate.color || path != oldDelegate.path;
 }
 
 class _CustomPathClipper extends CustomClipper<Path> {
@@ -123,8 +122,7 @@ class _WaveClipper extends CustomClipper<Path> {
     final waveList = <Offset>[];
     for (int i = -2; i <= size.height.toInt() + 2; i++) {
       final waveHeight = (size.width / 20);
-      final dx = math.sin((360 - i) % 360 * (math.pi / 180)) * waveHeight +
-          (size.width * value!);
+      final dx = math.sin((360 - i) % 360 * (math.pi / 180)) * waveHeight + (size.width * value!);
       waveList.add(Offset(dx, i.toDouble()));
     }
     return waveList;

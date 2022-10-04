@@ -18,8 +18,7 @@ class KeysWidget extends StatelessWidget {
     return AlertDialog(
       backgroundColor: Theme.of(context).cardColor,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14.0))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
       actionsPadding: EdgeInsets.zero,
@@ -62,9 +61,7 @@ class KeysWidget extends StatelessWidget {
         ),
         SizedBox(height: 14),
         Container(
-          decoration: BoxDecoration(
-              color: AppTheme().warningColor,
-              borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(color: AppTheme().warningColor, borderRadius: BorderRadius.circular(8)),
           padding: EdgeInsets.all(12),
           child: Column(
             children: [
@@ -146,11 +143,9 @@ class KeysWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
+                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                         child: Text(Keys.close.tr(context)),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: AppTheme().redColor),
+                        style: ElevatedButton.styleFrom(foregroundColor: AppTheme().redColor),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -158,15 +153,13 @@ class KeysWidget extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           if (perhaps.isNotEmpty) {
-                            Clipboard.setData(
-                                ClipboardData(text: perhaps.join(' ')));
+                            Clipboard.setData(ClipboardData(text: perhaps.join(' ')));
                             CustomAlertWidget.showToastMessage(context, Keys.copyMessage.tr(context));
                           }
                           Navigator.of(context, rootNavigator: true).pop();
                         },
                         child: Text(Keys.copy.tr(context)),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Theme.of(context).shadowColor),
+                        style: ElevatedButton.styleFrom(foregroundColor: Theme.of(context).shadowColor),
                       ),
                     ),
                   ],

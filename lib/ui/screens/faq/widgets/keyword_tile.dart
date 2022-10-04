@@ -10,10 +10,7 @@ class ChipTile extends StatelessWidget {
     return Chip(
       label: Text(
         value,
-        style: Theme.of(context)
-            .textTheme
-            .caption
-            ?.copyWith(color: Theme.of(context).cardColor),
+        style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).cardColor),
       ),
       backgroundColor: Theme.of(context).iconTheme.color,
       padding: EdgeInsets.symmetric(horizontal: 8),
