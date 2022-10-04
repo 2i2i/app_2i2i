@@ -2,6 +2,8 @@
 // flutter build appbundle --flavor production -t lib/main.dart
 // flutter build ipa --flavor production -t lib/main.dart
 // flutter config --android-sdk /Users/1m1/Documents/android-sdk
+// flutter run --flavor production -t lib/main.dart
+// flutter run --flavor dev -t lib/main_test.dart
 
 // A -> B
 // main actions:
