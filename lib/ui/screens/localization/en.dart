@@ -178,9 +178,8 @@ class en {
       Keys.signInAnonymously: 'Sign in Anonymously',
       Keys.signInWithWalletConnect: 'Wallet Connect',
       Keys.searchFaq: 'Search keywords',
-      Keys.loading:'Loading...',
-      Keys.signInWithInstagram:'Sign in with Instagram',
-
+      Keys.loading: 'Loading...',
+      Keys.signInWithInstagram: 'Sign in with Instagram',
       Keys.noInternetTitle: 'No Internet Connection',
       Keys.noInternetMessage: 'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
       Keys.noKeyFound: "We can't find account from this keys",

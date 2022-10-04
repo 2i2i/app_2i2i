@@ -249,9 +249,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       child: ValueListenableBuilder(
                         valueListenable: seeMore,
                         builder: (BuildContext context, bool value, Widget? child) {
-                          return Text(
-                            value ? Keys.less.tr(context) : Keys.seeMore.tr(context),
-                            style: Theme.of(context).textTheme.caption,
+                          return Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                            child: Text(
+                              value ? Keys.less.tr(context) : Keys.seeMore.tr(context),
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           );
                         },
                       ),

@@ -7,6 +7,7 @@ import '../../infrastructure/data_access_layer/repository/instagram_service.dart
 class InstagramLogin extends StatefulWidget {
   final ValueChanged<InAppWebViewController?> onWebViewCreated;
   final Function(InAppWebViewController controller, Uri? url, bool? androidIsReload) onUpdateVisitedHistory;
+
   const InstagramLogin({Key? key, required this.onUpdateVisitedHistory, required this.onWebViewCreated}) : super(key: key);
 
   @override
@@ -18,8 +19,6 @@ class _InstagramLoginState extends State<InstagramLogin> {
   double progress = 0;
 
   InstagramService instagram = InstagramService();
-
-
 
   @override
   Widget build(BuildContext context) {

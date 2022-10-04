@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
@@ -60,7 +61,7 @@ class FirestoreDatabase {
     Map<String, dynamic> userInfoMap = createdUserModel.toMap();
     userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
     userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
-    await _service.firestore.collection(FirestorePath.users()).doc(uid).set(userInfoMap).catchError(
+    await _service.firestore.collection(FirestorePath.users()).doc(createdUserModel.id).set(userInfoMap).catchError(
       (onError) {
         print(onError);
       },
@@ -164,6 +165,9 @@ class FirestoreDatabase {
       setStatus ? _updateUserHeartbeat(uid, 'heartbeatBackground', newStatus: 'IDLE') : _updateUserHeartbeat(uid, 'heartbeatBackground');
 
   Future<void>? _updateUserHeartbeat(String uid, String field, {String? newStatus}) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return null;
+    }
     final data = <String, dynamic>{
       field: FieldValue.serverTimestamp(),
     };
@@ -298,9 +302,9 @@ class FirestoreDatabase {
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.token(uid));
-    if (snapshot.data() is Map) {
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.token(uid));
+    if (snapshot?.data() is Map) {
+      Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
     }
     return null;
@@ -319,18 +323,18 @@ class FirestoreDatabase {
   }
 
   Future<AppVersionModel?> getAppVersion() async {
-    DocumentSnapshot snapshot = await _service.getData(path: FirestorePath.appVersion());
-    if (snapshot.data() is Map) {
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.appVersion());
+    if (snapshot?.data() is Map) {
+      Map<String, dynamic>? data = snapshot?.data() as Map<String, dynamic>?;
       return AppVersionModel.fromJson(data!);
     }
     return null;
   }
 
   Future<UserModel?> getUser(String uid) async {
-    DocumentSnapshot documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
-    if (documentSnapshot.exists) {
-      String id = documentSnapshot.id;
+    DocumentSnapshot? documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
+    if (documentSnapshot?.exists ?? false) {
+      String id = documentSnapshot!.id;
       final data = documentSnapshot.data();
       if (data is Map) {
         try {

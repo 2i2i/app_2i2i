@@ -23,28 +23,22 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
-    createUserBottomSheet();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      createUserBottomSheet();
+    });
     super.initState();
   }
 
   Future<void> createUserBottomSheet() async {
-    bool showUserSetting = false;
-    ref.read(appSettingProvider).getTappedOnKey(isNotify: false);
     final uid = ref.read(myUIDProvider);
     if (uid is String) {
-      UserModel? userModel = await ref.read(setupUserViewModelProvider).getUserInfoModel(uid);
-      if (userModel == null) {
-        final database = ref.read(databaseProvider);
-        await database.createUser(uid);
-        showUserSetting = true;
-      }
-      if (showUserSetting || (userModel?.name.isEmpty ?? false)) {
+      final database = ref.watch(databaseProvider);
+      UserModel? userModel = await database.getUser(uid);
+      if (userModel?.name.isEmpty ?? false) {
         CustomAlertWidget.showBottomSheet(context,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: UserSetting(
-                fromBottomSheet: true,
-              ),
+              child: UserSetting(fromBottomSheet: true),
             ),
             enableDrag: false,
             isDismissible: false);
@@ -58,13 +52,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
           ? null
           : AppBar(
-              leading: Container(),
+        leading: Container(),
               toolbarHeight: 20,
-              title: Text(AlgorandNet.testnet.name + ' - v52' + (widget.updateAvailable ? ' - update: reload page' : '')),
+              title: Text(AlgorandNet.testnet.name + ' - v54' + (widget.updateAvailable ? ' - update: reload page' : '')),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
               centerTitle: true,
               backgroundColor: Colors.green,
             ),
+      // body: SafeArea(child: widget.pageChild),
       body: SafeArea(child: widget.pageChild),
       bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBar(),

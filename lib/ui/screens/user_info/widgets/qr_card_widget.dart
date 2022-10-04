@@ -15,7 +15,6 @@ class QrCodeWidget extends StatefulWidget {
 }
 
 class _QrCodeWidgetState extends State<QrCodeWidget> {
-
   @override
   Widget build(BuildContext context) {
     // String userURL = '${dotenv.env['DYNAMIC_LINK_HOST'].toString()}/user/${widget.user.id}';
@@ -67,7 +66,13 @@ class _QrCodeWidgetState extends State<QrCodeWidget> {
                     Share.share('${Keys.comeAndHangOut.tr(context)}:\n${widget.userUrl}');
                     Navigator.of(context).maybePop();
                   },
-                  child: Text(Keys.share.tr(context)),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                  ),
+                  child: Text(
+                    Keys.share.tr(context),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                  ),
                 ),
               ),
             ],

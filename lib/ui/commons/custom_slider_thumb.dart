@@ -1,7 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 class CustomSliderThumbRect extends SliderComponentShape {
   final double? thumbRadius;
@@ -25,24 +26,23 @@ class CustomSliderThumbRect extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        Animation<double>? activationAnimation,
-        Animation<double>? enableAnimation,
-        bool? isDiscrete,
-        TextPainter? labelPainter,
-        RenderBox? parentBox,
-        SliderThemeData? sliderTheme,
-        TextDirection? textDirection,
-        double? value,
-        double? textScaleFactor,
-        Size? sizeWithOverflow,
-      }) {
+    PaintingContext context,
+    Offset center, {
+    Animation<double>? activationAnimation,
+    Animation<double>? enableAnimation,
+    bool? isDiscrete,
+    TextPainter? labelPainter,
+    RenderBox? parentBox,
+    SliderThemeData? sliderTheme,
+    TextDirection? textDirection,
+    double? value,
+    double? textScaleFactor,
+    Size? sizeWithOverflow,
+  }) {
     final Canvas canvas = context.canvas;
 
     final rRect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-          center: center, width: thumbHeight * 2, height: thumbHeight * 0.9),
+      Rect.fromCenter(center: center, width: thumbHeight * 2, height: thumbHeight * 0.9),
       Radius.circular(thumbRadius! * .4),
     );
 
@@ -51,29 +51,19 @@ class CustomSliderThumbRect extends SliderComponentShape {
       ..style = PaintingStyle.fill;
 
     TextSpan span1 = new TextSpan(
-        style: Theme.of(mainContext).textTheme.subtitle1!.copyWith(
-            color: Theme.of(mainContext).primaryColor,
-            fontWeight: FontWeight.w800),
+        style: Theme.of(mainContext).textTheme.subtitle1!.copyWith(color: Theme.of(mainContext).primaryColor, fontWeight: FontWeight.w800),
         text: '${getValue(value!)} ');
 
     TextSpan span2 = new TextSpan(
-        style: Theme.of(mainContext)
-            .textTheme
-            .overline!
-            .copyWith(color: Theme.of(mainContext).shadowColor),
-        text: '${Keys.algoPerSec.tr(mainContext)}');
+        style: Theme.of(mainContext).textTheme.overline!.copyWith(color: Theme.of(mainContext).shadowColor), text: '${Keys.algoPerSec.tr(mainContext)}');
 
     TextSpan span = new TextSpan(
       children: [span1, span2],
     );
 
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr);
+    TextPainter tp = new TextPainter(text: span, textAlign: TextAlign.left, textDirection: TextDirection.ltr);
     tp.layout();
-    Offset textCenter =
-    Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
+    Offset textCenter = Offset(center.dx - (tp.width / 2), center.dy - (tp.height / 2));
 
     final Path shadowPath = Path()..addRRect(rRect);
     canvas.drawRRect(rRect, paint);
@@ -105,16 +95,16 @@ class CustomTrack extends SliderTrackShape with BaseSliderTrackShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset offset, {
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required Animation<double> enableAnimation,
-        required TextDirection textDirection,
-        required Offset thumbCenter,
-        bool isDiscrete = false,
-        bool isEnabled = false,
-      }) {
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+  }) {
     assert(sliderTheme.disabledActiveTrackColor != null);
     assert(sliderTheme.disabledInactiveTrackColor != null);
     assert(sliderTheme.activeTrackColor != null);
@@ -124,16 +114,10 @@ class CustomTrack extends SliderTrackShape with BaseSliderTrackShape {
       return;
     }
 
-    final ColorTween activeTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledActiveTrackColor,
-        end: sliderTheme.activeTrackColor);
-    final ColorTween inactiveTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledInactiveTrackColor,
-        end: sliderTheme.inactiveTrackColor);
-    final Paint activePaint = Paint()
-      ..color = activeTrackColorTween.evaluate(enableAnimation)!;
-    final Paint inactivePaint = Paint()
-      ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
+    final ColorTween activeTrackColorTween = ColorTween(begin: sliderTheme.disabledActiveTrackColor, end: sliderTheme.activeTrackColor);
+    final ColorTween inactiveTrackColorTween = ColorTween(begin: sliderTheme.disabledInactiveTrackColor, end: sliderTheme.inactiveTrackColor);
+    final Paint activePaint = Paint()..color = activeTrackColorTween.evaluate(enableAnimation)!;
+    final Paint inactivePaint = Paint()..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
     final Paint leftTrackPaint;
     final Paint rightTrackPaint;
     switch (textDirection) {
@@ -156,31 +140,18 @@ class CustomTrack extends SliderTrackShape with BaseSliderTrackShape {
     );
 
     TextPainter tp = new TextPainter(
-        text: TextSpan(
-            text: "Swipe to bid",
-            style: Theme.of(mainContext).textTheme.caption),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
+        text: TextSpan(text: "Swipe to bid", style: Theme.of(mainContext).textTheme.caption), textAlign: TextAlign.center, textDirection: TextDirection.ltr);
     tp.layout();
 
-    final Rect leftTrackSegment = Rect.fromLTRB(
-        trackRect.left, trackRect.top, thumbCenter.dx, trackRect.bottom);
-    final RRect leftTrack =
-    RRect.fromRectAndRadius(leftTrackSegment, Radius.circular(8));
-    if (!leftTrackSegment.isEmpty)
-      context.canvas.drawRRect(leftTrack, leftTrackPaint);
+    final Rect leftTrackSegment = Rect.fromLTRB(trackRect.left, trackRect.top, thumbCenter.dx, trackRect.bottom);
+    final RRect leftTrack = RRect.fromRectAndRadius(leftTrackSegment, Radius.circular(8));
+    if (!leftTrackSegment.isEmpty) context.canvas.drawRRect(leftTrack, leftTrackPaint);
 
-    final Rect rightTrackSegment = Rect.fromLTRB(
-        thumbCenter.dx, trackRect.top, trackRect.right, trackRect.bottom);
-    final RRect rightTrack =
-    RRect.fromRectAndRadius(rightTrackSegment, Radius.circular(8));
-    if (!rightTrackSegment.isEmpty)
-      context.canvas.drawRRect(rightTrack, rightTrackPaint);
+    final Rect rightTrackSegment = Rect.fromLTRB(thumbCenter.dx, trackRect.top, trackRect.right, trackRect.bottom);
+    final RRect rightTrack = RRect.fromRectAndRadius(rightTrackSegment, Radius.circular(8));
+    if (!rightTrackSegment.isEmpty) context.canvas.drawRRect(rightTrack, rightTrackPaint);
 
-    tp.paint(
-        context.canvas,
-        Offset(trackRect.center.dx - (trackRect.bottom),
-            trackRect.center.dy - (trackRect.top * 0.5)));
+    tp.paint(context.canvas, Offset(trackRect.center.dx - (trackRect.bottom), trackRect.center.dy - (trackRect.top * 0.5)));
 
     context.canvas.drawImage(
         image,

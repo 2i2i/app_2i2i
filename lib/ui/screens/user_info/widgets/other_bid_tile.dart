@@ -12,18 +12,11 @@ class OtherBidTile extends ConsumerWidget {
   final UserModel user;
   final bool myBidOut;
 
-  const OtherBidTile(
-      {Key? key,
-      required this.bidIn,
-      required this.user,
-      this.myBidOut = false})
-      : super(key: key);
+  const OtherBidTile({Key? key, required this.bidIn, required this.user, this.myBidOut = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int duration = bidIn.speed.num == 0
-        ? bidIn.rule.maxMeetingDuration
-        : (bidIn.energy / bidIn.speed.num).round();
+    int duration = bidIn.speed.num == 0 ? bidIn.rule.maxMeetingDuration : (bidIn.energy / bidIn.speed.num).round();
 
     Widget userItem = Card(
       shape: RoundedRectangleBorder(
@@ -45,20 +38,12 @@ class OtherBidTile extends ConsumerWidget {
                     text: ' ALGO/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.color
-                              ?.withOpacity(0.7),
+                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                         ),
                   )
                 ],
                 style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.color
-                          ?.withOpacity(0.7),
+                  color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                     ),
               ),
             ),
@@ -68,10 +53,7 @@ class OtherBidTile extends ConsumerWidget {
                 textAlign: TextAlign.start,
                 text: TextSpan(
                   text: '${Keys.duration.tr(context)}:',
-                  children: [
-                    TextSpan(
-                        text: ' ${secondsToSensibleTimePeriod(duration, context)}', children: [], style: Theme.of(context).textTheme.bodyText2)
-                  ],
+                  children: [TextSpan(text: ' ${secondsToSensibleTimePeriod(duration, context)}', children: [], style: Theme.of(context).textTheme.bodyText2)],
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),

@@ -25,31 +25,27 @@ class FAQProviderModel extends ChangeNotifier {
           'Guest',
           'support',
         ],
-        description:
-            'Guests join the room of a Host. By offering coins (called support) to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
+        description: 'Guests join the room of a Host. By offering coins (called support) to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
     FAQDataModel(
         title: 'What is a Host?',
         tags: [
           'Host',
         ],
-        description:
-            'Hosts shared their time with Guests and earn coins (called support). The Host sets the minimum support they require.'),
+        description: 'Hosts shared their time with Guests and earn coins (called support). The Host sets the minimum support they require.'),
     FAQDataModel(
         title: 'What is a Crony?',
         tags: [
           'Crony',
           'Guest',
         ],
-        description:
-            'A Guest that offers exactly the minimum support to their Host. Cronies wait in chronological order.'),
+        description: 'A Guest that offers exactly the minimum support to their Host. Cronies wait in chronological order.'),
     FAQDataModel(
         title: 'What is a HighRoller?',
         tags: [
           'Guest',
           'HighRoller',
         ],
-        description:
-            'A Guest that offers higher than the minimum support to their Host. HighRollers wait in the order of their support.'),
+        description: 'A Guest that offers higher than the minimum support to their Host. HighRollers wait in the order of their support.'),
     FAQDataModel(
         title: 'What is an Eccentric*?',
         tags: [
@@ -71,8 +67,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: [
           'importance',
         ],
-        description:
-            'The Host chooses the relative importance between Cronies and HighRollers. '),
+        description: 'The Host chooses the relative importance between Cronies and HighRollers. '),
     FAQDataModel(
         title: 'How does the queuing work?',
         tags: [
@@ -80,12 +75,10 @@ class FAQProviderModel extends ChangeNotifier {
           'queue',
           'importance',
         ],
-        description:
-            '2i2i forms the fairest queue using the Importance set by the Host, the recent meeting history and the current queue.'),
+        description: '2i2i forms the fairest queue using the Importance set by the Host, the recent meeting history and the current queue.'),
     FAQDataModel(
         title: 'Why did someone overtake me in the queue?',
-        tags: [
-        ],
+        tags: [],
         description:
             '2i2i balances Guests into a fair queue according to the settings chosen by the Host.\nE.g. HighRollers can overtake each other by offering higher support.\nE.g. if the Host prefers HighRollers over Cronies, then HighRollers can overtake Cronies.\nE.g. if the Host prefers Cronies over HighRollers, then Cronies can overtake HighRollers.\nE.g. if the Host recently only met one type of Guest, then a different type could be moved ahead; to keep balance.'),
     FAQDataModel(
@@ -93,8 +86,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: [
           'version',
         ],
-        description:
-            '2i2i is still in beta version, which means testing. Please let us know of any errors: https://twitter.com/2i2i_app'),
+        description: '2i2i is still in beta version, which means testing. Please let us know of any errors: https://twitter.com/2i2i_app'),
     FAQDataModel(
         title: 'Who needs 2i2i?',
         tags: [
@@ -123,10 +115,8 @@ class FAQProviderModel extends ChangeNotifier {
             "A Guest locks up their coins to join the queue of a certain Host. As long as the Host is online, the Host can meet one Guest after another. Once a meeting ends, the locked coins are distributed:\n - to the Host according to the meeting duration\n - to the SYSTEM, 10% of what the Host would have gotten\n - to the Guest, the rest"),
     FAQDataModel(
         title: 'How is the level of support measured?',
-        tags: [
-        ],
-        description:
-            "The Guest offers support as coins per second. The Guest only pays for as many seconds as it meets the Host."),
+        tags: [],
+        description: "The Guest offers support as coins per second. The Guest only pays for as many seconds as it meets the Host."),
     FAQDataModel(
         title: 'Is my Algorand account safe?',
         tags: [
@@ -142,8 +132,7 @@ class FAQProviderModel extends ChangeNotifier {
           'wallet',
           'WalletConnect',
         ],
-        description:
-            "Yes, you can use any wallet that connects with WalletConnect. E.g. the official Algorand Wallet."),
+        description: "Yes, you can use any wallet that connects with WalletConnect. E.g. the official Algorand Wallet."),
     FAQDataModel(
         title: 'Is 2i2i available on Algorand testnet?',
         tags: [
@@ -167,8 +156,7 @@ class FAQProviderModel extends ChangeNotifier {
           'ALGO',
           'exchange',
         ],
-        description:
-            "Through other services such ChangeNow.io (no aff.), you can exchange your fiat into ALGO."),
+        description: "Through other services such ChangeNow.io (no aff.), you can exchange your fiat into ALGO."),
     FAQDataModel(
         title: 'Are the video calls private?',
         tags: [
@@ -181,10 +169,7 @@ class FAQProviderModel extends ChangeNotifier {
             "Yes. All video calls are end-to-end encrypted. All calls are also peer-to-peer. This means 2i2i never sees anything from your call. The Guest and the Host connect directly to each other."),
     FAQDataModel(
         title: 'How about audio only calls?',
-        tags: [
-          'audio',
-          'roadmap'
-        ],
+        tags: ['audio', 'roadmap'],
         description:
             "We are thinking about that. The issue is that an audio call is usually worth less. Audio and video calls are separate markets. Should we combine them?"),
     FAQDataModel(
@@ -251,8 +236,7 @@ class FAQProviderModel extends ChangeNotifier {
           'keywords',
           'Host',
         ],
-        description:
-            "Use # to declare your keywords. Keywords are used to search for Hosts."),
+        description: "Use # to declare your keywords. Keywords are used to search for Hosts."),
     FAQDataModel(
         title: 'Does 2i2i have access to the smart contract?',
         tags: [
@@ -263,20 +247,12 @@ class FAQProviderModel extends ChangeNotifier {
         description:
             "2i2i created the smart contract and currently has access to it. This means, 2i2i can modify the smart contract and extract funds from the account. The plan is to remove that access. We are keeping access for now until all it is \"battle tested\". Until then, We will sometimes need to unlock users' coins for them if an unexpected case occurs. Once we are confident that nobody's coins are left locked in the smart contract indefinitely, We will remove our access from the smart contract."),
     FAQDataModel(
-        tags: [
-          'account',
-          'Algorand',
-          'minimum balance'
-        ],
+        tags: ['account', 'Algorand', 'minimum balance'],
         title: 'Why did I not get my coins (as a Host)?',
         description:
             'If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
     FAQDataModel(
-        tags: [
-          'account',
-          'Algorand',
-          'minimum balance'
-        ],
+        tags: ['account', 'Algorand', 'minimum balance'],
         title: 'Is it ok to have an empty account as a Host?',
         description:
             'No. If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
@@ -302,7 +278,7 @@ class FAQProviderModel extends ChangeNotifier {
   }
 
   openCloseSuggestionView() {
-    isOpenSuggestionView =!isOpenSuggestionView;
+    isOpenSuggestionView = !isOpenSuggestionView;
     notifyListeners();
   }
 
@@ -313,9 +289,6 @@ class FAQProviderModel extends ChangeNotifier {
   }
 
   refreshList() {
-    searchFAQList = faqsList
-        .where((element) => element.tags!
-            .any((searchKeyword) => keywordList.contains(searchKeyword.toLowerCase())))
-        .toList();
+    searchFAQList = faqsList.where((element) => element.tags!.any((searchKeyword) => keywordList.contains(searchKeyword.toLowerCase()))).toList();
   }
 }

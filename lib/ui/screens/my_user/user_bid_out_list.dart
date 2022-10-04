@@ -10,7 +10,6 @@ import '../../../infrastructure/models/bid_model.dart';
 import 'widgets/bid_out_tile.dart';
 
 class UserBidOut extends ConsumerWidget {
-
   Widget build(BuildContext context, WidgetRef ref) {
     var userId = ref.watch(myUIDProvider);
     if (haveToWait(userId)) {
@@ -42,8 +41,7 @@ class UserBidOut extends ConsumerWidget {
             )
           : Center(
               child: Text(Keys.joinOtherRoom.tr(context),
-                  textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).disabledColor)),
             ),
     );
   }

@@ -4,7 +4,9 @@ import '../../../infrastructure/commons/keys.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage(this.exception);
+
   final Exception? exception;
+
   @override
   Widget build(BuildContext context) {
     return Center(

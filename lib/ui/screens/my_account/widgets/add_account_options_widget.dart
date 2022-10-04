@@ -1,6 +1,6 @@
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'dart:io';
 
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -153,7 +153,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
     final connector = await WalletConnectAccount.newConnector(id);
 
     var setupUserViewModel = ref.watch(setupUserViewModelProvider);
-    String userId = ref.read(myUIDProvider)??'';
+    String userId = ref.read(myUIDProvider) ?? '';
 
     final account = WalletConnectAccount.fromNewConnector(
       accountService: accountService,
@@ -171,7 +171,7 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
       CustomAlertWidget.loader(true, context, rootNavigator: true);
       await account.save(id);
 
-      var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect',userId: account.address);
+      var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address);
       if (account.address.isNotEmpty) {
         await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
       }

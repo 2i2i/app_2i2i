@@ -117,10 +117,7 @@ class _AddRatingPageState extends ConsumerState<AddRatingPage> {
                           await database.addRating(
                             otherUid,
                             meetingId,
-                            RatingModel(
-                              rating: rating,
-                              comment: feedbackController.text,
-                                createdAt: DateTime.now().toUtc().millisecondsSinceEpoch),
+                            RatingModel(rating: rating, comment: feedbackController.text, createdAt: DateTime.now().toUtc().millisecondsSinceEpoch),
                           );
                         }
                         NamedRoutes.showRating.value = {'show': false};

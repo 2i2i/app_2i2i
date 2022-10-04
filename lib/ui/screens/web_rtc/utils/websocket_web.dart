@@ -1,4 +1,5 @@
 import 'package:universal_html/html.dart';
+
 import '../../../../infrastructure/data_access_layer/services/logging.dart';
 
 class SimpleWebSocket {

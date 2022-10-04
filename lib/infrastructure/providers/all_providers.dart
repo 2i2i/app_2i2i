@@ -139,7 +139,10 @@ final myUserPageViewModelProvider = Provider((ref) {
       return null;
     }
     final accountService = ref.watch(accountServiceProvider);
-
+    if (accountService == null) return null;
+    if (accountService is AsyncError || accountService is AsyncLoading) {
+      return null;
+    }
     return MyUserPageViewModel(
       database: database,
       functions: functions,

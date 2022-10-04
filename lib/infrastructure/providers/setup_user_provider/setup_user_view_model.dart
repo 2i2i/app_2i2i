@@ -50,7 +50,19 @@ class SetupUserViewModel with ChangeNotifier {
   UserModel? userInfoModel;
   SocialLinksModel? socialLinksModel;
 
+  bool isLogged = false;
+
   List<String> authList = [];
+
+  void setLoginValue(bool value) {
+    isLogged = value;
+    notifyListeners();
+  }
+
+  Future<void> checkLogin() async {
+    isLogged = await storage.read('isLogged') == "1";
+    // notifyListeners();
+  }
 
   Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
@@ -111,7 +123,7 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future<void> signInWithApple(BuildContext context, {bool linkWithCredential = false}) async {
     try {
-      CustomAlertWidget.loader(true, context);
+      CustomAlertWidget.loader(true, context, rootNavigator: true);
       User? existingUser;
       UserCredential? firebaseUser;
       if (linkWithCredential) {
@@ -144,13 +156,13 @@ class SetupUserViewModel with ChangeNotifier {
         socialLinksModel?.userEmail = firebaseUser.user?.email ?? '';
         await signInProcess(uid, socialLinkModel: socialLinksModel);
       }
-      CustomAlertWidget.loader(false, context);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
     } on FirebaseAuthException catch (e) {
-      CustomAlertWidget.loader(false, context);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       CustomAlertWidget.showToastMessage(context, "${e.message}");
       throw e;
     } catch (e) {
-      CustomAlertWidget.loader(false, context);
+      CustomAlertWidget.loader(false, context, rootNavigator: true);
       throw e;
     }
   }
@@ -174,40 +186,32 @@ class SetupUserViewModel with ChangeNotifier {
         );
 
         authResult = await twitterLogin.login();
-        switch (authResult.status) {
-          case TwitterLoginStatus.loggedIn:
-            if (authResult.authToken is String && authResult.authTokenSecret is String) {
-              twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+        if (authResult.status == TwitterLoginStatus.loggedIn) {
+          if (authResult.authToken is String && authResult.authTokenSecret is String) {
+            twitterAuthCredential = TwitterAuthProvider.credential(accessToken: authResult.authToken!, secret: authResult.authTokenSecret!);
+          }
+          if (linkWithCredential && existingUser != null) {
+            if (kIsWeb) {
+              firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
+            } else if (twitterAuthCredential != null) {
+              firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
             }
-            if (linkWithCredential && existingUser != null) {
-              if (kIsWeb) {
-                firebaseUser = await existingUser.linkWithPopup(TwitterAuthProvider());
-              } else if (twitterAuthCredential != null) {
-                firebaseUser = await existingUser.linkWithCredential(twitterAuthCredential);
-              }
-            } else {
-              if (kIsWeb) {
-                firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
-              } else if (twitterAuthCredential != null) {
-                firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
-              }
+          } else {
+            if (kIsWeb) {
+              firebaseUser = await FirebaseAuth.instance.signInWithPopup(TwitterAuthProvider());
+            } else if (twitterAuthCredential != null) {
+              firebaseUser = await auth.signInWithCredential(twitterAuthCredential);
             }
+          }
 
-            if (authResult.user != null) {
-              socialLinksModel = SocialLinksModel(userName: authResult.user?.name ?? '', accountName: 'Twitter', userId: "${authResult.user?.id ?? ""}");
-            }
+          if (authResult.user != null) {
+            socialLinksModel = SocialLinksModel(userName: authResult.user?.name ?? '', accountName: 'Twitter', userId: "${authResult.user?.id ?? ""}");
+          }
 
-            String? uid = firebaseUser?.user?.uid;
-            if (uid is String) {
-              await signInProcess(uid, socialLinkModel: socialLinksModel);
-            }
-            break;
-          case TwitterLoginStatus.cancelledByUser:
-            break;
-          case TwitterLoginStatus.error:
-            break;
-          default:
-            break;
+          String? uid = firebaseUser?.user?.uid;
+          if (uid is String) {
+            await signInProcess(uid, socialLinkModel: socialLinksModel);
+          }
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -239,9 +243,9 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
     userInfoModel = await getUserInfoModel(uid);
-    if (userInfoModel?.url == null) {
-      String url = await createDeepLinkUrl(uid);
-      userInfoModel?.url = url;
+    if (userInfoModel == null) {
+      await database.createUser(uid);
+      await createDeepLinkUrl(uid);
     }
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
@@ -251,10 +255,13 @@ class SetupUserViewModel with ChangeNotifier {
     } else {
       userInfoModel?.socialLinks = [];
     }
-    final f2 = updateFirebaseMessagingToken(uid);
+    final f2 = await updateFirebaseMessagingToken(uid);
     // final f3 = setupAlgorandAccount(uid);
-    final f4 = updateDeviceInfo(uid);
-    return Future.wait([f2, /* f3,*/ f4]);
+    final f4 = await updateDeviceInfo(uid);
+    // return Future.wait([f2, /* f3,*/ f4]);
+    isLogged = true;
+    storage.write('isLogged', "1");
+    notifyListeners();
   }
 
   Future<void> signInWithWalletConnect(
@@ -399,9 +406,11 @@ class SetupUserViewModel with ChangeNotifier {
 
   Future<void> signOutFromAuth() async {
     socialLinksModel = null;
+    isLogged = false;
     await googleSignIn.signOut();
     await auth.signOut();
     await storage.clearStorage();
+    notifyListeners();
   }
 
   Future<void> deleteUser({required BuildContext mainContext, required String title, required String description}) async {

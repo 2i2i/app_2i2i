@@ -23,10 +23,7 @@ class LocalAccount extends AbstractAccount {
     required AccountService accountService,
   }) async {
     log('LocalAccount.create');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
     await account._createAndStoreAccount();
     await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
@@ -54,10 +51,7 @@ class LocalAccount extends AbstractAccount {
     required int numAccount,
   }) async {
     log('LocalAccount.fromNumAccount');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
     await account._loadAccountFromStorage(numAccount);
     await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
@@ -70,44 +64,33 @@ class LocalAccount extends AbstractAccount {
     required List<String> mnemonic,
   }) async {
     log('LocalAccount.fromMnemonic');
-    final account = LocalAccount._create(
-        accountService: accountService,
-        algorandLib: algorandLib,
-        storage: storage);
+    final account = LocalAccount._create(accountService: accountService, algorandLib: algorandLib, storage: storage);
     await account._loadAccountFromMnemonic(mnemonic);
     await account.updateBalances(net: AppConfig().ALGORAND_NET);
     return account;
   }
 
   @override
-  Future<String> optInToASA(
-      {required int assetId,
-      required AlgorandNet net,
-      waitForConfirmation = true}) async {
+  Future<String> optInToASA({required int assetId, required AlgorandNet net, waitForConfirmation = true}) async {
     final account = await _libAccount();
     final String txId = await algorandLib.client[net]!.assetManager.optIn(
       account: account,
       assetId: assetId,
     );
 
-    if (waitForConfirmation)
-      await algorandLib.client[net]!.waitForConfirmation(txId);
+    if (waitForConfirmation) await algorandLib.client[net]!.waitForConfirmation(txId);
 
     return txId;
   }
 
   @override
-  Future<String> optInToDapp(
-      {required int dappId,
-      required AlgorandNet net,
-      bool waitForConfirmation = false}) async {
+  Future<String> optInToDapp({required int dappId, required AlgorandNet net, bool waitForConfirmation = false}) async {
     final account = await _libAccount();
     final String txId = await algorandLib.client[net]!.applicationManager.optIn(
       account: account,
       applicationId: dappId,
     );
-    if (waitForConfirmation)
-      await algorandLib.client[net]!.waitForConfirmation(txId);
+    if (waitForConfirmation) await algorandLib.client[net]!.waitForConfirmation(txId);
     return txId;
   }
 
@@ -131,8 +114,7 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future _loadAccountFromMnemonic(List<String> mnemonic) async {
-    final account = await algorandLib.client[AppConfig().ALGORAND_NET]!
-        .restoreAccount(mnemonic);
+    final account = await algorandLib.client[AppConfig().ALGORAND_NET]!.restoreAccount(mnemonic);
     address = account.publicAddress;
     await storeAccount(account);
   }
@@ -144,8 +126,7 @@ class LocalAccount extends AbstractAccount {
   }
 
   Future<Account> createLocalAccountWithoutStore() async {
-    final Account account =
-        await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
+    final Account account = await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
     address = account.publicAddress;
     this.account = account;
     return account;
@@ -153,8 +134,7 @@ class LocalAccount extends AbstractAccount {
 
   Future _createAndStoreAccount() async {
     log('_createAndStoreAccount net=${AppConfig().ALGORAND_NET}');
-    final Account account =
-        await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
+    final Account account = await algorandLib.client[AppConfig().ALGORAND_NET]!.createAccount();
     address = account.publicAddress;
     log('_createAndStoreAccount address=${address}');
     await storeAccount(account);

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-
 import '../../infrastructure/providers/all_providers.dart';
 import '../../infrastructure/routes/app_routes.dart';
 import '../screens/search/widgtes/star_widget.dart';
@@ -15,7 +14,7 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final Widget? title;
 
-  const CustomAppbar({this.title,this.actions, this.backgroundColor = Colors.transparent});
+  const CustomAppbar({this.title, this.actions, this.backgroundColor = Colors.transparent});
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);
@@ -28,60 +27,62 @@ class CustomAppbar extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: backgroundColor,
       elevation: 0,
-      actions: actions??[
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            !(haveToWait(user))
-                ? RectangleBox(
-                    // DEBUG - test db rules
-                    // onTap: () => runTests(user.value!.id),
-                    // DEBUG - test db rules
-                    onTap: () => context.pushNamed(Routes.ratings.nameFromPath(),params: {'uid':uid}),
-                    radius: 46,
-                    icon: StarWidget(
-                      width: 20,
-                      height: 32,
-                      value: user.value?.rating ?? 1,
-                      startColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                  )
-                : Container(),
-            SizedBox(
-              width: 10,
+      actions: actions ??
+          [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                !(haveToWait(user))
+                    ? RectangleBox(
+                        // DEBUG - test db rules
+                        // onTap: () => runTests(user.value!.id),
+                        // DEBUG - test db rules
+                        onTap: () => context.pushNamed(Routes.ratings.nameFromPath(), params: {'uid': uid}),
+                        radius: 46,
+                        icon: StarWidget(
+                          width: 20,
+                          height: 32,
+                          value: user.value?.rating ?? 1,
+                          startColor: Theme.of(context).colorScheme.secondary,
+                        ),
+                      )
+                    : Container(),
+                SizedBox(
+                  width: 10,
+                ),
+                RectangleBox(
+                  onTap: () => context.pushNamed(Routes.top.nameFromPath()),
+                  radius: 46,
+                  icon: SvgPicture.asset(
+                    'assets/icons/crown.svg',
+                    width: 16,
+                    height: 16,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                )
+              ],
             ),
-            RectangleBox(
-              onTap: () => context.pushNamed(Routes.top.nameFromPath()),
-              radius: 46,
-              icon: SvgPicture.asset(
-                'assets/icons/crown.svg',
-                width: 16,
-                height: 16,
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            )
           ],
-        ),
-      ],
       toolbarHeight: kToolbarHeight + 50,
       centerTitle: false,
-      title: title??Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SvgPicture.asset(
-          getLogo(context),
-          fit: BoxFit.fill,
-          width: 55,
-          height: 65,
-        ),
-      ),
+      title: title ??
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SvgPicture.asset(
+              getLogo(context),
+              fit: BoxFit.fill,
+              width: 55,
+              height: 65,
+            ),
+          ),
     );
   }
 
-  String getLogo(context)  {
-    if(Theme.of(context).brightness == Brightness.dark){
+  String getLogo(context) {
+    if (Theme.of(context).brightness == Brightness.dark) {
       return 'assets/icons/appbar_icon_dark.svg';
     }
     return 'assets/icons/appbar_icon.svg';

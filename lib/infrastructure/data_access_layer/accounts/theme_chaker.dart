@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -9,12 +10,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text('App Bar'),
         actions: [
           IconButton(
-            onPressed: (){},
+            onPressed: () {},
             icon: Icon(Icons.add),
           )
         ],
@@ -30,35 +31,35 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              OutlinedButton(onPressed: (){}, child: Text('OutlinedButton')),
+              OutlinedButton(onPressed: () {}, child: Text('OutlinedButton')),
               SizedBox(height: 20),
-              ElevatedButton(onPressed: (){}, child: Text('ElevatedButton')),
+              ElevatedButton(onPressed: () {}, child: Text('ElevatedButton')),
               SizedBox(height: 20),
-              TextButton(onPressed: (){}, child: Text('TextButton')),
+              TextButton(onPressed: () {}, child: Text('TextButton')),
               SizedBox(height: 20),
-              ElevatedButton.icon(onPressed: (){}, icon: Icon(Icons.add), label: Text('ElevatedButton.icon')),
+              ElevatedButton.icon(onPressed: () {}, icon: Icon(Icons.add), label: Text('ElevatedButton.icon')),
               SizedBox(height: 20),
-              Text('Headline 6',style: Theme.of(context).textTheme.headline6),
+              Text('Headline 6', style: Theme.of(context).textTheme.headline6),
               SizedBox(height: 10),
-              Text('Headline 5',style: Theme.of(context).textTheme.headline5),
+              Text('Headline 5', style: Theme.of(context).textTheme.headline5),
               SizedBox(height: 10),
-              Text('Headline 4',style: Theme.of(context).textTheme.headline4),
+              Text('Headline 4', style: Theme.of(context).textTheme.headline4),
               SizedBox(height: 10),
-              Text('subtitle 2',style: Theme.of(context).textTheme.subtitle2),
+              Text('subtitle 2', style: Theme.of(context).textTheme.subtitle2),
               SizedBox(height: 10),
-              Text('subtitle 1',style: Theme.of(context).textTheme.subtitle1),
+              Text('subtitle 1', style: Theme.of(context).textTheme.subtitle1),
               SizedBox(height: 10),
-              Text('bodyText 2',style: Theme.of(context).textTheme.bodyText2),
+              Text('bodyText 2', style: Theme.of(context).textTheme.bodyText2),
               SizedBox(height: 10),
-              Text('bodyText 1',style: Theme.of(context).textTheme.bodyText1),
+              Text('bodyText 1', style: Theme.of(context).textTheme.bodyText1),
               SizedBox(height: 10),
-              Text('caption',style: Theme.of(context).textTheme.caption),
+              Text('caption', style: Theme.of(context).textTheme.caption),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+        onPressed: () {},
         child: Icon(Icons.add),
       ),
     );

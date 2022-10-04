@@ -7,8 +7,7 @@ class WaitPage extends StatelessWidget {
   final String? title;
   final String? message;
 
-  const WaitPage({Key? key, this.isCupertino, this.title, this.message, this.height})
-      : super(key: key);
+  const WaitPage({Key? key, this.isCupertino, this.title, this.message, this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +27,24 @@ class WaitPage extends StatelessWidget {
                 color: Colors.white,
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                        height: 90,
-                        width: 90,
-                        child: CircularProgressIndicator()),
-                    Image.asset('assets/logo.png',width: 60,height: 60,)
-                  ],
-                ),
               ),
-            );
-          }
-        ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(height: 90, width: 90, child: CircularProgressIndicator()),
+                  Image.asset(
+                    'assets/logo.png',
+                    width: 60,
+                    height: 60,
+                  )
+                ],
+              ),
+            ),
+          );
+        }),
       );
     }
-    if(isCupertino == true) {
+    if (isCupertino == true) {
       return Center(child: CupertinoActivityIndicator());
     }
     return Scaffold(
@@ -53,42 +52,49 @@ class WaitPage extends StatelessWidget {
       body: isCupertino == true
           ? Center(child: CupertinoActivityIndicator())
           : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 110,
-                  width: 110,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: LinearProgressIndicator(
-                          minHeight: 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 110,
+                    width: 110,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: LinearProgressIndicator(
+                            minHeight: 1,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Image.asset(
-                        'assets/logo.png',
-                        width: 60,
-                        height: 60,
-                      ),
-                    ],
+                        SizedBox(height: 20),
+                        Image.asset(
+                          'assets/logo.png',
+                          width: 60,
+                          height: 60,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    title ?? '',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    message ?? '',
+                    style: Theme.of(context).textTheme.caption,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
-        ),
-                SizedBox(height: 30),
-                Text(title??'',style: Theme.of(context).textTheme.headline6,),
-                SizedBox(height: 10),
-                Text(message??'',style: Theme.of(context).textTheme.caption,textAlign: TextAlign.center,),
-              ],
-            ),
-          ),
     );
   }
 }
