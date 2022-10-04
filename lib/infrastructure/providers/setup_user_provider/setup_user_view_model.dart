@@ -59,6 +59,11 @@ class SetupUserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> checkLogin() async {
+    isLogged = await storage.read('isLogged') == "1";
+    // notifyListeners();
+  }
+
   Future<List<String>> getAuthList() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     List<UserInfo> userAuthList = firebaseUser?.providerData ?? [];
@@ -255,6 +260,7 @@ class SetupUserViewModel with ChangeNotifier {
     final f4 = await updateDeviceInfo(uid);
     // return Future.wait([f2, /* f3,*/ f4]);
     isLogged = true;
+    storage.write('isLogged', "1");
     notifyListeners();
   }
 

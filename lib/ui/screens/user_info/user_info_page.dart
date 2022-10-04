@@ -36,7 +36,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     }
 
     final A = ref.watch(myUIDProvider);
-    bool amBlocked = A == null || userPageBViewModel.user.blocked.contains(A);
+    bool amBlocked = A == null || userPageBViewModel.user.blocked.contains(A) || widget.B == A;
 
     UserModel? userA;
     if (A is String) {

@@ -38,7 +38,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         CustomAlertWidget.showBottomSheet(context,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: UserSetting(fromBottomSheet: true, userModel: userModel),
+              child: UserSetting(fromBottomSheet: true),
             ),
             enableDrag: false,
             isDismissible: false);

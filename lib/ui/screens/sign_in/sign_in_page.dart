@@ -45,6 +45,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   void initState() {
+    ref.read(setupUserViewModelProvider).checkLogin();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
       if (uid.isNotEmpty) {
@@ -78,13 +79,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return authStateChanges.when(data: (firebaseUser) {
-                  if (firebaseUser == null) {
+                  if (signUpViewModel.isLogged) {
+                    return widget.homePageBuilder(context);
+                  } else if (firebaseUser == null) {
                     Future.delayed(Duration(milliseconds: 500)).then((value) {
                       currentIndex.value = 1;
                       context.go(Routes.myUser);
                     });
-                  } else if (signUpViewModel.isLogged) {
-                    return widget.homePageBuilder(context);
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

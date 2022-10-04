@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,6 +18,7 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/models/social_links_model.dart';
 import '../../../infrastructure/providers/all_providers.dart';
+import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_profile_image_view.dart';
 import '../create_bid/top_card_widget.dart';
@@ -24,9 +26,8 @@ import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
-  UserModel? userModel;
 
-  UserSetting({Key? key, this.fromBottomSheet, this.userModel}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
 
   @override
   _UserSettingState createState() => _UserSettingState();
@@ -57,39 +58,16 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   @override
   void initState() {
-    if (widget.userModel is UserModel) {
-      userNameEditController.text = widget.userModel?.name ?? "";
-      bioTextController.text = widget.userModel?.bio ?? "";
-
-      speedEditController.text = ((widget.userModel?.rule.minSpeed ?? 0) / MILLION).toString();
-      secondEditController.text = getSec(widget.userModel?.rule.maxMeetingDuration ?? 0);
-      minuteEditController.text = getMin(widget.userModel?.rule.maxMeetingDuration ?? 0);
-      hourEditController.text = getHour(widget.userModel?.rule.maxMeetingDuration ?? 0);
-
-      if (widget.userModel?.imageUrl?.isNotEmpty ?? false) {
-        imageUrl = widget.userModel!.imageUrl!;
-        imageType = ImageType.NETWORK_IMAGE;
-      } else {
-        imageUrl = widget.userModel?.name ?? "";
-      }
-
-      // importance
-      final c = widget.userModel?.rule.importance[Lounge.chrony] ?? 0;
-      final h = widget.userModel?.rule.importance[Lounge.highroller] ?? 0;
-      final N = c + h;
-      _importanceRatioValue = N / c;
-      double x = _importanceRatioValue! - 2.0;
-      if (h < c) {
-        _importanceRatioValue = N / h;
-        x = 2.0 - _importanceRatioValue!;
-      }
-      _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
-    }
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final myUserPageViewModel = ref.watch(myUserPageViewModelProvider);
+    final signUpViewModel = ref.watch(setupUserViewModelProvider);
     Widget body = SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Form(
@@ -109,19 +87,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               children: [
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
-                          context,
-                          backgroundColor: Theme.of(context).cardColor,
-                          child: ImagePickOptionWidget(
-                            imageCallBack: (ImageType imageType, String imagePath) {
-                              if (imagePath.isNotEmpty) {
-                                Navigator.of(context).pop();
-                                imageUrl = imagePath;
-                                this.imageType = imageType;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        ),
+                      context,
+                      backgroundColor: Theme.of(context).cardColor,
+                      child: ImagePickOptionWidget(
+                        imageCallBack: (ImageType imageType, String imagePath) {
+                          if (imagePath.isNotEmpty) {
+                            Navigator.of(context).pop();
+                            imageUrl = imagePath;
+                            this.imageType = imageType;
+                            setState(() {});
+                          }
+                        },
+                      ),
+                    ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -374,23 +352,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                      min: 0,
-                                      max: (_importanceSliderMaxHalf * 2.0),
-                                      value: _importanceSliderValue!,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                  _importanceSliderMaxHalf +
-                                              2.0;
-                                          // log(X +
-                                          //     '_importanceSliderValue=$_importanceSliderValue');
-                                          // log(X +
-                                          //     '_importanceRatioValue=$_importanceRatioValue');
-                                        });
-                                      },
-                                    ),
+                                min: 0,
+                                max: (_importanceSliderMaxHalf * 2.0),
+                                value: _importanceSliderValue!,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _importanceSliderValue = value;
+                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                        (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                        _importanceSliderMaxHalf +
+                                        2.0;
+                                    // log(X +
+                                    //     '_importanceSliderValue=$_importanceSliderValue');
+                                    // log(X +
+                                    //     '_importanceRatioValue=$_importanceRatioValue');
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -423,12 +401,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               visible: (widget.fromBottomSheet ?? false),
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary),
+                  backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
                 ),
                 onPressed: () async {
                   if (formKey.currentState?.validate() ?? false) {
                     CustomAlertWidget.loader(true, context);
-                    await onClickSave();
+                    await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                     CustomAlertWidget.loader(false, context);
                     Navigator.of(context).pop();
                   }
@@ -458,6 +436,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 padding: const EdgeInsets.only(right: 15),
                 child: ElevatedButton(
                   style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
@@ -468,7 +447,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       CustomAlertWidget.loader(true, context);
-                      await onClickSave();
+                      await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                       CustomAlertWidget.loader(false, context);
                     }
                   },
@@ -484,6 +463,42 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       ),
       body: body,
     );
+  }
+
+  void setData() {
+    final uid = ref.watch(myUIDProvider)!;
+    final userAsyncValue = ref.watch(userProvider(uid));
+    bool isLoaded = !(haveToWait(userAsyncValue));
+    if (isLoaded) {
+      UserModel user = userAsyncValue.value!;
+      userNameEditController.text = user.name;
+      bioTextController.text = user.bio;
+
+      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
+      secondEditController.text = getSec(user.rule.maxMeetingDuration);
+      minuteEditController.text = getMin(user.rule.maxMeetingDuration);
+      hourEditController.text = getHour(user.rule.maxMeetingDuration);
+
+      if (user.imageUrl is String && user.imageUrl!.isNotEmpty) {
+        imageUrl = user.imageUrl!;
+        imageType = ImageType.NETWORK_IMAGE;
+      } else {
+        imageUrl = user.name;
+      }
+
+      // importance
+      final c = user.rule.importance[Lounge.chrony]!;
+      final h = user.rule.importance[Lounge.highroller]!;
+      final N = c + h;
+      _importanceRatioValue = N / c;
+      double x = _importanceRatioValue! - 2.0;
+      if (h < c) {
+        _importanceRatioValue = N / h;
+        x = 2.0 - _importanceRatioValue!;
+      }
+      _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
+    }
+    setState(() {});
   }
 
   // Map<Lounge, int> oldFindImportances(double ratio, Lounge lounge) {
@@ -602,20 +617,21 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return twoDigitSeconds;
   }
 
-  Future<void> onClickSave() async {
-    final setupUserViewModel = ref.watch(setupUserViewModelProvider);
+  Future<void> onClickSave({required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    if (setupUserViewModel.socialLinksModel is SocialLinksModel) {
+    UserModel? user = myUserPageViewModel?.user;
+
+    if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
       String userName;
       SocialLinksModel? socialLinksModel;
-      if (setupUserViewModel.socialLinksModel?.userName?.isNotEmpty ?? false) {
+      if (setupUserViewModel!.socialLinksModel?.userName?.isNotEmpty ?? false) {
         userName = setupUserViewModel.socialLinksModel!.userName!;
       } else {
         userName = userNameEditController.text;
       }
       socialLinksModel = setupUserViewModel.socialLinksModel!;
       socialLinksModel.userName = userName;
-      widget.userModel?.socialLinks = [socialLinksModel];
+      user?.socialLinks = [socialLinksModel];
     }
 
     if (!invalidTime.value || (widget.fromBottomSheet ?? false)) {
@@ -624,7 +640,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         seconds += (int.tryParse(minuteEditController.text) ?? 0) * 60;
         seconds += (int.tryParse(hourEditController.text) ?? 0) * 3600;
 
-        widget.userModel?.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
 
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
         final importance = findImportances(_importanceRatioValue!, lounge);
@@ -637,9 +653,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
             Lounge.highroller: importance[Lounge.highroller]!,
           },
         );
-        widget.userModel?.rule = rule;
+        user.rule = rule;
       } else {
-        widget.userModel?.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
+        user!.setNameOrBio(name: userNameEditController.text, bio: bioTextController.text);
       }
 
       FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);
@@ -647,12 +663,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       if (imageType == ImageType.ASSENT_IMAGE) {
         String? firebaseImageUrl = await uploadImage();
         if ((firebaseImageUrl ?? "").isNotEmpty) {
-          widget.userModel?.imageUrl = firebaseImageUrl;
+          user.imageUrl = firebaseImageUrl;
         }
       }
 
-      widget.userModel?.url = await createDeepLinkUrl(widget.userModel!.id);
-      await setupUserViewModel.database.updateUser(widget.userModel!).then((value) {
+      user.url = await createDeepLinkUrl(user.id);
+      await myUserPageViewModel?.database.updateUser(user).then((value) {
         CustomAlertWidget.showToastMessage(context, "User saved successfully");
       });
     }
