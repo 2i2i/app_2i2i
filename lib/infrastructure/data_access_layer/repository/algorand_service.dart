@@ -89,6 +89,9 @@ class AlgorandService {
     required Quantity amount,
     required String note,
   }) async {
+
+    log('lockCoins - sessionId=$sessionId address=$address net=$net amount=$amount note=$note');
+
     final List<RawTransaction> txns = [];
     
     final params = await algorandLib.client[net]!.getSuggestedTransactionParams();
@@ -105,6 +108,8 @@ class AlgorandService {
     txns.add(payTxn);
     result['pay'] = payTxn.id;
 
+    log('lockCoins - payTxn.id=${payTxn.id}');
+
     if (amount.assetId != 0) {
       final axferTxn = await (AssetTransferTransactionBuilder()
           ..assetSender = Address.fromAlgorandAddress(address: address)
@@ -116,10 +121,13 @@ class AlgorandService {
         .build();
         txns.add(axferTxn);
         result['axfer'] = axferTxn.id;
+        log('lockCoins - axferTxn.id=${axferTxn.id}');
     }
 
     final connector = await WalletConnectAccount.newConnector(sessionId);
+    log('lockCoins - connector=$connector');
     final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
+    log('lockCoins - account=$account');
 
     final signedTxnsBytes = await account.sign(txns);
     log('lockCoins - signed $signedTxnsBytes');
