@@ -47,7 +47,6 @@ Future<void> main() async {
               appId: "1:453884442411:web:dad8591e5125eb8998776e")
           : null);
   await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
-  // FirebaseFunctions.instanceFor(app: app).useFunctionsEmulator('192.168.29.73', 5001);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
