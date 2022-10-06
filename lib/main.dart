@@ -74,6 +74,7 @@ Future<void> main() async {
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
+  
   // await _initializeAdmin();
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
