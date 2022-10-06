@@ -192,7 +192,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      log(onError);
+      log("$onError");
     });
   }
 
