@@ -90,7 +90,7 @@ class AlgorandService {
     required String note,
   }) async {
 
-    log('lockCoins - sessionId=$sessionId address=$address net=$net amount=$amount note=$note');
+    log('lockCoins2 - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
 
     final List<RawTransaction> txns = [];
     
@@ -101,7 +101,7 @@ class AlgorandService {
     final payTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: address)
           ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-          ..amount = 3 * MIN_TXN_FEE + amount.assetId == 0 ? amount.num : 0
+          ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
           ..suggestedParams = params
           ..noteText = note)
         .build();
