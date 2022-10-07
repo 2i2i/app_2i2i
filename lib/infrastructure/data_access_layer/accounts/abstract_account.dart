@@ -142,7 +142,7 @@ class AccountService {
     Map<String, List<String>> map = {};
     List<String> val = await getAllWalletConnectAccounts();
     for (String id in val) {
-      var connector = await WalletConnectAccount.newConnector(id);
+      final connector = await WalletConnectAccount.newConnector(id);
       map[id] = connector.session.accounts;
       // addresses.addAll(connector.session.accounts);
     }
