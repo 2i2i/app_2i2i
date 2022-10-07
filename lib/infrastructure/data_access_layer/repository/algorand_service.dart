@@ -23,23 +23,19 @@ class AlgorandLib {
   static const Map<AlgorandNet, String> API_URL = {
     AlgorandNet.mainnet: AlgoExplorer.MAINNET_ALGOD_API_URL,
     AlgorandNet.testnet: AlgoExplorer.TESTNET_ALGOD_API_URL,
-    AlgorandNet.betanet: AlgoExplorer.BETANET_ALGOD_API_URL,
   };
   static const Map<AlgorandNet, String> INDEXER_URL = {
     AlgorandNet.mainnet: AlgoExplorer.MAINNET_INDEXER_API_URL,
     AlgorandNet.testnet: AlgoExplorer.TESTNET_INDEXER_API_URL,
-    AlgorandNet.betanet: AlgoExplorer.BETANET_INDEXER_API_URL,
   };
   static const Map<AlgorandNet, String> API_KEY = {
     AlgorandNet.mainnet: '',
     AlgorandNet.testnet: '',
-    AlgorandNet.betanet: '',
   };
 
   // static const Map<AlgorandNet, String> API_KEY = {
   //   AlgorandNet.mainnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   //   AlgorandNet.testnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
-  //   AlgorandNet.betanet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
@@ -54,12 +50,10 @@ class AlgorandService {
   static Map<AlgorandNet, int> SYSTEM_ID = {
     AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
     AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_TESTNET']!),
-    // AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_BETANET']!),
   };
   static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
     AlgorandNet.mainnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_MAINNET']!,
     AlgorandNet.testnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_TESTNET']!,
-    // AlgorandNet.betanet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 
@@ -90,7 +84,7 @@ class AlgorandService {
     required String note,
   }) async {
 
-    log('lockCoins2 - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
+    log('lockCoins - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
 
     final List<RawTransaction> txns = [];
     
