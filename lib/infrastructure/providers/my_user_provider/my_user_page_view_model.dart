@@ -67,9 +67,8 @@ class MyUserPageViewModel {
             Navigator.of(context).maybePop();
             return false;
           }
-        } else {
-          addressOfUserB = addresses.first;
         }
+        addressOfUserB = addresses.first;
       }
       CustomAlertWidget.loader(true, context);
       await acceptCall(bidIns, addressOfUserB, context);
