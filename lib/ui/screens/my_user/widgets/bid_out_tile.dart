@@ -112,7 +112,7 @@ class BidOutTile extends ConsumerWidget {
                         if (!showLoaderIds.value.contains(bidOut.id)) {
                           showLoaderIds.value.add(bidOut.id);
                           showLoaderIds.value = List.from(showLoaderIds.value);
-                          await ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut);
+                          await ref.read(myUserPageViewModelProvider)?.cancelOwnBid(bidOut: bidOut, context: context);
                         }
                       },
                       yesButtonTextStyle: TextStyle(color: Theme.of(context).errorColor),
