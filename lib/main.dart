@@ -70,7 +70,7 @@ Future<void> main() async {
   FirebaseNotifications();
 
   //region DEBUG
-  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
