@@ -4,7 +4,6 @@ import 'package:app_2i2i/infrastructure/commons/instagram_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
-import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/commons/custom_app_bar.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
@@ -495,11 +494,11 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
         CustomAlertWidget.loader(true, context, rootNavigator: true);
 
         await account.save(id);
-        var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address, userName: setupUserViewModel.userInfoModel!.name);
+        // var socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: account.address, userName: setupUserViewModel.userInfoModel!.name);
         await myAccountPageViewModel.updateDBWithNewAccount(account.address, type: 'WC');
         await myAccountPageViewModel.updateAccounts();
         await account.setMainAccount();
-        await setupUserViewModel.signInProcess(userId, socialLinkModel: socialLinksModel);
+        await setupUserViewModel.signInProcess(userId);
 
         CustomAlertWidget.loader(false, context, rootNavigator: true);
 
