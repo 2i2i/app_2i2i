@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ui/commons/custom_alert_widget.dart';
+import '../../../ui/screens/my_user/widgets/bid_out_tile.dart';
 import '../../../ui/screens/my_user/widgets/wallet_connect_instruction_dialog.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -67,9 +68,8 @@ class MyUserPageViewModel {
             Navigator.of(context).maybePop();
             return false;
           }
-        } else {
-          addressOfUserB = addresses.first;
         }
+        addressOfUserB = addresses.first;
       }
       CustomAlertWidget.loader(true, context);
       await acceptCall(bidIns, addressOfUserB, context);
@@ -132,14 +132,20 @@ class MyUserPageViewModel {
     return database.cancelBid(A: bidIn.private!.A, B: user.id, bidId: bidIn.public.id);
   }
 
-  Future cancelOwnBid({required BidOut bidOut}) async {
-    if (!bidOut.active) return;
+  Future cancelOwnBid({required BidOut bidOut, required BuildContext context}) async {
+    try {
+      if (!bidOut.active) return;
 
-    if (bidOut.speed.num == 0) {
-      return database.cancelBid(A: user.id, B: bidOut.B, bidId: bidOut.id);
+      if (bidOut.speed.num == 0) {
+        return database.cancelBid(A: user.id, B: bidOut.B, bidId: bidOut.id);
+      }
+      final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
+      await cancelBid.call({'bidId': bidOut.id});
+    } on FirebaseFunctionsException catch (error) {
+      CustomAlertWidget.showToastMessage(context, error.message ?? "");
+      showLoaderIds.value.removeWhere((element) => element == bidOut.id);
+      // print(error.message);
     }
-    final HttpsCallable cancelBid = functions.httpsCallable('cancelBid');
-    await cancelBid.call({'bidId': bidOut.id});
   }
 
   Future updateHangout(UserModel user) => userChanger.updateSettings(user);

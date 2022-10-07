@@ -184,7 +184,7 @@ class en {
       Keys.noInternetMessage: 'You are not connected to the internet. Make sure WI-FI is on. Airplane Mode is off and try again',
       Keys.noKeyFound: "We can't find account from this keys",
       Keys.no: 'No',
-      Keys.yes: 'yes',
+      Keys.yes: 'Yes',
       Keys.transactionConfirmMsg: 'Are you sure to do the transaction from your wallet?',
       Keys.pleaseConfirm: 'Please Confirm',
       Keys.okay: 'Okay',

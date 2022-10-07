@@ -494,7 +494,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final availableBalance = _accountBalance - _minAccountBalance;
     maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
-    if (val != 0) {
+    if (speed.num != 0) {
       final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
@@ -573,7 +573,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     var val = getSpeedFromText(speedController.text);
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) return true;
-    if (speed.num == 0) return false;
+    if (speed.num == 0) {
+      return false;
+    }
     if (address == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
