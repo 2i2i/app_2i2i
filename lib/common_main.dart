@@ -116,7 +116,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       await updateHeartbeat(Status.ONLINE);
       ref.read(appSettingProvider).getTheme(widget.themeMode);
       ref.read(appSettingProvider).getLocal(widget.local);
-      // await ref.read(appSettingProvider).checkIfUpdateAvailable();
+      await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
         Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
