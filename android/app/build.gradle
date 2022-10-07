@@ -86,6 +86,7 @@ android {
 
     buildTypes {
         release {
+            shrinkResources false
             signingConfig signingConfigs.release
         }
     }
