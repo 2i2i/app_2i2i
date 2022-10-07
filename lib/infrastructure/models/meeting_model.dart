@@ -49,6 +49,7 @@ class MeetingStatusWithTS {
   Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
+      // 'ts': FieldValue.serverTimestamp(), // this is not working, though its more what we need
       'ts': ts.toString(),
     };
   }
