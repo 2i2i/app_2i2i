@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileIcon extends ConsumerWidget {
+  final bool isActiveIcon;
+
+  ProfileIcon({this.isActiveIcon = false});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final normalReturn = selectedIcon('assets/icons/person.svg', context);
@@ -21,10 +25,33 @@ class ProfileIcon extends ConsumerWidget {
     if ((bidInList.value ?? []).isEmpty) {
       return normalReturn;
     }
+
     List<BidInPublic> bids = bidInList.value ?? [];
     if (bids.isEmpty) {
       return normalReturn;
     }
+
+    return SizedBox(
+      height: 30,
+      width: 30,
+      child: Stack(
+        children: [
+          selectedIcon('assets/icons/person.svg', context, isSelected: isActiveIcon),
+          Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              height: 15,
+              width: 15,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
 
     return FutureBuilder(
       future: SecureStorage().read(Keys.myReadBids),
