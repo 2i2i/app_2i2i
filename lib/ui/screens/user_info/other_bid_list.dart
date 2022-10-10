@@ -41,6 +41,9 @@ class OtherBidInList extends ConsumerWidget {
       itemBuilder: (_, ix) {
         final myBidOut = bidOutIdsList.contains(bidIns[ix].id);
 
+        if (!bidIns[ix].active) {
+          return Container();
+        }
         return OtherBidTile(
           bidIn: bidIns[ix],
           user: user,
