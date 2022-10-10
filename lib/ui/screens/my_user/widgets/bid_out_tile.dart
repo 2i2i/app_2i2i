@@ -2,12 +2,14 @@ import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
+import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_alert_widget.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
@@ -61,6 +63,9 @@ class BidOutTile extends ConsumerWidget {
                 borderRadius: 10,
                 hideShadow: true,
                 showBorder: false,
+                onTap: () => context.pushNamed(Routes.user.nameFromPath(), params: {
+                  'uid': user.id,
+                }),
                 statusColor: statusColor,
                 style: Theme.of(context).textTheme.headline5,
               ),
