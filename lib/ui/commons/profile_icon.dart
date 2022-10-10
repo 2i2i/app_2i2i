@@ -62,6 +62,7 @@ class ProfileIcon extends ConsumerWidget {
         List<String> localIds = snapshot.data!.split(',').toSet().toList();
         List serverIds = bids.map((e) => e.id).toSet().toList();
         bool anyNew = serverIds.any((element) => !localIds.contains(element));
+
         if (!anyNew) {
           return normalReturn;
         }
