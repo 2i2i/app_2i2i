@@ -8,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../infrastructure/commons/utils.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
-import '../../infrastructure/providers/all_providers.dart';
 import '../screens/my_account/widgets/qr_image_widget.dart';
 
 ValueNotifier<String> userIdNav = ValueNotifier("");
@@ -58,11 +57,11 @@ class Custom {
           if (uri.queryParameters['uid'] is String) {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            // isUserLocked.notifyListeners();
           } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
             String userId = uri.pathSegments.last;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            // isUserLocked.notifyListeners();
           }
         });
       } catch (e) {
@@ -83,12 +82,12 @@ class Custom {
       if (uri.queryParameters['uid'] is String) {
         userId = uri.queryParameters['uid'] as String;
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        // isUserLocked.notifyListeners();
       } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
         String userId = uri.pathSegments.last;
         print(userId);
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        // isUserLocked.notifyListeners();
       }
     }
   }
