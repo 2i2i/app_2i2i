@@ -75,10 +75,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                     ),
                     BottomNavigationBarItem(
                       label: Keys.profile.tr(context),
-                      activeIcon: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: SvgPicture.asset('assets/icons/person.svg', color: Theme.of(context).colorScheme.secondary),
-                      ),
+                      activeIcon: ProfileIcon(isActiveIcon: true),
                       icon: ProfileIcon(),
                     ),
                     BottomNavigationBarItem(
