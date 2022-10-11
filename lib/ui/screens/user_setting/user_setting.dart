@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -474,7 +475,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
+      speedEditController.text = (user.rule.minSpeed / pow(10, 6)).toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -580,12 +581,12 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
+    final minSpeedPerHourinALGO = minSpeedPerHour / pow(10, 6);
     // final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);

@@ -37,7 +37,7 @@ class BidInTile extends StatelessWidget {
       totalDuration += thisBidMaxDuration;
     }
     budgetCountInt += bidInList[index].public.energy;
-    final budgetCount = budgetCountInt / MILLION;
+    final budgetCount = budgetCountInt / pow(10, 6);
 
     if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -107,7 +107,7 @@ class BidInTile extends StatelessWidget {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: (bidIn.public.speed.num / MILLION).toString(),
+                    text: (bidIn.public.speed.num / pow(10, 6)).toString(),
                     children: [
                       TextSpan(
                         text: '\nALGO/s',

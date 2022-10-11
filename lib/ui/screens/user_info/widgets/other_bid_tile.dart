@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +34,7 @@ class OtherBidTile extends ConsumerWidget {
             ),
             title: RichText(
               text: TextSpan(
-                text: (bidIn.speed.num / MILLION).toString(),
+                text: (bidIn.speed.num / pow(10, 6)).toString(),
                 children: [
                   TextSpan(
                     text: ' ALGO/s',

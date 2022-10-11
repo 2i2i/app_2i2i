@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -48,7 +50,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
                     ],
                   ),
                 ),
-                Text('${meeting.speed.num / MILLION} ALGO/sec', style: Theme.of(context).textTheme.subtitle2),
+                Text('${meeting.speed.num / pow(10, 6)} ALGO/sec', style: Theme.of(context).textTheme.subtitle2),
               ],
             ),
           ),

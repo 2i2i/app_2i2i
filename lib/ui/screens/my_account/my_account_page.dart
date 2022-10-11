@@ -1,12 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
 import '../my_user/widgets/wallet_connect_dialog.dart';
-import 'widgets/account_info.dart';
+import 'widgets/account_asset_info.dart';
 import 'widgets/add_account_options_widget.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
@@ -45,29 +47,34 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               ),
             ),
             SizedBox(height: 15),
-            Expanded(
-              child: Builder(builder: (context) {
-                if (myAccountPageViewModel.isLoading) {
-                  return WaitPage(
-                    isCupertino: true,
-                  );
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: myAccountPageViewModel.addresses.length,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                  itemBuilder: (BuildContext context, int index) {
-                    String address = myAccountPageViewModel.addresses[index];
-                    return AccountInfo(
-                      true,
-                      index: index,
-                      key: ObjectKey(myAccountPageViewModel.addresses[index]),
-                      address: address,
-                    );
-                  },
+            Expanded(child: Builder(builder: (context) {
+              if (myAccountPageViewModel.isLoading) {
+                return WaitPage(
+                  isCupertino: true,
                 );
-              }),
-            ),
+              }
+              return FutureBuilder(
+                  future: myAccountPageViewModel.addressBalanceCombos,
+                  builder: (context, addressAssetCombosData) {
+                    final addressAssetCombos = addressAssetCombosData.data as List<Tuple2<String, Balance>>;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: addressAssetCombos.length,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      itemBuilder: (BuildContext context, int index) {
+                        String address = addressAssetCombos[index].item1;
+                        Balance balance = addressAssetCombos[index].item2;
+                        return AccountAssetInfo(
+                          true,
+                          index: index,
+                          key: ObjectKey(addressAssetCombos[index]),
+                          address: address,
+                          balance: balance,
+                        );
+                      },
+                    );
+                  });
+            }))
           ],
         ),
       ),

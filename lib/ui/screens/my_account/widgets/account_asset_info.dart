@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
@@ -13,36 +16,36 @@ import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_alert_widget.dart';
 
-class AccountInfo extends ConsumerStatefulWidget {
+class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final int index;
 
-  AccountInfo(
+  AccountAssetInfo(
     this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
     required this.index,
     required this.address,
+    required this.balance,
   }) : super(key: key);
 
-  // final AbstractAccount account;
   final String address;
+  Balance balance;
 
-  // List<Balance> balances;
   final void Function()? afterRefresh;
 
   @override
-  _AccountInfoState createState() => _AccountInfoState();
+  _AccountAssetInfoState createState() => _AccountAssetInfoState();
 }
 
-class _AccountInfoState extends ConsumerState<AccountInfo> {
+class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   List<String> keyList = [];
-  List<Balance> balances = [];
+  Asset? asset;
 
   @override
   void initState() {
-    getBalance().then((value) {
-      balances = value;
+    getAsset().then((value) {
+      asset = value;
       if (mounted) {
         setState(() {});
       }
@@ -50,22 +53,34 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
     super.initState();
   }
 
-  Future<List<Balance>> getBalance() {
-    var myAccount = ref.read(myAccountPageViewModelProvider);
-    return myAccount.getBalanceFromAddress(widget.address);
+  Future<Balance> getBalance() async {
+    final myAccount = ref.read(myAccountPageViewModelProvider);
+    final balances = await myAccount.getBalanceFromAddress(widget.address);
+    for(final b in balances) {
+      if (b.assetHolding.assetId == asset!.index) {
+        return b;
+      }
+    }
+    throw "_AccountAssetInfoState - getBalance error - asset!.index=${asset!.index}";
+  }
+
+  Future<Asset> getAsset() async {
+    final myAccount = ref.read(myAccountPageViewModelProvider);
+    return myAccount.getAsset(widget.balance.assetHolding.assetId);
   }
 
   @override
   Widget build(BuildContext context) {
-    String assetName = Keys.ALGO.tr(context);
-    String amount = '0';
+    String assetName = '-';
+    String amount = '-';
 
-    if (balances.isNotEmpty) {
-      Balance balanceModel = balances.first;
-      final assetId = balanceModel.assetHolding.assetId;
-      var a = (balanceModel.assetHolding.amount / MILLION);
+    // set assetName and amount
+    if (asset != null) {
+      assetName = asset!.params.unitName ?? (asset!.params.name ?? asset!.index.toString());
+
+      final divisor = pow(10, asset!.params.decimals);
+      final a = widget.balance.assetHolding.amount / divisor;
       amount = doubleWithoutDecimalToInt(a).toString();
-      assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
     }
 
     return Container(
@@ -171,9 +186,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       color: iconColor(context),
                     ),
                     onPressed: () async {
+                      if (asset == null) return;
                       CustomAlertWidget.loader(true, context);
-                      var val = await getBalance();
-                      balances = val;
+                      widget.balance = await getBalance();
                       if (widget.afterRefresh != null) widget.afterRefresh!();
                       CustomAlertWidget.loader(false, context);
                       setState(() {});

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +46,7 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     int amount = meetingModel.energy['B'] ?? 0;
     if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
-    double amountInALGO = amount / MILLION;
+    double amountInALGO = amount / pow(10, 6);
 
     return InkResponse(
       onTap: onTap,

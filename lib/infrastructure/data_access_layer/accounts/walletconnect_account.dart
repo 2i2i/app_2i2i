@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
@@ -44,6 +45,7 @@ class WalletConnectAccount extends AbstractAccount {
 
   // TODO cache management
   Future<void> save(String sessionId) async {
+    log('save sessionId=$sessionId');
     // final List<Future<void>> futures = [];
     // for (int i = 0; i < connector.session.accounts.length; i++) {
     // final account = WalletConnectAccount(

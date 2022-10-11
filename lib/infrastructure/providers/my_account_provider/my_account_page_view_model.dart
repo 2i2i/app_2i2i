@@ -1,8 +1,9 @@
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:tuple/tuple.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/accounts/walletconnect_account.dart';
@@ -30,16 +31,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<void> initMethod() async {
     try {
-      log('MyAccountPageViewModel initMethod 1');
       algorandLib = await ref!.watch(algorandLibProvider);
-      log('MyAccountPageViewModel initMethod 2');
       storage = await ref!.watch(storageProvider);
-      log('MyAccountPageViewModel initMethod 3');
       accountService = await ref!.watch(accountServiceProvider);
-      log('MyAccountPageViewModel initMethod 4');
       // accounts = await accountService!.getAllAccounts();
       walletConnectAccounts = await accountService!.getAllWalletAddress();
-      log('MyAccountPageViewModel initMethod 5');
       isLoading = false;
     } catch (e) {
       log("$e");
@@ -52,43 +48,53 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Asset> getAsset(int assetId) async => (await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId)).asset;
+
   Future<List<Balance>> getBalanceFromAddress(String address) async {
-    if (accountService != null) {
-      final assetHoldings = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
-      var balances = assetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
-      return balances;
-    }
-    return [];
+    // if (accountService != null) {
+    final assetHoldings = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
+    final balances = assetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
+    return balances;
+    // }
+    // return [];
   }
 
   Future<int> getMinBalance({required String address}) async {
-    try {
-      if (algorandLib != null) {
-        final account = await algorandLib!.client[AppConfig().ALGORAND_NET]?.getAccountByAddress(address);
-        return account?.minimumBalance?.toInt() ?? 0;
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-    return 0;
+    // try {
+    // if (algorandLib != null) {
+    final account = await algorandLib!.client[AppConfig().ALGORAND_NET]!.getAccountByAddress(address);
+    return account.minimumBalance?.toInt() ?? 0;
+    // }
+    // throw "";
+    // } catch (e) {
+    //   debugPrint(e.toString());
+    // }
+    // return 0;
   }
 
   Future<int> getAlgoBalance({required String address}) async {
-    try {
-      List list = await getBalanceFromAddress(address);
-      for (final b in list) {
-        if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
-      }
-    } catch (e) {
-      debugPrint(e.toString());
+    // try {
+    List list = await getBalanceFromAddress(address);
+    for (final b in list) {
+      if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
     }
-    return 0;
+    throw "getAlgoBalance - ALGO balance not found - should never happen - address=$address";
+    // } catch (e) {
+    //   debugPrint(e.toString());
+    // }
+    // return 0;
   }
 
-  List<String> get addresses {
-    List<String> values = [];
-    for (List<String> val in walletConnectAccounts.values) {
-      values.addAll(val);
+  Future<List<Tuple2<String, Balance>>> get addressBalanceCombos async {
+    List<Tuple2<String, Balance>> values = [];
+    for (List<String> addressList in walletConnectAccounts.values) {
+      for (final address in addressList) {
+        final balanceList = await getBalanceFromAddress(address);
+        for (final balance in balanceList) {
+          final t = Tuple2<String, Balance>(address, balance);
+          values.add(t);
+        }
+      }
     }
     return values;
   }

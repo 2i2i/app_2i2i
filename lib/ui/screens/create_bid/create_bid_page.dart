@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -11,6 +12,7 @@ import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -18,7 +20,7 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
-import '../my_account/widgets/account_info.dart';
+import '../my_account/widgets/account_asset_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 import '../my_user/widgets/wallet_connect_dialog.dart';
 import 'top_card_widget.dart';
@@ -84,7 +86,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       if (!focusNode.hasFocus) {
         var val = getSpeedFromText(speedController.text);
         if (val < speed.num) {
-          speedController.text = (speed.num / MILLION).toString();
+          speedController.text = (speed.num / pow(10, 6)).toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
@@ -196,45 +198,51 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
-                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6)
-                        : null,
+                    constraints:
+                        myAccountPageViewModel.walletConnectAccounts.length > 0 ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6) : null,
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
                           // List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
 
-                          return PageView.builder(
-                            controller: controller,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: myAccountPageViewModel.addresses.length,
-                            itemBuilder: (_, index) {
-                              // AbstractAccount? abstractAccount = accountsList[index];
-                              String address = myAccountPageViewModel.addresses.elementAt(index);
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: AccountInfo(
-                                      false,
-                                      key: ObjectKey(address),
-                                      // account: abstractAccount,
-                                      afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
-                                      index: index,
-                                      address: address,
-                                      // balances: myAccountPageViewModel.accountBalancesMap[address]!,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                            onPageChanged: (int val) {
-                              if (mounted) {
-                                currentAccountIndex = val;
-                                updateAccountBalance(myAccountPageViewModel, accountIndex: val);
-                              }
-                            },
-                          );
+                          return FutureBuilder(
+                              future: myAccountPageViewModel.addressBalanceCombos,
+                              builder: (context, addressBalanceCombosData) {
+                                final addressBalanceCombos = addressBalanceCombosData.data as List<Tuple2<String, Balance>>;
+                                return PageView.builder(
+                                  controller: controller,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: addressBalanceCombos.length,
+                                  itemBuilder: (_, index) {
+                                    // AbstractAccount? abstractAccount = accountsList[index];
+                                    final address = addressBalanceCombos[index].item1;
+                                    final balance = addressBalanceCombos[index].item2;
+                                    return Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: AccountAssetInfo(
+                                            false,
+                                            key: ObjectKey(address),
+                                            // account: abstractAccount,
+                                            afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
+                                            index: index,
+                                            address: address,
+                                            balance: balance,
+                                            // balances: myAccountPageViewModel.accountBalancesMap[address]!,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  onPageChanged: (int val) {
+                                    if (mounted) {
+                                      currentAccountIndex = val;
+                                      updateAccountBalance(myAccountPageViewModel, accountIndex: val);
+                                    }
+                                  },
+                                );
+                              });
                         }
                         return Container(
                           padding: EdgeInsets.all(12),
@@ -363,7 +371,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (value) {
                               int num = getSpeedFromText(value ?? '');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / MILLION}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, 6)}';
                               }
                               return null;
                             },
@@ -390,10 +398,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -436,11 +441,24 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
+  int getAddressComboIndexByAddress(List<Tuple2<String, Balance>> addressBalanceCombos, String address) {
+    // int index = addressBalanceCombos.indexOf(addressOfAccount!);
+    int index = -1;
+    for (int i = 0; i < addressBalanceCombos.length; i++) {
+      if (addressBalanceCombos[i].item1 == address) {
+        index = i;
+        break;
+      }
+    }
+    if (index == -1) throw "getAddressComboIndexByAddress - address=$address";
+    return index;
+  }
+
   Future<void> addWalletAccount(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     String? addressOfAccount = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
     if (addressOfAccount?.isNotEmpty ?? false) {
-      final x = myAccountPageViewModel.addresses;
-      int index = x.indexOf(addressOfAccount!);
+      final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+      int index = getAddressComboIndexByAddress(addressBalanceCombos, addressOfAccount!);
       if (controller.hasClients) {
         controller.jumpToPage(index > 0 ? index : 0);
         controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
@@ -452,11 +470,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     CustomAlertWidget.showBottomSheet(
       context,
       child: AddAccountOptionsWidgets(
-        accountAddListener: (String? address) {
+        accountAddListener: (String? address) async {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x = myAccountPageViewModel.addresses;
-            int index = x.indexOf(address);
+            final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+            // int index = x.indexOf(address);
+            int index = getAddressComboIndexByAddress(addressBalanceCombos, address);
             if (controller.hasClients) {
               controller.jumpToPage(index > 0 ? index : 0);
               controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
@@ -477,13 +496,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       speed = Quantity(num: val, assetId: 0);
     }
     if (!focusNode.hasFocus) {
-      speedController.text = (speed.num / MILLION).toString();
+      speedController.text = (speed.num / pow(10, 6)).toString();
     }
-    if (myAccountPageViewModel.addresses.isNotEmpty) {
-      if (myAccountPageViewModel.addresses.length > accountIndex) {
-        address = myAccountPageViewModel.addresses[accountIndex];
+    final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+    if (addressBalanceCombos.isNotEmpty) {
+      if (addressBalanceCombos.length > accountIndex) {
+        address = addressBalanceCombos[accountIndex].item1;
       } else {
-        address = myAccountPageViewModel.addresses.first;
+        address = addressBalanceCombos.first.item1;
       }
     }
 
@@ -504,7 +524,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (this.mounted) setState(() {});
   }
 
-  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * MILLION).round();
+  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, 6)).round();
 
   String calcWaitTime(BuildContext context) {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
@@ -556,7 +576,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / MILLION).toString()} A';
+    var amountStr = '${(amount.num / pow(10, 6)).toString()} A';
     if (isInsufficient()) {
       var val = getSpeedFromText(speedController.text);
       bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
