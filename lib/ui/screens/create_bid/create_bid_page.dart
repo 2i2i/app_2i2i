@@ -228,7 +228,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                             afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                             index: index,
                                             address: address,
-                                            balance: balance,
+                                            initBalance: balance,
                                             // balances: myAccountPageViewModel.accountBalancesMap[address]!,
                                           ),
                                         ),

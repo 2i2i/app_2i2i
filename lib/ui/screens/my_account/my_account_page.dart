@@ -69,7 +69,7 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                           index: index,
                           key: ObjectKey(addressAssetCombos[index]),
                           address: address,
-                          balance: balance,
+                          initBalance: balance,
                         );
                       },
                     );
