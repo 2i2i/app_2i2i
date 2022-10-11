@@ -296,7 +296,8 @@ class SetupUserViewModel with ChangeNotifier {
           uid = ids.first;
         } else {
           uid = address;
-          socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: uid);
+          //For Don't show mark
+          // socialLinksModel = SocialLinksModel(accountName: 'WalletConnect', userId: uid);
         }
 
         if (uid?.isNotEmpty ?? false) {

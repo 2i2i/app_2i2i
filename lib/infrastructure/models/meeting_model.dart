@@ -49,6 +49,7 @@ class MeetingStatusWithTS {
   Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
+      // 'ts': FieldValue.serverTimestamp(), // this is not working, though its more what we need
       'ts': ts.toString(),
     };
   }
@@ -107,14 +108,12 @@ class MeetingChanger {
 
   Future endMeeting(Meeting meeting, MeetingStatus status) async {
     log(J + 'endMeeting - status=$status');
-    final now = FieldValue.serverTimestamp();
     final Map<String, dynamic> data = {
       'status': status.toStringEnum(),
       'statusHistory': FieldValue.arrayUnion([
         {'value': status.toStringEnum(), 'ts': DateTime.now().toUtc()}
       ]),
       'active': false,
-      'end': now,
     };
     return database.meetingEndUnlockUser(meeting, data);
   }

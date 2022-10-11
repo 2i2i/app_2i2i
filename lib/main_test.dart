@@ -1,3 +1,10 @@
+// change version in build.gradle and pubspec.yaml and app_setting_model and auth_screen.dart
+// flutter build appbundle --flavor production -t lib/main.dart
+// flutter build ipa --flavor production -t lib/main.dart
+// flutter config --android-sdk /Users/1m1/Documents/android-sdk
+// flutter run --flavor production -t lib/main.dart
+// flutter run --flavor dev -t lib/main_test.dart
+
 // A -> B
 // main actions:
 // createBid - A
@@ -10,7 +17,6 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -47,11 +53,16 @@ Future<void> main() async {
               appId: "1:453884442411:web:dad8591e5125eb8998776e")
           : null);
   await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
-  FirebaseFunctions.instanceFor(app: app).useFunctionsEmulator('192.168.29.73', 5001);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   FirebaseNotifications();
+
+  //region DEBUG
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //endregion DEBUG
 
   // await _initializeAdmin();
 

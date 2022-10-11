@@ -23,23 +23,19 @@ class AlgorandLib {
   static const Map<AlgorandNet, String> API_URL = {
     AlgorandNet.mainnet: AlgoExplorer.MAINNET_ALGOD_API_URL,
     AlgorandNet.testnet: AlgoExplorer.TESTNET_ALGOD_API_URL,
-    AlgorandNet.betanet: AlgoExplorer.BETANET_ALGOD_API_URL,
   };
   static const Map<AlgorandNet, String> INDEXER_URL = {
     AlgorandNet.mainnet: AlgoExplorer.MAINNET_INDEXER_API_URL,
     AlgorandNet.testnet: AlgoExplorer.TESTNET_INDEXER_API_URL,
-    AlgorandNet.betanet: AlgoExplorer.BETANET_INDEXER_API_URL,
   };
   static const Map<AlgorandNet, String> API_KEY = {
     AlgorandNet.mainnet: '',
     AlgorandNet.testnet: '',
-    AlgorandNet.betanet: '',
   };
 
   // static const Map<AlgorandNet, String> API_KEY = {
   //   AlgorandNet.mainnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   //   AlgorandNet.testnet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
-  //   AlgorandNet.betanet: 'MqL3AY7X9O4VCPFjW2XvE1jpjrF87i2B95pXlsoD',
   // };
   AlgorandLib() {
     client[AppConfig().ALGORAND_NET] = Algorand(
@@ -54,12 +50,10 @@ class AlgorandService {
   static Map<AlgorandNet, int> SYSTEM_ID = {
     AlgorandNet.mainnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_MAINNET']!),
     AlgorandNet.testnet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_TESTNET']!),
-    AlgorandNet.betanet: int.parse(dotenv.env['ALGORAND_SYSTEM_ID_BETANET']!),
   };
   static Map<AlgorandNet, String> SYSTEM_ACCOUNT = {
     AlgorandNet.mainnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_MAINNET']!,
     AlgorandNet.testnet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_TESTNET']!,
-    AlgorandNet.betanet: dotenv.env['ALGORAND_SYSTEM_ACCOUNT_BETANET']!,
   };
   static const int MIN_TXN_FEE = 1000;
 
@@ -89,44 +83,54 @@ class AlgorandService {
     required Quantity amount,
     required String note,
   }) async {
-    final List<RawTransaction> txns = [];
 
+    log('lockCoins - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
+
+    final List<RawTransaction> txns = [];
+    
     final params = await algorandLib.client[net]!.getSuggestedTransactionParams();
 
-    final lockTxn = await (PaymentTransactionBuilder()
+    final Map<String, String> result = {};
+
+    final payTxn = await (PaymentTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address: address)
           ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
-          ..amount = amount.num + 4 * MIN_TXN_FEE
+          ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
           ..suggestedParams = params
           ..noteText = note)
         .build();
-    txns.add(lockTxn);
+    txns.add(payTxn);
+    result['pay'] = payTxn.id;
 
-    final arguments = 'str:LOCK'.toApplicationArguments();
-    final appCallTxn = await (ApplicationCallTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: address)
-          ..applicationId = SYSTEM_ID[net]!
-          ..arguments = arguments
-          ..suggestedParams = params)
+    log('lockCoins - payTxn.id=${payTxn.id}');
+
+    if (amount.assetId != 0) {
+      final axferTxn = await (AssetTransferTransactionBuilder()
+          ..assetSender = Address.fromAlgorandAddress(address: address)
+          ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..amount = amount.num
+          ..assetId = amount.assetId
+          ..suggestedParams = params
+          ..noteText = note)
         .build();
-    txns.add(appCallTxn);
+        txns.add(axferTxn);
+        result['axfer'] = axferTxn.id;
+        log('lockCoins - axferTxn.id=${axferTxn.id}');
+    }
 
-    AtomicTransfer.group(txns);
-    log('lockALGO - grouped');
-    var connector = await WalletConnectAccount.newConnector(sessionId);
-    var account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
+    final connector = await WalletConnectAccount.newConnector(sessionId);
+    log('lockCoins - connector=$connector');
+    final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
+    log('lockCoins - account=$account');
 
     final signedTxnsBytes = await account.sign(txns);
-    log('lockALGO - signed $signedTxnsBytes');
+    log('lockCoins - signed $signedTxnsBytes');
 
     try {
       final groupTxId = await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      log('lockALGO - groupTxId $groupTxId');
-      return {
-        'group': groupTxId,
-        'pay': lockTxn.id,
-        'app': appCallTxn.id,
-      };
+      log('lockCoins - groupTxId $groupTxId');
+      result['group'] = groupTxId;
+      return result;
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {

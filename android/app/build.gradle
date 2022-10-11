@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '54'
+    flutterVersionCode = '55'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0.54'
+    flutterVersionName = '1.0.55'
 }
 
 apply plugin: 'com.android.application'
@@ -86,6 +86,7 @@ android {
 
     buildTypes {
         release {
+            shrinkResources false
             signingConfig signingConfigs.release
         }
     }
