@@ -208,6 +208,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                           return FutureBuilder(
                               future: myAccountPageViewModel.addressBalanceCombos,
                               builder: (context, addressBalanceCombosData) {
+                                if (!addressBalanceCombosData.hasData) return Container();
                                 final addressBalanceCombos = addressBalanceCombosData.data as List<Tuple2<String, Balance>>;
                                 return PageView.builder(
                                   controller: controller,

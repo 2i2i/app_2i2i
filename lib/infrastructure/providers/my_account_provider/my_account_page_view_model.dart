@@ -51,25 +51,26 @@ class MyAccountPageViewModel extends ChangeNotifier {
   Future<Asset> getAsset(int assetId) async {
     log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
     
-    final indexerClient = IndexerClient(
-      apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
-      // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
-      apiKey: '',
-    );
+    // final indexerClient = IndexerClient(
+    //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
+    //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
+    //   apiKey: '',
+    // );
 
-    final algorand = Algorand(
-      // algodClient: algodClient,
-      indexerClient: indexerClient,
-    );
+    // final algorand = Algorand(
+    //   // algodClient: algodClient,
+    //   indexerClient: indexerClient,
+    // );
 
-    final assetResponse = await algorand.indexer().getAssetById(assetId);
-    // final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
+    // final assetResponse = await algorand.indexer().getAssetById(assetId);
+    final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
     log('MyAccountPageViewModel getAsset assetResponse=$assetResponse');
     log('MyAccountPageViewModel getAsset assetResponse.asset=${assetResponse.asset}');
     return assetResponse.asset;
   }
 
   Future<List<Balance>> getBalanceFromAddress(String address) async {
+    log(Y + 'getBalanceFromAddress address=$address accountService=$accountService');
     // if (accountService != null) {
     final assetHoldings = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
     final balances = assetHoldings.map((assetHolding) => Balance(assetHolding: assetHolding, net: AppConfig().ALGORAND_NET)).toList();
@@ -79,6 +80,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<int> getMinBalance({required String address}) async {
+    log(Y + 'getMinBalance address=$address algorandLib=$algorandLib');
     // try {
     // if (algorandLib != null) {
     final account = await algorandLib!.client[AppConfig().ALGORAND_NET]!.getAccountByAddress(address);

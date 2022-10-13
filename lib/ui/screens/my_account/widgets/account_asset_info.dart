@@ -39,14 +39,13 @@ class AccountAssetInfo extends ConsumerStatefulWidget {
 }
 
 class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
-
   _AccountAssetInfoState(this.balance);
 
   List<String> keyList = [];
 
-  String assetName = 'ALGO';
-  String iconUrl = 'assets/algo_logo.png';
-  int decimals = 6;
+  String assetName = '-';
+  // String iconUrl = 'assets/algo_logo.png';
+  int decimals = 0;
 
   Balance balance;
 
@@ -76,10 +75,13 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   }
 
   Future<void> getAsset() async {
-
     log('getAsset assetId=$assetId');
 
-    if (assetId == 0) return;
+    if (assetId == 0) {
+      assetName = 'ALGO';
+      decimals = 6;
+      return;
+    }
 
     final myAccount = ref.read(myAccountPageViewModelProvider);
     log('await myAccount.getAsset assetId=$assetId');
@@ -93,11 +95,23 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   @override
   Widget build(BuildContext context) {
-
     // set assetName and amount
     final divisor = pow(10, decimals);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
+
+    final ccyLogo = Image.network(
+      'https://asa-list.tinyman.org/assets/$assetId/icon.png',
+      width: 40,
+      height: 40,
+      fit: BoxFit.fill,
+      errorBuilder: (context, error, stackTrace) => Image.asset(
+        'assets/algo_logo.png',
+        width: 40,
+        height: 40,
+        fit: BoxFit.fill,
+      ),
+    );
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -124,12 +138,13 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                 child: Row(
                   children: [
                     SizedBox(width: 10),
-                    Image.asset(
-                      'assets/algo_logo.png',
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.fill,
-                    ),
+                    // Image.asset(
+                    //   'assets/algo_logo.png',
+                    //   width: 40,
+                    //   height: 40,
+                    //   fit: BoxFit.fill,
+                    // ),
+                    ccyLogo,
                     SizedBox(width: 16),
                     Flexible(
                       child: Text(

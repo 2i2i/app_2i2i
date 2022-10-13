@@ -55,19 +55,20 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
               }
               return FutureBuilder(
                   future: myAccountPageViewModel.addressBalanceCombos,
-                  builder: (context, addressAssetCombosData) {
-                    final addressAssetCombos = addressAssetCombosData.data as List<Tuple2<String, Balance>>;
+                  builder: (context, addressBalanceCombosData) {
+                    if (!addressBalanceCombosData.hasData) return Container();
+                    final addressBalanceCombos = addressBalanceCombosData.data as List<Tuple2<String, Balance>>;
                     return ListView.builder(
                       shrinkWrap: true,
-                      itemCount: addressAssetCombos.length,
+                      itemCount: addressBalanceCombos.length,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                       itemBuilder: (BuildContext context, int index) {
-                        String address = addressAssetCombos[index].item1;
-                        Balance balance = addressAssetCombos[index].item2;
+                        String address = addressBalanceCombos[index].item1;
+                        Balance balance = addressBalanceCombos[index].item2;
                         return AccountAssetInfo(
                           true,
                           index: index,
-                          key: ObjectKey(addressAssetCombos[index]),
+                          key: ObjectKey(addressBalanceCombos[index]),
                           address: address,
                           initBalance: balance,
                         );

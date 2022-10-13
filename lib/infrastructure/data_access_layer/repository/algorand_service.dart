@@ -98,8 +98,8 @@ class AlgorandService {
     final Map<String, String> result = {};
 
     final payTxn = await (PaymentTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address: address)
-          ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..sender = Address.fromAlgorandAddress(address)
+          ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
           ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
           ..suggestedParams = params
           ..noteText = note)
@@ -111,8 +111,8 @@ class AlgorandService {
 
     if (amount.assetId != 0) {
       final axferTxn = await (AssetTransferTransactionBuilder()
-          ..assetSender = Address.fromAlgorandAddress(address: address)
-          ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+          ..assetSender = Address.fromAlgorandAddress(address)
+          ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
           ..amount = amount.num
           ..assetId = amount.assetId
           ..suggestedParams = params
