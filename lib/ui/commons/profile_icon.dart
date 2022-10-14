@@ -15,7 +15,7 @@ class ProfileIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final normalReturn = selectedIcon('assets/icons/person.svg', context);
+    final normalReturn = selectedIcon('assets/icons/person.svg', context, isSelected: isActiveIcon);
     final userId = ref.watch(myUIDProvider);
     if (userId == null) {
       return normalReturn;
