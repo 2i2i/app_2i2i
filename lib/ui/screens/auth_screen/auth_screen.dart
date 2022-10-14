@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upgrader/upgrader.dart';
 
 import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
@@ -21,6 +22,8 @@ class AuthScreen extends ConsumerStatefulWidget {
 }
 
 class _AuthScreenState extends ConsumerState<AuthScreen> {
+  int count = 0;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -52,7 +55,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
           ? null
           : AppBar(
-        leading: Container(),
+              leading: Container(),
               toolbarHeight: 20,
               title: Text(AlgorandNet.testnet.name + ' - v55' + (widget.updateAvailable ? ' - update: reload page' : '')),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
@@ -60,7 +63,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       // body: SafeArea(child: widget.pageChild),
-      body: SafeArea(child: widget.pageChild),
+      body: SafeArea(
+          child: UpgradeAlert(
+              upgrader: Upgrader(
+                  willDisplayUpgrade: ({required bool display, String? minAppVersion, String? installedVersion, String? appStoreVersion}) {
+                    if (display) {
+                      count++;
+                    }
+                    if (count > 1) {
+                      count = 1;
+                      Navigator.of(context).pop();
+                    }
+                    print(display);
+                    print(minAppVersion);
+                    print(installedVersion);
+                    print(appStoreVersion);
+                  },
+                  minAppVersion: '1.0.56'),
+              child: widget.pageChild)),
       bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBar(),
     );
