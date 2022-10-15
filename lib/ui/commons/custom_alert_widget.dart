@@ -165,6 +165,145 @@ class CustomAlertWidget {
     }
   }
 
+  static Future<void> updateAlertDialog(BuildContext context,
+      {required String title,
+      required String description,
+      String? releaseNote,
+      bool isForceUpdate = false,
+      VoidCallback? updateOnPressed,
+      VoidCallback? secondActionOnPressed}) async {
+    var cupertinoDialog = CupertinoAlertDialog(
+      title: Text(title),
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(description),
+            SizedBox(
+              height: (releaseNote?.isNotEmpty ?? false) ? 20 : 0,
+            ),
+            (releaseNote?.isNotEmpty ?? false)
+                ? Text(
+                    'Release Note:',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  )
+                : Container(),
+            SizedBox(
+              height: (releaseNote?.isNotEmpty ?? false) ? 10 : 0,
+            ),
+            (releaseNote?.isNotEmpty ?? false) ? Text(releaseNote!, textAlign: TextAlign.justify) : Container(),
+          ],
+        ),
+      ),
+      actions: [
+        if (!isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).maybePop();
+              secondActionOnPressed!();
+            },
+            child: Text(
+              'LATER',
+            ),
+          ),
+        if (!isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              updateOnPressed!();
+            },
+            child: Text(
+              'UPDATE NOW',
+            ),
+          ),
+        if (isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              updateOnPressed!();
+            },
+            child: Text(
+              'FORCE UPDATE',
+            ),
+          ),
+      ],
+    );
+    var materialDialog = AlertDialog(
+      title: Text(title),
+      elevation: 2,
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(description),
+            SizedBox(
+              height: (releaseNote?.isNotEmpty ?? false) ? 20 : 0,
+            ),
+            (releaseNote?.isNotEmpty ?? false)
+                ? Text(
+                    'Release Note:',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  )
+                : Container(),
+            SizedBox(
+              height: (releaseNote?.isNotEmpty ?? false) ? 10 : 0,
+            ),
+            (releaseNote?.isNotEmpty ?? false) ? Text(releaseNote!, textAlign: TextAlign.justify) : Container(),
+          ],
+        ),
+      ),
+      actions: [
+        if (!isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).maybePop();
+              secondActionOnPressed!();
+            },
+            child: Text(
+              'LATER',
+            ),
+          ),
+        if (!isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              updateOnPressed!();
+            },
+            child: Text(
+              'UPDATE NOW',
+            ),
+          ),
+        if (isForceUpdate)
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              updateOnPressed!();
+            },
+            child: Text(
+              'FORCE UPDATE',
+            ),
+          ),
+      ],
+    );
+    if (Platform.isIOS) {
+      await showCupertinoDialog(
+        context: context,
+        builder: (context) => WillPopScope(onWillPop: () async => !isForceUpdate, child: cupertinoDialog),
+        barrierDismissible: !isForceUpdate,
+      );
+    } else {
+      await showDialog(
+        context: context,
+        builder: (context) => WillPopScope(onWillPop: () async => !isForceUpdate, child: materialDialog),
+        barrierDismissible: !isForceUpdate,
+      );
+    }
+  }
+
   static loader(bool isLoading, BuildContext context, {String title = '', String message = '', bool rootNavigator = false}) {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.transparent,
@@ -338,8 +477,7 @@ class CustomAlertWidget {
     );
   }
 
-  static customAlertDialog(bool isLoading, BuildContext context,
-      {String title = '', String message = '', bool rootNavigator = false, required VoidCallback? onPressed}) async {
+  static customAlertDialog(BuildContext context, {String title = '', String message = '', bool rootNavigator = false, required VoidCallback? onPressed}) async {
     AlertDialog child = AlertDialog(
       backgroundColor: Colors.white,
       elevation: 0,

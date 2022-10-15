@@ -27,11 +27,17 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
+  bool isPressLater = false;
 
   bool isInternetAvailable = true;
 
   void setInternetStatus(bool value) {
     isInternetAvailable = value;
+    notifyListeners();
+  }
+
+  void setPressLater(bool value) {
+    isPressLater = value;
     notifyListeners();
   }
 
@@ -66,7 +72,9 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   bool updateRequired = false;
-  String version = "1.0.55";
+  AppVersionModel? appVersion;
+  PackageInfo? packageInfo;
+  String version = "1.0.54";
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
@@ -83,14 +91,14 @@ class AppSettingModel extends ChangeNotifier {
     if (kIsWeb) {
       return;
     }
-    AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appVersion = await firebaseDatabase.getAppVersion();
+    packageInfo = await PackageInfo.fromPlatform();
     if (Platform.isAndroid) {
       version = appVersion?.androidVersion ?? "1";
     } else if (Platform.isIOS) {
       version = appVersion?.iosVersion ?? "1";
     }
-    updateRequired = (packageInfo.version != version);
+    updateRequired = ((packageInfo?.version ?? "0") != version);
     notifyListeners();
   }
 

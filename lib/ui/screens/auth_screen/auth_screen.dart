@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/data_access_layer/repository/algorand_service.dart';
@@ -45,6 +47,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             ),
             enableDrag: false,
             isDismissible: false);
+      } else {
+        await ref.read(appSettingProvider).checkIfUpdateAvailable();
+        var appSettingModel = ref.watch(appSettingProvider);
+        if (appSettingModel.updateRequired && !appSettingModel.isPressLater) {
+          String version = Platform.isAndroid ? (appSettingModel.appVersion?.androidVersion ?? "0") : (appSettingModel.appVersion?.iosVersion ?? "0");
+          String packageVersion = appSettingModel.packageInfo?.version ?? "0";
+          CustomAlertWidget.updateAlertDialog(
+            context,
+            title: 'Update App?',
+            description: 'A new version is available! Version $version is now available-you have $packageVersion. Would you like to update to now?',
+            isForceUpdate: (appSettingModel.appVersion?.minAppVersion ?? "0") == packageVersion,
+            releaseNote: appSettingModel.appVersion?.releaseNote ?? "",
+            secondActionOnPressed: () => appSettingModel.setPressLater(true),
+            updateOnPressed: () async {
+              if (appSettingModel.updateRequired && !Platform.isIOS) {
+                await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
+              }
+              if (Platform.isIOS) {
+                await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
+              }
+            },
+          );
+        }
       }
     }
   }
@@ -63,24 +88,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               backgroundColor: Colors.green,
             ),
       // body: SafeArea(child: widget.pageChild),
-      body: SafeArea(
-          child: UpgradeAlert(
-              upgrader: Upgrader(
-                  willDisplayUpgrade: ({required bool display, String? minAppVersion, String? installedVersion, String? appStoreVersion}) {
-                    if (display) {
-                      count++;
-                    }
-                    if (count > 1) {
-                      count = 1;
-                      Navigator.of(context).pop();
-                    }
-                    print(display);
-                    print(minAppVersion);
-                    print(installedVersion);
-                    print(appStoreVersion);
-                  },
-                  minAppVersion: '1.0.56'),
-              child: widget.pageChild)),
+      body: SafeArea(child: widget.pageChild),
       bottomSheet: AddRatingPage(),
       bottomNavigationBar: BottomNavBar(),
     );
