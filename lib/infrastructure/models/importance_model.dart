@@ -1,8 +1,8 @@
 class ImportanceModel {
-  int? lurker;
-  int? chrony;
-  int? highroller;
-  int? eccentric;
+  int? lurker; // uint lurker = 0;
+  int? chrony; // uint
+  int? highroller; // uint
+  int? eccentric; // uint
 
   ImportanceModel({this.lurker, this.chrony, this.highroller, this.eccentric});
 
