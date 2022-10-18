@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_d
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/accounts/walletconnect_account.dart';
@@ -29,6 +30,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   LocalAccount? localAccount;
 
+  List<Tuple2<String, Balance>> addressWithASABalance = [];
+
   Future<void> initMethod() async {
     try {
       algorandLib = await ref!.watch(algorandLibProvider);
@@ -36,6 +39,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
       accountService = await ref!.watch(accountServiceProvider);
       // accounts = await accountService!.getAllAccounts();
       walletConnectAccounts = await accountService!.getAllWalletAddress();
+      addressWithASABalance = await addressBalanceCombos;
       isLoading = false;
     } catch (e) {
       log("$e");
@@ -106,6 +110,18 @@ class MyAccountPageViewModel extends ChangeNotifier {
     // return 0;
   }
 
+  Future<int> getAlgoBalanceFromAsaList({required String address}) async {
+    // try {
+    for (final b in addressWithASABalance) {
+      if (b.item1 == address && b.item2.assetHolding.assetId == 0) return b.item2.assetHolding.amount;
+    }
+    throw "getAlgoBalance - ALGO balance not found - should never happen - address=$address";
+    // } catch (e) {
+    //   debugPrint(e.toString());
+    // }
+    // return 0;
+  }
+
   Future<List<Tuple2<String, Balance>>> get addressBalanceCombos async {
     List<Tuple2<String, Balance>> values = [];
     for (List<String> addressList in walletConnectAccounts.values) {
@@ -117,6 +133,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
         }
       }
     }
+    addressWithASABalance = values;
     return values;
   }
 

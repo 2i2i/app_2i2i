@@ -102,7 +102,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
 
   @override
   void initState() {
-    super.initState();
     initConnectivity();
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
@@ -123,14 +122,14 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         try {
           if (notificationData.isNotEmpty) {
             Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
-            final meetingChanger = ref.watch(meetingChangerProvider);
+            final meetingChanger = ref.read(meetingChangerProvider);
             switch (methodCall.method) {
               case 'CUT':
                 meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
                 break;
               case 'ANSWER':
                 await meetingChanger.acceptMeeting(meetingModel.id);
-                ref.watch(lockedUserViewModelProvider);
+                ref.read(lockedUserViewModelProvider);
                 break;
               case 'MUTE':
                 break;
@@ -144,6 +143,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       });
     });
     Custom.deepLinks(context, mounted);
+    super.initState();
   }
 
   Future<void> initConnectivity() async {
@@ -174,19 +174,19 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
 
   Future<void> updateHeartbeat(Status status) async {
     // log(X + 'updateHeartbeat status=$status');
-    final userChanger = ref.watch(userChangerProvider);
+    final userChanger = ref.read(userChangerProvider);
     timer?.cancel();
 
     if (status == Status.IDLE) {
       userChanger?.updateHeartbeatBackground(setStatus: true); // immediate
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-        final userChanger = ref.watch(userChangerProvider);
+        final userChanger = ref.read(userChangerProvider);
         userChanger?.updateHeartbeatBackground();
       });
     } else if (status == Status.ONLINE) {
       userChanger?.updateHeartbeatForeground(setStatus: true); // immediate
       timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-        final userChanger = ref.watch(userChangerProvider);
+        final userChanger = ref.read(userChangerProvider);
         userChanger?.updateHeartbeatForeground(setStatus: true);
       });
     }
@@ -222,6 +222,7 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     var appSettingModel = ref.watch(appSettingProvider);
+    log(Y + 'Balance: refresh main');
     return MaterialApp.router(
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
