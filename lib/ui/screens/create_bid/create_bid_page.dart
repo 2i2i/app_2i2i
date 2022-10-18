@@ -92,7 +92,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
         }
       }
     });
-    ref.read(myAccountPageViewModelProvider).initMethod();
+    var providerObj = ref.read(myAccountPageViewModelProvider);
+    providerObj.initMethod().then((value) {
+      updateAccountBalance(providerObj);
+    });
+
     super.initState();
   }
 
@@ -101,7 +105,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
 
-    if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null) {
+    if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null || myAccountPageViewModel.isLoading) {
       return WaitPage(
         isCupertino: true,
         height: MediaQuery.of(context).size.height / 2,
@@ -109,8 +113,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
 
     userB = userPageBViewModel.user;
-
-    updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
       appBar: AppBar(
@@ -203,47 +205,40 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
-                          // List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
-
-                          return FutureBuilder(
-                              future: myAccountPageViewModel.addressBalanceCombos,
-                              builder: (context, addressBalanceCombosData) {
-                                if (!addressBalanceCombosData.hasData) return Container();
-                                final addressBalanceCombos = addressBalanceCombosData.data as List<Tuple2<String, Balance>>;
-                                return PageView.builder(
-                                  controller: controller,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: addressBalanceCombos.length,
-                                  itemBuilder: (_, index) {
-                                    // AbstractAccount? abstractAccount = accountsList[index];
-                                    final address = addressBalanceCombos[index].item1;
-                                    final balance = addressBalanceCombos[index].item2;
-                                    return Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: AccountAssetInfo(
-                                            false,
-                                            key: ObjectKey(address),
-                                            // account: abstractAccount,
-                                            afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
-                                            index: index,
-                                            address: address,
-                                            initBalance: balance,
-                                            // balances: myAccountPageViewModel.accountBalancesMap[address]!,
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                  onPageChanged: (int val) {
-                                    if (mounted) {
-                                      currentAccountIndex = val;
-                                      updateAccountBalance(myAccountPageViewModel, accountIndex: val);
-                                    }
-                                  },
-                                );
-                              });
+                          final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
+                          return PageView.builder(
+                            controller: controller,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: addressBalanceCombos.length,
+                            itemBuilder: (_, index) {
+                              // AbstractAccount? abstractAccount = accountsList[index];
+                              final address = addressBalanceCombos[index].item1;
+                              final balance = addressBalanceCombos[index].item2;
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: AccountAssetInfo(
+                                      false,
+                                      key: ObjectKey(address),
+                                      // account: abstractAccount,
+                                      afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
+                                      index: index,
+                                      address: address,
+                                      initBalance: balance,
+                                      // balances: myAccountPageViewModel.accountBalancesMap[address]!,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            onPageChanged: (int val) {
+                              if (mounted) {
+                                currentAccountIndex = val;
+                                updateAccountBalance(myAccountPageViewModel, accountIndex: val);
+                              }
+                            },
+                          );
                         }
                         return Container(
                           padding: EdgeInsets.all(12),
@@ -499,7 +494,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (!focusNode.hasFocus) {
       speedController.text = (speed.num / pow(10, 6)).toString();
     }
-    final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+    // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
     if (addressBalanceCombos.isNotEmpty) {
       if (addressBalanceCombos.length > accountIndex) {
         address = addressBalanceCombos[accountIndex].item1;
@@ -510,7 +506,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     if (address != null) {
       _minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
-      _accountBalance = await myAccountPageViewModel.getAlgoBalance(address: address!);
+      // _accountBalance = await myAccountPageViewModel.getAlgoBalance(address: address!);
+      _accountBalance = await myAccountPageViewModel.getAlgoBalanceFromAsaList(address: address!);
     }
 
     final availableBalance = _accountBalance - _minAccountBalance;
@@ -568,13 +565,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
   }
 
-  double getWidthForSlider(BuildContext context) {
-    double width = MediaQuery.of(context).size.width - 200;
-    if (width <= 250) {
-      return 250;
-    }
-    return width;
-  }
 
   String getConfirmSliderText() {
     var amountStr = '${(amount.num / pow(10, 6)).toString()} A';

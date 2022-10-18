@@ -79,9 +79,9 @@ class AppSettingModel extends ChangeNotifier {
     getLocal(local);
   }
 
-  Future<void> checkIfUpdateAvailable() async {
+  Future<bool> checkIfUpdateAvailable() async {
     if (kIsWeb) {
-      return;
+      return false;
     }
     AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -91,7 +91,8 @@ class AppSettingModel extends ChangeNotifier {
       version = appVersion?.iosVersion ?? "1";
     }
     updateRequired = (packageInfo.version != version);
-    notifyListeners();
+    // notifyListeners();
+    return updateRequired;
   }
 
   void getLocal(String local) {
