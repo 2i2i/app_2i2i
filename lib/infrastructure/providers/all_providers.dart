@@ -66,7 +66,7 @@ final userPageViewModelProvider = Provider.family<UserPageViewModel?, String>((r
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return UserPageViewModel(functions: functions, user: user.asData!.value);
+  return UserPageViewModel(functions: functions, user: user.value!);
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);

@@ -123,7 +123,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TopCard(minWait: await calcWaitTime(context, myAccountPageViewModel), B: userB!),
+          FutureBuilder(
+            future: calcWaitTime(context, myAccountPageViewModel),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                return TopCard(minWait: snapshot.data, B: userB!);
+              }
+              return Container();
+            },
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -200,8 +208,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints:
-                        myAccountPageViewModel.walletConnectAccounts.length > 0 ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6) : null,
+                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
+                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.8)
+                        : null,
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
@@ -394,7 +403,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -511,7 +523,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
 
     final availableBalance = _accountBalance - _minAccountBalance;
-    maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
+    maxMaxDuration = userB?.rule.maxMeetingDuration ?? 300;
     if (speed.num != 0) {
       final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
@@ -567,7 +579,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       }
     }
   }
-
 
   String getConfirmSliderText() {
     var amountStr = '${(amount.num / pow(10, 6)).toString()} A';
