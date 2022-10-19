@@ -1,6 +1,8 @@
 class FirestorePath {
   static String user(String uid) => 'users/$uid';
 
+  static String fx(String assetId) => 'FX/$assetId';
+
   static String users() => 'users';
 
   static String alograndAccounts(String address) => 'alogorand_aaccounts/$address';

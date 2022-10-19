@@ -347,6 +347,11 @@ class FirestoreDatabase {
     return null;
   }
 
+  Future<bool> getAssetIdInfo({required String assetID}) async {
+    DocumentSnapshot? documentSnapshot = await _service.getData(path: FirestorePath.fx(assetID));
+    return documentSnapshot?.exists ?? false;
+  }
+
   Future<List> checkAddressAvailable(String address) async {
     var documentSnapshot = await _service.getCollectionGroupData(
       path: FirestorePath.alograndAccountPath(),

@@ -200,8 +200,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints:
-                        myAccountPageViewModel.walletConnectAccounts.length > 0 ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6) : null,
+                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
+                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6)
+                        : null,
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
@@ -394,7 +395,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -564,7 +568,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       }
     }
   }
-
 
   String getConfirmSliderText() {
     var amountStr = '${(amount.num / pow(10, 6)).toString()} A';

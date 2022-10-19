@@ -35,7 +35,7 @@ class FirestoreService {
     final reference = firestore.doc(path);
     return await reference.get(GetOptions(source: Source.serverAndCache)).catchError(
       (onError) {
-        print(onError);
+        print("$onError");
       },
     );
   }

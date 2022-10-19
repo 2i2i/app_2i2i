@@ -32,6 +32,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   List<Tuple2<String, Balance>> addressWithASABalance = [];
 
+  bool isObjective = true;
+
   Future<void> initMethod() async {
     try {
       algorandLib = await ref!.watch(algorandLibProvider);
@@ -54,7 +56,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<Asset> getAsset(int assetId) async {
     log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
-    
+
     // final indexerClient = IndexerClient(
     //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
     //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
@@ -186,6 +188,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
     await updateDBWithNewAccount(account.address);
     await updateAccounts();
     return account;
+  }
+
+  Future<void> getAssetIdInfo({required String assetID}) async {
+    isObjective = await database.getAssetIdInfo(assetID: assetID);
+    notifyListeners();
   }
 
   Future<void> updateAccounts({bool notify = true}) async {
