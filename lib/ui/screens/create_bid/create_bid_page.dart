@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
@@ -68,6 +69,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int maxDuration = 300;
   int maxMaxDuration = 300;
   int minMaxDuration = 10;
+
+  int assetId = 0;
+  double FXValue = 1;
 
   int _minAccountBalance = 0;
   int _accountBalance = 0;
@@ -495,42 +499,62 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
+
     accountIndex ??= currentAccountIndex;
-    var val = getSpeedFromText(speedController.text);
-    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
-    if (isLessVal) {
-      speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
-    } else {
-      speed = Quantity(num: val, assetId: 0);
+    // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
+    int? accountBalance;
+    if (addressBalanceCombos.isNotEmpty) {
+      final combo = accountIndex < addressBalanceCombos.length ? addressBalanceCombos[accountIndex] : addressBalanceCombos.first;
+      address = combo.item1;
+      assetId = combo.item2.assetHolding.assetId;
+      accountBalance = combo.item2.assetHolding.amount;
     }
+    log(FX + 'address=$address');
+    log(FX + 'assetId=$assetId');
+    log(FX + 'accountBalance=$accountBalance');
+
+    int minAccountBalance = 0;
+    if (assetId != 0) {
+      minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
+    }
+    log(FX + 'minAccountBalance=$minAccountBalance');
+
+    FXValue = await myAccountPageViewModel.getFX(assetId);
+    log(FX + 'FXValue=$FXValue');
+
+    final speedVal = getSpeedFromText(speedController.text);
+    log(FX + 'speedVal=$speedVal');
+    bool isLessVal = speed.num*FXValue < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
+    log(FX + 'isLessVal=$isLessVal');
+    if (isLessVal) {
+      speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: assetId);
+    } else {
+      speed = Quantity(num: speedVal, assetId: assetId);
+    }
+    log(FX + 'speed=$speed speed.assetId=${speed.assetId} speed.num=${speed.num}');
+
     if (!focusNode.hasFocus) {
       speedController.text = (speed.num / pow(10, 6)).toString();
     }
-    // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
-    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
-    if (addressBalanceCombos.isNotEmpty) {
-      if (addressBalanceCombos.length > accountIndex) {
-        address = addressBalanceCombos[accountIndex].item1;
-      } else {
-        address = addressBalanceCombos.first.item1;
-      }
-    }
 
-    if (address != null) {
-      _minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
-      // _accountBalance = await myAccountPageViewModel.getAlgoBalance(address: address!);
-      _accountBalance = await myAccountPageViewModel.getAlgoBalanceFromAsaList(address: address!);
-    }
-
-    final availableBalance = _accountBalance - _minAccountBalance;
+    final availableBalance = accountBalance! - _minAccountBalance;
+    log(FX + 'availableBalance=$availableBalance');
     maxMaxDuration = userB?.rule.maxMeetingDuration ?? 300;
+    log(FX + 'maxMaxDuration=$maxMaxDuration');
     if (speed.num != 0) {
       final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
+      log(FX + 'availableMaxDuration=$availableMaxDuration');
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      log(FX + 'maxMaxDuration=$maxMaxDuration');
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+      log(FX + 'maxMaxDuration=$maxMaxDuration');
     }
     maxDuration = min(maxDuration, maxMaxDuration);
+    log(FX + 'maxDuration=$maxDuration');
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    log(FX + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
+
     if (this.mounted) setState(() {});
   }
 
@@ -538,8 +562,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
-
-    final FXValue = await myAccountPageViewModel.getFX(speed.assetId);
 
     final now = DateTime.now().toUtc();
     final tmpBidIn = BidInPublic(
