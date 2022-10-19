@@ -86,6 +86,13 @@ class AddBidPageViewModel {
           }
         }
 
+        // FX
+        double FXValue = 1;
+        if (speed.assetId != 0) {
+          final FX = await database.getFX(speed.assetId);
+          FXValue = FX!.value!; // crash if no FX
+        }
+
         final bidOut = BidOut(
           id: bidId,
           B: B.id,
@@ -96,6 +103,7 @@ class AddBidPageViewModel {
           addrA: addrA,
           energy: amount.num,
           comment: bidComment,
+          FX: FXValue,
         );
         final bidInPublic = BidInPublic(
           id: bidId,
@@ -105,6 +113,7 @@ class AddBidPageViewModel {
           ts: DateTime.now().toUtc(),
           rule: B.rule,
           energy: amount.num,
+          FX: FXValue,
         );
         final bidInPrivate = BidInPrivate(
           id: bidId,

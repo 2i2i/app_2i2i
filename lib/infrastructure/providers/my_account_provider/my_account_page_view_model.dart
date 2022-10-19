@@ -192,4 +192,10 @@ class MyAccountPageViewModel extends ChangeNotifier {
     await accountService?.getNumAccounts() ?? 0;
     if (notify) notifyListeners();
   }
+
+  Future<double> getFX(int assetId) async {
+    if (assetId == 0) return 1;
+    final fx = await database.getFX(assetId);
+    return fx!.value!;
+  }
 }

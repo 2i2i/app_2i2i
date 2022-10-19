@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -299,6 +300,15 @@ class FirestoreDatabase {
         .handleError((e) {
       print(e);
     });
+  }
+
+  Future<FXModel?> getFX(int assetId) async {
+    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
+    if (snapshot?.data() is Map) {
+      Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
+      return FXModel.fromJson(data!);
+    }
+    return null;
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {

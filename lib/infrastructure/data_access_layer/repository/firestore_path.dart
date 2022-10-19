@@ -47,4 +47,6 @@ class FirestorePath {
   static String iceCandidates(String meetingId, String subCollectionName) => 'meetings/$meetingId/rooms/main/$subCollectionName';
 
   static String algorandAccount(String uid, String algorandAccount) => 'users/$uid/algorand_accounts/$algorandAccount';
+
+  static String FX(int assetId) => 'FX/$assetId';
 }
