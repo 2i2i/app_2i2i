@@ -5,8 +5,8 @@ class FXModel {
   FXModel({this.ts, this.value});
 
   FXModel.fromJson(Map<String, dynamic> json) {
-    ts = json['ts'];
-    value = json['value'];
+    ts = json['ts']?.toDate();
+    value = double.tryParse(json['value'].toString());
   }
 
   Map<String, dynamic> toJson() {
