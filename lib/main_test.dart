@@ -42,7 +42,8 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await dotenv.load(fileName: "assets/.env_dev");
 
-  FirebaseApp app = await Firebase.initializeApp(
+  // FirebaseApp app = 
+  await Firebase.initializeApp(
       options: kIsWeb
           ? FirebaseOptions(
               apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",

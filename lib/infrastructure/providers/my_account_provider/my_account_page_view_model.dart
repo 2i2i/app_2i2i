@@ -3,10 +3,10 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
-import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/accounts/walletconnect_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
@@ -27,8 +27,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   String? uid;
   FirestoreDatabase database;
-
-  LocalAccount? localAccount;
 
   List<Tuple2<String, Balance>> addressWithASABalance = [];
 
@@ -154,39 +152,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
     storage?.remove('wallet_connect_accounts');
   }
 
-  Future<void> addLocalAccount() async {
-    localAccount = await LocalAccount.createWithoutStore(
-      accountService: accountService!,
-      algorandLib: algorandLib!,
-      storage: storage!,
-    );
-    isLoading = false;
-    notifyListeners();
-    // return localAccount;
-  }
-
   Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);
 
-  Future<void> saveLocalAccount(LocalAccount account) async {
-    if (uid == null) return;
-    await account.storeAccount(account.account);
-    await account.updateBalances(net: AppConfig().ALGORAND_NET);
-    await updateDBWithNewAccount(account.address);
-    updateAccounts();
-  }
-
-  Future recoverAccount(List<String> mnemonic) async {
-    if (uid == null) return;
-    final account = await LocalAccount.fromMnemonic(
-      accountService: accountService!,
-      algorandLib: algorandLib!,
-      storage: storage!,
-      mnemonic: mnemonic,
-    );
-    await updateDBWithNewAccount(account.address);
-    await updateAccounts();
-    return account;
-  }
 
   Future<void> updateAccounts({bool notify = true}) async {
     await accountService?.getNumAccounts() ?? 0;
@@ -194,8 +161,10 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<double> getFX(int assetId) async {
+    log(Y + 'getFX assetId=$assetId');
     if (assetId == 0) return 1;
     final fx = await database.getFX(assetId);
+    log(Y + 'getFX fx=$fx');
     return fx!.value!;
   }
 }

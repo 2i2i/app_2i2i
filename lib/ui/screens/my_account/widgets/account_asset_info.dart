@@ -251,53 +251,6 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                     },
                   ),
                 ),
-                /*  Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    iconSize: 18,
-                    icon: Icon(Icons.delete),
-                    onPressed: () async {
-                      CustomAlertWidget.loader(true, context);
-                      await ref.read(myAccountPageViewModelProvider).disconnectAccount(widget.address);
-                      CustomAlertWidget.loader(false, context);
-                      setState(() {});
-                    },
-                  ),
-                ),*/
-                /*if (widget.account is LocalAccount)
-                  Container(
-                    height: 40,
-                    width: 40,
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          iconSize: 18,
-                          icon: SvgPicture.asset(
-                            'assets/icons/key.svg',
-                            color: iconColor(context),
-                          ),
-                          onPressed: () async {
-                            CustomAlertWidget.infoDialog(
-                              context: context,
-                              child: KeysWidget(account: widget.account as LocalAccount),
-                            );
-                            await appSettingModel.setTappedOnKey("1");
-                          },
-                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
-                        ),
-                        Visibility(
-                          visible: widget.index == 0 && !(appSettingModel.isTappedOnKey),
-                          child: Positioned(
-                            top: 0.0,
-                            right: 0.0,
-                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),*/
               ],
             ),
           )

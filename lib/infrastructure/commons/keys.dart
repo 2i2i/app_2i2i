@@ -109,8 +109,6 @@ class Keys {
   static const String walletAccountMsg = 'walletAccountMsg';
   static const String recoverPassphrase = 'recoverPassphrase';
   static const String recoverPassPhaseMsg = 'recoverPassPhaseMsg';
-  static const String addLocalAccount = 'addLocalAccount';
-  static const String addLocalAccountMsg = 'addLocalAccountMsg';
   static const String estMaxDuration = 'estMaxDuration';
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
@@ -147,15 +145,8 @@ class Keys {
   static const String ALGO = 'ALGO';
   static const String pleaseReadCarefully = 'pleaseReadCarefully';
   static const String writeDownRecovery = 'writeDownRecovery';
-  static const String recoverAccount = 'recoverAccount';
   static const String warning = 'warning';
   static const String doNotShare = 'doNotShare';
-  static const String createLocalAccount = 'createLocalAccount';
-  static const String createLocalAccountWarning = 'createLocalAccountWarning';
-  static const String recoverAccounts = 'recoverAccounts';
-  static const String recoverAccountWarning = 'recoverAccountWarning';
-  static const String recover = 'recover';
-  static const String verifyRecovery = 'verifyRecovery';
   static const String selectWord = 'selectWord';
   static const String complete = 'complete';
   static const String accumulatedSupport = 'accumulatedSupport';

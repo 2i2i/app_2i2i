@@ -10,9 +10,10 @@ const String E = 'ERROR - ';
 const String K = 'K - ';
 const String X = 'X - ';
 const String Y = 'Y - ';
+const String FX = 'FX - ';
 
 void log(String message) {
-  if (!message.startsWith(Y)) return;
+  if (!message.startsWith(FX)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   debugPrint('************* - $now ($N): $message');
