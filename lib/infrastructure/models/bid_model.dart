@@ -40,6 +40,7 @@ class BidOut extends Equatable {
     required this.active,
     required this.energy,
     required this.comment,
+    required this.FX,
   });
 
   final String id;
@@ -52,6 +53,7 @@ class BidOut extends Equatable {
   final int energy;
   final String? comment;
   final bool isLoading = false;
+  final double FX;
 
   @override
   List<Object> get props => [id];
@@ -77,6 +79,7 @@ class BidOut extends Equatable {
     }
 
     final int energy = data['energy'];
+    final double FX = double.parse(data['FX'].toString());
 
     String? comment = data['comment'];
 
@@ -90,6 +93,7 @@ class BidOut extends Equatable {
       txns: txns,
       energy: energy,
       comment: comment,
+      FX: FX,
     );
   }
 
@@ -103,6 +107,7 @@ class BidOut extends Equatable {
       'txns': txns,
       'energy': energy,
       'comment': comment,
+      'FX': FX,
     };
   }
 }
@@ -152,6 +157,7 @@ class BidInPublic extends Equatable {
     required this.ts,
     required this.rule,
     required this.energy,
+    required this.FX,
   });
 
   final bool active;
@@ -161,6 +167,7 @@ class BidInPublic extends Equatable {
   final DateTime ts;
   final Rule rule;
   final int energy;
+  final double FX;
 
   @override
   List<Object> get props => [id];
@@ -180,6 +187,7 @@ class BidInPublic extends Equatable {
     final DateTime ts = data['ts'].toDate();
     final Rule rule = Rule.fromMap(data['rule']);
     int energy = data['energy'];
+    final double FX = double.parse(data['FX'].toString());
 
     return BidInPublic(
       id: documentId,
@@ -189,6 +197,7 @@ class BidInPublic extends Equatable {
       ts: ts,
       rule: rule,
       energy: energy,
+      FX: FX,
     );
   }
 
@@ -200,6 +209,7 @@ class BidInPublic extends Equatable {
       'ts': FieldValue.serverTimestamp(),
       'rule': rule.toMap(),
       'energy': energy,
+      'FX': FX,
     };
   }
 

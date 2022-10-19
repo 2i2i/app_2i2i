@@ -123,7 +123,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TopCard(minWait: calcWaitTime(context), B: userB!),
+          TopCard(minWait: await calcWaitTime(context, myAccountPageViewModel), B: userB!),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -524,8 +524,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, 6)).round();
 
-  String calcWaitTime(BuildContext context) {
+  Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
+
+    final FXValue = await myAccountPageViewModel.getFX(speed.assetId);
 
     final now = DateTime.now().toUtc();
     final tmpBidIn = BidInPublic(
@@ -536,6 +538,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       ts: now,
       energy: amount.num,
       rule: userB!.rule,
+      FX: FXValue,
     );
 
     final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
