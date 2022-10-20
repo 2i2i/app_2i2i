@@ -32,8 +32,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   List<Tuple2<String, Balance>> addressWithASABalance = [];
 
-  bool isObjective = true;
-
   Future<void> initMethod() async {
     try {
       algorandLib = await ref!.watch(algorandLibProvider);
@@ -190,9 +188,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
     return account;
   }
 
-  Future<void> getAssetIdInfo({required String assetID}) async {
-    isObjective = await database.getAssetIdInfo(assetID: assetID);
-    notifyListeners();
+  Future<bool> getAssetIdInfo({required String assetID}) async {
+    return await database.getAssetIdInfo(assetID: assetID);
   }
 
   Future<void> updateAccounts({bool notify = true}) async {

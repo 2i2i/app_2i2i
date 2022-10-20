@@ -78,6 +78,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int currentAccountIndex = 0;
   UserModel? userB;
   FocusNode focusNode = FocusNode();
+  bool isAccountObjective = false;
   final dataKey = new GlobalKey();
 
   @override
@@ -503,7 +504,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (addressBalanceCombos.isNotEmpty) {
       if (addressBalanceCombos.length > accountIndex) {
         address = addressBalanceCombos[accountIndex].item1;
+        isAccountObjective = await myAccountPageViewModel.getAssetIdInfo(assetID: addressBalanceCombos[accountIndex].item2.assetHolding.assetId.toString());
       } else {
+        isAccountObjective = await myAccountPageViewModel.getAssetIdInfo(assetID: addressBalanceCombos.first.item2.assetHolding.assetId.toString());
         address = addressBalanceCombos.first.item1;
       }
     }
@@ -591,6 +594,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       return false;
     }
     if (address == null) return true;
+    if (!isAccountObjective) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
     final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
