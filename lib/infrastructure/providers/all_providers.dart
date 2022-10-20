@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../ui/screens/locked_user/lock_watch_widget.dart';
+import '../commons/app_config.dart';
 import '../data_access_layer/accounts/abstract_account.dart';
 import '../data_access_layer/repository/algorand_service.dart';
 import '../data_access_layer/repository/firestore_database.dart';
@@ -419,4 +421,10 @@ final meetingChangerProvider = Provider((ref) {
 final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
+});
+
+// asset
+final assetProvider = FutureProvider.family<Asset, int>((ref, assetId) {
+  final algorand = ref.watch(algorandProvider);
+  return algorand.getAsset(assetId: assetId, net: AppConfig().ALGORAND_NET);
 });

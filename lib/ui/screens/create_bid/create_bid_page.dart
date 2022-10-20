@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -73,8 +74,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int assetId = 0;
   double FXValue = 1;
 
-  int _minAccountBalance = 0;
-  int _accountBalance = 0;
+  int minAccountBalance = 0;
+  int accountBalance = 0;
+
+  Asset? asset;
 
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
@@ -503,18 +506,17 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     accountIndex ??= currentAccountIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
     final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
-    int? accountBalance;
     if (addressBalanceCombos.isNotEmpty) {
       final combo = accountIndex < addressBalanceCombos.length ? addressBalanceCombos[accountIndex] : addressBalanceCombos.first;
       address = combo.item1;
       assetId = combo.item2.assetHolding.assetId;
       accountBalance = combo.item2.assetHolding.amount;
+      asset = await myAccountPageViewModel.getAsset(assetId);
     }
     log(FX + 'address=$address');
     log(FX + 'assetId=$assetId');
     log(FX + 'accountBalance=$accountBalance');
 
-    int minAccountBalance = 0;
     if (assetId != 0) {
       minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
     }
@@ -535,10 +537,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(FX + 'speed=$speed speed.assetId=${speed.assetId} speed.num=${speed.num}');
 
     if (!focusNode.hasFocus) {
-      speedController.text = (speed.num / pow(10, 6)).toString();
+      speedController.text = (speed.num * pow(10, -asset!.params.decimals)).toString();
     }
 
-    final availableBalance = accountBalance! - _minAccountBalance;
+    final availableBalance = accountBalance! - minAccountBalance;
     log(FX + 'availableBalance=$availableBalance');
     maxMaxDuration = userB?.rule.maxMeetingDuration ?? 300;
     log(FX + 'maxMaxDuration=$maxMaxDuration');
@@ -558,7 +560,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (this.mounted) setState(() {});
   }
 
-  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, 6)).round();
+  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, asset!.params.decimals))).round();
 
   Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
@@ -626,8 +628,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (address == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
-    final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
-    if (_accountBalance < minAccountBalanceNeeded) return true;
+    final minAccountBalanceNeeded = minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
+    if (accountBalance < minAccountBalanceNeeded) return true;
 
     return false;
   }
