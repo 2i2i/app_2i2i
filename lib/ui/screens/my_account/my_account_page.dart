@@ -64,12 +64,59 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
                     itemBuilder: (BuildContext context, int index) {
                       String address = addressBalanceCombos[index].item1;
                       Balance balance = addressBalanceCombos[index].item2;
-                      return AccountAssetInfo(
-                        true,
-                        index: index,
-                        key: ObjectKey(addressBalanceCombos[index]),
-                        address: address,
-                        initBalance: balance,
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          AccountAssetInfo(
+                            true,
+                            index: index,
+                            key: ObjectKey(addressBalanceCombos[index]),
+                            address: address,
+                            initBalance: balance,
+                          ),
+                          Positioned(
+                            top: -12,
+                            right: -15,
+                            child: IconButton(
+                              onPressed: () async {
+                                var dialog = AlertDialog(
+                                  title: Text('Disconnect?'),
+                                  content: Text(
+                                    'Are you sure want to disconnect this wallet connect account?\n\n$address',
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Theme.of(context).iconTheme.color,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Theme.of(context).errorColor,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: Text('Disconnect'),
+                                    ),
+                                  ],
+                                );
+                                final isSure = await showDialog(context: context, builder: (context) => dialog);
+                                if (isSure) {
+                                  CustomAlertWidget.loader(true, context);
+                                  await myAccountPageViewModel.disconnectAccount(address);
+                                  CustomAlertWidget.loader(false, context);
+                                }
+                              },
+                              icon: Icon(Icons.cancel),
+                            ),
+                          )
+                        ],
                       );
                     },
                   );
