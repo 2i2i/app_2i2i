@@ -143,6 +143,32 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       Icons.navigate_next,
                     ),
                   ),
+                  Consumer(
+                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                      final redeemCoinModelProviderRef = ref.watch(redeemCoinProvider(uid));
+                      return ListTile(
+                        onTap: () => context.pushNamed(Routes.redeemCoin.nameFromPath()),
+                        title: Row(
+                          children: [
+                            Text(
+                              Keys.redeemCoin.tr(context),
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                            Visibility(
+                              visible: redeemCoinModelProviderRef.value?.isNotEmpty ?? false,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 8),
+                                child: Icon(Icons.brightness_1, size: 12.0, color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Icon(
+                          Icons.navigate_next,
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
