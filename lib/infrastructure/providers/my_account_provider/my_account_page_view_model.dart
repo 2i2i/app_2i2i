@@ -150,6 +150,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     var connector = await WalletConnectAccount.newConnector(sessionId);
     connector.killSession();
     storage?.remove('wallet_connect_accounts');
+    initMethod();
   }
 
   Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);
