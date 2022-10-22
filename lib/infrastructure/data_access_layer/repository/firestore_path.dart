@@ -13,6 +13,8 @@ class FirestorePath {
 
   static String device(String uid) => 'devices/$uid';
 
+  static String redeem(String uid) => 'redeem/$uid';
+
   static String chat(String uid) => 'users/$uid/chat';
 
   static String meetings() => 'meetings';

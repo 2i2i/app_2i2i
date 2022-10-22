@@ -7,6 +7,7 @@ class Routes {
   static const bidOut = '/bidOut';
 
   static const account = '/account';
+  static const redeemCoin = '/redeemCoin';
   static const faq = '/faq';
   static const imi = '/imi';
   static const solli = '/solli';
@@ -70,6 +71,8 @@ extension name on String {
         return 'language';
       case Routes.meetingHistory:
         return 'meeting_history';
+      case Routes.redeemCoin:
+        return 'redeemCoin';
       case Routes.webView:
         return 'web_view';
       default:

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -164,6 +165,7 @@ final topSpeedsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topSpeedsStream();
 });
+
 final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topDurationsStream();
@@ -419,4 +421,10 @@ final meetingChangerProvider = Provider((ref) {
 final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
+});
+
+//Redeem Coin
+final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>?, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.redeemCoinStream(id: uid);
 });
