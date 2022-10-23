@@ -128,6 +128,7 @@ class AddBidPageViewModel {
         await database.addBid(bidOut, bidIn);
 
         TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
+        log(A + 'bUserTokenModel=$bUserTokenModel B.id=${B.id}');
 
         if (bUserTokenModel is TokenModel) {
           Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
