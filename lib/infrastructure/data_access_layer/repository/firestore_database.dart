@@ -12,6 +12,7 @@ import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
+import '../../models/redeem_coin_model.dart';
 import '../../models/room_model.dart';
 import '../../models/token_model.dart';
 import '../../models/user_model.dart';
@@ -403,6 +404,22 @@ class FirestoreDatabase {
     )
         .handleError((error) {
       log(error);
+    });
+  }
+
+  Stream<List<RedeemCoinModel>?> redeemCoinStream({required String id}) {
+    return _service
+        .documentStream(
+      path: FirestorePath.redeem(id),
+      builder: (data, documentId) {
+        if (data != null) {
+          var list = data.entries.toList();
+          return list.map((e) => RedeemCoinModel(asaId: e.key, refDocumentId: documentId, value: e.value)).toList();
+        }
+      },
+    )
+        .handleError((onError) {
+      log("$onError");
     });
   }
 

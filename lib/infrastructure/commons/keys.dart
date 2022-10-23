@@ -42,6 +42,7 @@ class Keys {
   static const String numberHint = 'numberHint';
   static const String numberZeroHint = 'numberZeroHint';
   static const String noRatingsFound = 'noRatingsFound';
+  static const String noRedeemCoinsFound = 'noRedeemCoinsFound';
   static const String algoPerSec = 'algoPerSec';
   static const String algoPerHr = 'algoPerHr';
   static const String hh = 'hh';
@@ -51,6 +52,7 @@ class Keys {
   static const String join = 'join';
   static const String favorites = 'favorites';
   static const String wallet = 'wallet';
+  static const String redeemCoin = 'redeemCoin';
   static const String blockList = 'blockList';
   static const String favList = 'favList';
   static const String fav = 'fav';

@@ -124,6 +124,8 @@ class AccountService {
     List<String> val = await getAllWalletConnectAccounts();
     for (String id in val) {
       final connector = await WalletConnectAccount.newConnector(id);
+      // print('connector.connected ${connector.connected}');
+      // print('connector.session.accounts ${connector.session.accounts}');
       map[id] = connector.session.accounts;
       // addresses.addAll(connector.session.accounts);
     }
