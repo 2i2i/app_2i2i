@@ -121,6 +121,8 @@ class AlgorandService {
         txns.add(axferTxn);
         result['axfer'] = axferTxn.id;
         log(FX + 'lockCoins - axferTxn.id=${axferTxn.id}');
+
+        AtomicTransfer.group(txns);
     }
 
     final connector = await WalletConnectAccount.newConnector(sessionId);
