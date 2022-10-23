@@ -14,7 +14,7 @@ const String FX = 'FX - ';
 const String A = 'A - ';
 
 void log(String message) {
-  if (!message.startsWith(FX)) return;
+  // if (!message.startsWith(FX)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   debugPrint('************* - $now ($N): $message');

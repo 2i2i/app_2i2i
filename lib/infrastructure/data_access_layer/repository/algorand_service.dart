@@ -97,19 +97,29 @@ class AlgorandService {
 
     final Map<String, String> result = {};
 
-    final payTxn = await (PaymentTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address)
-          ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
-          ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
-          ..suggestedParams = params
-          ..noteText = note)
-        .build();
-    txns.add(payTxn);
-    result['pay'] = payTxn.id;
+    if (amount.assetId == 0) {
+      final payTxn = await (PaymentTransactionBuilder()
+            ..sender = Address.fromAlgorandAddress(address)
+            ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
+            ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
+            ..suggestedParams = params
+            ..noteText = note)
+          .build();
+      txns.add(payTxn);
+      result['pay'] = payTxn.id;
+      log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
+    }
+    else {
+      final payTxn = await (PaymentTransactionBuilder()
+            ..sender = Address.fromAlgorandAddress(address)
+            ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
+            ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
+            ..suggestedParams = params)
+          .build();
+      txns.add(payTxn);
+      result['pay'] = payTxn.id;
+      log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
 
-    log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
-
-    if (amount.assetId != 0) {
       final axferTxn = await (AssetTransferTransactionBuilder()
           ..sender = Address.fromAlgorandAddress(address)
           ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
