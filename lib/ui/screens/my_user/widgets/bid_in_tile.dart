@@ -1,7 +1,11 @@
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -11,19 +15,25 @@ import '../../../../infrastructure/models/user_model.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_profile_image_view.dart';
 
-class BidInTile extends StatelessWidget {
+class BidInTile extends ConsumerWidget {
   final List<BidIn> bidInList;
   final int index;
 
   const BidInTile({Key? key, required this.bidInList, required this.index}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var statusColor = AppTheme().green;
 
     BidIn bidIn = bidInList[index];
 
     UserModel user = bidInList[index].user!;
+
+    final FXAsyncValue = ref.watch(FXProvider(bidIn.public.speed.assetId));
+    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+      return CupertinoActivityIndicator();
+    }
+    FXModel FXValue = FXAsyncValue.value!;
 
     int budgetCountInt = 0;
     int totalDuration = 0;
@@ -37,7 +47,7 @@ class BidInTile extends StatelessWidget {
       totalDuration += thisBidMaxDuration;
     }
     budgetCountInt += bidInList[index].public.energy;
-    final budgetCount = budgetCountInt / pow(10, 6);
+    final budgetCount = budgetCountInt / pow(10, FXValue.decimals);
 
     if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -107,10 +117,10 @@ class BidInTile extends StatelessWidget {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: (bidIn.public.speed.num / pow(10, 6)).toString(),
+                    text: (bidIn.public.speed.num / pow(10, FXValue.decimals)).toString(),
                     children: [
                       TextSpan(
-                        text: '\nALGO/s',
+                        text: '\n${FXValue.getName}/s',
                         children: [],
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(
                               color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
@@ -123,10 +133,17 @@ class BidInTile extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 8),
-                Image.asset(
-                  'assets/algo_logo.png',
-                  height: 34,
+                Image.network(
+                  FXValue.iconUrl ?? '',
                   width: 34,
+                  height: 34,
+                  fit: BoxFit.fill,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/algo_logo.png',
+                    width: 34,
+                    height: 34,
+                    fit: BoxFit.fill,
+                  ),
                 ),
                 SizedBox(width: 4),
               ],

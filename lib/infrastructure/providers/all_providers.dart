@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -427,4 +428,10 @@ final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref
 final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>?, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.redeemCoinStream(id: uid);
+});
+
+// FX
+final FXProvider = StreamProvider.family<FXModel, int>((ref, assetId) {
+  final database = ref.watch(databaseProvider);
+  return database.FXStream(assetId: assetId);
 });

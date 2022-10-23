@@ -303,6 +303,22 @@ class FirestoreDatabase {
     });
   }
 
+  Stream<FXModel> FXStream({required int assetId}) {
+    return _service
+        .documentStream(
+      path: FirestorePath.FX(assetId),
+      builder: (data, documentId) {
+        if (data == null) {
+          return FXModel.ALGO(); // TODO should fail actually
+        }
+        return FXModel.fromJson(data, assetId);
+      },
+    )
+        .handleError((e) {
+      print(e);
+    });
+  }
+
   Future<FXModel?> getFX(int assetId) async {
     DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
     if (snapshot?.data() is Map) {

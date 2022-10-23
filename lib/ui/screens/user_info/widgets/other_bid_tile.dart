@@ -1,6 +1,9 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,16 +13,22 @@ import '../../../../infrastructure/commons/utils.dart';
 import '../../../../infrastructure/models/bid_model.dart';
 
 class OtherBidTile extends ConsumerWidget {
-  final BidInPublic bidIn;
-  final UserModel user;
+  final BidInPublic bidInB;
+  final UserModel userB;
   final bool myBidOut;
 
-  const OtherBidTile({Key? key, required this.bidIn, required this.user, this.myBidOut = false}) : super(key: key);
+  const OtherBidTile({Key? key, required this.bidInB, required this.userB, this.myBidOut = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int duration = bidIn.speed.num == 0 ? bidIn.rule.maxMeetingDuration : (bidIn.energy / bidIn.speed.num).round();
+    int duration = bidInB.speed.num == 0 ? bidInB.rule.maxMeetingDuration : (bidInB.energy / bidInB.speed.num).round();
 
+    final FXAsyncValue = ref.watch(FXProvider(bidInB.speed.assetId));
+    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+      return CupertinoActivityIndicator();
+    }
+    FXModel FXValue = FXAsyncValue.value!;
+    
     Widget userItem = Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -27,17 +36,24 @@ class OtherBidTile extends ConsumerWidget {
       child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: ListTile(
-            leading: Image.asset(
-              'assets/algo_logo.png',
-              height: 34,
-              width: 34,
-            ),
+            leading: Image.network(
+                  FXValue.iconUrl ?? '',
+                  width: 34,
+                  height: 34,
+                  fit: BoxFit.fill,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/algo_logo.png',
+                    width: 34,
+                    height: 34,
+                    fit: BoxFit.fill,
+                  ),
+                ),
             title: RichText(
               text: TextSpan(
-                text: (bidIn.speed.num / pow(10, 6)).toString(),
+                text: (bidInB.speed.num / pow(10, FXValue.decimals)).toString(),
                 children: [
                   TextSpan(
-                    text: ' ALGO/s',
+                    text: ' ${FXValue.getName}/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
                       color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),

@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/screens/create_bid/create_bid_page.dart';
@@ -53,7 +54,9 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     if (haveToWait(bidInsAsyncValue)) return WaitPage();
 
     final bidIns = bidInsAsyncValue.value!;
+    // log(B + 'bidIns=$bidIns bidIns.length=${bidIns.length}');
     final bidInsSorted = combineQueues(bidIns, userB.loungeHistory, userB.loungeHistoryIndex);
+    // log(B + 'bidInsSorted=$bidInsSorted bidInsSorted.length=${bidInsSorted.length} userB.loungeHistory=${userB.loungeHistory} userB.loungeHistoryIndex=${userB.loungeHistoryIndex}');
 
     // show est. wait time?
     int? estWaitTime;
@@ -178,8 +181,8 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
           ),
           Expanded(
             child: OtherBidInList(
-              user: userB,
-              bidIns: bidInsSorted,
+              userB: userB,
+              bidInsB: bidInsSorted,
             ),
           ),
         ],
