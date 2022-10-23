@@ -1,7 +1,7 @@
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tuple/tuple.dart';
@@ -50,26 +50,26 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Asset> getAsset(int assetId) async {
-    log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
+  // Future<Asset> getAsset(int assetId) async {
+  //   log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
     
-    // final indexerClient = IndexerClient(
-    //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
-    //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
-    //   apiKey: '',
-    // );
+  //   // final indexerClient = IndexerClient(
+  //   //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
+  //   //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
+  //   //   apiKey: '',
+  //   // );
 
-    // final algorand = Algorand(
-    //   // algodClient: algodClient,
-    //   indexerClient: indexerClient,
-    // );
+  //   // final algorand = Algorand(
+  //   //   // algodClient: algodClient,
+  //   //   indexerClient: indexerClient,
+  //   // );
 
-    // final assetResponse = await algorand.indexer().getAssetById(assetId);
-    final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
-    log('MyAccountPageViewModel getAsset assetResponse=$assetResponse');
-    log('MyAccountPageViewModel getAsset assetResponse.asset=${assetResponse.asset}');
-    return assetResponse.asset;
-  }
+  //   // final assetResponse = await algorand.indexer().getAssetById(assetId);
+  //   final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
+  //   log('MyAccountPageViewModel getAsset assetResponse=$assetResponse');
+  //   log('MyAccountPageViewModel getAsset assetResponse.asset=${assetResponse.asset}');
+  //   return assetResponse.asset;
+  // }
 
   Future<List<Balance>> getBalanceFromAddress(String address) async {
     log(Y + 'getBalanceFromAddress address=$address accountService=$accountService');
@@ -161,11 +161,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  Future<double> getFX(int assetId) async {
+  Future<FXModel> getFX(int assetId) async {
     log(Y + 'getFX assetId=$assetId');
-    if (assetId == 0) return 1;
+    if (assetId == 0) return FXModel.ALGO();
     final fx = await database.getFX(assetId);
     log(Y + 'getFX fx=$fx');
-    return fx!.value!;
+    return fx!;
   }
 }

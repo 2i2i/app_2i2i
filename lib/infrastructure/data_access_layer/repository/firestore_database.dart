@@ -307,7 +307,7 @@ class FirestoreDatabase {
     DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
     if (snapshot?.data() is Map) {
       Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
-      return FXModel.fromJson(data!);
+      return FXModel.fromJson(data!, assetId);
     }
     return null;
   }

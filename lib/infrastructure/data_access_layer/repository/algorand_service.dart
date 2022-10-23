@@ -65,10 +65,10 @@ class AlgorandService {
   final AccountService accountService;
   final AlgorandLib algorandLib;
 
-  Future<Asset> getAsset({required int assetId, required AlgorandNet net}) async {
-    final assetResponse = await algorandLib.client[net]!.indexer().getAssetById(assetId);
-    return assetResponse.asset;
-  }
+  // Future<Asset> getAsset({required int assetId, required AlgorandNet net}) async {
+  //   final assetResponse = await algorandLib.client[net]!.indexer().getAssetById(assetId);
+  //   return assetResponse.asset;
+  // }
 
   // TODO: needs a try-catch ==> Removed
   // Future<TransactionResponse> getTransactionResponse(

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,19 +44,15 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   List<String> keyList = [];
 
-  String assetName = '-';
-  // String iconUrl = 'assets/algo_logo.png';
-  int decimals = 0;
-
+  FXModel FXValue = FXModel.ALGO();
   Balance balance;
 
   @override
   void initState() {
-    getAsset().then((_) {
-      // asset = value;
+    getFX().then((_) {
       if (mounted) {
         setState(() {});
-        log('getAsset setstate in init');
+        log('getFX setstate in init');
       }
     });
     super.initState();
@@ -74,34 +71,27 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     throw "_AccountAssetInfoState - getBalance error - assetId=$assetId";
   }
 
-  Future<void> getAsset() async {
-    log('getAsset assetId=$assetId');
+  Future<void> getFX() async {
+    log('getFX assetId=$assetId');
 
-    if (assetId == 0) {
-      assetName = 'ALGO';
-      decimals = 6;
-      return;
-    }
+    if (assetId == 0) return;
 
     final myAccount = ref.read(myAccountPageViewModelProvider);
-    log('await myAccount.getAsset assetId=$assetId');
-    final asset = await myAccount.getAsset(balance.assetHolding.assetId);
-    assetName = asset.params.unitName ?? (asset.params.name ?? asset.index.toString());
-    decimals = asset.params.decimals;
-    // iconUrl = // TODO
+    log('await myAccount.getFX assetId=$assetId');
+    FXValue = await myAccount.getFX(balance.assetHolding.assetId);
 
-    log('getAsset assetName=$assetName decimals=$decimals');
+    log('getAsset assetName=${FXValue.getName} decimals=${FXValue.decimals}');
   }
 
   @override
   Widget build(BuildContext context) {
     // set assetName and amount
-    final divisor = pow(10, decimals);
+    final divisor = pow(10, FXValue.decimals);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
 
     final ccyLogo = Image.network(
-      'https://asa-list.tinyman.org/assets/$assetId/icon.png',
+      FXValue.iconUrl ?? '',
       width: 40,
       height: 40,
       fit: BoxFit.fill,
@@ -148,7 +138,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                     SizedBox(width: 16),
                     Flexible(
                       child: Text(
-                        assetName,
+                        FXValue.getName,
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,

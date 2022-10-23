@@ -1,18 +1,45 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class FXModel {
-  DateTime? ts;
-  double? value;
+  final int id;
+  final DateTime ts;
+  final double value;
+  final int decimals;
+  final String? name;
+  final String? unitname;
+  final String? iconUrl;
 
-  FXModel({this.ts, this.value});
+  FXModel({required this.id, required this.ts, required this.value, required this.decimals, this.name, this.unitname, this.iconUrl});
 
-  FXModel.fromJson(Map<String, dynamic> json) {
-    ts = json['ts']?.toDate();
-    value = double.tryParse(json['value'].toString());
-  }
+  FXModel.ALGO() :
+  id = 0,
+  ts = DateTime.now(),
+  value = 1,
+  decimals = 6,
+  name = 'ALGO',
+  unitname = 'ALGO',
+  iconUrl = null;
+
+  FXModel.fromJson(Map<String, dynamic> json, int docId) :
+  id = docId,
+  ts = json['ts'].toDate(),
+  value = double.parse(json['value']),
+  decimals = int.parse(json['decimals']),
+  name = json['name'],
+  unitname = json['unitname'],
+  iconUrl = json['iconUrl'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['ts'] = this.ts;
     data['value'] = this.value;
+    data['decimals'] = this.decimals;
+    data['name'] = this.name;
+    data['unitname'] = this.unitname;
+    data['iconUrl'] = this.iconUrl;
     return data;
   }
+
+  String get getName => name ?? (unitname ?? id.toString());
 }

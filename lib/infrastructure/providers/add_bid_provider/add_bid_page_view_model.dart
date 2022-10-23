@@ -90,7 +90,7 @@ class AddBidPageViewModel {
         double FXValue = 1;
         if (speed.assetId != 0) {
           final FX = await database.getFX(speed.assetId);
-          FXValue = FX!.value!; // crash if no FX
+          FXValue = FX!.value; // crash if no FX
         }
 
         final bidOut = BidOut(

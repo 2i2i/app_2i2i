@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_acco
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
@@ -71,7 +72,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int minMaxDuration = 10;
 
   int assetId = 0;
-  double FXValue = 1;
+  FXModel FXValue = FXModel.ALGO();
 
   int _minAccountBalance = 0;
   int _accountBalance = 0;
@@ -90,7 +91,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       if (!focusNode.hasFocus) {
         var val = getSpeedFromText(speedController.text);
         if (val < speed.num) {
-          speedController.text = (speed.num / pow(10, 6)).toString();
+          speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
@@ -380,7 +381,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (value) {
                               int num = getSpeedFromText(value ?? '');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, 6)}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, FXModel.ALGO().decimals)}';
                               }
                               return null;
                             },
@@ -525,7 +526,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final speedVal = getSpeedFromText(speedController.text);
     log(FX + 'speedVal=$speedVal');
-    bool isLessVal = speed.num*FXValue < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
+    bool isLessVal = speed.num*FXValue.value < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
     log(FX + 'isLessVal=$isLessVal');
     if (isLessVal) {
       speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: assetId);
@@ -535,7 +536,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(FX + 'speed=$speed speed.assetId=${speed.assetId} speed.num=${speed.num}');
 
     if (!focusNode.hasFocus) {
-      speedController.text = (speed.num / pow(10, 6)).toString();
+      speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
     }
 
     final availableBalance = accountBalance! - _minAccountBalance;
@@ -558,7 +559,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (this.mounted) setState(() {});
   }
 
-  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, 6)).round();
+  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, FXValue.decimals)).round();
 
   Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
@@ -572,7 +573,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       ts: now,
       energy: amount.num,
       rule: userB!.rule,
-      FX: FXValue,
+      FX: FXValue.value,
     );
 
     final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
@@ -603,7 +604,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / pow(10, 6)).toString()} A';
+    var amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} A';
     if (isInsufficient()) {
       var val = getSpeedFromText(speedController.text);
       bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
