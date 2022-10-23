@@ -89,7 +89,7 @@ class AlgorandService {
     required String note,
   }) async {
 
-    log('lockCoins - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
+    log(FX + 'lockCoins - sessionId=$sessionId address=$address net=$net amount.num=${amount.num} amount.assetId=${amount.assetId} note=$note');
 
     final List<RawTransaction> txns = [];
     
@@ -107,11 +107,11 @@ class AlgorandService {
     txns.add(payTxn);
     result['pay'] = payTxn.id;
 
-    log('lockCoins - payTxn.id=${payTxn.id}');
+    log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
 
     if (amount.assetId != 0) {
       final axferTxn = await (AssetTransferTransactionBuilder()
-          ..assetSender = Address.fromAlgorandAddress(address)
+          ..sender = Address.fromAlgorandAddress(address)
           ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
           ..amount = amount.num
           ..assetId = amount.assetId
@@ -120,30 +120,30 @@ class AlgorandService {
         .build();
         txns.add(axferTxn);
         result['axfer'] = axferTxn.id;
-        log('lockCoins - axferTxn.id=${axferTxn.id}');
+        log(FX + 'lockCoins - axferTxn.id=${axferTxn.id}');
     }
 
     final connector = await WalletConnectAccount.newConnector(sessionId);
-    log('lockCoins - connector=$connector');
+    log(FX + 'lockCoins - connector=$connector');
     final account = WalletConnectAccount.fromNewConnector(accountService: accountService, connector: connector);
-    log('lockCoins - account=$account');
+    log(FX + 'lockCoins - account=$account');
 
     final signedTxnsBytes = await account.sign(txns);
-    log('lockCoins - signed $signedTxnsBytes');
+    log(FX + 'lockCoins - signed $signedTxnsBytes');
 
     try {
       final groupTxId = await algorandLib.client[net]!.sendRawTransactions(signedTxnsBytes);
-      log('lockCoins - groupTxId $groupTxId');
+      log(FX + 'lockCoins - groupTxId $groupTxId');
       result['group'] = groupTxId;
       return result;
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {
-        log('AlgorandException ' + cause.response?.data['message']);
+        log(FX + 'AlgorandException ' + cause.response?.data['message']);
       }
       throw ex;
     } on Exception catch (ex) {
-      log('Exception ' + ex.toString());
+      log(FX + 'Exception ' + ex.toString());
       throw ex;
     }
   }

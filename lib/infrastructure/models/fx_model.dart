@@ -24,8 +24,8 @@ class FXModel {
   FXModel.fromJson(Map<String, dynamic> json, int docId) :
   id = docId,
   ts = json['ts'].toDate(),
-  value = double.parse(json['value']),
-  decimals = int.parse(json['decimals']),
+  value = double.parse(json['value'].toString()),
+  decimals = int.parse(json['decimals'].toString()),
   name = json['name'],
   unitname = json['unitname'],
   iconUrl = json['iconUrl'];

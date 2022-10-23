@@ -57,6 +57,9 @@ class AddBidPageViewModel {
     BuildContext? context,
     Function? timeout,
   }) async {
+
+    log(FX + 'addBid sessionId=$sessionId address=$address amount.assetId=${amount.assetId} amount.num=${amount.num} speed.assetId=${speed.assetId} speed.num=${speed.num} bidComment=$bidComment');
+
     FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
@@ -68,6 +71,8 @@ class AddBidPageViewModel {
       final net = AppConfig().ALGORAND_NET;
       final String? addrA = speed.num == 0 ? null : address;
       final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
+
+      log(FX + 'addBid net=$net addrA=$addrA bidId=$bidId');
 
       // lock coins
       Map<String, String> txns = {};

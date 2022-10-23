@@ -74,8 +74,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int assetId = 0;
   FXModel FXValue = FXModel.ALGO();
 
-  int _minAccountBalance = 0;
-  int _accountBalance = 0;
+  int minAccountBalance = 0;
+  int accountBalance = 0;
 
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
@@ -347,7 +347,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 children: [
                                   Center(
                                     child: Text(
-                                      '${Keys.algoPerSec.tr(context)}',
+                                      // '${Keys.algoPerSec.tr(context)}',
+                                      '${FXValue.getName}/sec',
                                       style: Theme.of(context).textTheme.subtitle2?.copyWith(
                                             color: AppTheme().black,
                                             fontWeight: FontWeight.normal,
@@ -504,7 +505,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     accountIndex ??= currentAccountIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
     final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
-    int? accountBalance;
     if (addressBalanceCombos.isNotEmpty) {
       final combo = accountIndex < addressBalanceCombos.length ? addressBalanceCombos[accountIndex] : addressBalanceCombos.first;
       address = combo.item1;
@@ -515,8 +515,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(FX + 'assetId=$assetId');
     log(FX + 'accountBalance=$accountBalance');
 
-    int minAccountBalance = 0;
-    if (assetId != 0) {
+    minAccountBalance = 0;
+    if (assetId == 0) {
       minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
     }
     log(FX + 'minAccountBalance=$minAccountBalance');
@@ -539,9 +539,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
     }
 
-    final availableBalance = accountBalance! - _minAccountBalance;
+    final availableBalance = accountBalance - minAccountBalance;
     log(FX + 'availableBalance=$availableBalance');
-    maxMaxDuration = userB?.rule.maxMeetingDuration ?? 300;
+    maxMaxDuration = userB!.rule.maxMeetingDuration;
     log(FX + 'maxMaxDuration=$maxMaxDuration');
     if (speed.num != 0) {
       final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
@@ -553,7 +553,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
     maxDuration = min(maxDuration, maxMaxDuration);
     log(FX + 'maxDuration=$maxDuration');
-    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: assetId);
     log(FX + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
 
     if (this.mounted) setState(() {});
@@ -604,7 +604,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} A';
+    var amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} ${FXValue.getName}';
     if (isInsufficient()) {
       var val = getSpeedFromText(speedController.text);
       bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
@@ -627,8 +627,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (address == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
-    final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
-    if (_accountBalance < minAccountBalanceNeeded) return true;
+    final minAccountBalanceNeeded = minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
+    if (accountBalance < minAccountBalanceNeeded) return true;
 
     return false;
   }
