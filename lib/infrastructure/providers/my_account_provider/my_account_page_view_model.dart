@@ -161,11 +161,9 @@ class MyAccountPageViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  Future<FXModel> getFX(int assetId) async {
+  Future<FXModel?> getFX(int assetId) async {
     log(Y + 'getFX assetId=$assetId');
     if (assetId == 0) return FXModel.ALGO();
-    final fx = await database.getFX(assetId);
-    log(Y + 'getFX fx=$fx');
-    return fx!;
+    return database.getFX(assetId);
   }
 }

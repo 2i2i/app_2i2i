@@ -425,9 +425,9 @@ final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref
 });
 
 //Redeem Coin
-final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>?, String>((ref, uid) {
+final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.redeemCoinStream(id: uid);
+  return database.redeemCoinStream(uid: uid);
 });
 
 // FX

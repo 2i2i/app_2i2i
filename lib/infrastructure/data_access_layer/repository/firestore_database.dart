@@ -423,15 +423,16 @@ class FirestoreDatabase {
     });
   }
 
-  Stream<List<RedeemCoinModel>?> redeemCoinStream({required String id}) {
+  Stream<List<RedeemCoinModel>> redeemCoinStream({required String uid}) {
     return _service
         .documentStream(
-      path: FirestorePath.redeem(id),
+      path: FirestorePath.redeem(uid),
       builder: (data, documentId) {
         if (data != null) {
-          var list = data.entries.toList();
-          return list.map((e) => RedeemCoinModel(asaId: e.key, refDocumentId: documentId, value: e.value)).toList();
+          final list = data.entries.toList();
+          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: e.value as int)).toList();
         }
+        return <RedeemCoinModel>[];
       },
     )
         .handleError((onError) {

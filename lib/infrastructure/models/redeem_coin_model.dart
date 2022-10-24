@@ -1,32 +1,22 @@
-import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:flutter/material.dart';
 
+@immutable
 class RedeemCoinModel {
-  String asaId;
-  String? value;
-  String? asaName;
-  String? refDocumentId;
+  final int assetId;
+  final int value;
+  final String uid;
 
-  RedeemCoinModel({required this.asaId, this.value, this.asaName, this.refDocumentId});
+  RedeemCoinModel({required this.assetId, required this.value, required this.uid});
 
-  RedeemCoinModel.fromJson({Map? json, String? documentId}) : asaId = '' {
-    refDocumentId = documentId;
-    if (json != null) {
-      if (json['asaId'] != null) {
-        asaId = json['asaId'];
-      }
-      if (json['value'] != null) {
+  RedeemCoinModel.fromJson({required Map json, required String documentId})
+      : assetId = json['assetId'],
+        uid = documentId,
         value = json['value'];
-      }
-    }
-    log('RedeemCoinModel.fromMap - data == null');
-    throw StateError('missing data for id: $documentId');
-  }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['asaId'] = this.asaId;
+    data['assetId'] = this.assetId;
     data['value'] = this.value;
-    data['asaName'] = this.asaName;
     return data;
   }
 }

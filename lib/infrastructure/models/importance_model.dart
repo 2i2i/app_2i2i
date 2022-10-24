@@ -1,17 +1,19 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class ImportanceModel {
-  int? lurker; // uint lurker = 0;
-  int? chrony; // uint
-  int? highroller; // uint
-  int? eccentric; // uint
+  final int lurker; // uint lurker = 0;
+  final int chrony; // uint
+  final int highroller; // uint
+  final int eccentric; // uint
 
-  ImportanceModel({this.lurker, this.chrony, this.highroller, this.eccentric});
+  ImportanceModel({this.lurker = 0, required this.chrony, required this.highroller, this.eccentric = 0});
 
-  ImportanceModel.fromJson(Map<String, dynamic> json) {
-    lurker = json['lurker'];
-    chrony = json['chrony'];
-    highroller = json['highroller'];
-    eccentric = json['eccentric'];
-  }
+  ImportanceModel.fromJson(Map<String, dynamic> json)
+      : lurker = json['lurker'],
+        chrony = json['chrony'],
+        highroller = json['highroller'],
+        eccentric = json['eccentric'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

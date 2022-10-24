@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/screens/redeem_coin/widgets/redeem_tile.dart';
@@ -17,14 +18,21 @@ class RedeemCoinPage extends ConsumerStatefulWidget {
 }
 
 class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
+
   @override
   Widget build(BuildContext context) {
+    log(B + '_RedeemCoinPageState');
+
     final uid = ref.watch(myUIDProvider)!;
+    log(B + '_RedeemCoinPageState, uid=$uid');
     final redeemCoinModelProviderRef = ref.watch(redeemCoinProvider(uid));
+    log(B + '_RedeemCoinPageState, redeemCoinModelProviderRef=$redeemCoinModelProviderRef');
 
     if (haveToWait(redeemCoinModelProviderRef)) {
+      log(B + '_RedeemCoinPageState haveToWait(redeemCoinModelProviderRef)');
       return WaitPage();
     } else if (redeemCoinModelProviderRef is AsyncError) {
+      log(B + '_RedeemCoinPageState redeemCoinModelProviderRef is AsyncError');
       return Scaffold(
         body: Center(
           child: Text(Keys.somethingWantWrong.tr(context), style: Theme.of(context).textTheme.subtitle1),
@@ -32,7 +40,11 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
       );
     }
 
+    log(B + '_RedeemCoinPageState, 2');
+
     final redeemCoinsList = redeemCoinModelProviderRef.value ?? [];
+
+    log('_RedeemCoinPageState, redeemCoinsList=$redeemCoinsList redeemCoinsList.length=${redeemCoinsList.length}');
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
