@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +151,9 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
+                Visibility(
+                  visible: !Platform.isIOS,
+                    child: Container(
                   height: 40,
                   width: 40,
                   margin: EdgeInsets.symmetric(horizontal: 6),
@@ -159,7 +163,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                       context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
                     },
                   ),
-                ),
+                )),
                 Container(
                   height: 40,
                   width: 40,
