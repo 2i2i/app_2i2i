@@ -295,7 +295,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       }
                     },
                     title: Text(
-                      Keys.appVersion.tr(context),
+                      Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.version})" : ""),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
