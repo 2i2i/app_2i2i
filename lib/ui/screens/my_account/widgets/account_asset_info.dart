@@ -44,7 +44,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   List<String> keyList = [];
 
-  FXModel FXValue = FXModel.ALGO();
+  FXModel? FXValue = FXModel.ALGO();
   Balance balance;
 
   @override
@@ -80,18 +80,19 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     log('await myAccount.getFX assetId=$assetId');
     FXValue = await myAccount.getFX(balance.assetHolding.assetId);
 
-    log('getAsset assetName=${FXValue.getName} decimals=${FXValue.decimals}');
+    log('getAsset assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
   }
 
   @override
   Widget build(BuildContext context) {
     // set assetName and amount
-    final divisor = pow(10, FXValue.decimals);
+    // //  FXValue?.decimals default is 0 is okay?
+    final divisor = pow(10, FXValue?.decimals ?? 0);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
 
     final ccyLogo = Image.network(
-      FXValue.iconUrl ?? '',
+      FXValue?.iconUrl ?? '',
       width: 40,
       height: 40,
       fit: BoxFit.fill,
@@ -138,7 +139,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                     SizedBox(width: 16),
                     Flexible(
                       child: Text(
-                        FXValue.getName,
+                        FXValue?.getName ?? "",
                         style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
