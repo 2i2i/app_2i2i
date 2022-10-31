@@ -206,7 +206,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: kToolbarHeight * 1.55),
                                 child: Custom.signInButton(
-                                  label: 'Apple',
+                                  label: 'Sign in with Apple',
                                   icon: 'assets/apple.png',
                                   noFlex: true,
                                   isVisibleIf: !kIsWeb && Platform.isIOS,
