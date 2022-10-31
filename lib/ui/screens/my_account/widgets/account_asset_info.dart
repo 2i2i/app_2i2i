@@ -87,6 +87,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   @override
   Widget build(BuildContext context) {
     // set assetName and amount
+    // //  FXValue?.decimals default is 0 is okay?
     final divisor = pow(10, FXValue?.decimals ?? 0);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
