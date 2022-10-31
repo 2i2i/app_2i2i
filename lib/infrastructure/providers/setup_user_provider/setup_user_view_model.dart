@@ -115,8 +115,7 @@ class SetupUserViewModel with ChangeNotifier {
       CustomAlertWidget.showToastMessage(context, '${e.message}');
       throw e;
     } catch (e) {
-      CustomAlertWidget.loader(false, context);
-      throw e;
+      print("Application Error == > $e");
     }
     CustomAlertWidget.loader(false, context);
   }

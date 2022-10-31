@@ -104,7 +104,7 @@ class _ConnectDialogState extends ConsumerState<ConnectDialog> {
                   onPressed: () {
                     if (selectedIndex == 1) {
                       onClickConnect();
-                    } else {
+                    } else if (!isFailed) {
                       Navigator.of(context).pop(walletConnectAddress);
                     }
                   },
