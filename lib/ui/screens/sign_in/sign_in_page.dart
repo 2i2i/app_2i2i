@@ -129,15 +129,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: kToolbarHeight * 0.55),
-                              Row(
-                                children: [
-                                  Expanded(child: Divider()),
-                                  Text('Sign in with social media', style: Theme.of(context).textTheme.caption),
-                                  Expanded(child: Divider()),
-                                ],
-                              ),
-                              SizedBox(height: kToolbarHeight * 0.25),
                               Row(
                                 children: [
                                   Custom.signInButton(
@@ -204,7 +195,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: kToolbarHeight * 1.55),
+                                padding: const EdgeInsets.symmetric(horizontal: 1.55),
                                 child: Custom.signInButton(
                                   label: 'Sign in with Apple',
                                   icon: 'assets/apple.png',
@@ -213,16 +204,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   onPressed: () async {
                                     await ref.read(setupUserViewModelProvider).signInWithApple(context);
                                   },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: kToolbarHeight * 0.35),
-                                child: Row(
-                                  children: [
-                                    Expanded(child: Divider()),
-                                    Text('Sign in anonymously', style: Theme.of(context).textTheme.caption),
-                                    Expanded(child: Divider()),
-                                  ],
                                 ),
                               ),
                               Custom.signInButton(
