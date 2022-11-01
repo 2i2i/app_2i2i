@@ -523,7 +523,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final speedVal = getSpeedFromText(speedController.text);
     log(FX + 'speedVal=$speedVal');
-    bool isLessVal = speed.num * FXValue!.value < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
+    bool isLessVal = speed.num * FXValue!.value! < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
     log(FX + 'isLessVal=$isLessVal');
     if (isLessVal) {
       speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: assetId);
