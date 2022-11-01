@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/screens/redeem_coin/widgets/account_selection_page.dart';
 import 'package:app_2i2i/ui/screens/redeem_coin/widgets/redeem_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
 import '../app/wait_page.dart';
-import '../my_account/my_account_page.dart';
 
 class RedeemCoinPage extends ConsumerStatefulWidget {
   const RedeemCoinPage({Key? key}) : super(key: key);
@@ -85,7 +85,7 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
                   return RedeemTile(
                     redeemCoinModel: redeemCoinModel,
                     onTap: () async {
-                            CustomAlertWidget.showBottomSheet(context, child: MyAccountPage(), enableDrag: false, isDismissible: false);
+                      CustomAlertWidget.showBottomSheet(context, child: AccountSelectionPage());
                             /*if (!showCoinLoader.value.contains(redeemCoinModel.assetId)) {
                               showCoinLoader.value.add(redeemCoinModel.assetId);
                               showCoinLoader.value = List.from(showCoinLoader.value);
