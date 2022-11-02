@@ -28,7 +28,14 @@ class MyAccountPageViewModel extends ChangeNotifier {
   String? uid;
   FirestoreDatabase database;
 
+  int selectedAccountIndex = 0;
+
   List<Tuple2<String, Balance>> addressWithASABalance = [];
+
+  void setSelectedIndexValue(int index) {
+    selectedAccountIndex = index;
+    notifyListeners();
+  }
 
   Future<void> initMethod() async {
     try {
@@ -52,7 +59,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   // Future<Asset> getAsset(int assetId) async {
   //   log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
-    
+
   //   // final indexerClient = IndexerClient(
   //   //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
   //   //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
@@ -154,7 +161,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);
-
 
   Future<void> updateAccounts({bool notify = true}) async {
     await accountService?.getNumAccounts() ?? 0;

@@ -9,6 +9,7 @@ import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
+import 'package:app_2i2i/infrastructure/providers/redeem_coin_provider.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -428,6 +429,12 @@ final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref
 final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.redeemCoinStream(uid: uid);
+});
+
+//RedeemModel Coin
+final redeemCoinViewModelProvider = Provider((ref) {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  return RedeemCoinViewModel(functions: functions);
 });
 
 // FX

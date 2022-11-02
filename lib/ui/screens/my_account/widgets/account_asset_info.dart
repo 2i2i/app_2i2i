@@ -1,5 +1,5 @@
-import 'dart:math';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
@@ -20,12 +20,14 @@ import '../../../commons/custom_alert_widget.dart';
 
 class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
+  final bool isSelected;
   final int index;
 
   AccountAssetInfo(
     this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
+    this.isSelected = false,
     required this.index,
     required this.address,
     required this.initBalance,
@@ -45,7 +47,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   List<String> keyList = [];
 
-  FXModel? FXValue = FXModel.ALGO();
+  FXModel? FXValue;
   Balance balance;
 
   @override
@@ -86,20 +88,23 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (FXValue == null) return Container();
+
     // set assetName and amount
-    final divisor = pow(10, FXValue?.decimals ?? 0);
+    final divisor = pow(10, FXValue!.decimals);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
 
     final ccyLogo = Image.network(
-      FXValue?.iconUrl ?? '',
-      width: 40,
-      height: 40,
+      FXValue!.iconUrl ?? '',
+      width: 35,
+      height: 35,
       fit: BoxFit.fill,
       errorBuilder: (context, error, stackTrace) => Image.asset(
         'assets/algo_logo.png',
-        width: 40,
-        height: 40,
+        width: 35,
+        height: 35,
         fit: BoxFit.fill,
       ),
     );
@@ -129,18 +134,12 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                 child: Row(
                   children: [
                     SizedBox(width: 10),
-                    // Image.asset(
-                    //   'assets/algo_logo.png',
-                    //   width: 40,
-                    //   height: 40,
-                    //   fit: BoxFit.fill,
-                    // ),
                     ccyLogo,
-                    SizedBox(width: 16),
+                    SizedBox(width: 12),
                     Flexible(
                       child: Text(
-                        FXValue?.getName ?? "",
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                        FXValue!.getName,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -179,26 +178,28 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
               ),
             ],
           ),
-          Divider(),
-          Container(
-            // color: Colors.amber,
+          Divider(
+            color: widget.isSelected ? Colors.transparent : null,
+          ),
+          Visibility(
+            visible: !widget.isSelected,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Visibility(
-                  visible: !Platform.isIOS,
+                    visible: !Platform.isIOS,
                     child: Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
-                    onPressed: () async {
-                      context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
-                    },
-                  ),
-                )),
+                      height: 40,
+                      width: 40,
+                      margin: EdgeInsets.symmetric(horizontal: 6),
+                      child: IconButton(
+                        icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
+                        onPressed: () async {
+                          context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
+                        },
+                      ),
+                    )),
                 Container(
                   height: 40,
                   width: 40,

@@ -1,13 +1,14 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/screens/redeem_coin/widgets/account_selection_page.dart';
 import 'package:app_2i2i/ui/screens/redeem_coin/widgets/redeem_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/commons/utils.dart';
-import '../../../infrastructure/providers/all_providers.dart';
 import '../app/wait_page.dart';
 
 class RedeemCoinPage extends ConsumerStatefulWidget {
@@ -18,9 +19,15 @@ class RedeemCoinPage extends ConsumerStatefulWidget {
 }
 
 class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
+  @override
+  void initState() {
+    ref.read(myAccountPageViewModelProvider).initMethod();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     log(B + '_RedeemCoinPageState');
 
     final uid = ref.watch(myUIDProvider)!;
@@ -28,10 +35,10 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
     final redeemCoinModelProviderRef = ref.watch(redeemCoinProvider(uid));
     log(B + '_RedeemCoinPageState, redeemCoinModelProviderRef=$redeemCoinModelProviderRef');
 
-    if (haveToWait(redeemCoinModelProviderRef)) {
+    if (haveToWait(redeemCoinModelProviderRef) || haveToWait(myAccountPageViewModel)) {
       log(B + '_RedeemCoinPageState haveToWait(redeemCoinModelProviderRef)');
       return WaitPage();
-    } else if (redeemCoinModelProviderRef is AsyncError) {
+    } else if (redeemCoinModelProviderRef is AsyncError || myAccountPageViewModel is AsyncError) {
       log(B + '_RedeemCoinPageState redeemCoinModelProviderRef is AsyncError');
       return Scaffold(
         body: Center(
@@ -78,9 +85,16 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
                         return RedeemTile(
                           redeemCoinModel: redeemCoinModel,
                           onTap: () async {
-                            CustomAlertWidget.loader(true, context, title: Keys.weAreWaiting.tr(context), message: Keys.confirmInWallet.tr(context));
-                            await Future.delayed(Duration(seconds: 6));
-                            CustomAlertWidget.loader(false, context);
+                            CustomAlertWidget.showBottomSheet(
+                              context,
+                              child: AccountSelectionPage(
+                                onTapRedeemCoin: (String address) async {
+                                  CustomAlertWidget.loader(true, context);
+                                  await ref.read(redeemCoinViewModelProvider).redeemCoin(assetId: redeemCoinModel.assetId, addr: address, context: context);
+                                  CustomAlertWidget.loader(false, context);
+                                },
+                              ),
+                            );
                           },
                         );
                       },

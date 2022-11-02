@@ -430,14 +430,16 @@ class FirestoreDatabase {
       builder: (data, documentId) {
         if (data != null) {
           final list = data.entries.toList();
-          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: e.value as int)).toList();
+          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: int.parse(e.value))).toList();
         }
         return <RedeemCoinModel>[];
       },
     )
-        .handleError((onError) {
-      log("$onError");
-    });
+        .handleError(
+      (onError) {
+        log("$onError");
+      },
+    );
   }
 
   Stream<Room> roomStream({required String meetingId}) => _service.documentStream(

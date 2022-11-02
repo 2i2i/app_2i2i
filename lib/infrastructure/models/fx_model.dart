@@ -12,23 +12,23 @@ class FXModel {
 
   FXModel({required this.id, required this.ts, required this.value, required this.decimals, this.name, this.unitname, this.iconUrl});
 
-  FXModel.ALGO() :
-  id = 0,
-  ts = DateTime.now(),
-  value = 1,
+  FXModel.ALGO()
+      : id = 0,
+        ts = DateTime.now(),
+        value = 1,
   decimals = 6,
   name = 'ALGO',
   unitname = 'ALGO',
   iconUrl = null;
 
-  FXModel.fromJson(Map<String, dynamic> json, int docId) :
-  id = docId,
-  ts = json['ts'].toDate(),
-  value = double.parse(json['value'].toString()),
-  decimals = int.parse(json['decimals'].toString()),
-  name = json['name'],
-  unitname = json['unitname'],
-  iconUrl = json['iconUrl'];
+  FXModel.fromJson(Map<String, dynamic> json, int docId)
+      : id = docId,
+        ts = json['ts'].toDate(),
+        value = double.parse(json['value'].toString()),
+        decimals = int.parse(json['decimals'].toString()),
+        name = json['name'],
+        unitname = json['unitname'],
+        iconUrl = json['iconUrl'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
