@@ -20,14 +20,14 @@ import '../../../commons/custom_alert_widget.dart';
 
 class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
-  final bool isForSelection;
+  final bool isSelected;
   final int index;
 
   AccountAssetInfo(
     this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
-    this.isForSelection = false,
+    this.isSelected = false,
     required this.index,
     required this.address,
     required this.initBalance,
@@ -177,10 +177,10 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
             ],
           ),
           Divider(
-            color: widget.isForSelection ? Colors.transparent : null,
+            color: widget.isSelected ? Colors.transparent : null,
           ),
           Visibility(
-            visible: !widget.isForSelection,
+            visible: !widget.isSelected,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
