@@ -88,12 +88,12 @@ class AccountService {
     final algoAssetHolding = AssetHolding(amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
 
     // return [algoAssetHolding];
-    return [algoAssetHolding, ...assetHoldings];
+    return [algoAssetHolding, ...assetHoldings]; // ALGO always first
     // } catch (e) {}
   }
 
   Future<int> getNumWalletConnectAccounts() async {
-    String val = await storage.read('wallet_connect_accounts') ?? '';
+    String val = await storage.read(WalletConnectAccount.STORAGE_KEY) ?? '';
     return int.tryParse(val) ?? 0;
   }
 
@@ -112,11 +112,8 @@ class AccountService {
   }*/
 
   Future<List<String>> getAllWalletConnectAccounts() async {
-    String? val = await storage.read('wallet_connect_accounts');
-    if (val != null) {
-      return val.split(',');
-    }
-    return [];
+    String? val = await storage.read(WalletConnectAccount.STORAGE_KEY);
+    return val == null ? [] : val.split(',');
   }
 
   Future<Map<String, List<String>>> getAllWalletAddress() async {

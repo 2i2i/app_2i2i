@@ -63,27 +63,25 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   int get assetId => balance.assetHolding.assetId;
 
+  // only used on refresh
   Future<Balance> getBalance() async {
     final myAccount = ref.read(myAccountPageViewModelProvider);
-    final balances = await myAccount.getBalanceFromAddress(widget.address);
-    for (final b in balances) {
-      if (b.assetHolding.assetId == assetId) {
-        return b;
-      }
-    }
-    throw "_AccountAssetInfoState - getBalance error - assetId=$assetId";
+    return myAccount.getBalanceFromAddressAndAssetId(widget.address, assetId);
   }
 
   Future<void> getFX() async {
     log('getFX assetId=$assetId');
 
-    if (assetId == 0) return;
+    if (assetId == 0) {
+      FXValue = FXModel.ALGO();
+      return;
+    }
 
     final myAccount = ref.read(myAccountPageViewModelProvider);
     log('await myAccount.getFX assetId=$assetId');
     FXValue = await myAccount.getFX(balance.assetHolding.assetId);
 
-    log('getAsset assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
+    log('getAsset FXValue=$FXValue assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
   }
 
   @override

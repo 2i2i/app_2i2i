@@ -78,7 +78,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   //   return assetResponse.asset;
   // }
 
-  Future<List<Balance>> getBalanceFromAddress(String address) async {
+  Future<List<Balance>> getBalancesFromAddress(String address) async {
     log(Y + 'getBalanceFromAddress address=$address accountService=$accountService');
     // if (accountService != null) {
     final assetHoldings = await accountService!.getAssetHoldings(address: address, net: AppConfig().ALGORAND_NET);
@@ -86,6 +86,17 @@ class MyAccountPageViewModel extends ChangeNotifier {
     return balances;
     // }
     // return [];
+  }
+
+  Future<Balance> getBalanceFromAddressAndAssetId(String address, int assetId) async {
+    log(Y + 'getBalanceFromAddressAndAssetId address=$address assetId=$assetId accountService=$accountService');
+    final balances = await getBalancesFromAddress(address);
+    for (final b in balances) {
+      if (b.assetHolding.assetId == assetId) {
+        return b;
+      }
+    }
+    throw "getBalanceFromAddressAndAssetId - error - address=$address assetId=$assetId";
   }
 
   Future<int> getMinBalance({required String address}) async {
@@ -104,7 +115,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<int> getAlgoBalance({required String address}) async {
     // try {
-    List list = await getBalanceFromAddress(address);
+    List list = await getBalancesFromAddress(address);
     for (final b in list) {
       if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
     }
@@ -131,7 +142,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
     List<Tuple2<String, Balance>> values = [];
     for (List<String> addressList in walletConnectAccounts.values) {
       for (final address in addressList) {
-        final balanceList = await getBalanceFromAddress(address);
+        final balanceList = await getBalancesFromAddress(address);
         for (final balance in balanceList) {
           final t = Tuple2<String, Balance>(address, balance);
           values.add(t);
@@ -156,14 +167,14 @@ class MyAccountPageViewModel extends ChangeNotifier {
     String sessionId = getSessionId(address);
     var connector = await WalletConnectAccount.newConnector(sessionId);
     connector.killSession();
-    storage?.remove('wallet_connect_accounts');
+    storage?.remove(WalletConnectAccount.STORAGE_KEY);
     initMethod();
   }
 
   Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);
 
   Future<void> updateAccounts({bool notify = true}) async {
-    await accountService?.getNumAccounts() ?? 0;
+    await accountService?.getNumAccounts();
     if (notify) notifyListeners();
   }
 

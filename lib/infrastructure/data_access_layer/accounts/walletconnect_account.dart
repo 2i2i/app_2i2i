@@ -14,6 +14,8 @@ import 'abstract_account.dart';
 class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> cache = [];
 
+  static const String STORAGE_KEY = 'wallet_connect_accounts';
+
   static Future<WalletConnect> newConnector([String key = '0']) async {
     final sessionStorage = WalletConnectSecureStorage(storageKey: key);
     final session = await sessionStorage.getSession();
@@ -55,14 +57,14 @@ class WalletConnectAccount extends AbstractAccount {
 
     List<String> accounts = await accountService.getAllWalletConnectAccounts();
     accounts.add(sessionId);
-    storage.write('wallet_connect_accounts', accounts.join(','));
+    storage.write(STORAGE_KEY, accounts.join(','));
 
     if (connector.session.accounts.isNotEmpty) {
       address = connector.session.accounts[0];
       await updateBalances(net: AppConfig().ALGORAND_NET);
       // futures.add(updateBalances());
       int alreadyExistIndex = cache.indexWhere((element) => element.address == address);
-      if (alreadyExistIndex < 0) {
+      if (alreadyExistIndex == -1) {
         cache.add(this);
       } else {
         cache[alreadyExistIndex] = this;

@@ -405,7 +405,7 @@ class SetupUserViewModel with ChangeNotifier {
     isLogged = false;
     await googleSignIn.signOut();
     await auth.signOut();
-    await storage.clearStorage();
+    await storage.clear();
     notifyListeners();
   }
 
