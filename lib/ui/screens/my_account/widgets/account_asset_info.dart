@@ -88,14 +88,6 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (FXValue == null) return Container();
-
-    // set assetName and amount
-    final divisor = pow(10, FXValue!.decimals);
-    final a = balance.assetHolding.amount / divisor;
-    String amount = doubleWithoutDecimalToInt(a).toString();
-
     final ccyLogo = Image.network(
       FXValue!.iconUrl ?? '',
       width: 35,
@@ -109,6 +101,65 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
       ),
     );
 
+    if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, ''));
+
+    // set assetName and amount
+    final divisor = pow(10, FXValue!.decimals);
+    final a = balance.assetHolding.amount / divisor;
+    String amount = doubleWithoutDecimalToInt(a).toString();
+
+    return cont(ccyLogo, amount);
+  }
+
+  Widget subjectiveOverlay(Widget widget) {
+    var child = Stack(
+      alignment: Alignment.center,
+      children: [
+        widget,
+        Text(
+          'Subjective value assets\ncoming soon...',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            shadows: <Shadow>[
+              Shadow(
+                blurRadius: 10.0,
+                color: Colors.white,
+                offset: Offset(4.0, 4.0),
+              ),
+              Shadow(
+                color: Colors.white,
+                blurRadius: 10.0,
+                offset: Offset(-9.0, 4.0),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+
+    return AbsorbPointer(
+      absorbing: true,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+        decoration: BoxDecoration(
+          color: Color(0xFFd3d3d3),
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(2, 4),
+              blurRadius: 8,
+              color: Color.fromRGBO(0, 0, 0, 0.12),
+            ),
+          ],
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  Container cont(Widget ccyLogo, String amount) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
