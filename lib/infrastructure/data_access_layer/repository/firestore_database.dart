@@ -186,6 +186,11 @@ class FirestoreDatabase {
     });
   }
 
+  Future<bool> getAssetIdInfo({required String assetID}) async {
+    DocumentSnapshot? documentSnapshot = await _service.getData(path: FirestorePath.fx(assetID));
+    return documentSnapshot?.exists ?? false;
+  }
+
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
     return _service
         .setData(

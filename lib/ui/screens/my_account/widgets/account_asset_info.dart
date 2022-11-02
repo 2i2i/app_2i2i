@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:app_2i2i/infrastructure/models/fx_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,14 +19,12 @@ import '../../../commons/custom_alert_widget.dart';
 
 class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
-  final bool isSelected;
   final int index;
 
   AccountAssetInfo(
     this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
-    this.isSelected = false,
     required this.index,
     required this.address,
     required this.initBalance,
@@ -47,17 +44,22 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   List<String> keyList = [];
 
-  FXModel? FXValue;
+  String assetName = '-';
+
+  // String iconUrl = 'assets/algo_logo.png';
+  int decimals = 0;
+
   Balance balance;
 
   @override
   void initState() {
-    getFX().then((_) {
+    getAsset().then((_) {
+      // asset = value;
       if (mounted) {
         setState(() {});
-        log('getFX setstate in init');
       }
     });
+
     super.initState();
   }
 
@@ -74,173 +76,118 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     throw "_AccountAssetInfoState - getBalance error - assetId=$assetId";
   }
 
-  Future<void> getFX() async {
-    log('getFX assetId=$assetId');
+  Future<void> getAsset() async {
+    log('getAsset assetId=$assetId');
 
-    if (assetId == 0) return;
+    if (assetId == 0) {
+      assetName = 'ALGO';
+      decimals = 6;
+      return;
+    }
 
     final myAccount = ref.read(myAccountPageViewModelProvider);
-    log('await myAccount.getFX assetId=$assetId');
-    FXValue = await myAccount.getFX(balance.assetHolding.assetId);
+    log('await myAccount.getAsset assetId=$assetId');
+    final asset = await myAccount.getAsset(balance.assetHolding.assetId);
+    assetName = asset.params.unitName ?? (asset.params.name ?? asset.index.toString());
+    decimals = asset.params.decimals;
+    // iconUrl = // TODO
 
-    log('getAsset assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
+    log('getAsset assetName=$assetName decimals=$decimals');
   }
 
   @override
   Widget build(BuildContext context) {
-    final ccyLogo = Image.network(
-      FXValue!.iconUrl ?? '',
-      width: 35,
-      height: 35,
-      fit: BoxFit.fill,
-      errorBuilder: (context, error, stackTrace) => Image.asset(
-        'assets/algo_logo.png',
-        width: 35,
-        height: 35,
-        fit: BoxFit.fill,
-      ),
-    );
+    return FutureBuilder(
+      future: ref.read(myAccountPageViewModelProvider).getAssetIdInfo(assetID: balance.assetHolding.assetId.toString()),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData) {
+          // set assetName and amount
+          final divisor = pow(10, decimals);
+          final a = balance.assetHolding.amount / divisor;
+          String amount = doubleWithoutDecimalToInt(a).toString();
 
-    if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, ''));
-
-    // set assetName and amount
-    final divisor = pow(10, FXValue!.decimals);
-    final a = balance.assetHolding.amount / divisor;
-    String amount = doubleWithoutDecimalToInt(a).toString();
-
-    return cont(ccyLogo, amount);
-  }
-
-  Widget subjectiveOverlay(Widget widget) {
-    var child = Stack(
-      alignment: Alignment.center,
-      children: [
-        widget,
-        Text(
-          'Subjective value assets\ncoming soon...',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            shadows: <Shadow>[
-              Shadow(
-                blurRadius: 10.0,
-                color: Colors.white,
-                offset: Offset(4.0, 4.0),
-              ),
-              Shadow(
-                color: Colors.white,
-                blurRadius: 10.0,
-                offset: Offset(-9.0, 4.0),
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-
-    return AbsorbPointer(
-      absorbing: true,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10),
-        padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
-        decoration: BoxDecoration(
-          color: Color(0xFFd3d3d3),
-          borderRadius: BorderRadius.circular(10.0),
-          boxShadow: [
-            BoxShadow(
-              offset: Offset(2, 4),
-              blurRadius: 8,
-              color: Color.fromRGBO(0, 0, 0, 0.12),
+          final ccyLogo = Image.network(
+            'https://asa-list.tinyman.org/assets/$assetId/icon.png',
+            width: 40,
+            height: 40,
+            fit: BoxFit.fill,
+            errorBuilder: (context, error, stackTrace) => Image.asset(
+              'assets/algo_logo.png',
+              width: 40,
+              height: 40,
+              fit: BoxFit.fill,
             ),
-          ],
-        ),
-        child: child,
-      ),
-    );
-  }
+          );
 
-  Container cont(Widget ccyLogo, String amount) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(2, 4),
-            blurRadius: 8,
-            color: Color.fromRGBO(0, 0, 0, 0.12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    SizedBox(width: 10),
-                    ccyLogo,
-                    SizedBox(width: 12),
-                    Flexible(
-                      child: Text(
-                        FXValue!.getName,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                "$amount",
-                style: Theme.of(context).textTheme.headline4,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              )
-            ],
-          ),
-          SizedBox(height: 8),
-          Column(
+          Widget child = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Visibility(
-                visible: true, //widget.account is WalletConnectAccount
-                child: Image.asset(
-                  'assets/wc_logo.png',
-                  height: 20,
-                  fit: BoxFit.fill,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        SizedBox(width: 10),
+                        // Image.asset(
+                        //   'assets/algo_logo.png',
+                        //   width: 40,
+                        //   height: 40,
+                        //   fit: BoxFit.fill,
+                        // ),
+                        ccyLogo,
+                        SizedBox(width: 16),
+                        Flexible(
+                          child: Text(
+                            assetName,
+                            style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    "$amount",
+                    style: Theme.of(context).textTheme.headline4,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
               ),
               SizedBox(height: 8),
-              Text(
-                widget.address,
-                maxLines: 4,
-                style: Theme.of(context).textTheme.caption,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: true, //widget.account is WalletConnectAccount
+                    child: Image.asset(
+                      'assets/wc_logo.png',
+                      height: 20,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    widget.address,
+                    maxLines: 4,
+                    style: Theme.of(context).textTheme.caption,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
-          ),
-          Divider(
-            color: widget.isSelected ? Colors.transparent : null,
-          ),
-          Visibility(
-            visible: !widget.isSelected,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Visibility(
-                    visible: !Platform.isIOS,
-                    child: Container(
+              Divider(),
+              Container(
+                // color: Colors.amber,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
                       height: 40,
                       width: 40,
                       margin: EdgeInsets.symmetric(horizontal: 6),
@@ -250,57 +197,108 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                           context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
                         },
                       ),
-                    )),
-                Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    iconSize: 18,
-                    icon: SvgPicture.asset(
-                      'assets/icons/refresh.svg',
-                      color: iconColor(context),
                     ),
-                    onPressed: () async {
-                      CustomAlertWidget.loader(true, context);
-                      balance = await getBalance();
-                      if (widget.afterRefresh != null) widget.afterRefresh!();
-                      CustomAlertWidget.loader(false, context);
-                      setState(() {});
-                    },
-                  ),
-                ),
-                Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(
-                    iconSize: 18,
-                    icon: SvgPicture.asset(
-                      'assets/icons/copy.svg',
-                      color: iconColor(context),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      margin: EdgeInsets.symmetric(horizontal: 6),
+                      child: IconButton(
+                        iconSize: 18,
+                        icon: SvgPicture.asset(
+                          'assets/icons/refresh.svg',
+                          color: iconColor(context),
+                        ),
+                        onPressed: () async {
+                          CustomAlertWidget.loader(true, context);
+                          balance = await getBalance();
+                          if (widget.afterRefresh != null) widget.afterRefresh!();
+                          CustomAlertWidget.loader(false, context);
+                          setState(() {});
+                        },
+                      ),
                     ),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.address));
-                      showToast(Keys.copyMessage.tr(context),
-                          context: context,
-                          animation: StyledToastAnimation.slideFromTop,
-                          reverseAnimation: StyledToastAnimation.slideToTop,
-                          position: StyledToastPosition.top,
-                          startOffset: Offset(0.0, -3.0),
-                          reverseEndOffset: Offset(0.0, -3.0),
-                          duration: Duration(seconds: 4),
-                          animDuration: Duration(seconds: 1),
-                          curve: Curves.elasticOut,
-                          reverseCurve: Curves.fastOutSlowIn);
-                    },
-                  ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      margin: EdgeInsets.symmetric(horizontal: 8),
+                      child: IconButton(
+                        iconSize: 18,
+                        icon: SvgPicture.asset(
+                          'assets/icons/copy.svg',
+                          color: iconColor(context),
+                        ),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: widget.address));
+                          showToast(Keys.copyMessage.tr(context),
+                              context: context,
+                              animation: StyledToastAnimation.slideFromTop,
+                              reverseAnimation: StyledToastAnimation.slideToTop,
+                              position: StyledToastPosition.top,
+                              startOffset: Offset(0.0, -3.0),
+                              reverseEndOffset: Offset(0.0, -3.0),
+                              duration: Duration(seconds: 4),
+                              animDuration: Duration(seconds: 1),
+                              curve: Curves.elasticOut,
+                              reverseCurve: Curves.fastOutSlowIn);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
+              )
+            ],
+          );
+
+          if (!(snapshot.data)) {
+            child = Stack(
+              alignment: Alignment.center,
+              children: [
+                child,
+                Text(
+                  'Subjective assets\nsupport coming late...',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    shadows: <Shadow>[
+                      Shadow(
+                        blurRadius: 10.0,
+                        color: Colors.white,
+                        offset: Offset(4.0, 4.0),
+                      ),
+                      Shadow(
+                        color: Colors.white,
+                        blurRadius: 10.0,
+                        offset: Offset(-9.0, 4.0),
+                      ),
+                    ],
+                  ),
+                )
               ],
+            );
+          }
+
+          return AbsorbPointer(
+            absorbing: !(snapshot.data),
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+              decoration: BoxDecoration(
+                color: (snapshot.data) ? Theme.of(context).cardColor : Color(0xFFd3d3d3),
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(2, 4),
+                    blurRadius: 8,
+                    color: Color.fromRGBO(0, 0, 0, 0.12),
+                  ),
+                ],
+              ),
+              child: child,
             ),
-          )
-        ],
-      ),
+          );
+        }
+        return Container();
+      },
     );
   }
 
