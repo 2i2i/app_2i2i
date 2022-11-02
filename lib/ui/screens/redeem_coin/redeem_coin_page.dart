@@ -72,31 +72,33 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
               flex: 5,
               child: redeemCoinsList.isEmpty
                   ? Center(
-                child: Text(
-                  Keys.noRedeemCoinsFound.tr(context),
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-              )
+                      child: Text(
+                        Keys.noRedeemCoinsFound.tr(context),
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    )
                   : ListView.builder(
-                itemCount: redeemCoinsList.length,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                itemBuilder: (BuildContext context, int index) {
-                  RedeemCoinModel redeemCoinModel = redeemCoinsList[index];
-                  return RedeemTile(
-                    redeemCoinModel: redeemCoinModel,
-                    onTap: () async {
-                      CustomAlertWidget.showBottomSheet(context, child: AccountSelectionPage());
-                            /*if (!showCoinLoader.value.contains(redeemCoinModel.assetId)) {
-                              showCoinLoader.value.add(redeemCoinModel.assetId);
-                              showCoinLoader.value = List.from(showCoinLoader.value);
-                              await ref
-                                  .read(redeemCoinViewModelProvider)
-                                  .redeemCoin(assetId: redeemCoinModel.assetId, addr: redeemCoinModel.value, context: context);
-                            }*/
+                      itemCount: redeemCoinsList.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      itemBuilder: (BuildContext context, int index) {
+                        RedeemCoinModel redeemCoinModel = redeemCoinsList[index];
+                        return RedeemTile(
+                          redeemCoinModel: redeemCoinModel,
+                          onTap: () async {
+                            CustomAlertWidget.showBottomSheet(
+                              context,
+                              child: AccountSelectionPage(
+                                onTapRedeemCoin: (String address) async {
+                                  CustomAlertWidget.loader(true, context);
+                                  await ref.read(redeemCoinViewModelProvider).redeemCoin(assetId: redeemCoinModel.assetId, addr: address, context: context);
+                                  CustomAlertWidget.loader(false, context);
+                                },
+                              ),
+                            );
                           },
-                  );
-                },
-              ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
