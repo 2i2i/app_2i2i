@@ -47,7 +47,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   List<String> keyList = [];
 
-  FXModel? FXValue = FXModel.ALGO();
+  FXModel? FXValue;
   Balance balance;
 
   @override
@@ -88,14 +88,16 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (FXValue == null) return Container();
+
     // set assetName and amount
-    // //  FXValue?.decimals default is 0 is okay?
-    final divisor = pow(10, FXValue?.decimals ?? 0);
+    final divisor = pow(10, FXValue!.decimals);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
 
     final ccyLogo = Image.network(
-      FXValue?.iconUrl ?? '',
+      FXValue!.iconUrl ?? '',
       width: 35,
       height: 35,
       fit: BoxFit.fill,
@@ -136,7 +138,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                     SizedBox(width: 12),
                     Flexible(
                       child: Text(
-                        FXValue?.getName ?? "",
+                        FXValue!.getName,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
