@@ -9,7 +9,11 @@ class RedeemCoinViewModel {
 
   RedeemCoinViewModel({required this.functions});
 
-  Future redeemCoin({required int assetId, required int addr, required BuildContext context}) async {
+  Future redeemCoin({
+    required int assetId,
+    required String addr,
+    required BuildContext context,
+  }) async {
     try {
       final HttpsCallable redeemCoin = functions.httpsCallable('redeem');
       await redeemCoin.call({'assetId': assetId, 'addr': addr});

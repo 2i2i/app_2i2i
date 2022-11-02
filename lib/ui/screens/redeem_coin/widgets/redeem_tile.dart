@@ -9,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom.dart';
 
-ValueNotifier<List> showCoinLoader = ValueNotifier([]);
 
 class RedeemTile extends ConsumerWidget {
   const RedeemTile({Key? key, required this.onTap, required this.redeemCoinModel}) : super(key: key);
@@ -62,17 +61,9 @@ class RedeemTile extends ConsumerWidget {
               ),
               trailing: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: ValueListenableBuilder(
-                  valueListenable: showCoinLoader,
-                  builder: (BuildContext context, List<dynamic> value, Widget? child) {
-                    bool showLoader = value.contains(redeemCoinModel.assetId);
-                    return showLoader
-                        ? CupertinoActivityIndicator()
-                        : InkResponse(
-                            onTap: onTap,
-                            child: Image.asset('assets/wallet.png', width: 30, height: 30),
-                          );
-                  },
+                child: InkResponse(
+                  onTap: onTap,
+                  child: Image.asset('assets/wallet.png', width: 30, height: 30),
                 ),
               ),
             );
