@@ -381,7 +381,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (value) {
                               int num = getSpeedFromText(value ?? '');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, FXModel.ALGO().decimals)}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, FXValue?.decimals ?? 0)}';
                               }
                               return null;
                             },
