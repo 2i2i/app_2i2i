@@ -430,7 +430,7 @@ class FirestoreDatabase {
       builder: (data, documentId) {
         if (data != null) {
           final list = data.entries.toList();
-          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: e.value)).toList();
+          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: int.parse(e.value))).toList();
         }
         return <RedeemCoinModel>[];
       },
