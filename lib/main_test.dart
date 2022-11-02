@@ -29,9 +29,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // DEBUG
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG3
 
 import 'common_main.dart';
@@ -60,9 +60,9 @@ Future<void> main() async {
   FirebaseNotifications();
 
   //region DEBUG
-  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //endregion DEBUG
 
   // await _initializeAdmin();
