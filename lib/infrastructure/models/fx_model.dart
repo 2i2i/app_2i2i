@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class FXModel {
   final int id;
   final DateTime ts;
-  final double? value;
+  final double value;
   final int decimals;
   final String? name;
   final String? unitname;
@@ -24,7 +24,7 @@ class FXModel {
   FXModel.fromJson(Map<String, dynamic> json, int docId)
       : id = docId,
         ts = json['ts'].toDate(),
-        value = json['value'] != null ? double.parse(json['value'].toString()) : null,
+        value = double.parse(json['value'].toString()),
         decimals = int.parse(json['decimals'].toString()),
         name = json['name'],
         unitname = json['unitname'],
