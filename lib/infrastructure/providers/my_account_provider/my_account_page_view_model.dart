@@ -165,10 +165,16 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future disconnectAccount(String address) async {
     String sessionId = getSessionId(address);
+    print('removed session $sessionId');
     var connector = await WalletConnectAccount.newConnector(sessionId);
+
     connector.killSession();
-    storage?.remove(WalletConnectAccount.STORAGE_KEY);
-    initMethod();
+    List<String> accounts = await accountService?.getAllWalletConnectAccounts() ?? [];
+    accounts.remove(sessionId);
+    await storage?.write(WalletConnectAccount.STORAGE_KEY, accounts.join(','));
+    // storage?.remove(WalletConnectAccount.STORAGE_KEY);
+    await initMethod();
+    notifyListeners();
   }
 
   Future updateDBWithNewAccount(String address, {String userId = '', String type = 'LOCAL'}) => database.addAlgorandAccount(uid ?? userId, address, type);

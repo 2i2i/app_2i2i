@@ -119,6 +119,7 @@ class AccountService {
   Future<Map<String, List<String>>> getAllWalletAddress() async {
     Map<String, List<String>> map = {};
     List<String> val = await getAllWalletConnectAccounts();
+    log(K + ' session ids $val');
     for (String id in val) {
       final connector = await WalletConnectAccount.newConnector(id);
       // print('connector.connected ${connector.connected}');
