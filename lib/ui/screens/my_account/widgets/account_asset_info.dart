@@ -87,7 +87,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   @override
   Widget build(BuildContext context) {
     final ccyLogo = Image.network(
-      FXValue!.iconUrl ?? '',
+      FXValue?.iconUrl ?? '',
       width: 35,
       height: 35,
       fit: BoxFit.fill,
@@ -99,14 +99,14 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
       ),
     );
 
-    if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, ''));
+    if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, '', ''));
 
     // set assetName and amount
     final divisor = pow(10, FXValue!.decimals);
     final a = balance.assetHolding.amount / divisor;
     String amount = doubleWithoutDecimalToInt(a).toString();
 
-    return cont(ccyLogo, amount);
+    return cont(ccyLogo, amount, FXValue!.getName);
   }
 
   Widget subjectiveOverlay(Widget widget) {
@@ -157,7 +157,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     );
   }
 
-  Container cont(Widget ccyLogo, String amount) {
+  Container cont(Widget ccyLogo, String amount, String name) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
@@ -187,7 +187,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                     SizedBox(width: 12),
                     Flexible(
                       child: Text(
-                        FXValue!.getName,
+                        name,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
