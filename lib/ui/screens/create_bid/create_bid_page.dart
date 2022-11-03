@@ -453,15 +453,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   int getAddressComboIndexByAddress(List<Tuple2<String, Balance>> addressBalanceCombos, String address) {
     // int index = addressBalanceCombos.indexOf(addressOfAccount!);
-    int index = -1;
     for (int i = 0; i < addressBalanceCombos.length; i++) {
-      if (addressBalanceCombos[i].item1 == address) {
-        index = i;
-        break;
-      }
+      if (addressBalanceCombos[i].item1 == address) return i;
     }
-    if (index == -1) throw "getAddressComboIndexByAddress - address=$address";
-    return index;
+    throw "getAddressComboIndexByAddress - address=$address";
   }
 
   Future<void> addWalletAccount(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
