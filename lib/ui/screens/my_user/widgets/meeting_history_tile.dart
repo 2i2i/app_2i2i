@@ -28,7 +28,6 @@ class MeetingHistoryTile extends ConsumerWidget {
       return Container();
     }
 
-    
     final FXValueTmp = ref.watch(FXProvider(meetingModel.speed.assetId)).value;
     if (haveToWait(FXValueTmp)) {
       return Container();

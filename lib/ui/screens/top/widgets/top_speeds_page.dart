@@ -30,6 +30,13 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
       padding: EdgeInsets.symmetric(vertical: 8),
       itemBuilder: (BuildContext context, int index) {
         TopMeeting meeting = topMeetings[index];
+
+        final FXValueTmp = ref.watch(FXProvider(meeting.speed.assetId)).value;
+        if (haveToWait(FXValueTmp)) {
+          return Container();
+        }
+        final FXValue = FXValueTmp!;
+
         return Card(
           child: ListTile(
             contentPadding: EdgeInsets.all(8),
@@ -50,7 +57,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
                     ],
                   ),
                 ),
-                Text('${meeting.speed.num / pow(10, 6)} ALGO/sec', style: Theme.of(context).textTheme.subtitle2),
+                Text('${meeting.speed.num / pow(10, FXValue.decimals)} ${FXValue.getName}/sec', style: Theme.of(context).textTheme.subtitle2),
               ],
             ),
           ),
