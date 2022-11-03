@@ -43,7 +43,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.only(top: 20, bottom: 15),
               child: Text(
                 Keys.wallet.tr(context),
                 style: Theme.of(context).textTheme.headline5,
@@ -88,6 +88,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
                                 key: ObjectKey(addressBalanceCombos[index]),
                                 address: address,
                                 initBalance: balance,
+                                isForSelectAccount: true,
                               ),
                             ),
                           ],
