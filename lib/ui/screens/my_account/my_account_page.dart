@@ -130,6 +130,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
         onPressed: () async {
           await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+          myAccountPageViewModel.isLoading = true; // this line is used to show progress indicator
+          await myAccountPageViewModel.initMethod();
           // showBottomSheet.value = !showBottomSheet.value;
         },
         child: ValueListenableBuilder(
