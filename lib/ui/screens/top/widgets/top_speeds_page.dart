@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -28,6 +30,13 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
       padding: EdgeInsets.symmetric(vertical: 8),
       itemBuilder: (BuildContext context, int index) {
         TopMeeting meeting = topMeetings[index];
+
+        final FXValueTmp = ref.watch(FXProvider(meeting.speed.assetId)).value;
+        if (haveToWait(FXValueTmp)) {
+          return Container();
+        }
+        final FXValue = FXValueTmp!;
+
         return Card(
           child: ListTile(
             contentPadding: EdgeInsets.all(8),
@@ -48,7 +57,7 @@ class _TopSpeedsPageState extends ConsumerState<TopSpeedsPage> {
                     ],
                   ),
                 ),
-                Text('${meeting.speed.num / MILLION} ALGO/sec', style: Theme.of(context).textTheme.subtitle2),
+                Text('${meeting.speed.num / pow(10, FXValue.decimals)} ${FXValue.getName}/sec', style: Theme.of(context).textTheme.subtitle2),
               ],
             ),
           ),

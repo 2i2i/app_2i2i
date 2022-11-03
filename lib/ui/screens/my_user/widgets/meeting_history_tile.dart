@@ -1,11 +1,11 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -28,6 +28,12 @@ class MeetingHistoryTile extends ConsumerWidget {
       return Container();
     }
 
+    final FXValueTmp = ref.watch(FXProvider(meetingModel.speed.assetId)).value;
+    if (haveToWait(FXValueTmp)) {
+      return Container();
+    }
+    final FXValue = FXValueTmp!;
+
     if (user?.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
@@ -44,7 +50,9 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     int amount = meetingModel.energy['B'] ?? 0;
     if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
-    double amountInALGO = amount / MILLION;
+    double amountWithDecimals = amount / pow(10, FXValue.decimals);
+
+    String assetName = FXValue.getName;
 
     return InkResponse(
       onTap: onTap,
@@ -128,7 +136,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '$amountInALGO ${Keys.ALGO.tr(context)}'.toUpperCase(),
+                      '$amountWithDecimals $assetName'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +12,7 @@ import '../../models/bid_model.dart';
 import '../../models/chat_model.dart';
 import '../../models/meeting_history_model.dart';
 import '../../models/meeting_model.dart';
+import '../../models/redeem_coin_model.dart';
 import '../../models/room_model.dart';
 import '../../models/token_model.dart';
 import '../../models/user_model.dart';
@@ -301,6 +303,31 @@ class FirestoreDatabase {
     });
   }
 
+  Stream<FXModel> FXStream({required int assetId}) {
+    return _service
+        .documentStream(
+      path: FirestorePath.FX(assetId),
+      builder: (data, documentId) {
+        if (data == null) {
+          return FXModel.ALGO(); // TODO should fail actually
+        }
+        return FXModel.fromJson(data, assetId);
+      },
+    )
+        .handleError((e) {
+      print(e);
+    });
+  }
+
+  Future<FXModel?> getFX(int assetId) async {
+    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
+    if (snapshot?.data() is Map) {
+      Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
+      return FXModel.fromJson(data!, assetId);
+    }
+    return null;
+  }
+
   Future<TokenModel?> getTokenFromId(String uid) async {
     DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.token(uid));
     if (snapshot?.data() is Map) {
@@ -394,6 +421,25 @@ class FirestoreDatabase {
         .handleError((error) {
       log(error);
     });
+  }
+
+  Stream<List<RedeemCoinModel>> redeemCoinStream({required String uid}) {
+    return _service
+        .documentStream(
+      path: FirestorePath.redeem(uid),
+      builder: (data, documentId) {
+        if (data != null) {
+          final list = data.entries.toList();
+          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: int.parse(e.value))).toList();
+        }
+        return <RedeemCoinModel>[];
+      },
+    )
+        .handleError(
+      (onError) {
+        log("$onError");
+      },
+    );
   }
 
   Stream<Room> roomStream({required String meetingId}) => _service.documentStream(

@@ -195,8 +195,6 @@ Future<String> getWCBridge() async {
   return 'https://bridge.walletconnect.org';
 }
 
-const int MILLION = 1000000;
-
 class MyBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {

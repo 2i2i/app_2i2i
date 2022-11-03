@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,61 +18,146 @@ import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_alert_widget.dart';
 
-class AccountInfo extends ConsumerStatefulWidget {
+class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
+  final bool isSelected;
   final int index;
 
-  AccountInfo(
+  AccountAssetInfo(
     this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
+    this.isSelected = false,
     required this.index,
     required this.address,
+    required this.initBalance,
   }) : super(key: key);
 
-  // final AbstractAccount account;
   final String address;
+  final Balance initBalance;
 
-  // List<Balance> balances;
   final void Function()? afterRefresh;
 
   @override
-  _AccountInfoState createState() => _AccountInfoState();
+  _AccountAssetInfoState createState() => _AccountAssetInfoState(initBalance);
 }
 
-class _AccountInfoState extends ConsumerState<AccountInfo> {
+class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
+  _AccountAssetInfoState(this.balance);
+
   List<String> keyList = [];
-  List<Balance> balances = [];
+
+  FXModel? FXValue;
+  Balance balance;
 
   @override
   void initState() {
-    getBalance().then((value) {
-      balances = value;
+    getFX().then((_) {
       if (mounted) {
         setState(() {});
+        log('getFX setstate in init');
       }
     });
     super.initState();
   }
 
-  Future<List<Balance>> getBalance() {
-    var myAccount = ref.read(myAccountPageViewModelProvider);
-    return myAccount.getBalanceFromAddress(widget.address);
+  int get assetId => balance.assetHolding.assetId;
+
+  // only used on refresh
+  Future<Balance> getBalance() async {
+    final myAccount = ref.read(myAccountPageViewModelProvider);
+    return myAccount.getBalanceFromAddressAndAssetId(widget.address, assetId);
+  }
+
+  Future<void> getFX() async {
+    log('getFX assetId=$assetId');
+
+    if (assetId == 0) {
+      FXValue = FXModel.ALGO();
+      return;
+    }
+
+    final myAccount = ref.read(myAccountPageViewModelProvider);
+    log('await myAccount.getFX assetId=$assetId');
+    FXValue = await myAccount.getFX(balance.assetHolding.assetId);
+
+    log('getAsset FXValue=$FXValue assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
   }
 
   @override
   Widget build(BuildContext context) {
-    String assetName = Keys.ALGO.tr(context);
-    String amount = '0';
+    final ccyLogo = Image.network(
+      FXValue?.iconUrl ?? '',
+      width: 35,
+      height: 35,
+      fit: BoxFit.fill,
+      errorBuilder: (context, error, stackTrace) => Image.asset(
+        'assets/algo_logo.png',
+        width: 35,
+        height: 35,
+        fit: BoxFit.fill,
+      ),
+    );
 
-    if (balances.isNotEmpty) {
-      Balance balanceModel = balances.first;
-      final assetId = balanceModel.assetHolding.assetId;
-      var a = (balanceModel.assetHolding.amount / MILLION);
-      amount = doubleWithoutDecimalToInt(a).toString();
-      assetName = assetId == 0 ? '${Keys.ALGO.tr(context)}' : balanceModel.assetHolding.assetId.toString();
-    }
+    if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, '', ''));
 
+    // set assetName and amount
+    final divisor = pow(10, FXValue!.decimals);
+    final a = balance.assetHolding.amount / divisor;
+    String amount = doubleWithoutDecimalToInt(a).toString();
+
+    return cont(ccyLogo, amount, FXValue!.getName);
+  }
+
+  Widget subjectiveOverlay(Widget widget) {
+    var child = Stack(
+      alignment: Alignment.center,
+      children: [
+        widget,
+        Text(
+          'Subjective value assets\ncoming soon...',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            shadows: <Shadow>[
+              Shadow(
+                blurRadius: 10.0,
+                color: Colors.white,
+                offset: Offset(4.0, 4.0),
+              ),
+              Shadow(
+                color: Colors.white,
+                blurRadius: 10.0,
+                offset: Offset(-9.0, 4.0),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+
+    return AbsorbPointer(
+      absorbing: true,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+        decoration: BoxDecoration(
+          color: Color(0xFFd3d3d3),
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(2, 4),
+              blurRadius: 8,
+              color: Color.fromRGBO(0, 0, 0, 0.12),
+            ),
+          ],
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  Container cont(Widget ccyLogo, String amount, String name) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
@@ -95,17 +183,12 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                 child: Row(
                   children: [
                     SizedBox(width: 10),
-                    Image.asset(
-                      'assets/algo_logo.png',
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.fill,
-                    ),
-                    SizedBox(width: 16),
+                    ccyLogo,
+                    SizedBox(width: 12),
                     Flexible(
                       child: Text(
-                        assetName,
-                        style: Theme.of(context).textTheme.subtitle1?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                        name,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -144,26 +227,28 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
               ),
             ],
           ),
-          Divider(),
-          Container(
-            // color: Colors.amber,
+          Divider(
+            color: widget.isSelected ? Colors.transparent : null,
+          ),
+          Visibility(
+            visible: !widget.isSelected,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Visibility(
-                  visible: !Platform.isIOS,
+                    visible: !Platform.isIOS,
                     child: Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
-                    onPressed: () async {
-                      context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
-                    },
-                  ),
-                )),
+                      height: 40,
+                      width: 40,
+                      margin: EdgeInsets.symmetric(horizontal: 6),
+                      child: IconButton(
+                        icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
+                        onPressed: () async {
+                          context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
+                        },
+                      ),
+                    )),
                 Container(
                   height: 40,
                   width: 40,
@@ -176,8 +261,7 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     ),
                     onPressed: () async {
                       CustomAlertWidget.loader(true, context);
-                      var val = await getBalance();
-                      balances = val;
+                      balance = await getBalance();
                       if (widget.afterRefresh != null) widget.afterRefresh!();
                       CustomAlertWidget.loader(false, context);
                       setState(() {});
@@ -210,53 +294,6 @@ class _AccountInfoState extends ConsumerState<AccountInfo> {
                     },
                   ),
                 ),
-                /*  Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
-                  child: IconButton(
-                    iconSize: 18,
-                    icon: Icon(Icons.delete),
-                    onPressed: () async {
-                      CustomAlertWidget.loader(true, context);
-                      await ref.read(myAccountPageViewModelProvider).disconnectAccount(widget.address);
-                      CustomAlertWidget.loader(false, context);
-                      setState(() {});
-                    },
-                  ),
-                ),*/
-                /*if (widget.account is LocalAccount)
-                  Container(
-                    height: 40,
-                    width: 40,
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          iconSize: 18,
-                          icon: SvgPicture.asset(
-                            'assets/icons/key.svg',
-                            color: iconColor(context),
-                          ),
-                          onPressed: () async {
-                            CustomAlertWidget.infoDialog(
-                              context: context,
-                              child: KeysWidget(account: widget.account as LocalAccount),
-                            );
-                            await appSettingModel.setTappedOnKey("1");
-                          },
-                          // onPressed: () => _showPrivateKey(context, widget.account as LocalAccount),
-                        ),
-                        Visibility(
-                          visible: widget.index == 0 && !(appSettingModel.isTappedOnKey),
-                          child: Positioned(
-                            top: 0.0,
-                            right: 0.0,
-                            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),*/
               ],
             ),
           )

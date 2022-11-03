@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
-import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
@@ -80,68 +77,6 @@ class _AddAccountOptionsWidgetsState extends ConsumerState<AddAccountOptionsWidg
             title: Text(Keys.walletAccount.tr(context)),
             subtitle: Text(Keys.walletAccountMsg.tr(context)),
             trailing: Icon(Icons.navigate_next),
-          ),
-          Visibility(
-            visible: false,
-            child: ListTile(
-              onTap: () {
-                widget.showBottom?.value = false;
-                context.pushNamed(Routes.recover.nameFromPath());
-              },
-              leading: Container(
-                height: 50,
-                width: 50,
-                decoration:
-                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    spreadRadius: 0.5,
-                  )
-                ]),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  'assets/icons/recover.svg',
-                  height: 15,
-                  width: 15,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              title: Text(Keys.recoverPassphrase.tr(context)),
-              subtitle: Text(Keys.recoverPassPhaseMsg.tr(context)),
-              trailing: Icon(Icons.navigate_next),
-            ),
-          ),
-          Visibility(
-            visible: false,
-            child: ListTile(
-              onTap: () async {
-                widget.showBottom?.value = false;
-                context.pushNamed(Routes.createLocalAccount.nameFromPath());
-              },
-              leading: Container(
-                height: 50,
-                width: 50,
-                decoration:
-                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white, width: 2), boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    spreadRadius: 0.5,
-                  )
-                ]),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  'assets/icons/wallet.svg',
-                  height: 15,
-                  width: 15,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              title: Text(Keys.addLocalAccount.tr(context)),
-              subtitle: Text(Keys.addLocalAccountMsg.tr(context)),
-              trailing: Icon(Icons.navigate_next),
-            ),
           ),
         ],
       ),

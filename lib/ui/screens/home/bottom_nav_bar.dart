@@ -19,16 +19,7 @@ class BottomNavBar extends ConsumerStatefulWidget {
 
 class _BottomNavBarState extends ConsumerState<BottomNavBar> {
   @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.watch(appSettingProvider).checkIfUpdateAvailable();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var appSettingModel = ref.watch(appSettingProvider);
     return ValueListenableBuilder(
       valueListenable: isUserLocked,
       builder: (BuildContext context, value, Widget? child) {
@@ -102,8 +93,8 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                     ),
                     BottomNavigationBarItem(
                       label: Keys.settings.tr(context),
-                      activeIcon: settingIcons(updateRequired: appSettingModel.updateRequired, color: Theme.of(context).colorScheme.secondary),
-                      icon: settingIcons(updateRequired: appSettingModel.updateRequired),
+                      activeIcon: settingIcons(color: Theme.of(context).colorScheme.secondary),
+                      icon: settingIcons(),
                     ),
                   ],
                 );
@@ -118,31 +109,26 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
     );
   }
 
-  Widget settingIcons({required bool updateRequired, Color? color}) {
-    return Stack(
-      children: [
-        Padding(
+  Widget settingIcons({Color? color}) {
+    return FutureBuilder(
+      future: ref.read(appSettingProvider).checkIfUpdateAvailable(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.data == true) {
+          return Padding(
+              padding: const EdgeInsets.all(6),
+              child: RotatedBox(
+                quarterTurns: 1,
+                child: Icon(
+                  Icons.arrow_circle_left_rounded,
+                  color: Colors.amber,
+                ),
+              ));
+        }
+        return Padding(
           padding: const EdgeInsets.all(6),
-          child: updateRequired
-              ? RotatedBox(
-                  quarterTurns: 1,
-                  child: Icon(
-                    Icons.arrow_circle_left_rounded,
-                    color: Colors.amber,
-                  ),
-                )
-              : SvgPicture.asset('assets/icons/setting.svg', color: color),
-        ),
-        Visibility(
-          // visible: !isTappedOnKey,
-          visible: false,
-          child: Positioned(
-            top: 0.0,
-            right: 0.0,
-            child: new Icon(Icons.brightness_1, size: 12.0, color: Colors.redAccent),
-          ),
-        )
-      ],
+          child: SvgPicture.asset('assets/icons/setting.svg', color: color),
+        );
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -21,7 +22,6 @@ import '../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_profile_image_view.dart';
-import '../create_bid/top_card_widget.dart';
 import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
@@ -39,6 +39,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
+  TextEditingController importanceEditController = TextEditingController();
   RichTextController bioTextController = RichTextController(
     patternMatchMap: {RegExp(r"(?:#)[a-zA-Z0-9]+"): TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)},
     onMatch: (List<String> match) {},
@@ -87,19 +88,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               children: [
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
-                      context,
-                      backgroundColor: Theme.of(context).cardColor,
-                      child: ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ),
-                    ),
+                          context,
+                          backgroundColor: Theme.of(context).cardColor,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -325,11 +326,54 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    '${Keys.importance.tr(context)}: ${importanceString()}',
+                    '${Keys.importance.tr(context)}:',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
-                  Container(
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '${importanceString()}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          controller: importanceEditController,
+                          style: TextStyle(color: AppTheme().cardDarkColor),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) async {
+                            if (value.isEmpty) {
+                              return;
+                            }
+                            _importanceSliderValue = double.parse(value);
+                            _importanceRatioValue =
+                                (_importanceSliderValue! - _importanceSliderMaxHalf).abs() * (_importanceSliderMaxHalf * 2.0 - 2.0) / _importanceSliderMaxHalf +
+                                    2.0;
+                            await Future.delayed(Duration(milliseconds: 500));
+                            importanceEditController.text = _importanceSliderValue!.round().toString();
+                            setState(() {});
+                          },
+                          textInputAction: TextInputAction.done,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(2),
+                          ],
+                          autofocus: false,
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: 'Imp',
+                            // suffix: Text(Keys..algoPerSec),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  /*Container(
                     decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
@@ -352,23 +396,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                min: 0,
-                                max: (_importanceSliderMaxHalf * 2.0),
-                                value: _importanceSliderValue!,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _importanceSliderValue = value;
-                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                        (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                        _importanceSliderMaxHalf +
-                                        2.0;
-                                    // log(X +
-                                    //     '_importanceSliderValue=$_importanceSliderValue');
-                                    // log(X +
-                                    //     '_importanceRatioValue=$_importanceRatioValue');
-                                  });
-                                },
-                              ),
+                                      min: 0,
+                                      max: (_importanceSliderMaxHalf * 2.0),
+                                      value: _importanceSliderValue!,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _importanceSliderValue = value;
+                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                                  _importanceSliderMaxHalf +
+                                              2.0;
+                                        });
+                                      },
+                                    ),
                             ),
                           ),
                         ),
@@ -376,7 +416,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                         SizedBox(width: 6),
                       ],
                     ),
-                  ),
+                  ),*/
                   ValueListenableBuilder(
                     valueListenable: invalidTime,
                     builder: (BuildContext context, bool value, Widget? child) {
@@ -474,7 +514,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
+      speedEditController.text = (user.rule.minSpeed / pow(10, 6)).toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -497,6 +537,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         x = 2.0 - _importanceRatioValue!;
       }
       _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
+      importanceEditController.text = (_importanceSliderValue?.round() ?? "").toString();
     }
     setState(() {});
   }
@@ -573,19 +614,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final ratio = _importanceRatioValue!.round();
     final postfix = ordinalIndicator(ratio);
     final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-    return 'every $ratio$postfix is a ${lounge.name()}';
+    return 'Every $ratio$postfix is a\n${lounge.name()}';
   }
 
   String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
+    final minSpeedPerHourinALGO = minSpeedPerHour / pow(10, 6);
     // final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round();
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);

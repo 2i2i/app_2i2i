@@ -2,8 +2,11 @@ import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
@@ -11,6 +14,7 @@ import 'package:app_2i2i/ui/screens/app/wait_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -18,7 +22,7 @@ import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
-import '../my_account/widgets/account_info.dart';
+import '../my_account/widgets/account_asset_info.dart';
 import '../my_account/widgets/add_account_options_widget.dart';
 import '../my_user/widgets/wallet_connect_dialog.dart';
 import 'top_card_widget.dart';
@@ -67,8 +71,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int maxMaxDuration = 300;
   int minMaxDuration = 10;
 
-  int _minAccountBalance = 0;
-  int _accountBalance = 0;
+  int assetId = 0;
+  FXModel FXValue = FXModel.ALGO();
+
+  int minAccountBalance = 0;
+  int accountBalance = 0;
 
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
@@ -84,13 +91,17 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       if (!focusNode.hasFocus) {
         var val = getSpeedFromText(speedController.text);
         if (val < speed.num) {
-          speedController.text = (speed.num / MILLION).toString();
+          speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
       }
     });
-    ref.read(myAccountPageViewModelProvider).initMethod();
+    var providerObj = ref.read(myAccountPageViewModelProvider);
+    providerObj.initMethod().then((value) {
+      updateAccountBalance(providerObj);
+    });
+
     super.initState();
   }
 
@@ -99,7 +110,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
     final userPageBViewModel = ref.watch(userPageViewModelProvider(widget.B));
 
-    if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null) {
+    if (haveToWait(myAccountPageViewModel) || haveToWait(userPageBViewModel) || userPageBViewModel == null || myAccountPageViewModel.isLoading) {
       return WaitPage(
         isCupertino: true,
         height: MediaQuery.of(context).size.height / 2,
@@ -107,8 +118,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
 
     userB = userPageBViewModel.user;
-
-    updateAccountBalance(myAccountPageViewModel);
 
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +128,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TopCard(minWait: calcWaitTime(context), B: userB!),
+          FutureBuilder(
+            future: calcWaitTime(context, myAccountPageViewModel),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                return TopCard(minWait: snapshot.data, B: userB!);
+              }
+              return Container();
+            },
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -196,32 +213,32 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
-                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.6)
-                        : null,
+                    constraints:
+                        myAccountPageViewModel.walletConnectAccounts.length > 0 ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.8) : null,
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
-                          // List<AbstractAccount> accountsList = myAccountPageViewModel.accounts ?? [];
-
+                          final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
                           return PageView.builder(
                             controller: controller,
                             scrollDirection: Axis.horizontal,
-                            itemCount: myAccountPageViewModel.addresses.length,
+                            itemCount: addressBalanceCombos.length,
                             itemBuilder: (_, index) {
                               // AbstractAccount? abstractAccount = accountsList[index];
-                              String address = myAccountPageViewModel.addresses.elementAt(index);
+                              final address = addressBalanceCombos[index].item1;
+                              final balance = addressBalanceCombos[index].item2;
                               return Column(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: AccountInfo(
+                                    child: AccountAssetInfo(
                                       false,
                                       key: ObjectKey(address),
                                       // account: abstractAccount,
                                       afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
                                       index: index,
                                       address: address,
+                                      initBalance: balance,
                                       // balances: myAccountPageViewModel.accountBalancesMap[address]!,
                                     ),
                                   ),
@@ -329,7 +346,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                 children: [
                                   Center(
                                     child: Text(
-                                      '${Keys.algoPerSec.tr(context)}',
+                                      // '${Keys.algoPerSec.tr(context)}',
+                                      '${FXValue.getName}/sec',
                                       style: Theme.of(context).textTheme.subtitle2?.copyWith(
                                             color: AppTheme().black,
                                             fontWeight: FontWeight.normal,
@@ -363,7 +381,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (value) {
                               int num = getSpeedFromText(value ?? '');
                               if (num < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / MILLION}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / pow(10, FXValue.decimals)}';
                               }
                               return null;
                             },
@@ -390,10 +408,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        ?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
               ),
             ),
             ValueListenableBuilder(
@@ -436,11 +451,19 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
+  int getAddressComboIndexByAddress(List<Tuple2<String, Balance>> addressBalanceCombos, String address) {
+    // int index = addressBalanceCombos.indexOf(addressOfAccount!);
+    for (int i = 0; i < addressBalanceCombos.length; i++) {
+      if (addressBalanceCombos[i].item1 == address) return i;
+    }
+    throw "getAddressComboIndexByAddress - address=$address";
+  }
+
   Future<void> addWalletAccount(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     String? addressOfAccount = await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
     if (addressOfAccount?.isNotEmpty ?? false) {
-      final x = myAccountPageViewModel.addresses;
-      int index = x.indexOf(addressOfAccount!);
+      final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+      int index = getAddressComboIndexByAddress(addressBalanceCombos, addressOfAccount!);
       if (controller.hasClients) {
         controller.jumpToPage(index > 0 ? index : 0);
         controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
@@ -452,11 +475,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     CustomAlertWidget.showBottomSheet(
       context,
       child: AddAccountOptionsWidgets(
-        accountAddListener: (String? address) {
+        accountAddListener: (String? address) async {
           Navigator.of(context, rootNavigator: true).pop();
           if (address is String) {
-            final x = myAccountPageViewModel.addresses;
-            int index = x.indexOf(address);
+            final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+            // int index = x.indexOf(address);
+            int index = getAddressComboIndexByAddress(addressBalanceCombos, address);
             if (controller.hasClients) {
               controller.jumpToPage(index > 0 ? index : 0);
               controller.animateToPage(index, curve: Curves.decelerate, duration: Duration(milliseconds: 300));
@@ -468,45 +492,69 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
+    
+    var FXValueTmp = await myAccountPageViewModel.getFX(assetId);
+    log(FX + 'FXValueTmp=$FXValueTmp');
+    if (FXValueTmp == null) return;
+    FXValue = FXValueTmp;
+
     accountIndex ??= currentAccountIndex;
-    var val = getSpeedFromText(speedController.text);
-    bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
+    // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
+    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
+    if (addressBalanceCombos.isNotEmpty) {
+      final combo = accountIndex < addressBalanceCombos.length ? addressBalanceCombos[accountIndex] : addressBalanceCombos.first;
+      address = combo.item1;
+      assetId = combo.item2.assetHolding.assetId;
+      accountBalance = combo.item2.assetHolding.amount;
+    }
+    log(FX + 'address=$address');
+    log(FX + 'assetId=$assetId');
+    log(FX + 'accountBalance=$accountBalance');
+
+    minAccountBalance = 0;
+    if (assetId == 0) {
+      minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
+    }
+    log(FX + 'minAccountBalance=$minAccountBalance');
+
+    final speedVal = getSpeedFromText(speedController.text);
+    log(FX + 'speedVal=$speedVal');
+    bool isLessVal = speed.num * FXValue.value < (userB?.rule.minSpeed ?? 0) || speedVal < (userB?.rule.minSpeed ?? 0);
+    log(FX + 'isLessVal=$isLessVal');
     if (isLessVal) {
-      speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: 0);
+      speed = Quantity(num: userB?.rule.minSpeed ?? 0, assetId: assetId);
     } else {
-      speed = Quantity(num: val, assetId: 0);
+      speed = Quantity(num: speedVal, assetId: assetId);
     }
+    log(FX + 'speed=$speed speed.assetId=${speed.assetId} speed.num=${speed.num}');
+
     if (!focusNode.hasFocus) {
-      speedController.text = (speed.num / MILLION).toString();
-    }
-    if (myAccountPageViewModel.addresses.isNotEmpty) {
-      if (myAccountPageViewModel.addresses.length > accountIndex) {
-        address = myAccountPageViewModel.addresses[accountIndex];
-      } else {
-        address = myAccountPageViewModel.addresses.first;
-      }
+      speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
     }
 
-    if (address != null) {
-      _minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
-      _accountBalance = await myAccountPageViewModel.getAlgoBalance(address: address!);
-    }
-
-    final availableBalance = _accountBalance - _minAccountBalance;
-    maxMaxDuration = userB?.rule.maxMeetingDuration ?? 0;
+    final availableBalance = accountBalance - minAccountBalance;
+    log(FX + 'availableBalance=$availableBalance');
+    maxMaxDuration = userB!.rule.maxMeetingDuration;
+    log(FX + 'maxMaxDuration=$maxMaxDuration');
     if (speed.num != 0) {
       final availableMaxDuration = max(0, ((availableBalance - 4 * AlgorandService.MIN_TXN_FEE) / speed.num).floor());
+      log(FX + 'availableMaxDuration=$availableMaxDuration');
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      log(FX + 'maxMaxDuration=$maxMaxDuration');
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+      log(FX + 'maxMaxDuration=$maxMaxDuration');
     }
     maxDuration = min(maxDuration, maxMaxDuration);
-    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: 0);
+    log(FX + 'maxDuration=$maxDuration');
+    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: assetId);
+    log(FX + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
+
     if (this.mounted) setState(() {});
   }
 
-  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * MILLION).round();
+  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, FXValue.decimals)).round();
 
-  String calcWaitTime(BuildContext context) {
+  Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
 
     final now = DateTime.now().toUtc();
@@ -518,6 +566,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       ts: now,
       energy: amount.num,
       rule: userB!.rule,
+      FX: FXValue.value,
     );
 
     final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn], userB?.loungeHistory ?? [], userB?.loungeHistoryIndex ?? 0);
@@ -535,9 +584,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future onAddBid() async {
-    if (isInsufficient() && userB == null) {
-      return;
-    }
+    if (isInsufficient() && userB == null) return;
+
     final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.B));
     if (addBidPageViewModel is AddBidPageViewModel) {
       if (!addBidPageViewModel.submitting) {
@@ -547,16 +595,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     }
   }
 
-  double getWidthForSlider(BuildContext context) {
-    double width = MediaQuery.of(context).size.width - 200;
-    if (width <= 250) {
-      return 250;
-    }
-    return width;
-  }
-
   String getConfirmSliderText() {
-    var amountStr = '${(amount.num / MILLION).toString()} A';
+    var amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} ${FXValue.getName}';
     if (isInsufficient()) {
       var val = getSpeedFromText(speedController.text);
       bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
@@ -573,14 +613,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     var val = getSpeedFromText(speedController.text);
     bool isLessVal = speed.num < (userB?.rule.minSpeed ?? 0) || val < (userB?.rule.minSpeed ?? 0);
     if (isLessVal) return true;
-    if (speed.num == 0) {
-      return false;
-    }
+    if (speed.num == 0) return false;
     if (address == null) return true;
     final minCoinsNeeded = speed.num * 10;
     if (amount.num < minCoinsNeeded) return true; // at least 10 seconds
-    final minAccountBalanceNeeded = _minAccountBalance + amount.num + 4 * AlgorandService.MIN_TXN_FEE;
-    if (_accountBalance < minAccountBalanceNeeded) return true;
+    final minAccountBalanceNeeded = minAccountBalance + amount.num + 3 * AlgorandService.MIN_TXN_FEE;
+    if (accountBalance < minAccountBalanceNeeded) return true;
 
     return false;
   }

@@ -5,7 +5,6 @@ import 'package:algorand_dart/algorand_dart.dart';
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import '../services/logging.dart';
-import 'local_account.dart';
 import 'walletconnect_account.dart';
 
 class Balance {
@@ -64,48 +63,44 @@ class AccountService {
   }
 
   Future<List<AssetHolding>> getAssetHoldings({required String address, required AlgorandNet net}) async {
-    int balanceALGO = 0;
+    log('getAssetHoldings address=$address net=$net');
 
-    try {
+    // int balanceALGO = 0;
+
+    // try {
       final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-      // final accountInfoFuture =
-      //     algorandLib.client[net]!.getAccountByAddress(address);
+      final accountInfoFuture =
+          algorandLib.client[net]!.getAccountByAddress(address);
 
-      // final futureResults =
-      //     await Future.wait([balanceALGOFuture, accountInfoFuture]);
-      final futureResults = await Future.wait([balanceALGOFuture]);
+      final futureResults =
+          await Future.wait([balanceALGOFuture, accountInfoFuture]);
+      // final futureResults = await Future.wait([balanceALGOFuture]);
 
-      balanceALGO = futureResults[0];
-    } catch (e) {}
+      final balanceALGO = futureResults[0] as int;
 
-    // final assetHoldings = (futureResults[1] as AccountInformation).assets;
+
+
+    final assetHoldings = (futureResults[1] as AccountInformation).assets;
+
+    log('assetHoldings=$assetHoldings');
 
     final algoAssetHolding = AssetHolding(amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
 
-    return [algoAssetHolding];
-    // return [algoAssetHolding, ...assetHoldings];
-  }
-
-  Future<int> getNumLocalAccounts() async {
-    log('getNumLocalAccounts');
-    final numAccountsString = await storage.read('num_accounts');
-    log('getNumLocalAccounts numAccountsString=$numAccountsString');
-    final numAccounts = numAccountsString == null ? 0 : int.parse(numAccountsString);
-    log('getNumLocalAccounts numAccounts=$numAccounts');
-    return numAccounts;
+    // return [algoAssetHolding];
+    return [algoAssetHolding, ...assetHoldings]; // ALGO always first
+    // } catch (e) {}
   }
 
   Future<int> getNumWalletConnectAccounts() async {
-    String val = await storage.read('wallet_connect_accounts') ?? '';
+    String val = await storage.read(WalletConnectAccount.STORAGE_KEY) ?? '';
     return int.tryParse(val) ?? 0;
   }
 
   Future<int> getNumAccounts() async {
-    final numLocalAccounts = await getNumLocalAccounts();
     final numWalletConnectAccounts = await getNumWalletConnectAccounts();
-    log('getNumAccounts - numLocalAccounts=$numLocalAccounts - numWalletConnectAccounts=$numWalletConnectAccounts');
-    return numLocalAccounts + numWalletConnectAccounts;
+    log('getNumAccounts - numWalletConnectAccounts=$numWalletConnectAccounts');
+    return numWalletConnectAccounts;
   }
 
   /*Future<AbstractAccount?> findAccount(String address) async {
@@ -116,47 +111,24 @@ class AccountService {
     return null;
   }*/
 
-  Future<List<LocalAccount>> getAllLocalAccounts() async {
-    log('AccountService getAllLocalAccounts');
-    final int numAccounts = await getNumLocalAccounts();
-    log('AccountService numAccounts=$numAccounts');
-    final List<Future<LocalAccount>> futures = [];
-    for (var i = 0; i < numAccounts; i++) {
-      log('AccountService i=$i');
-      final accountFuture = LocalAccount.fromNumAccount(numAccount: i, algorandLib: algorandLib, storage: storage, accountService: this);
-      futures.add(accountFuture);
-    }
-    log('AccountService done');
-    return Future.wait(futures);
-  }
-
   Future<List<String>> getAllWalletConnectAccounts() async {
-    String? val = await storage.read('wallet_connect_accounts');
-    if (val != null) {
-      return val.split(',');
-    }
-    return [];
+    String? val = await storage.read(WalletConnectAccount.STORAGE_KEY);
+    return val == null ? [] : val.split(',');
   }
 
   Future<Map<String, List<String>>> getAllWalletAddress() async {
     Map<String, List<String>> map = {};
     List<String> val = await getAllWalletConnectAccounts();
+    log(K + ' session ids $val');
     for (String id in val) {
       final connector = await WalletConnectAccount.newConnector(id);
+      // print('connector.connected ${connector.connected}');
+      // print('connector.session.accounts ${connector.session.accounts}');
       map[id] = connector.session.accounts;
       // addresses.addAll(connector.session.accounts);
     }
     return map;
   }
-
-  // WalletConnectAccount.getAllAccounts();
-
-  /*Future<List<AbstractAccount>> getAllAccounts() async {
-    log('AccountService getAllAccounts');
-    final localAccounts = await getAllLocalAccounts();
-    final walletConnectAccounts = getAllWalletConnectAccounts();
-    return [...localAccounts, ...walletConnectAccounts];
-  }*/
 
   Future<bool> isOptedInToASA({required String address, required int assetId, required AlgorandNet net}) async {
     if (assetId == 0) return true; // all accounts can use ALGO

@@ -13,6 +13,8 @@ class FirestorePath {
 
   static String device(String uid) => 'devices/$uid';
 
+  static String redeem(String uid) => 'redeem/$uid';
+
   static String chat(String uid) => 'users/$uid/chat';
 
   static String meetings() => 'meetings';
@@ -47,4 +49,6 @@ class FirestorePath {
   static String iceCandidates(String meetingId, String subCollectionName) => 'meetings/$meetingId/rooms/main/$subCollectionName';
 
   static String algorandAccount(String uid, String algorandAccount) => 'users/$uid/algorand_accounts/$algorandAccount';
+
+  static String FX(int assetId) => 'FX/$assetId';
 }

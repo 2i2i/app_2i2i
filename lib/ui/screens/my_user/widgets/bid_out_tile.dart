@@ -1,4 +1,6 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'dart:math';
+
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,8 +32,14 @@ class BidOutTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
+    final FXAsyncValue = ref.watch(FXProvider(bidOut.speed.assetId));
+    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+      return CupertinoActivityIndicator();
+    }
+    FXModel FXValue = FXAsyncValue.value!;
+
     UserModel user = userAsyncValue.value!;
-    bidSpeed = (bidOut.speed.num / MILLION).toString();
+    bidSpeed = (bidOut.speed.num / pow(10, FXValue.decimals)).toString();
 
     if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -85,7 +93,7 @@ class BidOutTile extends ConsumerWidget {
                     text: bidSpeed,
                     children: [
                       TextSpan(
-                        text: ' ALGO/sec',
+                        text: ' ${FXValue.getName}/sec',
                         children: [],
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
@@ -98,10 +106,17 @@ class BidOutTile extends ConsumerWidget {
                   ),
                 ),
               ),
-              trailing: Image.asset(
-                'assets/algo_logo.png',
-                height: 34,
+              trailing: Image.network(
+                FXValue.iconUrl ?? '',
                 width: 34,
+                height: 34,
+                fit: BoxFit.fill,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  'assets/algo_logo.png',
+                  width: 34,
+                  height: 34,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
             Padding(
@@ -137,7 +152,7 @@ class BidOutTile extends ConsumerWidget {
                       textAlign: TextAlign.end,
                       text: TextSpan(
                         text: '${Keys.speed.tr(context)} :',
-                        children: [TextSpan(text: ' ${bidOut.energy / MILLION} ALGO', children: [], style: Theme.of(context).textTheme.bodyText2)],
+                        children: [TextSpan(text: ' ${bidOut.energy / pow(10, FXValue.decimals)} ${FXValue.getName}', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

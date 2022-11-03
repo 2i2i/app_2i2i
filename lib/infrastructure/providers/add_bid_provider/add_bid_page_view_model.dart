@@ -57,6 +57,9 @@ class AddBidPageViewModel {
     BuildContext? context,
     Function? timeout,
   }) async {
+
+    log(FX + 'addBid sessionId=$sessionId address=$address amount.assetId=${amount.assetId} amount.num=${amount.num} speed.assetId=${speed.assetId} speed.num=${speed.num} bidComment=$bidComment');
+
     FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
@@ -68,6 +71,8 @@ class AddBidPageViewModel {
       final net = AppConfig().ALGORAND_NET;
       final String? addrA = speed.num == 0 ? null : address;
       final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
+
+      log(FX + 'addBid net=$net addrA=$addrA bidId=$bidId');
 
       // lock coins
       Map<String, String> txns = {};
@@ -86,6 +91,13 @@ class AddBidPageViewModel {
           }
         }
 
+        // FX
+        double FXValue = 1;
+        if (speed.assetId != 0) {
+          final FX = await database.getFX(speed.assetId);
+          FXValue = FX!.value; // crash if no FX
+        }
+
         final bidOut = BidOut(
           id: bidId,
           B: B.id,
@@ -96,6 +108,7 @@ class AddBidPageViewModel {
           addrA: addrA,
           energy: amount.num,
           comment: bidComment,
+          FX: FXValue,
         );
         final bidInPublic = BidInPublic(
           id: bidId,
@@ -105,6 +118,7 @@ class AddBidPageViewModel {
           ts: DateTime.now().toUtc(),
           rule: B.rule,
           energy: amount.num,
+          FX: FXValue,
         );
         final bidInPrivate = BidInPrivate(
           id: bidId,
@@ -119,6 +133,7 @@ class AddBidPageViewModel {
         await database.addBid(bidOut, bidIn);
 
         TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
+        log(A + 'bUserTokenModel=$bUserTokenModel B.id=${B.id}');
 
         if (bUserTokenModel is TokenModel) {
           Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};

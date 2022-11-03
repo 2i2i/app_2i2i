@@ -82,7 +82,7 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

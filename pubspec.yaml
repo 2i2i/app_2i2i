@@ -31,7 +31,8 @@ dependencies:
 
   walletconnect_dart: ^0.0.11
   walletconnect_secure_storage: ^1.0.0
-  algorand_dart: ^1.0.3
+  # algorand_dart: ^1.0.3
+  algorand_dart: ^2.0.0-dev.4
   image_picker: ^0.8.5+3
   flutter_webrtc: ^0.9.8
   just_audio: ^0.9.28
@@ -78,9 +79,10 @@ dependencies:
   share_plus: ^4.4.0
   flutter_inappwebview: ^5.4.4+2
 
-  flutter_native_splash: ^2.2.10+1
+  flutter_native_splash: ^2.2.13
   perfect_volume_control: ^1.0.5
   image_picker_ios: ^0.8.6+1
+  tuple: ^2.0.1
 
 
 dev_dependencies:

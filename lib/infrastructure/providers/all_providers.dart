@@ -4,9 +4,12 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
+import 'package:app_2i2i/infrastructure/providers/redeem_coin_provider.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,7 +69,7 @@ final userPageViewModelProvider = Provider.family<UserPageViewModel?, String>((r
   final user = ref.watch(userProvider(uid));
   // log('userPageViewModelProvider - user=$user');
   if (user is AsyncLoading) return null;
-  return UserPageViewModel(functions: functions, user: user.asData!.value);
+  return UserPageViewModel(functions: functions, user: user.value!);
 });
 
 final searchFilterProvider = StateProvider((ref) => const <String>[]);
@@ -164,6 +167,7 @@ final topSpeedsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topSpeedsStream();
 });
+
 final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topDurationsStream();
@@ -401,14 +405,6 @@ final myAccountPageViewModelProvider = ChangeNotifierProvider<MyAccountPageViewM
   return MyAccountPageViewModel(ref: ref, uid: uid, database: database);
 });
 
-// final createLocalAccountProvider = FutureProvider(
-//   (ref) async {
-//     final myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-//     LocalAccount account = await myAccountPageViewModel.addLocalAccount();
-//     return account;
-//   },
-// );
-
 final userChangerProvider = Provider((ref) {
   final database = ref.watch(databaseProvider);
   final uid = ref.watch(myUIDProvider);
@@ -427,4 +423,22 @@ final meetingChangerProvider = Provider((ref) {
 final ratingListProvider = StreamProvider.family<List<RatingModel>, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
   return database.getUserRatings(uid);
+});
+
+//Redeem Coin
+final redeemCoinProvider = StreamProvider.family<List<RedeemCoinModel>, String>((ref, uid) {
+  final database = ref.watch(databaseProvider);
+  return database.redeemCoinStream(uid: uid);
+});
+
+//RedeemModel Coin
+final redeemCoinViewModelProvider = Provider((ref) {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  return RedeemCoinViewModel(functions: functions);
+});
+
+// FX
+final FXProvider = StreamProvider.family<FXModel, int>((ref, assetId) {
+  final database = ref.watch(databaseProvider);
+  return database.FXStream(assetId: assetId);
 });

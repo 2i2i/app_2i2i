@@ -2,8 +2,8 @@
 // flutter build appbundle --flavor production -t lib/main.dart
 // flutter build ipa --flavor production -t lib/main.dart
 // flutter config --android-sdk /Users/1m1/Documents/android-sdk
-// flutter run --flavor production -t lib/main.dart
-// flutter run --flavor dev -t lib/main_test.dart
+// flutter run --flavor production -t lib/main.dart --release
+// flutter run --flavor dev -t lib/main_test.dart --release
 
 // A -> B
 // main actions:
@@ -32,7 +32,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-// DEBUG3
+// DEBUG
 
 import 'common_main.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
@@ -42,7 +42,8 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await dotenv.load(fileName: "assets/.env_dev");
 
-  FirebaseApp app = await Firebase.initializeApp(
+  // FirebaseApp app = 
+  await Firebase.initializeApp(
       options: kIsWeb
           ? FirebaseOptions(
               apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
@@ -58,11 +59,11 @@ Future<void> main() async {
 
   FirebaseNotifications();
 
-  //region DEBUG
+  // DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  //endregion DEBUG
+  // DEBUG
 
   // await _initializeAdmin();
 
