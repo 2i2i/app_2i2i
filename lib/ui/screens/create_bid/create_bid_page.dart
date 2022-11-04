@@ -496,6 +496,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(FX + 'FXValueTmp=$FXValueTmp');
     if (FXValueTmp == null) return;
     FXValue = FXValueTmp;
+    log(FX + 'FXValue=$FXValue');
 
     accountIndex ??= currentAccountIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
@@ -506,12 +507,14 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       assetId = combo.item2.assetHolding.assetId;
       accountBalance = combo.item2.assetHolding.amount;
     }
+    log(FX + 'accountIndex=$accountIndex');
+    log(FX + 'addressBalanceCombos=$addressBalanceCombos');
     log(FX + 'address=$address');
     log(FX + 'assetId=$assetId');
     log(FX + 'accountBalance=$accountBalance');
 
     minAccountBalance = 0;
-    if (assetId == 0) {
+    if (assetId == 0 && address != null) {
       minAccountBalance = await myAccountPageViewModel.getMinBalance(address: address!);
     }
     log(FX + 'minAccountBalance=$minAccountBalance');
