@@ -83,7 +83,8 @@ class AppSettingModel extends ChangeNotifier {
     if (kIsWeb) {
       return false;
     }
-    AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();
+    AppVersionModel appVersion = AppVersionModel(androidVersion: "1.0.59", iosVersion: "1.0.59", webVersion: "1.0.59");
+    // AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     if (Platform.isAndroid) {
       version = appVersion?.androidVersion ?? "1";
