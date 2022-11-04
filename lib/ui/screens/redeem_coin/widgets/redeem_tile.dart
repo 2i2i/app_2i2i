@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom.dart';
 
@@ -26,12 +27,12 @@ class RedeemTile extends ConsumerWidget {
 
           final FXValue = snapshot.data;
 
-          bool isSubjective = FXValue == null;
+          bool isSubjective = FXValue?.value == null;
           final isProjectASA = redeemCoinModel.assetId == int.parse(dotenv.env['PROJECT_ASA_ID']!);
           final iconUrl = isProjectASA ? dotenv.env['PROJECT_ASA_ICON_URL']! : (FXValue?.iconUrl ?? '');
           final ASAName = isProjectASA ? dotenv.env['PROJECT_ASA_NAME']! : (FXValue?.getName ?? redeemCoinModel.assetId.toString());
 
-          log('RedeemTile FXValue=$FXValue redeemCoinModel.assetId=${redeemCoinModel.assetId} isProjectASA=$isProjectASA iconUrl=$iconUrl ASAName=$ASAName');
+          log('RedeemTile FXValue=$FXValue redeemCoinModel.assetId=${redeemCoinModel.assetId} isProjectASA=$isProjectASA iconUrl=$iconUrl ASAName=$ASAName value=${FXValue?.value}');
 
           final ccyLogo = Image.network(
             iconUrl,
