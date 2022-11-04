@@ -79,13 +79,16 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   Future<void> getFX() async {
     log('getFX assetId=$assetId');
 
-    if (assetId == 0) return;
+    if (assetId == 0) {
+      FXValue = FXModel.ALGO();
+      return;
+    }
 
     final myAccount = ref.read(myAccountPageViewModelProvider);
     log('await myAccount.getFX assetId=$assetId');
     FXValue = await myAccount.getFX(balance.assetHolding.assetId);
 
-    log('getAsset assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
+    log('getAsset FXValue=$FXValue assetName=${FXValue?.getName} decimals=${FXValue?.decimals}');
   }
 
   /* Future<void> getAsset() async {

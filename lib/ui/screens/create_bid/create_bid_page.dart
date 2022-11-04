@@ -497,7 +497,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
-    
     var FXValueTmp = await myAccountPageViewModel.getFX(assetId);
     log(FX + 'FXValueTmp=$FXValueTmp');
     if (FXValueTmp == null) return;

@@ -1,4 +1,3 @@
-import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
@@ -56,27 +55,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
   Future<void> getWalletAccount() async {
     walletConnectAccounts = await accountService!.getAllWalletAddress();
     notifyListeners();
-  }
-
-  Future<Asset> getAsset(int assetId) async {
-    log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
-
-    // final indexerClient = IndexerClient(
-    //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
-    //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
-    //   apiKey: '',
-    // );
-
-    // final algorand = Algorand(
-    //   // algodClient: algodClient,
-    //   indexerClient: indexerClient,
-    // );
-
-    // final assetResponse = await algorand.indexer().getAssetById(assetId);
-    final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
-    log('MyAccountPageViewModel getAsset assetResponse=$assetResponse');
-    log('MyAccountPageViewModel getAsset assetResponse.asset=${assetResponse.asset}');
-    return assetResponse.asset;
   }
 
   Future<List<Balance>> getBalanceFromAddress(String address) async {
