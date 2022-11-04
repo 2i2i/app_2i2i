@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import '../../../ui/commons/custom_alert_widget.dart';
 import '../../../ui/screens/my_user/widgets/bid_out_tile.dart';
-import '../../../ui/screens/my_user/widgets/wallet_connect_instruction_dialog.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
@@ -47,8 +46,9 @@ class MyUserPageViewModel {
   Future acceptBid(List<BidIn> bidIns, BuildContext context) async {
     String? addressOfUserB;
     BidIn bidIn = bidIns.first;
-    if (!(bidIn.public.active)) {
-      CustomAlertWidget.showToastMessage(context, "Bidder is not active");
+    if (!bidIn.public.active) {
+      // CustomAlertWidget.showToastMessage(context, "Bidder is not active");
+      throw "!bidIn.public.active bidIn=${bidIn.public.id}";
     } else if (bidIn.user!.isInMeeting()) {
       CustomAlertWidget.showToastMessage(context, "Bidder is busy with another user");
       await cancelNoShow(bidIn: bidIn);
@@ -59,17 +59,7 @@ class MyUserPageViewModel {
         for (List<String> val in sessionWithAddress.values) {
           addresses.addAll(val);
         }
-        if (addresses.isEmpty) {
-          final result =
-              await CustomAlertWidget.showBottomSheet(context, child: ConnectDialog(), isDismissible: true, backgroundColor: Theme.of(context).cardColor);
-          if (result is String) {
-            addresses.add(result);
-          } else {
-            Navigator.of(context).maybePop();
-            return false;
-          }
-        }
-        addressOfUserB = addresses.first;
+        if (!addresses.isEmpty) addressOfUserB = addresses.first;
       }
       CustomAlertWidget.loader(true, context);
       await acceptCall(bidIns, addressOfUserB, context);
