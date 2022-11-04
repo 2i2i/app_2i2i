@@ -49,7 +49,7 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
 
     log(B + '_RedeemCoinPageState, 2');
 
-    final redeemCoinsList = redeemCoinModelProviderRef.value ?? [];
+    final redeemCoinsList = redeemCoinModelProviderRef.value?.where((redeemCoin) => 0 < redeemCoin.value).toList() ?? [];
 
     log(B + '_RedeemCoinPageState, redeemCoinsList=$redeemCoinsList redeemCoinsList.length=${redeemCoinsList.length}');
 
