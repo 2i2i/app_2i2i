@@ -160,8 +160,8 @@ class BidInTile extends ConsumerWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: '${Keys.accumulatedSupport.tr(context)} ',
-                        children: [TextSpan(text: ' $budgetCount', children: [], style: Theme.of(context).textTheme.bodyText2)],
+                        text: '${Keys.accumulatedSupport.tr(context)}',
+                        children: [TextSpan(text: ' $budgetCount ${FXValue.getName}', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

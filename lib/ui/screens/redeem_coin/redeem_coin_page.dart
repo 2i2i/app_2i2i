@@ -51,7 +51,7 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
 
     final redeemCoinsList = redeemCoinModelProviderRef.value ?? [];
 
-    log('_RedeemCoinPageState, redeemCoinsList=$redeemCoinsList redeemCoinsList.length=${redeemCoinsList.length}');
+    log(B + '_RedeemCoinPageState, redeemCoinsList=$redeemCoinsList redeemCoinsList.length=${redeemCoinsList.length}');
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),

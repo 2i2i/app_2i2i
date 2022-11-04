@@ -428,9 +428,15 @@ class FirestoreDatabase {
         .documentStream(
       path: FirestorePath.redeem(uid),
       builder: (data, documentId) {
+        // log(B + 'redeemCoinStream uid=$uid data=$data');
         if (data != null) {
           final list = data.entries.toList();
-          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: int.parse(e.value))).toList();
+          log(B + 'redeemCoinStream uid=$uid list=$list list.length=${list.length}');
+          return list.map((e) {
+            // log(B + 'redeemCoinStream e.key=${e.key} e.value=${e.value}');
+            log(B + 'redeemCoinStream e.key.runtimeType=${e.key.runtimeType} e.value.runtimeType=${e.value.runtimeType}');
+            return RedeemCoinModel(assetId: int.parse(e.key), uid: uid, value: e.value as int);
+          }).toList();
         }
         return <RedeemCoinModel>[];
       },
