@@ -19,6 +19,8 @@ class FirestorePath {
 
   static String meetings() => 'meetings';
 
+  static String topValues() => 'topSpeeds';
+
   static String topSpeeds() => 'topSpeeds';
 
   static String topDurations() => 'topDurations';

@@ -1,9 +1,12 @@
+import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
+import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
+import 'package:app_2i2i/ui/screens/top/top_content_page.dart';
 import 'package:flutter/material.dart';
-
 import '../../../infrastructure/commons/keys.dart';
-import 'widgets/top_durations_page.dart';
-import 'widgets/top_speeds_page.dart';
 
 class TopPage extends StatefulWidget {
   const TopPage({Key? key}) : super(key: key);
@@ -20,6 +23,10 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
     super.initState();
     controller = TabController(length: 2, vsync: this);
   }
+
+  String valueStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
+  String speedStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX * meeting.duration / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
+  String durationStat(TopMeeting meeting, FXModel FXValue) => secondsToSensibleTimePeriod(meeting.duration, context);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +62,11 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                     tabs: [
                       Container(
                           child: Tab(
+                            text: Keys.topValues.tr(context),
+                          ),
+                          height: kRadialReactionRadius + 12),
+                      Container(
+                          child: Tab(
                             text: Keys.topSpeeds.tr(context),
                           ),
                           height: kRadialReactionRadius + 12),
@@ -69,8 +81,9 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      TopSpeedsPage(),
-                      TopDurationsPage(),
+                      TopContentPage(statFn: valueStat, topProvider: topValuesProvider,),
+                      TopContentPage(statFn: speedStat, topProvider: topSpeedsProvider,),
+                      TopContentPage(statFn: durationStat, topProvider: topDurationsProvider,),
                     ],
                   ),
                 ),
