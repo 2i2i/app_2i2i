@@ -1,4 +1,5 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
@@ -21,12 +22,13 @@ class TopContentPage extends ConsumerStatefulWidget {
 class _TopContentPageState extends ConsumerState<TopContentPage> {
   @override
   Widget build(BuildContext context) {
+    // log(I + '_TopContentPageState, build');
 
     final topMeetingsAsyncValue = ref.watch(widget.topProvider);
     if (haveToWait(topMeetingsAsyncValue)) {
       return WaitPage();
     }
-    if (topMeetingsAsyncValue.value == null) return WaitPage(); 
+    if (topMeetingsAsyncValue.value == null) return WaitPage();
     final topMeetings = topMeetingsAsyncValue.value!;
 
     return ListView.builder(
@@ -34,12 +36,16 @@ class _TopContentPageState extends ConsumerState<TopContentPage> {
       padding: EdgeInsets.symmetric(vertical: 8),
       itemBuilder: (BuildContext context, int index) {
         final meeting = topMeetings[index];
+        // log(I + '_TopContentPageState, index=$index meeting=$meeting meeting.nameB=${meeting.nameB} meeting.speed.assetId=${meeting.speed.assetId} meeting.speed.num=${meeting.speed.num} meeting.duration=${meeting.duration} meeting.FX=${meeting.FX}');
 
-        final FXValueTmp = ref.watch(FXProvider(meeting.speed.assetId)).value;
-        if (haveToWait(FXValueTmp)) {
-          return Container();
+        FXModel FXValue = FXModel.ALGO();
+        if (meeting.speed.assetId != 0) {
+          final FXValueTmp = ref.watch(FXProvider(meeting.speed.assetId)).value;
+          if (haveToWait(FXValueTmp)) {
+            return Container();
+          }
+          FXValue = FXValueTmp!;
         }
-        final FXValue = FXValueTmp!;
 
         return Card(
           child: ListTile(

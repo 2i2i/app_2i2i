@@ -93,6 +93,8 @@ class TopMeeting extends Equatable {
   bool get stringify => true;
 
   factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    log(I + 'TopMeeting.fromMap documentId=$documentId data=$data');
+
     if (data == null) {
       log('TopMeeting.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
@@ -104,8 +106,8 @@ class TopMeeting extends Equatable {
     final nameA = data['nameA'] as String;
     final nameB = data['nameB'] as String;
     final DateTime ts = data['ts'].toDate();
-    final value = double.parse(data['value']);
-    final FX = double.parse(data['FX']);
+    final value = double.parse(data['value'].toString());
+    final FX = double.parse(data['FX'].toString());
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
 
@@ -307,7 +309,7 @@ class Meeting extends Equatable {
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
-    final FX = double.parse(data['FX']);
+    final FX = double.parse(data['FX'].toString());
 
     final Map<String, String> txns = {};
     for (final String k in data['txns'].keys) {

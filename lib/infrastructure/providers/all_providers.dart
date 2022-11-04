@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/meeting_model.dart';
@@ -440,7 +441,7 @@ final redeemCoinViewModelProvider = Provider((ref) {
   return RedeemCoinViewModel(functions: functions);
 });
 
-// FX
+// FX - TODO return FXModel.ALGO() is assetId==0 ; but how to send stream?
 final FXProvider = StreamProvider.family<FXModel, int>((ref, assetId) {
   final database = ref.watch(databaseProvider);
   return database.FXStream(assetId: assetId);

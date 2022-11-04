@@ -24,15 +24,15 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
     controller = TabController(length: 2, vsync: this);
   }
 
-  String valueStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
-  String speedStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX * meeting.duration / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
+  String valueStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX * meeting.duration / pow(10, FXValue.decimals)} ${FXValue.getName}';
+  String speedStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
   String durationStat(TopMeeting meeting, FXModel FXValue) => secondsToSensibleTimePeriod(meeting.duration, context);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,

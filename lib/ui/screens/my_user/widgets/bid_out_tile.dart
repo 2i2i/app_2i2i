@@ -32,11 +32,14 @@ class BidOutTile extends ConsumerWidget {
       return CupertinoActivityIndicator();
     }
 
-    final FXAsyncValue = ref.watch(FXProvider(bidOut.speed.assetId));
-    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
-      return CupertinoActivityIndicator();
+    FXModel FXValue = FXModel.ALGO();
+    if (bidOut.speed.assetId != 0) {
+      final FXAsyncValue = ref.watch(FXProvider(bidOut.speed.assetId));
+      if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+        return CupertinoActivityIndicator();
+      }
+      FXValue = FXAsyncValue.value!;
     }
-    FXModel FXValue = FXAsyncValue.value!;
 
     UserModel user = userAsyncValue.value!;
     bidSpeed = (bidOut.speed.num / pow(10, FXValue.decimals)).toString();

@@ -23,12 +23,15 @@ class OtherBidTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     int duration = bidInB.speed.num == 0 ? bidInB.rule.maxMeetingDuration : (bidInB.energy / bidInB.speed.num).round();
 
-    final FXAsyncValue = ref.watch(FXProvider(bidInB.speed.assetId));
-    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
-      return CupertinoActivityIndicator();
+    FXModel FXValue = FXModel.ALGO();
+    if (bidInB.speed.assetId != 0) {
+      final FXAsyncValue = ref.watch(FXProvider(bidInB.speed.assetId));
+      if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+        return CupertinoActivityIndicator();
+      }
+      FXValue = FXAsyncValue.value!;
     }
-    FXModel FXValue = FXAsyncValue.value!;
-    
+
     Widget userItem = Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -37,17 +40,17 @@ class OtherBidTile extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: ListTile(
             leading: Image.network(
-                  FXValue.iconUrl ?? '',
-                  width: 34,
-                  height: 34,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) => Image.asset(
-                    'assets/algo_logo.png',
-                    width: 34,
-                    height: 34,
-                    fit: BoxFit.fill,
-                  ),
-                ),
+              FXValue.iconUrl ?? '',
+              width: 34,
+              height: 34,
+              fit: BoxFit.fill,
+              errorBuilder: (context, error, stackTrace) => Image.asset(
+                'assets/algo_logo.png',
+                width: 34,
+                height: 34,
+                fit: BoxFit.fill,
+              ),
+            ),
             title: RichText(
               text: TextSpan(
                 text: (bidInB.speed.num / pow(10, FXValue.decimals)).toString(),
@@ -56,12 +59,12 @@ class OtherBidTile extends ConsumerWidget {
                     text: ' ${FXValue.getName}/s',
                     children: [],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                          color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                         ),
                   )
                 ],
                 style: Theme.of(context).textTheme.headline6?.copyWith(
-                  color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
+                      color: Theme.of(context).textTheme.headline6?.color?.withOpacity(0.7),
                     ),
               ),
             ),
@@ -87,9 +90,7 @@ class OtherBidTile extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          border: Border.all(color: Theme.of(context).colorScheme.secondary),
-          borderRadius: BorderRadius.circular(12)),
+          color: Theme.of(context).colorScheme.secondary, border: Border.all(color: Theme.of(context).colorScheme.secondary), borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
