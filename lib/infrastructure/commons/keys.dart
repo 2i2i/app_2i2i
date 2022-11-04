@@ -164,7 +164,8 @@ class Keys {
   static const String connectingHost = 'connectingHost';
   static const String connectingGuest = 'connectingGuest';
   static const String whoTop = 'whoTop';
-  static const String topSpeeds = 'Top Speeds';
+  static const String topValues = 'topValues';
+  static const String topSpeeds = 'topSpeeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
   static const String inviteFriend = 'inviteFriend';

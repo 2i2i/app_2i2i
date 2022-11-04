@@ -163,11 +163,14 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
+final topValuesProvider = StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topValuesStream();
+});
 final topSpeedsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topSpeedsStream();
 });
-
 final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topDurationsStream();
