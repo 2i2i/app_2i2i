@@ -40,7 +40,7 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
 List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic, List<int> loungeHistory, int loungeHistoryIndex) {
   // split into chronies and highrollers
   List<BidInPublic> bidInsChronies = bidInsPublic.where((bidIn) => bidIn.speed.num * bidIn.FX == bidIn.rule.minSpeed).toList();
-  List<BidInPublic> bidInsHighRollers = bidInsPublic.where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num*bidIn.FX).toList();
+  List<BidInPublic> bidInsHighRollers = bidInsPublic.where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num * bidIn.FX).toList();
   if (bidInsChronies.length + bidInsHighRollers.length != bidInsPublic.length)
     throw Exception('UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
