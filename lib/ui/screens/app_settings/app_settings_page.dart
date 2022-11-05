@@ -321,7 +321,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       }
                     },
                     title: Text(
-                      Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.version})" : ""),
+                      Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.currentVersion})" : ""),
                       style: Theme.of(context).textTheme.subtitle1,
                     ),
                     subtitle: appSettingModel.updateRequired
@@ -335,7 +335,8 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               Icons.arrow_circle_left_rounded,
                             ),
                           )
-                        : Text("${appSettingModel.version}", style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
+                        : Text("${appSettingModel.currentVersion}",
+                            style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () => CustomAlertWidget.confirmDialog(

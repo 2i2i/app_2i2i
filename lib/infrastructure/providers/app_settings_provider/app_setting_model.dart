@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +8,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../commons/keys.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
-import '../../models/app_version_model.dart';
 
 class AppSettingModel extends ChangeNotifier {
   final SecureStorage storage;
@@ -27,6 +25,7 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
+  late String currentVersion;
 
   bool isInternetAvailable = true;
 
@@ -66,7 +65,6 @@ class AppSettingModel extends ChangeNotifier {
   }
 
   bool updateRequired = false;
-  String version = "1.0.58";
 
   Future<void> setThemeMode(String mode) async {
     await storage.write('theme_mode', mode);
@@ -79,21 +77,27 @@ class AppSettingModel extends ChangeNotifier {
     getLocal(local);
   }
 
-  Future<bool> checkIfUpdateAvailable() async {
+  Future<void> checkIfUpdateAvailable() async {
     if (kIsWeb) {
-      return false;
+      return;
     }
-    AppVersionModel appVersion = AppVersionModel(androidVersion: "1.0.59", iosVersion: "1.0.59", webVersion: "1.0.59");
-    // AppVersionModel? appVersion = await firebaseDatabase.getAppVersion();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    if (Platform.isAndroid) {
-      version = appVersion?.androidVersion ?? "1";
-    } else if (Platform.isIOS) {
-      version = appVersion?.iosVersion ?? "1";
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    currentVersion = info.version;
+
+    //Get Latest version info from firebase config
+    final FirebaseRemoteConfig remoteConfig = await FirebaseRemoteConfig.instance;
+
+    try {
+      // Using default duration to force fetching from remote server.
+      await remoteConfig.fetch();
+      await remoteConfig.activate();
+      remoteConfig.getString('update_current_version');
+      String newVersion = remoteConfig.getString('force_update_current_version').trim();
+      updateRequired = (currentVersion != newVersion);
+      notifyListeners();
+    } catch (exception) {
+      print('Unable to fetch remote config. Cached or default values will be ' 'used');
     }
-    updateRequired = (packageInfo.version != version);
-    // notifyListeners();
-    return updateRequired;
   }
 
   void getLocal(String local) {

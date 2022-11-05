@@ -110,19 +110,20 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
   }
 
   Widget settingIcons({Color? color}) {
-    return FutureBuilder(
-      future: ref.read(appSettingProvider).checkIfUpdateAvailable(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (snapshot.data == true) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        var appSettingModel = ref.read(appSettingProvider);
+        if (appSettingModel.updateRequired) {
           return Padding(
-              padding: const EdgeInsets.all(6),
-              child: RotatedBox(
-                quarterTurns: 1,
-                child: Icon(
-                  Icons.arrow_circle_left_rounded,
-                  color: Colors.amber,
-                ),
-              ));
+            padding: const EdgeInsets.all(6),
+            child: RotatedBox(
+              quarterTurns: 1,
+              child: Icon(
+                Icons.arrow_circle_left_rounded,
+                color: Colors.amber,
+              ),
+            ),
+          );
         }
         return Padding(
           padding: const EdgeInsets.all(6),
