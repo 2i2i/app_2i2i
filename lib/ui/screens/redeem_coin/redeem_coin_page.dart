@@ -89,9 +89,12 @@ class _RedeemCoinPageState extends ConsumerState<RedeemCoinPage> {
                               context,
                               child: AccountSelectionPage(
                                 onTapRedeemCoin: (String address) async {
-                                  CustomAlertWidget.loader(true, context);
-                                  await ref.read(redeemCoinViewModelProvider).redeemCoin(assetId: redeemCoinModel.assetId, addr: address, context: context);
-                                  CustomAlertWidget.loader(false, context);
+                                  if (!showCoinLoaderIds.value.contains(redeemCoinModel.assetId)) {
+                                    showCoinLoaderIds.value.add(redeemCoinModel.assetId);
+                                    showCoinLoaderIds.value = List.from(showCoinLoaderIds.value);
+                                    await ref.read(redeemCoinViewModelProvider).redeemCoin(assetId: redeemCoinModel.assetId, addr: address, context: context);
+                                    showCoinLoaderIds.value.removeWhere((element) => element == redeemCoinModel.assetId);
+                                  }
                                 },
                               ),
                             );
