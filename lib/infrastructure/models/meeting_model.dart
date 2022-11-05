@@ -95,7 +95,7 @@ class TopMeeting extends Equatable {
     final name = data['name'] as String;
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
-    final DateTime ts = data['ts'].toDate();
+    final DateTime ts = data['ts'].toDate() ?? DateTime.now();
 
     return TopMeeting(id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
   }
@@ -288,8 +288,8 @@ class Meeting extends Equatable {
       energy[k] = data['energy'][k] as int?;
     }
 
-    final DateTime? start = data['start']?.toDate();
-    final DateTime? end = data['end']?.toDate();
+    final DateTime? start = data['start'].toDate();
+    final DateTime? end = data['end'].toDate();
     final int? duration = data['duration'];
 
     final Map<String, String> txns = {};

@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -23,7 +24,7 @@ class FXModel {
 
   FXModel.fromJson(Map<String, dynamic> json, int docId)
       : id = docId,
-        ts = json['ts'].toDate(),
+        ts = (json['ts'] as Object).toDate() ?? DateTime.now(),
         value = json.containsKey('value') && json['value'] != null ? double.parse(json['value'].toString()) : null,
         decimals = int.parse(json['decimals'].toString()),
         name = json['name'],
