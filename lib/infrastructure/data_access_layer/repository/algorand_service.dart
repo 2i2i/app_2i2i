@@ -101,7 +101,7 @@ class AlgorandService {
       final payTxn = await (PaymentTransactionBuilder()
             ..sender = Address.fromAlgorandAddress(address)
             ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
-            ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
+            ..amount = 3 * MIN_TXN_FEE + amount.num // 3 fess to unlock
             ..suggestedParams = params
             ..noteText = note)
           .build();
@@ -113,7 +113,7 @@ class AlgorandService {
       final payTxn = await (PaymentTransactionBuilder()
             ..sender = Address.fromAlgorandAddress(address)
             ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
-            ..amount = 3 * MIN_TXN_FEE + (amount.assetId == 0 ? amount.num : 0)
+            ..amount = 3 * MIN_TXN_FEE // 3 fess to unlock
             ..suggestedParams = params)
           .build();
       txns.add(payTxn);
