@@ -8,6 +8,8 @@ import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+final CHRONY_GAP = 0.01;
+
 // bidInsPublic comes sorted by ts
 List<BidInPublic> combineQueues(List<BidInPublic> bidInsPublic, List<Lounge> loungeHistory, int loungeHistoryIndex) {
   final loungeHistoryAsInts = loungeHistory.map((e) => Lounge.values.indexWhere((element) => element == e)).toList();
@@ -37,10 +39,24 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   return bidInsPublicSections;
 }
 
+int speedNumInALGO(BidInPublic bidIn) => (bidIn.speed.num * bidIn.FX).round();
+// due to FX, it would be near impossible to be a Chrony with if CHRONY_GAP == 0
+bool isChrony(BidInPublic bidIn) {
+  final speed = speedNumInALGO(bidIn);
+  final min = bidIn.rule.minSpeedALGO * (1.0 - CHRONY_GAP);
+  final max = bidIn.rule.minSpeedALGO * (1.0 + CHRONY_GAP);
+  return min <= speed && speed <= max;
+}
+bool isHighRoller(BidInPublic bidIn) {
+  final speed = speedNumInALGO(bidIn);
+  final max = bidIn.rule.minSpeedALGO * (1.0 + CHRONY_GAP);
+  return max < speed;
+}
+
 List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic, List<int> loungeHistory, int loungeHistoryIndex) {
   // split into chronies and highrollers
-  List<BidInPublic> bidInsChronies = bidInsPublic.where((bidIn) => bidIn.speed.num * bidIn.FX == bidIn.rule.minSpeed).toList();
-  List<BidInPublic> bidInsHighRollers = bidInsPublic.where((bidIn) => bidIn.rule.minSpeed < bidIn.speed.num * bidIn.FX).toList();
+  List<BidInPublic> bidInsChronies = bidInsPublic.where(isChrony).toList();
+  List<BidInPublic> bidInsHighRollers = bidInsPublic.where(isHighRoller).toList();
   if (bidInsChronies.length + bidInsHighRollers.length != bidInsPublic.length)
     throw Exception('UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
 
@@ -368,9 +384,9 @@ void combineQueuesTestRun() {
   final loungeHistory = testData['loungeHistory']; // 0: chrony, 1: highroller
   final loungeHistoryIndex = testData['loungeHistoryIndex'];
   final bidIns = combineQueues(bidInsPublic, loungeHistory, loungeHistoryIndex);
-  log('C: ${bidIns.where((e) => e.speed.num == e.rule.minSpeed).length}');
-  log('H: ${bidIns.where((e) => e.speed.num != e.rule.minSpeed).length}');
+  log('C: ${bidIns.where((e) => e.speed.num == e.rule.minSpeedALGO).length}');
+  log('H: ${bidIns.where((e) => e.speed.num != e.rule.minSpeedALGO).length}');
   log('bidIns: ${bidIns.length}');
-  final result = bidIns.map((e) => (e.speed.num == e.rule.minSpeed ? 'C' : 'H') + '_' + e.ts.microsecondsSinceEpoch.toString()).join(' ');
+  final result = bidIns.map((e) => (e.speed.num == e.rule.minSpeedALGO ? 'C' : 'H') + '_' + e.ts.microsecondsSinceEpoch.toString()).join(' ');
   log(result);
 }

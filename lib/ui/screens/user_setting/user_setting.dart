@@ -514,7 +514,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeed / pow(10, 6)).toString();
+      speedEditController.text = (user.rule.minSpeedALGO / pow(10, 6)).toString();
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -687,7 +687,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-          minSpeed: getSpeedFromText(),
+          minSpeedALGO: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
             Lounge.chrony: importance[Lounge.chrony]!,

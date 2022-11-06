@@ -384,15 +384,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
-                              if (speedAsInt >= (userB?.rule.minSpeed ?? 0 / FXValue.value).ceil()) {
+                              if (speedAsInt >= (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
                             },
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
-                              if (speedAsInt < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / FXValue.value / pow(10, FXValue.decimals)}';
+                              if (speedAsInt < userB!.rule.minSpeedALGO) {
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeedALGO / FXValue.value / pow(10, FXValue.decimals)}';
                               }
                               return null;
                             },
@@ -535,10 +535,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     // final speedVal = getSpeedFromText(speedController.text);
     // log(FX + 'speedVal=$speedVal');
     // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
-    bool speedTooLow = speed.num * FXValue.value < (userB?.rule.minSpeed ?? 0);
-    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeed} speedTooLow=$speedTooLow');
+    bool speedTooLow = speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0);
+    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO} speedTooLow=$speedTooLow');
     if (speedTooLow) {
-      speed = Quantity(num: (userB?.rule.minSpeed ?? 0 / FXValue.value).ceil(), assetId: assetId);
+      speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil(), assetId: assetId);
     }
     // else {
     //   speed = Quantity(num: speedVal, assetId: assetId);
@@ -638,7 +638,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     // }
   }
 
-  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeed ?? 0);
+  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0);
 
   bool goodToAddBid() {
 
