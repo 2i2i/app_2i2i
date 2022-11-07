@@ -52,13 +52,21 @@ bool isHighRoller(BidInPublic bidIn) {
   final max = bidIn.rule.minSpeedALGO * (1.0 + CHRONY_GAP);
   return max < speed;
 }
+bool isEccentric(BidInPublic bidIn) => bidIn.FX == null; // TODO FX can null for eccentric
+bool isLurker(BidInPublic bidIn) {
+  final speed = speedNumInALGO(bidIn);
+  final min = bidIn.rule.minSpeedALGO * (1.0 - CHRONY_GAP);
+  return speed < min;
+}
 
 List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic, List<int> loungeHistory, int loungeHistoryIndex) {
   // split into chronies and highrollers
   List<BidInPublic> bidInsChronies = bidInsPublic.where(isChrony).toList();
   List<BidInPublic> bidInsHighRollers = bidInsPublic.where(isHighRoller).toList();
-  if (bidInsChronies.length + bidInsHighRollers.length != bidInsPublic.length)
-    throw Exception('UserBidInsList: bidInsChronies.length + bidInsHighRollers.length != bidIns.length');
+  List<BidInPublic> bidInsEccentrics = bidInsPublic.where(isEccentric).toList();
+  List<BidInPublic> bidInsLurkers = bidInsPublic.where(isLurker).toList();
+  if (bidInsChronies.length + bidInsHighRollers.length + bidInsEccentrics.length + bidInsLurkers.length != bidInsPublic.length)
+    throw Exception('UserBidInsList: bidInsChronies.length + bidInsHighRollers.length + bidInsEccentrics.length + bidInsLurkers.length != bidIns.length');
 
   // sort highrollers by speed
   bidInsHighRollers.sort((b1, b2) {
