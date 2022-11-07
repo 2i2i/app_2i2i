@@ -26,11 +26,12 @@ class RedeemTile extends ConsumerWidget {
       child: FutureBuilder<FXModel?>(
         future: ref.read(myAccountPageViewModelProvider).getFX(redeemCoinModel.assetId),
         builder: (BuildContext context, AsyncSnapshot<FXModel?> snapshot) {
-          if (!snapshot.hasData) return Container();
+          //Here we comment line if other wise overlay Ui not shown
+          // if (!snapshot.hasData) return Container();
 
           final FXValue = snapshot.data;
 
-          bool isSubjective = FXValue?.value == null;
+          bool isSubjective = FXValue == null;
           final isProjectASA = redeemCoinModel.assetId == int.parse(dotenv.env['PROJECT_ASA_ID']!);
           final iconUrl = isProjectASA ? dotenv.env['PROJECT_ASA_ICON_URL']! : (FXValue?.iconUrl ?? '');
           final ASAName = isProjectASA ? dotenv.env['PROJECT_ASA_NAME']! : (FXValue?.getName ?? redeemCoinModel.assetId.toString());
