@@ -4,6 +4,7 @@ import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -47,6 +48,7 @@ class CreateBidPage extends ConsumerStatefulWidget {
   CreateBidPage({this.sliderHeight = 48, this.max = 10, required this.B, required this.bidIns, this.min = 0, this.fullWidth = false});
 
   CreateBidPage.fromObject(CreateBidPageRouterObject obj) {
+    log(C + 'fromObject');
     B = obj.B;
     bidIns = obj.bidIns;
     sliderHeight = obj.sliderHeight ?? 48;
@@ -84,15 +86,23 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   FocusNode focusNode = FocusNode();
   final dataKey = new GlobalKey();
 
+  // @override
+  // String toString({DiagnosticLevel minLevel = DiagnosticLevel.hidden}) {
+  //   final A = 'C';
+  //   log(A + 'addressA=$addressA amount=$amount ');
+  // }
+
   @override
   void initState() {
+    log(C + 'initState, this=$this');
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         final speedAsInt = getSpeedFromText(speedController.text);
-        // log(C + '!focusNode.hasFocus speedAsInt=$speedAsInt speed.num=${speed.num}');
-        if (speedAsInt < speed.num) { // ?
+        log(C + '!focusNode.hasFocus speedAsInt=$speedAsInt speed.num=${speed.num}');
+        if (speedAsInt < speed.num) {
+          // ?
           speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
-          // log(C + '!focusNode.hasFocus speedController.text=${speedController.text}');
+          log(C + '!focusNode.hasFocus speedController.text=${speedController.text}');
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
           updateAccountBalance(myAccountPageViewModel);
         }
@@ -374,15 +384,15 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
-                              if (speedAsInt >= (userB?.rule.minSpeed ?? 0 / FXValue.value).ceil()) {
+                              if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
                             },
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
-                              if (speedAsInt < userB!.rule.minSpeed) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeed / FXValue.value / pow(10, FXValue.decimals)}';
+                              if (speedAsInt < userB!.rule.minSpeedALGO) {
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeedALGO / FXValue.value / pow(10, FXValue.decimals)}';
                               }
                               return null;
                             },
@@ -404,12 +414,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: isInsufficient() ? null : () => onAddBid(),
+                onPressed: goodToAddBid() ? () => onAddBid(myAccountPageViewModel) : null,
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(isInsufficient() ? Theme.of(context).errorColor : Theme.of(context).colorScheme.secondary),
+                  backgroundColor: MaterialStateProperty.all(goodToAddBid() ? Theme.of(context).colorScheme.secondary : Theme.of(context).errorColor),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: isInsufficient() ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor)),
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: goodToAddBid() ? Theme.of(context).primaryColor : Theme.of(context).primaryColorDark)),
               ),
             ),
             ValueListenableBuilder(
@@ -453,6 +463,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   int getAddressComboIndexByAddress(List<Tuple2<String, Balance>> addressBalanceCombos, String address) {
+    log(C + 'getAddressComboIndexByAddress, address=$address');
     // int index = addressBalanceCombos.indexOf(addressOfAccount!);
     for (int i = 0; i < addressBalanceCombos.length; i++) {
       if (addressBalanceCombos[i].item1 == address) return i;
@@ -493,12 +504,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
-    
-    final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
-    // log(FX + 'FXValueTmp=$FXValueTmp');
-    if (FXValueTmp == null) return;
-    FXValue = FXValueTmp;
-    // log(FX + 'FXValue=$FXValue');
+    log(C + 'updateAccountBalance accountIndex=$accountIndex assetId=$assetId');
 
     accountIndex ??= currentAccountIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
@@ -510,24 +516,29 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       accountASABalance = combo.item2.assetHolding.amount;
       accountALGOBalance = addressBalanceCombos[0].item2.assetHolding.amount;
     }
-    // log(FX + 'accountIndex=$accountIndex');
-    // log(FX + 'addressBalanceCombos=$addressBalanceCombos');
-    // log(FX + 'address=$addressA');
-    // log(FX + 'assetId=$assetId');
-    // log(FX + 'accountBalance=$accountASABalance');
-    // log(FX + 'accountALGOBalance=$accountALGOBalance');
+    log(C + 'accountIndex=$accountIndex');
+    log(C + 'addressBalanceCombos=$addressBalanceCombos');
+    log(C + 'address=$addressA');
+    log(C + 'assetId=$assetId');
+    log(C + 'accountBalance=$accountASABalance');
+    log(C + 'accountALGOBalance=$accountALGOBalance');
+
+    final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
+    // log(FX + 'FXValueTmp=$FXValueTmp');
+    if (FXValueTmp == null) return;
+    FXValue = FXValueTmp;
+    log(C + 'FXValue=$FXValue');
 
     if (addressA != null) minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
-    // log(FX + 'minAccountBalance=$minAccountALGOBalance');
+    log(C + 'minAccountALGOBalance=$minAccountALGOBalance');
 
     // final speedVal = getSpeedFromText(speedController.text);
     // log(FX + 'speedVal=$speedVal');
-    // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
-    bool speedTooLow = speed.num * FXValue.value < (userB?.rule.minSpeed ?? 0);
-    // log(FX + 'isLessVal=$isLessVal');
-    if (speedTooLow) {
-      speed = Quantity(num: (userB?.rule.minSpeed ?? 0 / FXValue.value).ceil(), assetId: assetId);
-    } 
+    
+    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO}');
+    if (speedTooLow()) {
+      speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil(), assetId: assetId);
+    }
     // else {
     //   speed = Quantity(num: speedVal, assetId: assetId);
     // }
@@ -541,25 +552,25 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final availableALGOBalance = accountALGOBalance - minAccountALGOBalance - feeALGO;
     final availableASABalance = assetId == 0 ? availableALGOBalance : accountASABalance;
-    // log(FX + 'availableALGOBalance=$availableALGOBalance');
-    // log(FX + 'availableASABalance=$availableASABalance');
+    log(C + 'availableALGOBalance=$availableALGOBalance');
+    log(C + 'availableASABalance=$availableASABalance');
 
     maxMaxDuration = userB!.rule.maxMeetingDuration;
-    // log(FX + 'maxMaxDuration=$maxMaxDuration');
+    log(C + 'maxMaxDuration=$maxMaxDuration');
 
     if (speed.num != 0) {
       final availableMaxDuration = max(0, (availableASABalance / speed.num).floor());
-      // log(FX + 'availableMaxDuration=$availableMaxDuration');
+      log(C + 'availableMaxDuration=$availableMaxDuration');
       maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
-      // log(FX + 'maxMaxDuration=$maxMaxDuration');
+      log(C + 'maxMaxDuration=$maxMaxDuration');
       maxMaxDuration = max(minMaxDuration, maxMaxDuration);
-      // log(FX + 'maxMaxDuration=$maxMaxDuration');
+      log(C + 'maxMaxDuration=$maxMaxDuration');
     }
     maxDuration = min(maxDuration, maxMaxDuration);
-    // log(FX + 'maxDuration=$maxDuration');
+    log(C + 'maxDuration=$maxDuration');
 
     amount = Quantity(num: (maxDuration * speed.num).round(), assetId: assetId);
-    // log(FX + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
+    log(C + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
 
     if (this.mounted) setState(() {});
   }
@@ -595,8 +606,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     return waitTimeString;
   }
 
-  Future onAddBid() async {
-    if (isInsufficient() && userB == null) return;
+  Future onAddBid(MyAccountPageViewModel myAccountPageViewModel) async {
+    minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
+    if (!goodToAddBid()) return;
 
     final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.B));
     if (addBidPageViewModel is AddBidPageViewModel) {
@@ -608,32 +620,57 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   String getConfirmSliderText() {
+    log(C + 'getConfirmSliderText amount.num=${amount.num} FXValue.decimals=${FXValue.decimals} FXValue.getName=${FXValue.getName}');
     final amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} ${FXValue.getName}';
-    if (isInsufficient()) {
-      if (speedTooLow()) {
-        return Keys.addBid.tr(context) + ' : ' + amountStr;
-      } else {
-        return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
-      }
-    }
-    return Keys.addBid.tr(context) + ' : ' + amountStr;
+    log(C + 'getConfirmSliderText amountStr=${amountStr}');
+
+    if (goodToAddBid()) return Keys.addBid.tr(context) + ' : ' + amountStr;
+
+    return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
+
+    // log(C + 'getConfirmSliderText goodToAddBid()');
+    // if (speedTooLow()) {
+    //   log(C + 'getConfirmSliderText speedTooLow()');
+    //   return Keys.addBid.tr(context) + ' : ' + amountStr;
+    // } else {
+    //   return Keys.insufficientBalance.tr(context) + ' : ' + amountStr;
+    // }
   }
 
-  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeed ?? 0);
+  // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
+  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
 
-  bool isInsufficient() {
+  bool goodToAddBid() {
 
-    if (speedTooLow()) return true;
+    log(C + 'goodToAddBid 0');
 
-    if (speed.num == 0) return false;
-    if (addressA == null) return true;
-    if (accountASABalance < amount.num) return true;
-    
+    if (userB == null) return false;
+
+    log(C + 'goodToAddBid 1');
+
+    if (speedTooLow()) return false;
+
+    log(C + 'goodToAddBid 2');
+
+    if (speed.num == 0) return true;
+
+    log(C + 'goodToAddBid 3');
+
+    if (addressA == null) return false;
+
+    log(C + 'goodToAddBid 4');
+
+    if (accountASABalance * FXValue.value < amount.num) return false;
+
+    log(C + 'goodToAddBid 5');
+
     final oneIfASA = speed.assetId == 0 ? 0 : 1;
     final minAccountALGOBalanceNeeded = minAccountALGOBalance + (4 + oneIfASA) * AlgorandService.MIN_TXN_FEE; // 3 fess to unlock plus 1 xor 2 for txns
-    if (accountALGOBalance < minAccountALGOBalanceNeeded) return true;
+    if (accountALGOBalance < minAccountALGOBalanceNeeded) return false;
 
-    return false;
+    log(C + 'goodToAddBid 6');
+
+    return true;
   }
 
   Future addBid({required AddBidPageViewModel addBidPageViewModel}) async {
