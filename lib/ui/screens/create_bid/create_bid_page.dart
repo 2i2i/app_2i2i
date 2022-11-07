@@ -384,7 +384,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
-                              if (speedAsInt >= (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil()) {
+                              if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
@@ -534,10 +534,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     // final speedVal = getSpeedFromText(speedController.text);
     // log(FX + 'speedVal=$speedVal');
-    // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
-    bool speedTooLow = speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0);
-    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO} speedTooLow=$speedTooLow');
-    if (speedTooLow) {
+    
+    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO}');
+    if (speedTooLow()) {
       speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil(), assetId: assetId);
     }
     // else {
@@ -638,7 +637,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     // }
   }
 
-  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0);
+  // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
+  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
 
   bool goodToAddBid() {
 
@@ -660,7 +660,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     log(C + 'goodToAddBid 4');
 
-    if (accountASABalance < amount.num) return false;
+    if (accountASABalance * FXValue.value < amount.num) return false;
 
     log(C + 'goodToAddBid 5');
 
