@@ -1,11 +1,15 @@
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/redeem_coin_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../commons/custom.dart';
+
+ValueNotifier<List> showCoinLoaderIds = ValueNotifier([]);
 
 class RedeemTile extends ConsumerWidget {
   const RedeemTile({Key? key, required this.onTap, required this.redeemCoinModel}) : super(key: key);
@@ -22,7 +26,8 @@ class RedeemTile extends ConsumerWidget {
       child: FutureBuilder<FXModel?>(
         future: ref.read(myAccountPageViewModelProvider).getFX(redeemCoinModel.assetId),
         builder: (BuildContext context, AsyncSnapshot<FXModel?> snapshot) {
-          if (!snapshot.hasData) return Container();
+          //Here we comment line if other wise overlay Ui not shown
+          // if (!snapshot.hasData) return Container();
 
           final FXValue = snapshot.data;
 
@@ -31,7 +36,7 @@ class RedeemTile extends ConsumerWidget {
           final iconUrl = isProjectASA ? dotenv.env['PROJECT_ASA_ICON_URL']! : (FXValue?.iconUrl ?? '');
           final ASAName = isProjectASA ? dotenv.env['PROJECT_ASA_NAME']! : (FXValue?.getName ?? redeemCoinModel.assetId.toString());
 
-          log('RedeemTile FXValue=$FXValue redeemCoinModel.assetId=${redeemCoinModel.assetId} isProjectASA=$isProjectASA iconUrl=$iconUrl ASAName=$ASAName');
+          log('RedeemTile FXValue=$FXValue redeemCoinModel.assetId=${redeemCoinModel.assetId} isProjectASA=$isProjectASA iconUrl=$iconUrl ASAName=$ASAName value=${FXValue?.value}');
 
           final ccyLogo = Image.network(
             iconUrl,
@@ -52,14 +57,24 @@ class RedeemTile extends ConsumerWidget {
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Text(redeemCoinModel.value.toString(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800), maxLines: 1, softWrap: true, overflow: TextOverflow.ellipsis),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                  maxLines: 1,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis),
             ),
             trailing: FittedBox(
               fit: BoxFit.scaleDown,
-              child: InkResponse(
-                onTap: onTap,
-                child: Image.asset('assets/wallet.png', width: 30, height: 30),
-              ),
+              child: ValueListenableBuilder(
+                  valueListenable: showCoinLoaderIds,
+                  builder: (BuildContext context, List<dynamic> value, Widget? child) {
+                    bool showLoader = value.contains(redeemCoinModel.assetId);
+                    return showLoader
+                        ? CupertinoActivityIndicator()
+                        : InkResponse(
+                            onTap: onTap,
+                            child: Image.asset('assets/wallet.png', width: 30, height: 30),
+                          );
+                  }),
             ),
           );
 

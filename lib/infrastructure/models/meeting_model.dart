@@ -380,7 +380,7 @@ class Meeting extends Equatable {
   }) {
     return Meeting(
       id: id,
-      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed ? Lounge.chrony : Lounge.highroller,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeedALGO ? Lounge.chrony : Lounge.highroller,
       active: true,
       settled: false,
       A: bidIn.private!.A,

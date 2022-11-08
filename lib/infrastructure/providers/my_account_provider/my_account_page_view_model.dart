@@ -100,7 +100,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<int> getMinBalance({required String address}) async {
-    log(Y + 'getMinBalance address=$address algorandLib=$algorandLib');
+    // log(Y + 'getMinBalance address=$address algorandLib=$algorandLib');
     // try {
     // if (algorandLib != null) {
     final account = await algorandLib!.client[AppConfig().ALGORAND_NET]!.getAccountByAddress(address);
@@ -185,7 +185,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
   }
 
   Future<FXModel?> getFX(int assetId) async {
-    log(Y + 'getFX assetId=$assetId');
+    // log(Y + 'getFX assetId=$assetId');
     if (assetId == 0) return FXModel.ALGO();
     return database.getFX(assetId);
   }

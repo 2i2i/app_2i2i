@@ -63,7 +63,7 @@ class AddBidPageViewModel {
     FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
-    } else if (speed.num < B.rule.minSpeed) {
+    } else if (speed.num < B.rule.minSpeedALGO) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.miniSupport.tr(context));
     } else if (speed.num != 0 && (sessionId?.isEmpty ?? true)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.noWalletFound.tr(context));
