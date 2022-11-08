@@ -290,9 +290,17 @@ class UserModel extends Equatable {
   bool isVerified() => socialLinks.isNotEmpty;
 }
 
-extension ParseToDate on String {
+extension ParseToDate on Object {
   DateTime? toDate() {
-    return DateTime.tryParse(this)?.toLocal();
+    if (this is String) {
+      return DateTime.tryParse(this as String)?.toLocal();
+    } else if (this is num) {
+      var n = (this as num).toInt();
+      return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+    } else if (this is Timestamp) {
+      return (this as Timestamp).toDate().toLocal();
+    }
+    return null;
   }
 }
 

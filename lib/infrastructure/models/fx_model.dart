@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -16,10 +17,10 @@ class FXModel {
       : id = 0,
         ts = DateTime.now(),
         value = 1,
-  decimals = 6,
-  name = 'ALGO',
-  unitname = 'ALGO',
-  iconUrl = null;
+        decimals = 6,
+        name = 'ALGO',
+        unitname = 'ALGO',
+        iconUrl = null;
 
   FXModel.fromJson(Map<String, dynamic> json, int docId)
       : id = docId,
