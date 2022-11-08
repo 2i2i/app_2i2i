@@ -12,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -22,12 +21,12 @@ import '../../../commons/custom_alert_widget.dart';
 class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final int index;
-  final bool isForSelectAccount;
+  final bool isSelected;
 
   AccountAssetInfo(this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
-    this.isForSelectAccount = false,
+    this.isSelected = false,
     required this.index,
     required this.address,
     required this.initBalance,
@@ -102,9 +101,12 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     // if (FXValue == null) return subjectiveOverlay(cont(ccyLogo, '', ''));
 
     // set assetName and amount
-    final divisor = pow(10, FXValue?.decimals ?? 0);
-    final a = balance.assetHolding.amount / divisor;
-    String amount = doubleWithoutDecimalToInt(a).toString();
+    String amount = '';
+    if (FXValue != null) {
+      final divisor = pow(10, FXValue!.decimals);
+      final a = balance.assetHolding.amount / divisor;
+      amount = doubleWithoutDecimalToInt(a).toString();
+    }
 
     Widget child = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,10 +174,10 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
           ],
         ),
         Divider(
-          color: widget.isForSelectAccount ? Colors.transparent : null,
+          color: widget.isSelected ? Colors.transparent : null,
         ),
         Visibility(
-          visible: !widget.isForSelectAccount,
+          visible: !widget.isSelected,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,7 +304,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
       ],
     );
 
-    if (!(FXValue?.value != null) && !widget.isForSelectAccount) {
+    if (FXValue == null && widget.isSelected) {
       child = Stack(
         alignment: Alignment.center,
         children: [
@@ -335,12 +337,12 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
     }
 
     return AbsorbPointer(
-      absorbing: !(FXValue?.value != null),
+      absorbing: FXValue == null,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
         padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
         decoration: BoxDecoration(
-          color: (FXValue?.value != null) || widget.isForSelectAccount ? Theme
+          color: (FXValue?.value != null) || widget.isSelected ? Theme
               .of(context)
               .cardColor : Color(0xFFd3d3d3),
           borderRadius: BorderRadius.circular(10.0),
@@ -514,10 +516,10 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
             ],
           ),
           Divider(
-            color: widget.isForSelectAccount ? Colors.transparent : null,
+            color: widget.isSelected ? Colors.transparent : null,
           ),
           Visibility(
-            visible: !widget.isForSelectAccount,
+            visible: !widget.isSelected,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

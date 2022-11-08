@@ -88,7 +88,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
                                 key: ObjectKey(addressBalanceCombos[index]),
                                 address: address,
                                 initBalance: balance,
-                                isForSelectAccount: true,
+                                isSelected: true,
                               ),
                             ),
                           ],
