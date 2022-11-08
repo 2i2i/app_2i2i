@@ -64,19 +64,27 @@ class MeetingStatusWithTS {
 class TopMeeting extends Equatable {
   TopMeeting({
     required this.id,
+    required this.A,
     required this.B,
-    required this.name,
+    required this.nameA,
+    required this.nameB,
+    required this.ts,
+    required this.FX,
     required this.duration,
     required this.speed,
-    required this.ts,
+    required this.value,
   });
 
   final String id;
+  final String A;
   final String B;
-  final String name;
+  final String nameA;
+  final String nameB;
+  final DateTime ts;
+  final double FX;
   final int duration;
   final Quantity speed;
-  final DateTime ts;
+  final double value;
 
   @override
   List<Object> get props => [id];
@@ -85,19 +93,25 @@ class TopMeeting extends Equatable {
   bool get stringify => true;
 
   factory TopMeeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    log(I + 'TopMeeting.fromMap documentId=$documentId data=$data');
+
     if (data == null) {
       log('TopMeeting.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
 
     final id = documentId;
+    final A = data['A'] as String;
     final B = data['B'] as String;
-    final name = data['name'] as String;
+    final nameA = data['nameA'] as String;
+    final nameB = data['nameB'] as String;
+    final DateTime ts = data['ts'].toDate();
+    final value = double.parse(data['value'].toString());
+    final FX = double.parse(data['FX'].toString());
     final duration = data['duration'] as int;
     final speed = Quantity.fromMap(data['speed']);
-    final DateTime ts = data['ts'].toDate();
 
-    return TopMeeting(id: id, B: B, name: name, duration: duration, speed: speed, ts: ts);
+    return TopMeeting(id: id, A: A, B: B, nameA: nameA, nameB: nameB, value: value, ts: ts, FX: FX, duration: duration, speed: speed);
   }
 }
 
@@ -207,6 +221,7 @@ class Meeting extends Equatable {
     this.mutedVideoA = false,
     this.mutedAudioB = false,
     this.mutedVideoB = false,
+    required this.FX,
   });
 
   final String id;
@@ -224,6 +239,8 @@ class Meeting extends Equatable {
   final DateTime? start; // MeetingStatus.CALL_STARTED ts
   final DateTime? end; // MeetingStatus.END_* ts
   final int? duration; // realised duration of the call
+
+  final double FX;
 
   final Map<String, String> txns;
 
@@ -292,6 +309,8 @@ class Meeting extends Equatable {
     final DateTime? end = data['end']?.toDate();
     final int? duration = data['duration'];
 
+    final FX = double.parse(data['FX'].toString());
+
     final Map<String, String> txns = {};
     for (final String k in data['txns'].keys) {
       txns[k] = data['txns'][k] as String;
@@ -348,6 +367,7 @@ class Meeting extends Equatable {
       mutedVideoA: mutedVideoA,
       mutedAudioB: mutedAudioB,
       mutedVideoB: mutedVideoB,
+      FX: FX,
     );
   }
 
@@ -360,7 +380,7 @@ class Meeting extends Equatable {
   }) {
     return Meeting(
       id: id,
-      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeed ? Lounge.chrony : Lounge.highroller,
+      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeedALGO ? Lounge.chrony : Lounge.highroller,
       active: true,
       settled: false,
       A: bidIn.private!.A,
@@ -389,6 +409,7 @@ class Meeting extends Equatable {
       coinFlowsA: [],
       coinFlowsB: [],
       rule: bidIn.public.rule,
+      FX: bidIn.public.FX,
     );
   }
 
@@ -419,6 +440,7 @@ class Meeting extends Equatable {
       'mutedVideoA': mutedVideoA,
       'mutedAudioB': mutedAudioB,
       'mutedVideoB': mutedVideoB,
+      'FX': FX,
     };
   }
 }

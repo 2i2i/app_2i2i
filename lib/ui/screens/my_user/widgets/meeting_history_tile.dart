@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,11 +29,14 @@ class MeetingHistoryTile extends ConsumerWidget {
       return Container();
     }
 
-    final FXValueTmp = ref.watch(FXProvider(meetingModel.speed.assetId)).value;
-    if (haveToWait(FXValueTmp)) {
-      return Container();
+    FXModel FXValue = FXModel.ALGO();
+    if (meetingModel.speed.assetId != 0) {
+      final FXValueTmp = ref.watch(FXProvider(meetingModel.speed.assetId)).value;
+      if (haveToWait(FXValueTmp)) {
+        return Container();
+      }
+      FXValue = FXValueTmp!;
     }
-    final FXValue = FXValueTmp!;
 
     if (user?.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
@@ -98,8 +102,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                       child: Container(
                         height: 15,
                         width: 15,
-                        decoration:
-                            BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
+                        decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
                       ),
                     ),
                   ],

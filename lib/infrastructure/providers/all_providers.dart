@@ -163,11 +163,14 @@ final meetingProvider = StreamProvider.family<Meeting, String>((ref, id) {
   return database.meetingStream(id: id);
 });
 
+final topValuesProvider = StreamProvider<List<TopMeeting>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.topValuesStream();
+});
 final topSpeedsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topSpeedsStream();
 });
-
 final topDurationsProvider = StreamProvider<List<TopMeeting>>((ref) {
   final database = ref.watch(databaseProvider);
   return database.topDurationsStream();
@@ -437,7 +440,7 @@ final redeemCoinViewModelProvider = Provider((ref) {
   return RedeemCoinViewModel(functions: functions);
 });
 
-// FX
+// FX - TODO return FXModel.ALGO() is assetId==0 ; but how to send stream?
 final FXProvider = StreamProvider.family<FXModel, int>((ref, assetId) {
   final database = ref.watch(databaseProvider);
   return database.FXStream(assetId: assetId);

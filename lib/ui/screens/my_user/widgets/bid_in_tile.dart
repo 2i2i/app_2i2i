@@ -29,11 +29,14 @@ class BidInTile extends ConsumerWidget {
 
     UserModel user = bidInList[index].user!;
 
-    final FXAsyncValue = ref.watch(FXProvider(bidIn.public.speed.assetId));
-    if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
-      return CupertinoActivityIndicator();
+    FXModel FXValue = FXModel.ALGO();
+    if (bidIn.public.speed.assetId != 0) {
+      final FXAsyncValue = ref.watch(FXProvider(bidIn.public.speed.assetId));
+      if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) {
+        return CupertinoActivityIndicator();
+      }
+      FXValue = FXAsyncValue.value!;
     }
-    FXModel FXValue = FXAsyncValue.value!;
 
     int budgetCountInt = 0;
     int totalDuration = 0;
@@ -157,8 +160,8 @@ class BidInTile extends ConsumerWidget {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: '${Keys.accumulatedSupport.tr(context)} ',
-                        children: [TextSpan(text: ' $budgetCount', children: [], style: Theme.of(context).textTheme.bodyText2)],
+                        text: '${Keys.accumulatedSupport.tr(context)}',
+                        children: [TextSpan(text: ' $budgetCount ${FXValue.getName}', children: [], style: Theme.of(context).textTheme.bodyText2)],
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),

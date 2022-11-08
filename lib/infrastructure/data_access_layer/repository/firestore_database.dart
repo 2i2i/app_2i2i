@@ -44,7 +44,7 @@ class FirestoreDatabase {
         tags: [],
         rule: Rule(
           maxMeetingDuration: 300,
-          minSpeed: 0,
+          minSpeedALGO: 0,
           importance: {
             Lounge.chrony: 1,
             Lounge.highroller: 4,
@@ -428,9 +428,10 @@ class FirestoreDatabase {
         .documentStream(
       path: FirestorePath.redeem(uid),
       builder: (data, documentId) {
+        // log(B + 'redeemCoinStream uid=$uid data=$data');
         if (data != null) {
           final list = data.entries.toList();
-          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: documentId, value: e.value)).toList();
+          return list.map((e) => RedeemCoinModel(assetId: int.parse(e.key), uid: uid, value: e.value)).toList();
         }
         return <RedeemCoinModel>[];
       },
@@ -522,27 +523,19 @@ class FirestoreDatabase {
     });
   }
 
-  Stream<List<TopMeeting>> topSpeedsStream() => _service
+Stream<List<TopMeeting>> topStream(path) => _service
           .collectionStream(
-        path: FirestorePath.topSpeeds(),
+        path: path,
         builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
-        queryBuilder: (query) => query.orderBy('speed.num', descending: true),
+        queryBuilder: (query) => query.orderBy('value', descending: true),
       )
           .handleError((onError) {
         log(onError);
         return [];
       });
-
-  Stream<List<TopMeeting>> topDurationsStream() => _service
-          .collectionStream(
-        path: FirestorePath.topDurations(),
-        builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
-        queryBuilder: (query) => query.orderBy('duration', descending: true),
-      )
-          .handleError((onError) {
-        log(onError);
-        return [];
-      });
+  Stream<List<TopMeeting>> topValuesStream() => topStream(FirestorePath.topValues());
+  Stream<List<TopMeeting>> topSpeedsStream() => topStream(FirestorePath.topSpeeds());
+  Stream<List<TopMeeting>> topDurationsStream() => topStream(FirestorePath.topDurations());
 
   // Future<void> setMeeting(Meeting meeting) => _service.setData(
   //       path: FirestorePath.meeting(meeting.id),
