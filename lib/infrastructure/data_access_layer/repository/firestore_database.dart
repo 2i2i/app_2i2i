@@ -308,10 +308,8 @@ class FirestoreDatabase {
         .documentStream(
       path: FirestorePath.FX(assetId),
       builder: (data, documentId) {
-        if (data == null) {
-          return FXModel.ALGO(); // TODO should fail actually
-        }
-        return FXModel.fromJson(data, assetId);
+        if (data == null) return FXModel.subjective(id: assetId);
+        return FXModel.objective(data, assetId);
       },
     )
         .handleError((e) {
@@ -323,9 +321,9 @@ class FirestoreDatabase {
     DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
     if (snapshot?.data() is Map) {
       Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
-      return FXModel.fromJson(data!, assetId);
+      return FXModel.objective(data!, assetId);
     }
-    return null;
+    return FXModel.subjective(id: assetId);
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
@@ -523,7 +521,7 @@ class FirestoreDatabase {
     });
   }
 
-Stream<List<TopMeeting>> topStream(path) => _service
+  Stream<List<TopMeeting>> topStream(path) => _service
           .collectionStream(
         path: path,
         builder: (data, documentId) => TopMeeting.fromMap(data, documentId),
@@ -576,7 +574,7 @@ Stream<List<TopMeeting>> topStream(path) => _service
   }
 
   Future<void> addChat(String uid, ChatModel chat) => _service.setData(
-    path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
+        path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
         data: chat.toMap(),
       );
 }

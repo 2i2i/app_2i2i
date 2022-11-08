@@ -384,7 +384,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
-                              if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value).ceil()) {
+                              if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value!).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
                               updateAccountBalance(myAccountPageViewModel);
@@ -392,7 +392,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
                               if (speedAsInt < userB!.rule.minSpeedALGO) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeedALGO / FXValue.value / pow(10, FXValue.decimals)}';
+                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeedALGO / FXValue.value! / pow(10, FXValue.decimals)}';
                               }
                               return null;
                             },
@@ -525,9 +525,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
     // log(FX + 'FXValueTmp=$FXValueTmp');
-    if (FXValueTmp == null) return;
-    FXValue = FXValueTmp;
+    if (FXValueTmp?.value == null) return;
+    FXValue = FXValueTmp!;
     log(C + 'FXValue=$FXValue');
+
 
     if (addressA != null) minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
     log(C + 'minAccountALGOBalance=$minAccountALGOBalance');
@@ -537,7 +538,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     
     log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO}');
     if (speedTooLow()) {
-      speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value).ceil(), assetId: assetId);
+      speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value!).ceil(), assetId: assetId);
     }
     // else {
     //   speed = Quantity(num: speedVal, assetId: assetId);
@@ -589,7 +590,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
       ts: now,
       energy: amount.num,
       rule: userB!.rule,
-      FX: FXValue.value,
+      FX: FXValue.value!,
     );
 
     final sortedBidIns = combineQueues([...widget.bidIns, tmpBidIn], userB!.loungeHistory, userB!.loungeHistoryIndex);
@@ -638,13 +639,17 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
-  bool speedTooLow() => speed.num * FXValue.value < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
+  bool speedTooLow() => speed.num * FXValue.value! < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
 
   bool goodToAddBid() {
 
     log(C + 'goodToAddBid 0');
 
     if (userB == null) return false;
+
+    log(C + 'goodToAddBid 1/2');
+
+    if (FXValue.value == null) return false;
 
     log(C + 'goodToAddBid 1');
 
@@ -660,7 +665,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     log(C + 'goodToAddBid 4');
 
-    if (accountASABalance * FXValue.value < amount.num) return false;
+    if (accountASABalance * FXValue.value! < amount.num) return false;
 
     log(C + 'goodToAddBid 5');
 
