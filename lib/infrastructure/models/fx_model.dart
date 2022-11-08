@@ -31,16 +31,5 @@ class FXModel {
         unitname = json['unitname'],
         iconUrl = json['iconUrl'];
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ts'] = this.ts;
-    data['value'] = this.value;
-    data['decimals'] = this.decimals;
-    data['name'] = this.name;
-    data['unitname'] = this.unitname;
-    data['iconUrl'] = this.iconUrl;
-    return data;
-  }
-
   String get getName => name ?? (unitname ?? id.toString());
 }
