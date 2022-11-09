@@ -36,6 +36,7 @@ class AddBidPageViewModel {
   final AlgorandService algorand;
   final AccountService accountService;
 
+
   // final List<AbstractAccount> accounts;
   final FirestoreDatabase database;
 
@@ -94,8 +95,8 @@ class AddBidPageViewModel {
         // FX
         double FXValue = 1;
         if (speed.assetId != 0) {
-          final FX = await database.getFX(speed.assetId);
-          FXValue = FX!.value; // crash if no FX
+          final FX = await database.getFX(speed.assetId); // TODO use Provider
+          FXValue = FX!.value!; // crash if no FX
         }
 
         final bidOut = BidOut(

@@ -1,28 +1,35 @@
-import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class FXModel {
   final int id;
-  final DateTime ts;
-  final double value;
   final int decimals;
+  final DateTime? ts;
+  final double? value;
   final String? name;
   final String? unitname;
   final String? iconUrl;
 
-  FXModel({required this.id, required this.ts, required this.value, required this.decimals, this.name, this.unitname, this.iconUrl});
+  FXModel({required this.id, required this.decimals, this.ts, this.value, this.name, this.unitname, this.iconUrl});
 
   FXModel.ALGO()
       : id = 0,
-        ts = DateTime.now(),
+        ts = DateTime.fromMicrosecondsSinceEpoch(0),
         value = 1,
         decimals = 6,
         name = 'ALGO',
         unitname = 'ALGO',
-        iconUrl = null;
+        iconUrl = 'https://asa-list.tinyman.org/assets/0/icon.png';
 
-  FXModel.fromJson(Map<String, dynamic> json, int docId)
+  FXModel.subjective({required this.id})
+      : ts = null,
+        value = null,
+        decimals = 0, // TODO wrong ~ better to get from internet
+        name = null, // TODO better to get from internet
+        unitname = null, // TODO better to get from internet
+        iconUrl = 'https://asa-list.tinyman.org/assets/$id/icon.png';
+
+  FXModel.objective(Map<String, dynamic> json, int docId)
       : id = docId,
         ts = json['ts'].toDate(),
         value = double.parse(json['value'].toString()),
@@ -31,16 +38,7 @@ class FXModel {
         unitname = json['unitname'],
         iconUrl = json['iconUrl'];
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['ts'] = this.ts;
-    data['value'] = this.value;
-    data['decimals'] = this.decimals;
-    data['name'] = this.name;
-    data['unitname'] = this.unitname;
-    data['iconUrl'] = this.iconUrl;
-    return data;
-  }
-
   String get getName => name ?? (unitname ?? id.toString());
+  bool get isSubjective => value == null;
+  bool get isObjective => !isSubjective;
 }
