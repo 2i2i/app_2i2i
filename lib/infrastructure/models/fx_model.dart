@@ -25,8 +25,8 @@ class FXModel {
       : ts = null,
         value = null,
         decimals = 0, // TODO wrong ~ better to get from internet
-        name = '-', // TODO wrong ~ better to get from internet
-        unitname = '-', // TODO wrong ~ better to get from internet
+        name = null, // TODO better to get from internet
+        unitname = null, // TODO better to get from internet
         iconUrl = 'https://asa-list.tinyman.org/assets/$id/icon.png';
 
   FXModel.objective(Map<String, dynamic> json, int docId)

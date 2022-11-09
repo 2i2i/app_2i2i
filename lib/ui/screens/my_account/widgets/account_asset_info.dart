@@ -308,7 +308,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
         children: [
           child,
           Text(
-            'Subjective assets\nsupport coming late...',
+            'subjective assets\nsupport coming later...',
             textAlign: TextAlign.center,
             style: Theme
                 .of(context)
