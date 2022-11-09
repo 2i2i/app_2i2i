@@ -152,7 +152,7 @@ class ar {
       Keys.topSpeeds: 'سرعة',
       Keys.topDurations: 'مدة',
       Keys.language: "لغة التطبيق",
-      Keys.inviteFriend: 'شارك رابط ملفك الشخصي مع متابعيك لمقابلتهم هنا',
+      Keys.inviteFriend: 'الخطوة 1: شارك رابط ملفك الشخصي مع العالم ويمكن للعالم مشاركة العملات المعدنية من خلال التحدث إليك',
       Keys.joinInvite: 'تسكع معي على 2i2i',
       Keys.joinOtherRoom: 'الرجاء الانضمام إلى بعض المضيفين',
       Keys.beFirstJoin: 'كن أول من ينضم إلى هذا المضيف',

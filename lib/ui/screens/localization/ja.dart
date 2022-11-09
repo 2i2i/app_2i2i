@@ -152,7 +152,7 @@ class ja {
       Keys.topSpeeds: 'スピード',
       Keys.topDurations: '間隔',
       Keys.language: 'アプリの言語',
-      Keys.inviteFriend: 'プロフィールリンクをフォロワーと共有して、ここでフォロワーに会いましょう',
+      Keys.inviteFriend: 'ステップ 1: あなたのプロフィール リンクを世界と共有すると、世界はあなたと話すことでコインを共有できます',
       Keys.joinInvite: '2i2iで私と一緒にたむろ',
       Keys.joinOtherRoom: 'いくつかのホストに参加してください',
       Keys.beFirstJoin: 'このホストに最初に参加する',

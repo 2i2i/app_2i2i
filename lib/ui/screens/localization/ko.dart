@@ -152,7 +152,7 @@ class ko {
       Keys.topSpeeds: '속도',
       Keys.topDurations: '지속',
       Keys.language: '앱 언어',
-      Keys.inviteFriend: '프로필 링크를 팔로워와 공유하여 여기에서 만나세요',
+      Keys.inviteFriend: '1단계: 프로필 링크를 전 세계와 공유하면 전 세계가 대화를 통해 코인을 공유할 수 있습니다.',
       Keys.joinInvite: '2i2i에서 나와 함께 놀아요',
       Keys.joinOtherRoom: '일부 호스트에 가입하십시오',
       Keys.beFirstJoin: '이 호스트에 가장 먼저 가입하세요.',

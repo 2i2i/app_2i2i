@@ -155,7 +155,7 @@ class en {
       Keys.topSpeeds: 'Speed',
       Keys.topDurations: 'Duration',
       Keys.language: 'App Language',
-      Keys.inviteFriend: 'Share your profile link with\nyour followers to meet them here',
+      Keys.inviteFriend: 'STEP 1: share your profile link with the world\nand the world can share coins by talking to you',
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Please join some Hosts',
       Keys.beFirstJoin: 'Be the first to join this Host',

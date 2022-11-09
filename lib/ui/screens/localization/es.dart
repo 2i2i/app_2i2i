@@ -152,7 +152,7 @@ class es {
       Keys.topSpeeds: 'Velocidad',
       Keys.topDurations: 'Duración',
       Keys.language: 'Idioma de la aplicación',
-      Keys.inviteFriend: 'Comparte el enlace de tu perfil con tus seguidores para conocerlos aquí',
+      Keys.inviteFriend: 'PASO 1: comparta el enlace de su perfil con el mundo y el mundo puede compartir monedas hablando con usted',
       Keys.joinInvite: 'Tu amigo e invita a unirte a 2i2i',
       Keys.joinOtherRoom: 'Únase a algunos anfitriones',
       Keys.beFirstJoin: 'Sé el primero en unirte a este Host',

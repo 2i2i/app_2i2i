@@ -130,16 +130,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           textInputAction: TextInputAction.next,
                           autofocus: false,
                           style: TextStyle(color: AppTheme().cardDarkColor),
-                          validator: (value) {
+                          validator: (String? value) {
                             value ??= '';
-                            if (value.trim().isEmpty) {
-                              return Keys.required.tr(context);
-                            } else if (value.trim().length < 3) {
-                              return 'Required min 3 characters';
-                            }
-                            if (value.trim().length < 3) {
-                              return "name must be 3 characters long";
-                            }
+                            if (value.trim().isEmpty) return Keys.required.tr(context);
                             return null;
                           },
                           decoration: InputDecoration(

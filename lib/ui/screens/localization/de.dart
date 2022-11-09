@@ -153,7 +153,7 @@ class de {
       Keys.topSpeeds: 'Geschwindigkeit',
       Keys.topDurations: 'Dauer',
       Keys.language: 'App-Sprache',
-      Keys.inviteFriend: 'Teilen Sie Ihren Profillink mit Ihren Followern, um sie hier zu treffen',
+      Keys.inviteFriend: 'SCHRITT 1: Teilen Sie Ihren Profillink mit der Welt und die Welt kann Coins teilen, indem sie mit Ihnen spricht',
       Keys.joinInvite: 'Hang out with me on 2i2i',
       Keys.joinOtherRoom: 'Bitte schließen Sie sich einigen Hosts an',
       Keys.beFirstJoin: 'Seien Sie der Erste, der diesem Host beitritt',

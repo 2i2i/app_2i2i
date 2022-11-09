@@ -152,7 +152,7 @@ class zh {
       Keys.topSpeeds: '速度',
       Keys.topDurations: '期间',
       Keys.language: '应用语言',
-      Keys.inviteFriend: '与您的关注者分享您的个人资料链接，以便在此处与他们会面',
+      Keys.inviteFriend: '第 1 步：与世界分享您的个人资料链接，世界可以通过与您交谈来分享硬币',
       Keys.joinInvite: '在 2i2i 上和我一起出去玩',
       Keys.joinOtherRoom: '请加入一些主机',
       Keys.beFirstJoin: '成为第一个加入此主持人的人',
