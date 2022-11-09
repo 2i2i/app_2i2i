@@ -162,7 +162,7 @@ class ar {
       Keys.updateAvailable: 'التحديث متاح',
       Keys.loginMsg: "كسب النقود من خلال التحدث",
       Keys.loginMsg2: "يوفر 2i2i مساحة آمنة وخاصة للضيوف والمضيفين للالتقاء في شكل مكالمات فيديو",
-      Keys.loginMsg3: "> 654 اجتماعات منذ الإطلاق",
+      Keys.loginMsg3: "اجتماعات منذ الإطلاق",
       Keys.signInWithGoogle: 'الدخول مع جوجل',
       Keys.signInWithApple: "تسجيل الدخول باستخدام Apple",
       Keys.signInWithTwitter: "تسجيل الدخول باستخدام Twitter",

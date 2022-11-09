@@ -1,4 +1,6 @@
 class FirestorePath {
+  static String numMeetings() => 'system/stats';
+
   static String user(String uid) => 'users/$uid';
 
   static String users() => 'users';

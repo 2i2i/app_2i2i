@@ -17,7 +17,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
-
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -114,7 +113,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               SizedBox(height: 8),
                               Text(Keys.loginMsg2.tr(context), textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
-                              Text(Keys.loginMsg3.tr(context),
+                              Text(signUpViewModel.getNumMeetings().toString() + ' ' + Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme

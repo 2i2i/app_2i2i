@@ -162,7 +162,7 @@ class ja {
       Keys.updateAvailable: '利用可能なアップデート',
       Keys.loginMsg: '会話でコインを獲得',
       Keys.loginMsg2: '2i2iは、ゲストとホストがビデオ通話の形で会うための安全でプライベートなスペースを提供します',
-      Keys.loginMsg3: 'ローンチ以来654回以上の会議',
+      Keys.loginMsg3: 'ローンチ以来 回以上の会議',
       Keys.signInWithGoogle: 'Googleでサインイン',
       Keys.signInWithApple: 'Appleでサインイン',
       Keys.signInWithTwitter: 'Twitterでログイン',
