@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -23,7 +24,8 @@ class AccountAssetInfo extends ConsumerStatefulWidget {
   final int index;
   final bool isSelected;
 
-  AccountAssetInfo(this.shrinkwrap, {
+  AccountAssetInfo(
+    this.shrinkwrap, {
     Key? key,
     this.afterRefresh,
     this.isSelected = false,
@@ -124,11 +126,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                   Flexible(
                     child: Text(
                       FXValue?.getName ?? "",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: AppTheme().lightSecondaryTextColor),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme().lightSecondaryTextColor),
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -138,10 +136,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
             ),
             Text(
               amount.isNotEmpty ? "${amount}" : "0",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
+              style: Theme.of(context).textTheme.headline4,
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             )
@@ -164,10 +159,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
             Text(
               widget.address,
               maxLines: 4,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .caption,
+              style: Theme.of(context).textTheme.caption,
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),
@@ -194,18 +186,12 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                         title: Text('Disconnect?'),
                         content: Text(
                           'Are you sure want to disconnect this wallet connect account?\n\n${widget.address}',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .labelSmall,
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                         actions: [
                           TextButton(
                             style: TextButton.styleFrom(
-                              foregroundColor: Theme
-                                  .of(context)
-                                  .iconTheme
-                                  .color,
+                              foregroundColor: Theme.of(context).iconTheme.color,
                             ),
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -214,9 +200,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                           ),
                           TextButton(
                             style: TextButton.styleFrom(
-                              foregroundColor: Theme
-                                  .of(context)
-                                  .errorColor,
+                              foregroundColor: Theme.of(context).errorColor,
                             ),
                             onPressed: () {
                               Navigator.of(context).pop(true);
@@ -261,11 +245,16 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                       color: iconColor(context),
                     ),
                     onPressed: () async {
-                      CustomAlertWidget.loader(true, context);
+                      if (mounted) {
+                        CustomAlertWidget.loader(true, context);
+                      }
                       balance = await getBalance();
                       if (widget.afterRefresh != null) widget.afterRefresh!();
-                      CustomAlertWidget.loader(false, context);
-                      setState(() {});
+
+                      if (mounted) {
+                        CustomAlertWidget.loader(false, context);
+                        setState(() {});
+                      }
                     },
                   ),
                 ),
@@ -312,11 +301,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
           Text(
             'Subjective assets\nsupport coming late...',
             textAlign: TextAlign.center,
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               shadows: <Shadow>[
                 Shadow(
@@ -342,9 +327,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
         margin: EdgeInsets.symmetric(vertical: 10),
         padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
         decoration: BoxDecoration(
-          color: (FXValue?.value != null) || widget.isSelected ? Theme
-              .of(context)
-              .cardColor : Color(0xFFd3d3d3),
+          color: (FXValue?.value != null) || widget.isSelected ? Theme.of(context).cardColor : Color(0xFFd3d3d3),
           borderRadius: BorderRadius.circular(10.0),
           boxShadow: [
             BoxShadow(

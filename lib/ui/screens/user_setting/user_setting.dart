@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import 'package:app_2i2i/ui/screens/create_bid/top_card_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -330,7 +331,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
-                  Row(
+                  /*Row(
                     children: [
                       Expanded(
                         flex: 2,
@@ -372,8 +373,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                         ),
                       ),
                     ],
-                  ),
-                  /*Container(
+                  ),*/
+                  Container(
                     decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
@@ -416,7 +417,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                         SizedBox(width: 6),
                       ],
                     ),
-                  ),*/
+                  ),
                   ValueListenableBuilder(
                     valueListenable: invalidTime,
                     builder: (BuildContext context, bool value, Widget? child) {

@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/commons/theme.dart';
@@ -384,6 +385,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
+                              // print('userB ==> ${FXValue.decimals} ==> ${(userB!.rule.minSpeedALGO / FXValue.value).ceil()}');
                               if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
@@ -607,7 +609,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future onAddBid(MyAccountPageViewModel myAccountPageViewModel) async {
-    minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
+    if (addressA?.isNotEmpty ?? false) {
+      minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
+    }
     if (!goodToAddBid()) return;
 
     final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.B));
