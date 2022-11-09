@@ -329,25 +329,27 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
   // log('lockedUserViewModelProvider - algorand=$algorand');
   final uid = ref.watch(myUIDProvider)!;
   // log('ringingPageViewModelProvider - uid=$uid');
-  final user = ref.watch(userProvider(uid));
+  final userAsyncValue = ref.watch(userProvider(uid));
   // log('ringingPageViewModelProvider - user=$user');
-
-  if (user is AsyncLoading || user is AsyncError) return null;
+  if (userAsyncValue is AsyncLoading || userAsyncValue is AsyncError) return null;
+  final user = userAsyncValue.asData!.value;
 
   // log('ringingPageViewModelProvider - user.data=${user.data}');
   // log('ringingPageViewModelProvider - user.asData!.value=${user.asData!.value}');
   // log('ringingPageViewModelProvider - user.asData!.value.meeting=${user.asData!.value.meeting}');
-  if (user.asData!.value.meeting == null) return null;
-  final String userMeeting = user.value!.meeting!;
-  final meeting = ref.watch(meetingProvider(userMeeting));
+  if (user.meeting == null) return null;
+  final String meetingId = user.meeting!;
+  final meetingAsyncValue = ref.watch(meetingProvider(meetingId));
   // log('ringingPageViewModelProvider - meeting=$meeting');
+  if (meetingAsyncValue is AsyncLoading || meetingAsyncValue is AsyncError) return null;
+  final meeting = meetingAsyncValue.asData!.value;
 
-  if (meeting is AsyncLoading || meeting is AsyncError) return null;
-
-  final amA = meeting.asData!.value.A == user.asData!.value.id;
-  final otherUserId = amA ? meeting.asData!.value.B : meeting.asData!.value.A;
-  final otherUser = ref.watch(userProvider(otherUserId));
-  if (otherUser is AsyncLoading || otherUser is AsyncError) return null;
+  final amA = meeting.A == user.id;
+  final otherUserId = amA ? meeting.B : meeting.A;
+  
+  final otherUserAsyncValue = ref.watch(userProvider(otherUserId));
+  if (otherUserAsyncValue is AsyncLoading || otherUserAsyncValue is AsyncError) return null;
+  final otherUser = userAsyncValue.asData!.value;
 
   final functions = ref.watch(firebaseFunctionsProvider);
   // log('lockedUserViewModelProvider - functions=$functions');
@@ -357,14 +359,19 @@ final ringingPageViewModelProvider = Provider<RingingPageViewModel?>((ref) {
 
   final meetingChanger = ref.watch(meetingChangerProvider);
 
+  final FXAsyncValue = ref.watch(FXProvider(meeting.speed.assetId));
+  if (FXAsyncValue is AsyncLoading || FXAsyncValue is AsyncError) return null;
+  final FX = FXAsyncValue.asData!.value;
+
   return RingingPageViewModel(
-      user: user.asData!.value,
-      otherUser: otherUser.asData!.value,
+      FX: FX,
+      user: user,
+      otherUser: otherUser,
       algorand: algorand,
       functions: functions,
       meetingChanger: meetingChanger,
       userChanger: userChanger,
-      meeting: meeting.asData!.value);
+      meeting: meeting,);
 });
 
 final addBidPageViewModelProvider = StateProvider.family<AddBidPageViewModel?, String>((ref, B) {
