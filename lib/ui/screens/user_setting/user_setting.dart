@@ -1,9 +1,17 @@
 import 'dart:io';
 import 'dart:math';
-
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
+import 'package:app_2i2i/ui/screens/create_bid/top_card_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -13,15 +21,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
-
-import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/commons/theme.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
-import '../../../infrastructure/models/social_links_model.dart';
-import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
-import '../../commons/custom_alert_widget.dart';
-import '../../commons/custom_profile_image_view.dart';
 import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
@@ -39,7 +38,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
-  TextEditingController importanceEditController = TextEditingController();
   RichTextController bioTextController = RichTextController(
     patternMatchMap: {RegExp(r"(?:#)[a-zA-Z0-9]+"): TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)},
     onMatch: (List<String> match) {},
@@ -319,54 +317,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    '${Keys.importance.tr(context)}:',
+                    '${Keys.importance.tr(context)}: ${importanceString()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          '${importanceString()}',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: importanceEditController,
-                          style: TextStyle(color: AppTheme().cardDarkColor),
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) async {
-                            if (value.isEmpty) {
-                              return;
-                            }
-                            _importanceSliderValue = double.parse(value);
-                            _importanceRatioValue =
-                                (_importanceSliderValue! - _importanceSliderMaxHalf).abs() * (_importanceSliderMaxHalf * 2.0 - 2.0) / _importanceSliderMaxHalf +
-                                    2.0;
-                            await Future.delayed(Duration(milliseconds: 500));
-                            importanceEditController.text = _importanceSliderValue!.round().toString();
-                            setState(() {});
-                          },
-                          textInputAction: TextInputAction.done,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            filled: true,
-                            hintText: 'Imp',
-                            // suffix: Text(Keys..algoPerSec),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  /*Container(
+                  Container(
                     decoration: BoxDecoration(color: Theme.of(context).shadowColor.withOpacity(0.20), borderRadius: BorderRadius.circular(10)),
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
@@ -389,19 +344,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                      min: 0,
-                                      max: (_importanceSliderMaxHalf * 2.0),
-                                      value: _importanceSliderValue!,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _importanceSliderValue = value;
-                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                                  _importanceSliderMaxHalf +
-                                              2.0;
-                                        });
-                                      },
-                                    ),
+                                min: 0,
+                                max: (_importanceSliderMaxHalf * 2.0),
+                                value: _importanceSliderValue!,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _importanceSliderValue = value;
+                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                        (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                        _importanceSliderMaxHalf +
+                                        2.0;
+                                    // log(X +
+                                    //     '_importanceSliderValue=$_importanceSliderValue');
+                                    // log(X +
+                                    //     '_importanceRatioValue=$_importanceRatioValue');
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -409,7 +368,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                         SizedBox(width: 6),
                       ],
                     ),
-                  ),*/
+                  ),
                   ValueListenableBuilder(
                     valueListenable: invalidTime,
                     builder: (BuildContext context, bool value, Widget? child) {
@@ -507,7 +466,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeedALGO / pow(10, 6)).toString();
+      speedEditController.text = (user.rule.minSpeedALGO / pow(10, 6)).toString(); // min speed is in ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -521,7 +480,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
       // importance
       final c = user.rule.importance[Lounge.chrony]!;
-      final h = user.rule.importance[Lounge.highroller]!;
+      final h = user.rule.importance[Lounge.highroller]!; 
       final N = c + h;
       _importanceRatioValue = N / c;
       double x = _importanceRatioValue! - 2.0;
@@ -530,7 +489,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         x = 2.0 - _importanceRatioValue!;
       }
       _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
-      importanceEditController.text = (_importanceSliderValue?.round() ?? "").toString();
     }
     setState(() {});
   }
@@ -607,19 +565,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final ratio = _importanceRatioValue!.round();
     final postfix = ordinalIndicator(ratio);
     final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-    return 'Every $ratio$postfix is a\n${lounge.name()}';
+    return 'Every $ratio$postfix is a ${lounge.name()}';
   }
 
   String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / pow(10, 6);
+    final minSpeedPerHourinALGO = minSpeedPerHour / pow(10, 6); // min speed is in ALGO
     // final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round(); // min speed is in ALGO
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
