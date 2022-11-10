@@ -63,10 +63,10 @@ class MeetingHistoryModel extends ChangeNotifier {
 }
 
 class MeetingDataModel {
-  int? page;
-  String? uid;
-  String? userAorB;
+  int page;
+  String uid;
+  String userAorB;
   DocumentSnapshot? lastDocument;
 
-  MeetingDataModel({required this.page, required this.userAorB, required this.uid, this.lastDocument});
+  MeetingDataModel({this.page = 10, required this.userAorB, required this.uid, this.lastDocument});
 }

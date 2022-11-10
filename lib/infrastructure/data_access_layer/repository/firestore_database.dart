@@ -560,17 +560,18 @@ class FirestoreDatabase {
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(meetingDataModel.userAorB!, isEqualTo: meetingDataModel.uid!);
+        log('meetingHistory meetingDataModel.userAorB=${meetingDataModel.userAorB} meetingDataModel.uid=${meetingDataModel.uid} meetingDataModel.lastDocument=${meetingDataModel.lastDocument} meetingDataModel.page=${meetingDataModel.page}');
+        query = query.where(meetingDataModel.userAorB, isEqualTo: meetingDataModel.uid);
         if (meetingDataModel.lastDocument != null) {
-          query = query.startAfterDocument(meetingDataModel.lastDocument!).limit(meetingDataModel.page ?? 10);
+          query = query.startAfterDocument(meetingDataModel.lastDocument!).limit(meetingDataModel.page);
         } else {
-          query = query.limit(meetingDataModel.page ?? 10);
+          query = query.limit(meetingDataModel.page);
         }
         return query;
       },
     )
         .handleError((onError) {
-      log(onError);
+      log(onError.toString());
     });
   }
 

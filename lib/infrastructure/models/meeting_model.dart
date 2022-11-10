@@ -24,6 +24,7 @@ enum MeetingStatus {
   END_A, // A hangs up
   END_B, // B hangs up
   END_DISCONNECT, // disconnected
+  END_END, // done
 }
 
 // ACCEPTED_B -> END_TIMER_RINGING_PAGE
@@ -282,18 +283,19 @@ class Meeting extends Equatable {
   }
 
   factory Meeting.fromMap(Map<String, dynamic>? data, String documentId) {
+    log('Meeting.fromMap - documentId=$documentId');
     if (data == null) {
       log('Meeting.fromMap - data == null');
       throw StateError('missing data for id: $documentId');
     }
 
-    final bool active = data['active'] ?? false;
-    final bool settled = data['settled'] ?? false;
+    final bool active = data['active'];
+    final bool settled = data['settled'];
 
-    final bool mutedAudioA = data['mutedAudioA'] ?? false;
-    final bool mutedVideoA = data['mutedVideoA'] ?? false;
-    final bool mutedAudioB = data['mutedAudioB'] ?? false;
-    final bool mutedVideoB = data['mutedVideoB'] ?? false;
+    final bool mutedAudioA = data['mutedAudioA'];
+    final bool mutedVideoA = data['mutedVideoA'];
+    final bool mutedAudioB = data['mutedAudioB'];
+    final bool mutedVideoB = data['mutedVideoB'];
 
     final String A = data['A'];
     final String B = data['B'];
