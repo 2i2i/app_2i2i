@@ -86,6 +86,7 @@ dependencies:
   perfect_volume_control: ^1.0.5
   image_picker_ios: ^0.8.6+1
   tuple: ^2.0.1
+  firebase_analytics: ^10.0.5
 
 
 dev_dependencies:
@@ -114,6 +115,12 @@ flutter:
     - assets/3x/
     - assets/icons/
     - assets/html/
+    - assets/logo.png
+    - assets/2i2i_letter.png
+    - assets/video_call.mp3
+    - assets/video_call.mp3
+    - assets/no_internet.png
+    - assets/stopwatch.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -35,6 +35,9 @@ import 'ui/screens/localization/app_localization.dart';
 final platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
+  
+  log('common main');
+
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
