@@ -101,6 +101,11 @@ final setupUserViewModelProvider = ChangeNotifierProvider.autoDispose<SetupUserV
       accountService: accountService);
 });
 
+final numMeetingsProvider = StreamProvider<int?>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.numMeetingsStream();
+});
+
 final storageProvider = Provider((ref) => SecureStorage());
 
 final algorandProvider = Provider((ref) {

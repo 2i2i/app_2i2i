@@ -372,9 +372,14 @@ class FirestoreDatabase {
     return null;
   }
 
-  Future<int?> getNumMeetings() async {
-    final documentSnapshot = await _service.getData(path: FirestorePath.numMeetings());
-    return documentSnapshot?.get('numMeetings');
+  Stream<int?> numMeetingsStream() {
+    return _service.documentStream(
+      path: FirestorePath.numMeetings(),
+      builder: (data, documentId) {
+        if (data == null) return null;
+        return data['numMeetings'] as int;
+      },
+    );
   }
 
   Future<List> checkAddressAvailable(String address) async {
