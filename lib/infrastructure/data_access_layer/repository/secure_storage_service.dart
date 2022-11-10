@@ -19,7 +19,7 @@ class SecureStorage {
 
   Future<void> remove(String key) => _storage.delete(key: key);
 
-  Future<void> clearStorage() async => await _storage.deleteAll();
+  Future<void> clear() async => await _storage.deleteAll();
 
   Future<List<String>> keys() async {
     log('SecureStorage - _storage=$_storage');

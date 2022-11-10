@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/data_access_layer/accounts/local_account.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:app_2i2i/ui/screens/app/error_page.dart';
@@ -11,10 +10,7 @@ import 'package:app_2i2i/ui/screens/favorites/favorite_list_page.dart';
 import 'package:app_2i2i/ui/screens/home/bottom_nav_bar.dart';
 import 'package:app_2i2i/ui/screens/locked_user/locked_user_page.dart';
 import 'package:app_2i2i/ui/screens/meeting_history/meeting_history.dart';
-import 'package:app_2i2i/ui/screens/my_account/create_local_account.dart';
 import 'package:app_2i2i/ui/screens/my_account/my_account_page.dart';
-import 'package:app_2i2i/ui/screens/my_account/recover_account.dart';
-import 'package:app_2i2i/ui/screens/my_account/verify_perhaps_page.dart';
 import 'package:app_2i2i/ui/screens/my_user/my_user_page.dart';
 import 'package:app_2i2i/ui/screens/my_user/user_bid_out_list.dart';
 import 'package:app_2i2i/ui/screens/rating/rating_page.dart';
@@ -29,6 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../ui/screens/auth_screen/auth_screen.dart';
+import '../../ui/screens/redeem_coin/redeem_coin_page.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
 import 'app_routes.dart';
 
@@ -197,16 +194,6 @@ class NamedRoutes {
         },
       ),
       GoRoute(
-        name: Routes.recover.nameFromPath(),
-        path: Routes.recover,
-        pageBuilder: (context, state) {
-          return NoTransitionPage<void>(
-            key: state.pageKey,
-            child: getView(RecoverAccountPage()),
-          );
-        },
-      ),
-      GoRoute(
         name: Routes.webView.nameFromPath(),
         path: Routes.webView,
         pageBuilder: (context, state) {
@@ -269,43 +256,12 @@ class NamedRoutes {
         },
       ),
       GoRoute(
-        name: Routes.createLocalAccount.nameFromPath(),
-        path: Routes.createLocalAccount,
-        pageBuilder: (context, state) {
-          return NoTransitionPage<void>(
-            key: state.pageKey,
-            child: getView(CreateLocalAccount()),
-          );
-        },
-      ),
-      GoRoute(
         name: Routes.meetingHistory.nameFromPath(),
         path: Routes.meetingHistory,
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: getView(MeetingHistory()),
-          );
-        },
-      ),
-      GoRoute(
-        name: Routes.verifyPerhaps.nameFromPath(),
-        path: Routes.verifyPerhaps,
-        pageBuilder: (context, state) {
-          if (state.extra is Map) {
-            Map map = state.extra as Map;
-            List<String> perhaps = map['perhaps'];
-            if (map['account'] is LocalAccount) {
-              LocalAccount account = map['account'];
-              return NoTransitionPage<void>(
-                key: state.pageKey,
-                child: getView(VerifyPerhapsPage(perhaps, account)),
-              );
-            }
-          }
-          return NoTransitionPage<void>(
-            key: state.pageKey,
-            child: getView(NotFound()),
           );
         },
       ),
@@ -324,6 +280,14 @@ class NamedRoutes {
             child: NotFound(),
           );
         },
+      ),
+      GoRoute(
+        name: Routes.redeemCoin.nameFromPath(),
+        path: Routes.redeemCoin,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: getView(RedeemCoinPage()),
+        ),
       ),
     ],
     errorPageBuilder: (context, state) {

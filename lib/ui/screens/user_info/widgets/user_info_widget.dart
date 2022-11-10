@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -328,7 +330,7 @@ class UserRulesWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '${(user.rule.minSpeed / MILLION)} A/sec',
+                  '${(user.rule.minSpeedALGO / pow(10, 6))} A/sec', // min speed is in ALGO
                   style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
                 ),
                 SizedBox(height: 5),

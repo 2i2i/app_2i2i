@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
@@ -18,7 +17,6 @@ import 'package:twitter_login/entity/auth_result.dart';
 import 'package:twitter_login/twitter_login.dart';
 
 import '../../data_access_layer/accounts/abstract_account.dart';
-import '../../data_access_layer/accounts/local_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/repository/secure_storage_service.dart';
@@ -232,7 +230,7 @@ class SetupUserViewModel with ChangeNotifier {
     userInfoModel = await database.getUser(uid);
     return userInfoModel;
   }
-
+  
   Future updateFirebaseMessagingToken(String uid) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
@@ -254,10 +252,8 @@ class SetupUserViewModel with ChangeNotifier {
     } else {
       userInfoModel?.socialLinks = [];
     }
-    final f2 = await updateFirebaseMessagingToken(uid);
-    // final f3 = setupAlgorandAccount(uid);
-    final f4 = await updateDeviceInfo(uid);
-    // return Future.wait([f2, /* f3,*/ f4]);
+    await updateFirebaseMessagingToken(uid);
+    await updateDeviceInfo(uid);
     isLogged = true;
     storage.write('isLogged', "1");
     notifyListeners();
@@ -409,7 +405,7 @@ class SetupUserViewModel with ChangeNotifier {
     isLogged = false;
     await googleSignIn.signOut();
     await auth.signOut();
-    await storage.clearStorage();
+    await storage.clear();
     notifyListeners();
   }
 
@@ -499,35 +495,6 @@ class SetupUserViewModel with ChangeNotifier {
       'web.browserName': webBrowserInfo.browserName.name,
     };
     return database.updateDeviceInfo(uid, data);
-  }
-
-  // KEEP my_account_provider in local scope
-  Future setupAlgorandAccount(String uid) async {
-    if (0 < await accountService.getNumAccounts()) return;
-    final LocalAccount account = await LocalAccount.create(algorandLib: algorandLib, storage: storage, accountService: accountService);
-    await database.addAlgorandAccount(uid, account.address, 'LOCAL');
-    await accountService.setMainAccount(account.address);
-    log('SetupUserViewModel - setupAlgorandAccount - algorand.createAccount - my_account_provider=${account.address}');
-
-    // TODO uncomment try
-    // DEBUG - off for faster debugging
-    // final HttpsCallable giftALGO = FirebaseFunctions.instance.httpsCallable('giftALGO');
-
-    if (AppConfig().ALGORAND_NET == AlgorandNet.testnet) {
-      // await giftALGO({'account': account.address});
-      return account.updateBalances(net: AlgorandNet.testnet);
-    }
-
-    // log('SetupUserViewModel - setupAlgorandAccount - algorand.giftALGO');
-    // final optInToASAFuture = my_account_provider.optInToASA(
-    //     assetId: AlgorandService.NOVALUE_ASSET_ID[AlgorandNet.testnet]!,
-    //     net: AlgorandNet.testnet);
-    // final optInStateTxId = await optInToASAFuture
-    //     .then((value) => algorand.giftASA(my_account_provider, waitForConfirmation: false));
-    // log('SetupUserViewModel - setupAlgorandAccount - Future.wait - optInStateTxId=$optInStateTxId');
-    // await algorand.waitForConfirmation(
-    //     txId: optInStateTxId, net: AlgorandNet.testnet);
-    // log('SetupUserViewModel - setupAlgorandAccount - algorand.waitForConfirmation - optInStateTxId=$optInStateTxId');
   }
 
   String generateNonce([int length = 32]) {

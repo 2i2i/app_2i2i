@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '58'
+    flutterVersionCode = '1'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0.58'
+    flutterVersionName = '1.1.0'
 }
 
 apply plugin: 'com.android.application'
@@ -102,7 +102,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
+//    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
 //    implementation platform('com.google.firebase:firebase-bom:29.0.2')
     implementation 'com.google.firebase:firebase-appcheck-debug:16.0.1'
     implementation 'com.google.firebase:firebase-messaging:23.0.8'

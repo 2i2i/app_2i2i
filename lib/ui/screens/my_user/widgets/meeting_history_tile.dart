@@ -1,11 +1,12 @@
+import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/commons/theme.dart';
 import '../../../../infrastructure/models/meeting_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
@@ -23,28 +24,40 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     bool amA = meetingModel.A == currentUid;
 
-    final user = ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
-    if (haveToWait(user)) {
+    final userValue = ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
+    if (haveToWait(userValue)) {
       return Container();
     }
+    final user = userValue!;
 
-    if (user?.status == Status.OFFLINE) {
+    FXModel FXValue = FXModel.ALGO();
+    if (meetingModel.speed.assetId != 0) {
+      final FXValueTmp = ref.watch(FXProvider(meetingModel.speed.assetId)).value;
+      if (haveToWait(FXValueTmp)) {
+        return Container();
+      }
+      FXValue = FXValueTmp!;
+    }
+
+    if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    if (user?.status == Status.IDLE) {
+    if (user.status == Status.IDLE) {
       statusColor = Colors.amber;
     }
-    if (user?.isInMeeting() ?? false) {
+    if (user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = user?.name ?? '';
+    String firstNameChar = user.name;
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
 
     int amount = meetingModel.energy['B'] ?? 0;
     if (amA) amount += meetingModel.energy['CREATOR'] ?? 0;
-    double amountInALGO = amount / MILLION;
+    double amountWithDecimals = amount / pow(10, FXValue.decimals);
+
+    String assetName = FXValue.getName;
 
     return InkResponse(
       onTap: onTap,
@@ -90,8 +103,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                       child: Container(
                         height: 15,
                         width: 15,
-                        decoration:
-                            BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
+                        decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white, width: 2)),
                       ),
                     ),
                   ],
@@ -105,7 +117,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      user!.name,
+                      user.name,
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
@@ -128,7 +140,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '$amountInALGO ${Keys.ALGO.tr(context)}'.toUpperCase(),
+                      '$amountWithDecimals $assetName'.toUpperCase(),
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,

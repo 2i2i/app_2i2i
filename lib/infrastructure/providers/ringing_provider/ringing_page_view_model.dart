@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 import '../../data_access_layer/repository/algorand_service.dart';
@@ -9,7 +11,8 @@ import '../../models/user_model.dart';
 
 class RingingPageViewModel {
   RingingPageViewModel(
-      {required this.user,
+      {required this.FX,
+      required this.user,
       required this.otherUser,
       required this.meeting,
       required this.algorand,
@@ -17,6 +20,7 @@ class RingingPageViewModel {
       required this.meetingChanger,
       required this.userChanger});
 
+  final FXModel FX;
   final MeetingChanger meetingChanger;
   final UserModelChanger userChanger;
   final FirebaseFunctions functions;
@@ -39,5 +43,10 @@ class RingingPageViewModel {
   Future acceptMeeting() {
     if (meeting.status != MeetingStatus.ACCEPTED_B) return Future.value();
     return meetingChanger.acceptMeeting(meeting.id);
+  }
+
+  String speed() {
+    final decimalSpeed = meeting.speed.num / pow(10, FX.decimals);
+    return '$decimalSpeed ${FX.getName}/s';
   }
 }

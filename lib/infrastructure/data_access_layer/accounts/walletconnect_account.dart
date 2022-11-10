@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:walletconnect_secure_storage/walletconnect_secure_storage.dart';
 
@@ -13,6 +14,8 @@ import 'abstract_account.dart';
 class WalletConnectAccount extends AbstractAccount {
   static List<WalletConnectAccount> cache = [];
 
+  static const String STORAGE_KEY = 'wallet_connect_accounts';
+
   static Future<WalletConnect> newConnector([String key = '0']) async {
     final sessionStorage = WalletConnectSecureStorage(storageKey: key);
     final session = await sessionStorage.getSession();
@@ -23,7 +26,7 @@ class WalletConnectAccount extends AbstractAccount {
       sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
         name: '2i2i',
-        description: 'earn coins by talking',
+        description: 'receive coins by talking',
         url: 'https://2i2i.app',
         icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
       ),
@@ -44,6 +47,7 @@ class WalletConnectAccount extends AbstractAccount {
 
   // TODO cache management
   Future<void> save(String sessionId) async {
+    log('save sessionId=$sessionId');
     // final List<Future<void>> futures = [];
     // for (int i = 0; i < connector.session.accounts.length; i++) {
     // final account = WalletConnectAccount(
@@ -53,14 +57,14 @@ class WalletConnectAccount extends AbstractAccount {
 
     List<String> accounts = await accountService.getAllWalletConnectAccounts();
     accounts.add(sessionId);
-    storage.write('wallet_connect_accounts', accounts.join(','));
+    storage.write(STORAGE_KEY, accounts.join(','));
 
     if (connector.session.accounts.isNotEmpty) {
       address = connector.session.accounts[0];
       await updateBalances(net: AppConfig().ALGORAND_NET);
       // futures.add(updateBalances());
       int alreadyExistIndex = cache.indexWhere((element) => element.address == address);
-      if (alreadyExistIndex < 0) {
+      if (alreadyExistIndex == -1) {
         cache.add(this);
       } else {
         cache[alreadyExistIndex] = this;

@@ -42,6 +42,7 @@ class Keys {
   static const String numberHint = 'numberHint';
   static const String numberZeroHint = 'numberZeroHint';
   static const String noRatingsFound = 'noRatingsFound';
+  static const String noRedeemCoinsFound = 'noRedeemCoinsFound';
   static const String algoPerSec = 'algoPerSec';
   static const String algoPerHr = 'algoPerHr';
   static const String hh = 'hh';
@@ -51,6 +52,7 @@ class Keys {
   static const String join = 'join';
   static const String favorites = 'favorites';
   static const String wallet = 'wallet';
+  static const String redeemCoin = 'redeemCoin';
   static const String blockList = 'blockList';
   static const String favList = 'favList';
   static const String fav = 'fav';
@@ -109,8 +111,6 @@ class Keys {
   static const String walletAccountMsg = 'walletAccountMsg';
   static const String recoverPassphrase = 'recoverPassphrase';
   static const String recoverPassPhaseMsg = 'recoverPassPhaseMsg';
-  static const String addLocalAccount = 'addLocalAccount';
-  static const String addLocalAccountMsg = 'addLocalAccountMsg';
   static const String estMaxDuration = 'estMaxDuration';
   static const String swipeAndChangeAccount = 'swipeAndChangeAccount';
   static const String insufficientBalance = 'insufficientBalance';
@@ -147,15 +147,8 @@ class Keys {
   static const String ALGO = 'ALGO';
   static const String pleaseReadCarefully = 'pleaseReadCarefully';
   static const String writeDownRecovery = 'writeDownRecovery';
-  static const String recoverAccount = 'recoverAccount';
   static const String warning = 'warning';
   static const String doNotShare = 'doNotShare';
-  static const String createLocalAccount = 'createLocalAccount';
-  static const String createLocalAccountWarning = 'createLocalAccountWarning';
-  static const String recoverAccounts = 'recoverAccounts';
-  static const String recoverAccountWarning = 'recoverAccountWarning';
-  static const String recover = 'recover';
-  static const String verifyRecovery = 'verifyRecovery';
   static const String selectWord = 'selectWord';
   static const String complete = 'complete';
   static const String accumulatedSupport = 'accumulatedSupport';
@@ -171,7 +164,8 @@ class Keys {
   static const String connectingHost = 'connectingHost';
   static const String connectingGuest = 'connectingGuest';
   static const String whoTop = 'whoTop';
-  static const String topSpeeds = 'Top Speeds';
+  static const String topValues = 'topValues';
+  static const String topSpeeds = 'topSpeeds';
   static const String topDurations = 'topDurations';
   static const String language = 'Language';
   static const String inviteFriend = 'inviteFriend';

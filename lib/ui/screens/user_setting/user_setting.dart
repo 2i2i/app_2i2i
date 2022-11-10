@@ -1,8 +1,17 @@
 import 'dart:io';
-
+import 'dart:math';
+import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/providers/my_user_provider/my_user_page_view_model.dart';
+import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
+import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
+import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
+import 'package:app_2i2i/ui/screens/create_bid/top_card_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,16 +21,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
-
-import '../../../infrastructure/commons/keys.dart';
-import '../../../infrastructure/commons/theme.dart';
-import '../../../infrastructure/data_access_layer/services/logging.dart';
-import '../../../infrastructure/models/social_links_model.dart';
-import '../../../infrastructure/providers/all_providers.dart';
-import '../../../infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
-import '../../commons/custom_alert_widget.dart';
-import '../../commons/custom_profile_image_view.dart';
-import '../create_bid/top_card_widget.dart';
 import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
@@ -87,19 +86,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
               children: [
                 ProfileWidget(
                     onTap: () => CustomAlertWidget.showBottomSheet(
-                      context,
-                      backgroundColor: Theme.of(context).cardColor,
-                      child: ImagePickOptionWidget(
-                        imageCallBack: (ImageType imageType, String imagePath) {
-                          if (imagePath.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            imageUrl = imagePath;
-                            this.imageType = imageType;
-                            setState(() {});
-                          }
-                        },
-                      ),
-                    ),
+                          context,
+                          backgroundColor: Theme.of(context).cardColor,
+                          child: ImagePickOptionWidget(
+                            imageCallBack: (ImageType imageType, String imagePath) {
+                              if (imagePath.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                imageUrl = imagePath;
+                                this.imageType = imageType;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
                     stringPath: imageUrl,
                     radius: kToolbarHeight * 1.45,
                     imageType: imageType,
@@ -129,16 +128,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                           textInputAction: TextInputAction.next,
                           autofocus: false,
                           style: TextStyle(color: AppTheme().cardDarkColor),
-                          validator: (value) {
+                          validator: (String? value) {
                             value ??= '';
-                            if (value.trim().isEmpty) {
-                              return Keys.required.tr(context);
-                            } else if (value.trim().length < 3) {
-                              return 'Required min 3 characters';
-                            }
-                            if (value.trim().length < 3) {
-                              return "name must be 3 characters long";
-                            }
+                            if (value.trim().isEmpty) return Keys.required.tr(context);
                             return null;
                           },
                           decoration: InputDecoration(
@@ -474,7 +466,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeed / MILLION).toString();
+      speedEditController.text = (user.rule.minSpeedALGO / pow(10, 6)).toString(); // min speed is in ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -488,7 +480,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
       // importance
       final c = user.rule.importance[Lounge.chrony]!;
-      final h = user.rule.importance[Lounge.highroller]!;
+      final h = user.rule.importance[Lounge.highroller]!; 
       final N = c + h;
       _importanceRatioValue = N / c;
       double x = _importanceRatioValue! - 2.0;
@@ -573,19 +565,19 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     final ratio = _importanceRatioValue!.round();
     final postfix = ordinalIndicator(ratio);
     final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
-    return 'every $ratio$postfix is a ${lounge.name()}';
+    return 'Every $ratio$postfix is a ${lounge.name()}';
   }
 
   String minSpeedString(BuildContext context) {
     if (speedEditController.text.isEmpty) return '';
     final minSpeedPerSec = getSpeedFromText();
     final minSpeedPerHour = minSpeedPerSec * 3600;
-    final minSpeedPerHourinALGO = minSpeedPerHour / MILLION;
+    final minSpeedPerHourinALGO = minSpeedPerHour / pow(10, 6); // min speed is in ALGO
     // final s = microALGOToLargerUnit(minSpeedPerHour);
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * MILLION).round();
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round(); // min speed is in ALGO
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -646,7 +638,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-          minSpeed: getSpeedFromText(),
+          minSpeedALGO: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
             Lounge.chrony: importance[Lounge.chrony]!,

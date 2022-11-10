@@ -9,9 +9,15 @@ const String J = 'J - ';
 const String E = 'ERROR - ';
 const String K = 'K - ';
 const String X = 'X - ';
+const String Y = 'Y - ';
+const String FX = 'FX - ';
+const String A = 'A - ';
+const String B = 'B - ';
+const String C = 'C - ';
+const String D = 'D - ';
 
 void log(String message) {
-  // if (!message.startsWith(X)) return;
+  // if (!message.startsWith(D)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   debugPrint('************* - $now ($N): $message');

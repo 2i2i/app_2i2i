@@ -74,17 +74,17 @@ class Rule extends Equatable {
   const Rule({
     // set also in cloud function userCreated
     this.maxMeetingDuration = 300,
-    this.minSpeed = 0,
+    this.minSpeedALGO = 0,
     this.importance = defaultImportance,
   });
 
   final int maxMeetingDuration;
-  final int minSpeed;
+  final int minSpeedALGO;
   final Map<Lounge, int> importance;
 
   factory Rule.fromMap(Map<String, dynamic> data) {
     final int maxMeetingDuration = data['maxMeetingDuration'];
-    final int minSpeed = data['minSpeed'];
+    final int minSpeedALGO = data['minSpeed'];
     final Map<Lounge, int> importance = {};
 
     final Map<String, dynamic> x = data['importance'];
@@ -95,7 +95,7 @@ class Rule extends Equatable {
 
     return Rule(
       maxMeetingDuration: maxMeetingDuration,
-      minSpeed: minSpeed,
+      minSpeedALGO: minSpeedALGO,
       importance: importance,
     );
   }
@@ -103,7 +103,7 @@ class Rule extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'maxMeetingDuration': maxMeetingDuration,
-      'minSpeed': minSpeed,
+      'minSpeed': minSpeedALGO,
       'importance': importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
@@ -111,7 +111,7 @@ class Rule extends Equatable {
   int importanceSize() => importance.values.reduce((value, element) => value + element);
 
   @override
-  List<Object> get props => [maxMeetingDuration, minSpeed, importance];
+  List<Object> get props => [maxMeetingDuration, minSpeedALGO, importance];
 }
 
 @immutable
@@ -290,9 +290,17 @@ class UserModel extends Equatable {
   bool isVerified() => socialLinks.isNotEmpty;
 }
 
-extension ParseToDate on String {
+extension ParseToDate on Object {
   DateTime? toDate() {
-    return DateTime.tryParse(this)?.toLocal();
+    if (this is String) {
+      return DateTime.tryParse(this as String)?.toLocal();
+    } else if (this is num) {
+      var n = (this as num).toInt();
+      return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+    } else if (this is Timestamp) {
+      return (this as Timestamp).toDate().toLocal();
+    }
+    return null;
   }
 }
 

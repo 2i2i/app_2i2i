@@ -18,34 +18,34 @@ class FAQProviderModel extends ChangeNotifier {
           'Host',
         ],
         description:
-            '2i2i is the place for you to hang out. Every user on 2i2i can be a Guest and a Host. 2i2i provides a safe and private space for Guests and Hosts to meet via live video calls.'),
+            '2i2i is a market for your time. it is provably the fairest market. it is infinitely dimensional and infinitely inclusive. infinitely dimensional means users can offer any type of coin in exchange for talking with you. infinitely inclusive means that the range of value that you receive in exchange for your time is unlimited. every user on 2i2i can be a Guest and a Host. 2i2i provides a safe and private space for Guests and Hosts to meet via live video calls.'),
     FAQDataModel(
         title: 'What is a Guest?',
         tags: [
           'Guest',
           'support',
         ],
-        description: 'Guests join the room of a Host. By offering coins (called support) to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
+        description: 'Guests join the room of a Host. By offering coins to the Host, the Guest can have a 1-on-1 meeting with the Host.'),
     FAQDataModel(
         title: 'What is a Host?',
         tags: [
           'Host',
         ],
-        description: 'Hosts shared their time with Guests and earn coins (called support). The Host sets the minimum support they require.'),
+        description: 'Hosts shared their time with Guests and receive coins. The Host sets the minimum coins they require in exchange for its time. the Host also set the max duration per meeting. the Host also sets the importance of Chrony vs HighRoller vs Eccentric'),
     FAQDataModel(
         title: 'What is a Crony?',
         tags: [
           'Crony',
           'Guest',
         ],
-        description: 'A Guest that offers exactly the minimum support to their Host. Cronies wait in chronological order.'),
+        description: 'A Guest that offers exactly the minimum coins to their Host. Cronies wait in chronological order.'),
     FAQDataModel(
         title: 'What is a HighRoller?',
         tags: [
           'Guest',
           'HighRoller',
         ],
-        description: 'A Guest that offers higher than the minimum support to their Host. HighRollers wait in the order of their support.'),
+        description: 'A Guest that offers higher than the minimum coins to their Host. HighRollers wait in the order of their support.'),
     FAQDataModel(
         title: 'What is an Eccentric*?',
         tags: [
@@ -67,7 +67,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: [
           'importance',
         ],
-        description: 'The Host chooses the relative importance between Cronies and HighRollers. '),
+        description: 'The Host chooses the relative importance between Chronies (c), HighRollers (h) and Eccentrics (e). 2i2i allows everyone to get their turn. on average, per n=c+h+e Guests, there will be c/n Chrony, h/n HighRoller, e/n Eccentric'),
     FAQDataModel(
         title: 'How does the queuing work?',
         tags: [
@@ -86,7 +86,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: [
           'version',
         ],
-        description: '2i2i is still in beta version, which means testing. Please let us know of any errors: https://twitter.com/2i2i_app'),
+        description: '2i2i is live on mainnet. Please let us know of any errors: https://twitter.com/2i2i_app'),
     FAQDataModel(
         title: 'Who needs 2i2i?',
         tags: [
@@ -98,33 +98,33 @@ class FAQProviderModel extends ChangeNotifier {
           'teacher',
         ],
         description:
-            'If you have fans, let your fans out-support each other to see you live. Literally anyone with internet can earn coins just by talking about whatever. Maybe you are a teacher - students can offer support for your time. Or you are just bored and willing to listen to someone; someone will value that and offer support for your time.\nOn the other hand, if you need to talk with someone right now: once we have lots of users on 2i2i, you will find them. Whatever you need, right now.'),
+            'If you have fans, let your fans out-support each other to see you live. Literally anyone with internet can receive coins just by talking about whatever. Maybe you are a teacher - students can offer support for your time. Or you are just bored and willing to listen to someone; someone will value that and offer support for your time.\nOn the other hand, if you need to talk with someone right now: once we have lots of users on 2i2i, you will find them. Whatever you need, right now.'),
     FAQDataModel(
         title: 'Is 2i2i only for **live** video calls?',
         tags: [
           'now',
         ],
         description:
-            "Yes. 2i2i is about having a chat right now - When you feel like it. Going for a walk and would not mind having a chat? Earn extra coins."),
+            "Yes. 2i2i is about having a chat right now - When you feel like it. Going for a walk and would not mind having a chat? Receive extra coins."),
     FAQDataModel(
         title: 'How does 2i2i work?',
         tags: [
           'system',
         ],
         description:
-            "A Guest locks up their coins to join the queue of a certain Host. As long as the Host is online, the Host can meet one Guest after another. Once a meeting ends, the locked coins are distributed:\n - to the Host according to the meeting duration\n - to the SYSTEM, 10% of what the Host would have gotten\n - to the Guest, the rest"),
+            "A Guest locks up their coins to join the queue of a certain Host. the Host can meet one Guest after another. Once a meeting ends, the locked coins are distributed:\n - to the Host according to the meeting duration\n - to the SYSTEM, 10% of what the Host would have gotten\n - to the Guest, the rest"),
     FAQDataModel(
         title: 'How is the level of support measured?',
         tags: [],
         description: "The Guest offers support as coins per second. The Guest only pays for as many seconds as it meets the Host."),
     FAQDataModel(
-        title: 'Is my Algorand account safe?',
+        title: 'Is this safe?',
         tags: [
           'Algorand',
           'safe',
         ],
         description:
-            "We create an Algorand account for you when you create your user. This account is local to your device. We have no standards to it. It is encrypted on your device using amongst the highest standards of cryptography: WebCrypto or Keychains."),
+            "we do not store any private keys. all your accounts are connected using WalletConnect to your own wallet app"),
     FAQDataModel(
         title: 'Can I use other wallets?',
         tags: [
@@ -132,14 +132,7 @@ class FAQProviderModel extends ChangeNotifier {
           'wallet',
           'WalletConnect',
         ],
-        description: "Yes, you can use any wallet that connects with WalletConnect. E.g. the official Algorand Wallet."),
-    FAQDataModel(
-        title: 'Is 2i2i available on Algorand testnet?',
-        tags: [
-          'testnet',
-          'mainnet',
-        ],
-        description: "Yes, 2i2i.app runs mainnet and test.2i2i.app on testnet"),
+        description: "Yes, you can use any wallet that connects with WalletConnect. E.g. Pera."),
     FAQDataModel(
         title: 'How does the Algorand system work?',
         tags: [
@@ -171,7 +164,7 @@ class FAQProviderModel extends ChangeNotifier {
         title: 'How about audio only calls?',
         tags: ['audio', 'roadmap'],
         description:
-            "We are thinking about that. The issue is that an audio call is usually worth less. Audio and video calls are separate markets. Should we combine them?"),
+            "you can mute video or audio during the call"),
     FAQDataModel(
         title: 'What is the meaning of energy?',
         tags: [
@@ -205,7 +198,7 @@ class FAQProviderModel extends ChangeNotifier {
           'ASA',
         ],
         description:
-            "We do not promote any specific coin. The Guest can bid for the Host using any coin (ASA) they like. Although the technology is all set up for this, we believe that starting only with ALGO and then adding coins over time will solve the problem of liquidity better."),
+            "yes, there is a 2i2i coin. after each meeting, you get some 2i2i coins. these coins represent ownership in the project. e.g. decisions about changes and such will be governed via the 2i2i coin."),
     FAQDataModel(
         title: 'Can I use any coin/token/ASA?',
         tags: [
@@ -214,7 +207,7 @@ class FAQProviderModel extends ChangeNotifier {
           'support',
         ],
         description:
-            "Yes. Anything on Algorand. On Algorand, to use a new coin, accounts have to opt-in. If 2i2i is not opted-into your coin yet, you can opt-in the system simply by offering support. You would have to provide the ALGOs necessary for 2i2i to opt-in (0.202 ALGO). Although the technology is all set up for this, we believe that starting only with ALGO and then adding coins over time will solve the problem of liquidity better."),
+            "Yes. Anything on Algorand. currently, only objective value coins are supported. subjective value coins support is coming/"),
     FAQDataModel(
         title: 'Why Algorand?',
         tags: [
@@ -224,12 +217,12 @@ class FAQProviderModel extends ChangeNotifier {
         description:
             "Using a blockhain, the users coins are never sent to us. Users transact via smart contracts. This means 0 credit risk. There is nothing to hack and we cannot steal anything. No risk for the user."),
     FAQDataModel(
-        title: 'How does offering support work?',
+        title: 'How does offering coins work?',
         tags: [
           'Guest',
         ],
         description:
-            "The Guest only needs to choose the maximum duration of their meeting. The level of support is set by the Host. The Guest can see how many coins they would lock up and the estimated waiting time. A Guest can choose to offer higher support, which might allow the Guest to skip parts of the queue."),
+            "The Guest only needs to choose the maximum duration of their meeting. The level of coins is set by the Host. The Guest can see how many coins they would lock up and the estimated waiting time. A Guest can choose to offer more coins, which might allow the Guest to skip parts of the queue."),
     FAQDataModel(
         title: 'How does the bio/name work?',
         tags: [
@@ -250,12 +243,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: ['account', 'Algorand', 'minimum balance'],
         title: 'Why did I not get my coins (as a Host)?',
         description:
-            'If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
-    FAQDataModel(
-        tags: ['account', 'Algorand', 'minimum balance'],
-        title: 'Is it ok to have an empty account as a Host?',
-        description:
-            'No. If the account where you should have received coins is empty, you cannot receive less than 0.1 ALGO. This is an Algorand restriction. Once your "left-over" coins accumulate to at least 0.1 ALGO, we will initiate the transfer for you. This process will soon be automated.'),
+            'in your redeem page, you might see coins that the smart contract was not able to send to your account. reasons can be that your account is not opted-into that coin or that it is empty. just add some ALGO to your account or opt it into the coin and redeem.'),
   ];
 
   List<FAQDataModel> searchFAQList = [];

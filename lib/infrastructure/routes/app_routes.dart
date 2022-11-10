@@ -7,6 +7,7 @@ class Routes {
   static const bidOut = '/bidOut';
 
   static const account = '/account';
+  static const redeemCoin = '/redeemCoin';
   static const faq = '/faq';
   static const imi = '/imi';
   static const solli = '/solli';
@@ -18,15 +19,11 @@ class Routes {
   static const favorites = '/favorites';
   static const userSetting = '/userSetting';
   static const webView = '/webView/:walletAddress';
-  static const recover = '/recover';
-  static const createLocalAccount = '/createLocalAccount';
   static const test = '/test';
 
   static const user = '/user/:uid';
   static const createBid = '/addBid';
   static const ratings = '/rating/:uid';
-
-  static const verifyPerhaps = '/verifyPerhaps';
 
   static const meetingHistory = '/meetingHistory';
 }
@@ -56,16 +53,12 @@ extension name on String {
         return 'setting';
       case Routes.userSetting:
         return 'user_setting';
-      case Routes.recover:
-        return 'recover';
       case Routes.user:
         return 'user';
       case Routes.createBid:
         return 'add_bid';
       case Routes.ratings:
         return 'rating';
-      case Routes.createLocalAccount:
-        return 'create_local_account';
       case Routes.account:
         return 'account';
       case Routes.faq:
@@ -78,8 +71,8 @@ extension name on String {
         return 'language';
       case Routes.meetingHistory:
         return 'meeting_history';
-      case Routes.verifyPerhaps:
-        return 'verify_perhaps';
+      case Routes.redeemCoin:
+        return 'redeemCoin';
       case Routes.webView:
         return 'web_view';
       default:

@@ -83,7 +83,7 @@ post_install do |installer|
         ## dart: PermissionGroup.criticalAlerts
         # 'PERMISSION_CRITICAL_ALERTS=1'
       ]
-      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='11.0'
+      config.build_settings['IPHONE_DEPLOYMENT_TARGET']='10.0'
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulators*]']='arm64'
       config.build_settings['ONLY_ACTIVE_ARCH']='YES'
     end

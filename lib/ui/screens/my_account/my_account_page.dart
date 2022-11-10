@@ -1,12 +1,14 @@
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../app/wait_page.dart';
 import '../my_user/widgets/wallet_connect_dialog.dart';
-import 'widgets/account_info.dart';
+import 'widgets/account_asset_info.dart';
 import 'widgets/add_account_options_widget.dart';
 
 class MyAccountPage extends ConsumerStatefulWidget {
@@ -30,6 +32,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
+    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
+    log(Y + 'Balance: refresh');
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
       body: Padding(
@@ -46,27 +50,31 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
             ),
             SizedBox(height: 15),
             Expanded(
-              child: Builder(builder: (context) {
-                if (myAccountPageViewModel.isLoading) {
-                  return WaitPage(
-                    isCupertino: true,
-                  );
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: myAccountPageViewModel.addresses.length,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                  itemBuilder: (BuildContext context, int index) {
-                    String address = myAccountPageViewModel.addresses[index];
-                    return AccountInfo(
-                      true,
-                      index: index,
-                      key: ObjectKey(myAccountPageViewModel.addresses[index]),
-                      address: address,
+              child: Builder(
+                builder: (context) {
+                  if (myAccountPageViewModel.isLoading) {
+                    return WaitPage(
+                      isCupertino: true,
                     );
-                  },
-                );
-              }),
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: addressBalanceCombos.length,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    itemBuilder: (BuildContext context, int index) {
+                      String address = addressBalanceCombos[index].item1;
+                      Balance balance = addressBalanceCombos[index].item2;
+                      return AccountAssetInfo(
+                        true,
+                        index: index,
+                        key: ObjectKey(addressBalanceCombos[index]),
+                        address: address,
+                        initBalance: balance,
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -75,6 +83,8 @@ class _MyAccountPageState extends ConsumerState<MyAccountPage> {
         // onPressed: () => CustomAlertWidget.showBidAlert(context, AddAccountOptionsWidgets()),
         onPressed: () async {
           await CustomAlertWidget.showBottomSheet(context, child: WalletConnectDialog(), isDismissible: true);
+          myAccountPageViewModel.isLoading = true; // this line is used to show progress indicator
+          await myAccountPageViewModel.initMethod();
           // showBottomSheet.value = !showBottomSheet.value;
         },
         child: ValueListenableBuilder(
