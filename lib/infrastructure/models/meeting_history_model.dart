@@ -64,25 +64,9 @@ class MeetingHistoryModel extends ChangeNotifier {
 
 class MeetingDataModel {
   int? page;
-  String? uId;
+  String? uid;
   String? userAorB;
   DocumentSnapshot? lastDocument;
 
-  MeetingDataModel({required this.page, required this.userAorB, required this.uId, this.lastDocument});
-
-  MeetingDataModel.fromJson(Map<String, dynamic> json) {
-    page = json['page'];
-    uId = json['uId'];
-    userAorB = json['userAorB'];
-    lastDocument = json['lastDocument'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['page'] = this.page;
-    data['uId'] = this.uId;
-    data['userAorB'] = this.userAorB;
-    data['lastDocument'] = this.lastDocument;
-    return data;
-  }
+  MeetingDataModel({required this.page, required this.userAorB, required this.uid, this.lastDocument});
 }

@@ -560,7 +560,7 @@ class FirestoreDatabase {
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(meetingDataModel.userAorB!, isEqualTo: meetingDataModel.uId!);
+        query = query.where(meetingDataModel.userAorB!, isEqualTo: meetingDataModel.uid!);
         if (meetingDataModel.lastDocument != null) {
           query = query.startAfterDocument(meetingDataModel.lastDocument!).limit(meetingDataModel.page ?? 10);
         } else {
