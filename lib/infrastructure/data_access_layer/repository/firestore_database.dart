@@ -107,7 +107,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      // log(onError);
+      // log(onError.toString());
     });
   }
 
@@ -206,7 +206,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      log(onError);
+      log(onError.toString());
     });
   }
 
@@ -500,7 +500,7 @@ class FirestoreDatabase {
       queryBuilder: (query) => query.where('active', isEqualTo: true),
     )
         .handleError((onError) {
-      log(onError);
+      log(onError.toString());
     });
   }
 
@@ -527,7 +527,7 @@ class FirestoreDatabase {
               return Meeting.fromMap(data, documentId);
             })
         .handleError((onError) {
-      log(onError);
+      log(onError.toString());
     });
   }
 
@@ -538,7 +538,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('value', descending: true),
       )
           .handleError((onError) {
-        log(onError);
+        log(onError.toString());
         return [];
       });
   Stream<List<TopMeeting>> topValuesStream() => topStream(FirestorePath.topValues());
