@@ -36,7 +36,6 @@ class AddBidPageViewModel {
   final AlgorandService algorand;
   final AccountService accountService;
 
-
   // final List<AbstractAccount> accounts;
   final FirestoreDatabase database;
 
@@ -58,13 +57,20 @@ class AddBidPageViewModel {
     BuildContext? context,
     Function? timeout,
   }) async {
+    log(FX +
+        'addBid sessionId=$sessionId address=$address amount.assetId=${amount.assetId} amount.num=${amount.num} speed.assetId=${speed.assetId} speed.num=${speed.num} bidComment=$bidComment');
 
-    log(FX + 'addBid sessionId=$sessionId address=$address amount.assetId=${amount.assetId} amount.num=${amount.num} speed.assetId=${speed.assetId} speed.num=${speed.num} bidComment=$bidComment');
+    // FX
+    double FXValue = 1;
+    if (speed.assetId != 0) {
+      final FX = await database.getFX(speed.assetId); // TODO use Provider
+      FXValue = FX!.value!; // crash if no FX
+    }
 
     FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
-    } else if (speed.num < B.rule.minSpeedALGO) {
+    } else if (speed.num * FXValue < B.rule.minSpeedALGO) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.miniSupport.tr(context));
     } else if (speed.num != 0 && (sessionId?.isEmpty ?? true)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.noWalletFound.tr(context));
@@ -90,13 +96,6 @@ class AddBidPageViewModel {
           if ((sessionId.isNotEmpty) && (address?.isNotEmpty ?? false)) {
             txns = await algorand.lockCoins(sessionId: sessionId, address: address!, net: net, amount: amount, note: note).timeout(Duration(seconds: 60));
           }
-        }
-
-        // FX
-        double FXValue = 1;
-        if (speed.assetId != 0) {
-          final FX = await database.getFX(speed.assetId); // TODO use Provider
-          FXValue = FX!.value!; // crash if no FX
         }
 
         final bidOut = BidOut(

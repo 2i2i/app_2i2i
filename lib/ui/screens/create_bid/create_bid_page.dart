@@ -523,6 +523,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(C + 'accountBalance=$accountASABalance');
     log(C + 'accountALGOBalance=$accountALGOBalance');
 
+    speed = Quantity(num: speed.num, assetId: assetId);
+
     final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
     // log(FX + 'FXValueTmp=$FXValueTmp');
     if (FXValueTmp?.value == null) return;
