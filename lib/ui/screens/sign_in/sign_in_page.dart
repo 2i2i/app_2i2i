@@ -17,7 +17,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
-
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -64,11 +63,17 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final signUpViewModel = ref.watch(setupUserViewModelProvider);
+    final numMeetingsAsyncValue = ref.watch(numMeetingsProvider);
     final authStateChanges = ref.watch(authStateChangesProvider);
     var appSettingModel = ref.watch(appSettingProvider);
     if (!appSettingModel.isInternetAvailable) {
       return NoInternetScreen();
     }
+
+    // log(D + 'build numMeetingsAsyncValue=$numMeetingsAsyncValue');
+    final numMeetings = numMeetingsAsyncValue.asData?.value?.toString() ?? '?';
+    // log(D + 'build numMeetings=$numMeetings');
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -114,7 +119,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               SizedBox(height: 8),
                               Text(Keys.loginMsg2.tr(context), textAlign: TextAlign.center, style: Theme.of(context).textTheme.caption),
                               SizedBox(height: 8),
-                              Text(Keys.loginMsg3.tr(context),
+                              Text(numMeetings + ' ' + Keys.loginMsg3.tr(context),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme

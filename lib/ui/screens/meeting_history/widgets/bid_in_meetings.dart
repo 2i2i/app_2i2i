@@ -28,7 +28,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'A'));
+      ref.read(meetingHistory).getMeetingHistoryList(MeetingDataModel(uid: widget.uid, page: 10, userAorB: 'A'));
     });
     controller.addListener(_scrollListener);
     super.initState();
@@ -99,7 +99,7 @@ class _BidInMeetingsState extends ConsumerState<BidInMeetings> {
     if (maxScroll - currentScroll <= delta && !(meetingHistoryModel?.isRequesting ?? false)) {
       ref
           .read(meetingHistory)
-          .getMeetingHistoryList(MeetingDataModel(uId: widget.uid, page: 10, userAorB: 'A', lastDocument: meetingHistoryModel?.lastDocument));
+          .getMeetingHistoryList(MeetingDataModel(uid: widget.uid, page: 10, userAorB: 'A', lastDocument: meetingHistoryModel?.lastDocument));
     }
   }
 }

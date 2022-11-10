@@ -155,7 +155,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                               style: Theme.of(context).textTheme.subtitle1,
                             ),
                             Visibility(
-                              visible: redeemCoinModelProviderRef.value?.isNotEmpty ?? false,
+                              visible: redeemCoinModelProviderRef.value?.where((e) => 0 < e.value).isNotEmpty ?? false,
                               child: Padding(
                                 padding: EdgeInsets.only(left: 8),
                                 child: Icon(Icons.brightness_1, size: 12.0, color: Colors.red),

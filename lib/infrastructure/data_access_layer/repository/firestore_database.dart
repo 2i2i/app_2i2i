@@ -33,7 +33,7 @@ class FirestoreDatabase {
 
   //create user function
   Future createUser(String uid) async {
-    UserModel createdUserModel = UserModel(
+    final createdUserModel = UserModel(
         id: uid,
         status: Status.ONLINE,
         meeting: null,
@@ -60,7 +60,7 @@ class FirestoreDatabase {
         heartbeatBackground: DateTime.now(),
         heartbeatForeground: DateTime.now(),
         socialLinks: []);
-    Map<String, dynamic> userInfoMap = createdUserModel.toMap();
+    final userInfoMap = createdUserModel.toMap();
     userInfoMap['heartbeatBackground'] = FieldValue.serverTimestamp();
     userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
     await _service.firestore.collection(FirestorePath.users()).doc(createdUserModel.id).set(userInfoMap).catchError(
@@ -318,18 +318,18 @@ class FirestoreDatabase {
   }
 
   Future<FXModel?> getFX(int assetId) async {
-    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.FX(assetId));
+    final snapshot = await _service.getData(path: FirestorePath.FX(assetId));
     if (snapshot?.data() is Map) {
-      Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
+      final data = snapshot!.data() as Map<String, dynamic>?;
       return FXModel.objective(data!, assetId);
     }
     return FXModel.subjective(id: assetId);
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.token(uid));
+    final snapshot = await _service.getData(path: FirestorePath.token(uid));
     if (snapshot?.data() is Map) {
-      Map<String, dynamic>? data = snapshot!.data() as Map<String, dynamic>?;
+      final data = snapshot!.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
     }
     return null;
@@ -348,18 +348,18 @@ class FirestoreDatabase {
   }
 
   Future<AppVersionModel?> getAppVersion() async {
-    DocumentSnapshot? snapshot = await _service.getData(path: FirestorePath.appVersion());
+    final snapshot = await _service.getData(path: FirestorePath.appVersion());
     if (snapshot?.data() is Map) {
-      Map<String, dynamic>? data = snapshot?.data() as Map<String, dynamic>?;
+      final data = snapshot?.data() as Map<String, dynamic>?;
       return AppVersionModel.fromJson(data!);
     }
     return null;
   }
 
   Future<UserModel?> getUser(String uid) async {
-    DocumentSnapshot? documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
+    final documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
     if (documentSnapshot?.exists ?? false) {
-      String id = documentSnapshot!.id;
+      final id = documentSnapshot!.id;
       final data = documentSnapshot.data();
       if (data is Map) {
         try {
@@ -372,8 +372,18 @@ class FirestoreDatabase {
     return null;
   }
 
+  Stream<int?> numMeetingsStream() {
+    return _service.documentStream(
+      path: FirestorePath.numMeetings(),
+      builder: (data, documentId) {
+        if (data == null) return null;
+        return data['numMeetings'] as int;
+      },
+    );
+  }
+
   Future<List> checkAddressAvailable(String address) async {
-    var documentSnapshot = await _service.getCollectionGroupData(
+    final documentSnapshot = await _service.getCollectionGroupData(
       path: FirestorePath.alograndAccountPath(),
       queryBuilder: (query) => query.where('id', isEqualTo: address).orderBy('ts', descending: true),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
@@ -393,7 +403,7 @@ class FirestoreDatabase {
   }
 
   Future<List> checkInstaUserAvailable(SocialLinksModel socialLinksModel) async {
-    var documentSnapshot = await _service.getCollectionData(
+    final documentSnapshot = await _service.getCollectionData(
       path: FirestorePath.users(),
       queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
@@ -550,7 +560,7 @@ class FirestoreDatabase {
       path: FirestorePath.meetings(),
       builder: (data, documentId) => Meeting.fromMap(data, documentId),
       queryBuilder: (query) {
-        query = query.where(meetingDataModel.userAorB!, isEqualTo: meetingDataModel.uId!);
+        query = query.where(meetingDataModel.userAorB!, isEqualTo: meetingDataModel.uid!);
         if (meetingDataModel.lastDocument != null) {
           query = query.startAfterDocument(meetingDataModel.lastDocument!).limit(meetingDataModel.page ?? 10);
         } else {

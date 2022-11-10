@@ -26,7 +26,7 @@ class WalletConnectAccount extends AbstractAccount {
       sessionStorage: sessionStorage,
       clientMeta: const PeerMeta(
         name: '2i2i',
-        description: 'earn coins by talking',
+        description: 'receive coins by talking',
         url: 'https://2i2i.app',
         icons: ['https://firebasestorage.googleapis.com/v0/b/app-2i2i.appspot.com/o/logo.png?alt=media&token=851a5941-50f5-466c-91ec-10868ff27423'],
       ),
