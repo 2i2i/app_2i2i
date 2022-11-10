@@ -24,10 +24,11 @@ class MeetingHistoryTile extends ConsumerWidget {
 
     bool amA = meetingModel.A == currentUid;
 
-    final user = ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
-    if (haveToWait(user)) {
+    final userValue = ref.watch(userProvider(amA ? meetingModel.B : meetingModel.A)).value;
+    if (haveToWait(userValue)) {
       return Container();
     }
+    final user = userValue!;
 
     FXModel FXValue = FXModel.ALGO();
     if (meetingModel.speed.assetId != 0) {
@@ -38,16 +39,16 @@ class MeetingHistoryTile extends ConsumerWidget {
       FXValue = FXValueTmp!;
     }
 
-    if (user?.status == Status.OFFLINE) {
+    if (user.status == Status.OFFLINE) {
       statusColor = AppTheme().gray;
     }
-    if (user?.status == Status.IDLE) {
+    if (user.status == Status.IDLE) {
       statusColor = Colors.amber;
     }
-    if (user?.isInMeeting() ?? false) {
+    if (user.isInMeeting()) {
       statusColor = AppTheme().red;
     }
-    String firstNameChar = user?.name ?? '';
+    String firstNameChar = user.name;
     if (firstNameChar.isNotEmpty) {
       firstNameChar = firstNameChar.substring(0, 1);
     }
@@ -116,7 +117,7 @@ class MeetingHistoryTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      user!.name,
+                      user.name,
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
