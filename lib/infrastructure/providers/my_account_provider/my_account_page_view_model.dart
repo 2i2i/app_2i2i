@@ -22,6 +22,8 @@ class MyAccountPageViewModel extends ChangeNotifier {
   AccountService? accountService;
   bool isLoading = true;
 
+  FXModel? FXValue;
+
   // List<AbstractAccount>? accounts;
   Map<String, List<String>> walletConnectAccounts = {};
 
@@ -39,6 +41,7 @@ class MyAccountPageViewModel extends ChangeNotifier {
 
   Future<void> initMethod() async {
     try {
+      print("get list method");
       algorandLib = await ref!.watch(algorandLibProvider);
       storage = await ref!.watch(storageProvider);
       accountService = await ref!.watch(accountServiceProvider);
@@ -50,6 +53,15 @@ class MyAccountPageViewModel extends ChangeNotifier {
       log("$e");
     }
     notifyListeners();
+  }
+
+  Future<FXModel?> getFXValue(int assetId) async {
+    log('getFX assetId=$assetId');
+
+    if (assetId == 0) {
+      return FXModel.ALGO();
+    }
+    return await getFX(assetId);
   }
 
   Future<void> getWalletAccount() async {

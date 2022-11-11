@@ -18,7 +18,7 @@ class FirebaseNotifications {
   }
 
   void firebaseCloudMessagingListeners() {
-    FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
+    if (Platform.isIOS) FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       log("Handling a onMessage message: ${message.messageId}");
