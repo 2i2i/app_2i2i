@@ -50,7 +50,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       if (uid.isNotEmpty) {
         return await FirebaseMessaging.instance
             .getToken(
-          vapidKey: dotenv.env['TOKEN_KEY'].toString(),
+          // vapidKey: dotenv.env['TOKEN_KEY'].toString(),
         )
             .then((String? token) {
           if (token is String) return FirestoreDatabase().updateToken(uid, token);

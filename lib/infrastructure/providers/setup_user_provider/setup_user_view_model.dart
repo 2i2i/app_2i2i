@@ -233,7 +233,9 @@ class SetupUserViewModel with ChangeNotifier {
   
   Future updateFirebaseMessagingToken(String uid) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging.getToken(vapidKey: dotenv.env['TOKEN_KEY'].toString()).then((String? token) {
+    return messaging.getToken(
+      // vapidKey: dotenv.env['TOKEN_KEY'].toString()
+    ).then((String? token) {
       if (token is String) return database.updateToken(uid, token);
     });
   }

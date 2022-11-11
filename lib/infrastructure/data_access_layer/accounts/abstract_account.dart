@@ -1,7 +1,6 @@
 import 'dart:typed_data';
-
+import 'package:dio/dio.dart' as dio;
 import 'package:algorand_dart/algorand_dart.dart';
-
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import '../services/logging.dart';
@@ -67,7 +66,7 @@ class AccountService {
 
     // int balanceALGO = 0;
 
-    // try {
+    try {
       final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
       final accountInfoFuture =
@@ -80,7 +79,6 @@ class AccountService {
       final balanceALGO = futureResults[0] as int;
 
 
-
     final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
     log('assetHoldings=$assetHoldings');
@@ -89,7 +87,17 @@ class AccountService {
 
     // return [algoAssetHolding];
     return [algoAssetHolding, ...assetHoldings]; // ALGO always first
-    // } catch (e) {}
+    } on AlgorandException catch (ex) {
+      final cause = ex.cause;
+      if (cause is dio.DioError) {
+        log(FX + 'AlgorandException ' + cause.response?.data['message']);
+      }
+      // throw ex;
+      return [AssetHolding(amount: 0, assetId: 0, creator: '', isFrozen: false)];
+    } on Exception catch (ex) {
+      log(FX + 'Exception ' + ex.toString());
+      throw ex;
+    }
   }
 
   Future<int> getNumWalletConnectAccounts() async {

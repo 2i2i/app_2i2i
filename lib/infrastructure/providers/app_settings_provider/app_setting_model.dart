@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -91,8 +92,9 @@ class AppSettingModel extends ChangeNotifier {
       // Using default duration to force fetching from remote server.
       await remoteConfig.fetch();
       await remoteConfig.activate();
-      remoteConfig.getString('update_current_version');
-      String newVersion = remoteConfig.getString('force_update_current_version').trim();
+      final newVersion = remoteConfig.getString('update_current_version');
+      // final newVersion = remoteConfig.getString('force_update_current_version').trim();
+      log('checkIfUpdateAvailable currentVersion=$currentVersion newVersion=$newVersion');
       updateRequired = (currentVersion != newVersion);
       notifyListeners();
     } catch (exception) {
