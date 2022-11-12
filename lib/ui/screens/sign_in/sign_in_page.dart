@@ -11,12 +11,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
+
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/repository/firestore_database.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -44,14 +44,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   void initState() {
-    ref.read(setupUserViewModelProvider).checkLogin();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref.read(setupUserViewModelProvider).checkLogin();
       String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
       if (uid.isNotEmpty) {
         return await FirebaseMessaging.instance
             .getToken(
-          // vapidKey: dotenv.env['TOKEN_KEY'].toString(),
-        )
+                // vapidKey: dotenv.env['TOKEN_KEY'].toString(),
+                )
             .then((String? token) {
           if (token is String) return FirestoreDatabase().updateToken(uid, token);
         });
