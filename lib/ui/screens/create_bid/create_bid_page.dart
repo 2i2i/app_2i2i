@@ -78,6 +78,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   int accountASABalance = 0;
   int accountALGOBalance = 0;
 
+  int availableALGOBalance = 0;
+  int availableASABalance = 0;
+
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
   PageController controller = PageController(initialPage: 0);
@@ -104,13 +107,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
           speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
           log(C + '!focusNode.hasFocus speedController.text=${speedController.text}');
           var myAccountPageViewModel = ref.read(myAccountPageViewModelProvider);
-          updateAccountBalance(myAccountPageViewModel);
+          changeAccountAsset(myAccountPageViewModel);
         }
       }
     });
     var providerObj = ref.read(myAccountPageViewModelProvider);
     providerObj.initMethod().then((value) {
-      updateAccountBalance(providerObj);
+      changeAccountAsset(providerObj);
     });
 
     super.initState();
@@ -196,7 +199,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                     value: maxDuration.toDouble(),
                                     onChanged: (value) {
                                       maxDuration = value.round();
-                                      updateAccountBalance(myAccountPageViewModel);
+                                      changeSpeedOrMaxDuration(myAccountPageViewModel);
                                     },
                                   ),
                                 ),
@@ -246,7 +249,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                                       false,
                                       key: ObjectKey(address),
                                       // account: abstractAccount,
-                                      afterRefresh: () => updateAccountBalance(myAccountPageViewModel),
+                                      afterRefresh: () => changeAccountAsset(myAccountPageViewModel),
                                       index: index,
                                       address: address,
                                       initBalance: balance,
@@ -259,7 +262,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             onPageChanged: (int val) {
                               if (mounted) {
                                 currentAccountAssetIndex = val;
-                                updateAccountBalance(myAccountPageViewModel, accountAssetIndex: val);
+                                changeAccountAsset(myAccountPageViewModel, accountAssetIndex: val);
                               }
                             },
                           );
@@ -341,15 +344,16 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             autovalidateMode: AutovalidateMode.always,
                             controller: speedController,
                             title: Keys.speed.tr(context),
-                            hintText: "0.01",
+                            // hintText: '${pow(10, -FXValue.decimals)}',
+                            hintText: '${speed.num / pow(10, FXValue.decimals)}',
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,6}')),
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,' + FXValue.decimals.toString() + '}')),
                             ],
                             keyboardType: TextInputType.numberWithOptions(decimal: true),
                             suffixIcon: GestureDetector(
                               onTap: () {
                                 isAddSupportVisible.value = false;
-                                updateAccountBalance(myAccountPageViewModel);
+                                changeSpeedOrMaxDuration(myAccountPageViewModel);
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -387,7 +391,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value!).ceil()) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
                               }
-                              updateAccountBalance(myAccountPageViewModel);
+                              changeSpeedOrMaxDuration(myAccountPageViewModel);
                             },
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
@@ -503,8 +507,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountAssetIndex}) async {
-    log(C + 'updateAccountBalance accountIndex=$accountAssetIndex assetId=$assetId');
+  void changeAccountAsset(MyAccountPageViewModel myAccountPageViewModel, {int? accountAssetIndex}) async {
+    log(C + 'changeAccountAsset accountIndex=$accountAssetIndex assetId=$assetId');
 
     accountAssetIndex ??= currentAccountAssetIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
@@ -529,7 +533,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(C + 'accountBalance=$accountASABalance');
     log(C + 'accountALGOBalance=$accountALGOBalance');
 
-    speed = Quantity(num: speed.num, assetId: assetId);
 
     final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
     // log(FX + 'FXValueTmp=$FXValueTmp');
@@ -537,35 +540,42 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     FXValue = FXValueTmp!;
     log(C + 'FXValue=$FXValue');
 
+    speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value!).ceil(), assetId: assetId);
+    speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
 
     if (addressA != null) minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
     log(C + 'minAccountALGOBalance=$minAccountALGOBalance');
 
-    // final speedVal = getSpeedFromText(speedController.text);
-    // log(FX + 'speedVal=$speedVal');
-    
-    log(C + 'speed.num=${speed.num} FXValue.value=${FXValue.value} userB?.rule.minSpeed=${userB?.rule.minSpeedALGO}');
-    if (speedTooLow()) {
-      speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value!).ceil(), assetId: assetId);
-    }
-    // else {
-    //   speed = Quantity(num: speedVal, assetId: assetId);
-    // }
-    // log(FX + 'speed=$speed speed.assetId=${speed.assetId} speed.num=${speed.num}');
-
-    if (!focusNode.hasFocus) {
-      speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
-    }
 
     final feeALGO = (assetId == 0 ? 4 : 5) * AlgorandService.MIN_TXN_FEE; // 3 fess to unlock plus 1 xor 2 to send
 
-    final availableALGOBalance = accountALGOBalance - minAccountALGOBalance - feeALGO;
-    final availableASABalance = assetId == 0 ? availableALGOBalance : accountASABalance;
+    availableALGOBalance = accountALGOBalance - minAccountALGOBalance - feeALGO;
+    availableASABalance = assetId == 0 ? availableALGOBalance : accountASABalance;
     log(C + 'availableALGOBalance=$availableALGOBalance');
     log(C + 'availableASABalance=$availableASABalance');
 
     maxMaxDuration = userB!.rule.maxMeetingDuration;
     log(C + 'maxMaxDuration=$maxMaxDuration');
+
+    if (speed.num != 0) {
+      final availableMaxDuration = max(0, (availableASABalance / speed.num).floor());
+      log(C + 'availableMaxDuration=$availableMaxDuration');
+      maxMaxDuration = min(availableMaxDuration, maxMaxDuration);
+      log(C + 'maxMaxDuration=$maxMaxDuration');
+      maxMaxDuration = max(minMaxDuration, maxMaxDuration);
+      log(C + 'maxMaxDuration=$maxMaxDuration');
+    }
+    maxDuration = min(maxDuration, maxMaxDuration);
+    log(C + 'maxDuration=$maxDuration');
+
+    amount = Quantity(num: (maxDuration * speed.num).round(), assetId: assetId);
+    log(C + 'amount=$amount amount.assetId=${amount.assetId} amount.num=${amount.num}');
+
+    if (this.mounted) setState(() {});
+  }
+
+  void changeSpeedOrMaxDuration(MyAccountPageViewModel myAccountPageViewModel, {int? accountAssetIndex}) async {
+    log(C + 'changeSpeed accountIndex=$accountAssetIndex assetId=$assetId');
 
     if (speed.num != 0) {
       final availableMaxDuration = max(0, (availableASABalance / speed.num).floor());
@@ -673,7 +683,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     log(C + 'goodToAddBid 4');
 
-    if (accountASABalance * FXValue.value! < amount.num) return false;
+    if (accountASABalance < amount.num) return false;
 
     log(C + 'goodToAddBid 5');
 
