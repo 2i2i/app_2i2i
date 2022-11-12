@@ -673,7 +673,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     log(C + 'goodToAddBid 4');
 
-    if (accountASABalance * FXValue.value! < amount.num) return false;
+    if (accountASABalance < amount.num) return false;
 
     log(C + 'goodToAddBid 5');
 
