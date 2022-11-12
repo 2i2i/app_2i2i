@@ -29,7 +29,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
   @override
   Widget build(BuildContext context) {
     final myAccountPageViewModel = ref.watch(myAccountPageViewModelProvider);
-    List<String> addressBalanceCombos = myAccountPageViewModel.addressWithASABalance.map((e) => e.item1).toSet().toList();
+    final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance.map((e) => e.item1).toSet().toList();
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.width * 1.12,
@@ -69,7 +69,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
                     primary: false,
                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                     itemBuilder: (BuildContext context, int index) {
-                      String address = addressBalanceCombos[index];
+                      final address = addressBalanceCombos[index];
                       return Container(
                         width: double.infinity,
                         child: Row(

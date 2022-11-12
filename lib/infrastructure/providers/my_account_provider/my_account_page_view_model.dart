@@ -69,27 +69,6 @@ class MyAccountPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<Asset> getAsset(int assetId) async {
-  //   log('MyAccountPageViewModel getAsset assetId=$assetId assetId.runtimeType=${assetId.runtimeType} AppConfig().ALGORAND_NET=${AppConfig().ALGORAND_NET}');
-
-  //   // final indexerClient = IndexerClient(
-  //   //   apiUrl: AlgoExplorer.TESTNET_INDEXER_API_URL,
-  //   //   // apiUrl: AlgoExplorer.MAINNET_INDEXER_API_URL,
-  //   //   apiKey: '',
-  //   // );
-
-  //   // final algorand = Algorand(
-  //   //   // algodClient: algodClient,
-  //   //   indexerClient: indexerClient,
-  //   // );
-
-  //   // final assetResponse = await algorand.indexer().getAssetById(assetId);
-  //   final assetResponse = await algorandLib!.client[AppConfig().ALGORAND_NET]!.indexer().getAssetById(assetId);
-  //   log('MyAccountPageViewModel getAsset assetResponse=$assetResponse');
-  //   log('MyAccountPageViewModel getAsset assetResponse.asset=${assetResponse.asset}');
-  //   return assetResponse.asset;
-  // }
-
   Future<List<Balance>> getBalancesFromAddress(String address) async {
     log(Y + 'getBalanceFromAddress address=$address accountService=$accountService');
     // if (accountService != null) {
@@ -111,31 +90,11 @@ class MyAccountPageViewModel extends ChangeNotifier {
     throw "getBalanceFromAddressAndAssetId - error - address=$address assetId=$assetId";
   }
 
-  Future<int> getMinBalance({required String address}) async {
-    // log(Y + 'getMinBalance address=$address algorandLib=$algorandLib');
-    // try {
-    // if (algorandLib != null) {
-    final account = await algorandLib!.client[AppConfig().ALGORAND_NET]!.getAccountByAddress(address);
-    return account.minimumBalance?.toInt() ?? 0;
-    // }
-    // throw "";
-    // } catch (e) {
-    //   debugPrint(e.toString());
-    // }
-    // return 0;
-  }
+  Future<int> getMinBalance({required String address}) => accountService!.getMinBalance(address: address, net: AppConfig().ALGORAND_NET);
 
   Future<int> getAlgoBalance({required String address}) async {
-    // try {
-    List list = await getBalancesFromAddress(address);
-    for (final b in list) {
-      if (b.assetHolding.assetId == 0) return b.assetHolding.amount;
-    }
-    throw "getAlgoBalance - ALGO balance not found - should never happen - address=$address";
-    // } catch (e) {
-    //   debugPrint(e.toString());
-    // }
-    // return 0;
+    final assetHolding = await accountService!.getALGOBalance(address: address, net: AppConfig().ALGORAND_NET);
+    return assetHolding.amount;
   }
 
   Future<int> getAlgoBalanceFromAsaList({required String address}) async {
