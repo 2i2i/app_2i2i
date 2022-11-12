@@ -81,7 +81,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   ValueNotifier<bool> isAddSupportVisible = ValueNotifier(false);
   TextEditingController speedController = TextEditingController();
   PageController controller = PageController(initialPage: 0);
-  int currentAccountIndex = 0;
+  int currentAccountAssetIndex = 0;
   UserModel? userB;
   FocusNode focusNode = FocusNode();
   final dataKey = new GlobalKey();
@@ -258,8 +258,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             },
                             onPageChanged: (int val) {
                               if (mounted) {
-                                currentAccountIndex = val;
-                                updateAccountBalance(myAccountPageViewModel, accountIndex: val);
+                                currentAccountAssetIndex = val;
+                                updateAccountBalance(myAccountPageViewModel, accountAssetIndex: val);
                               }
                             },
                           );
@@ -503,20 +503,26 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
-  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountIndex}) async {
-    log(C + 'updateAccountBalance accountIndex=$accountIndex assetId=$assetId');
+  void updateAccountBalance(MyAccountPageViewModel myAccountPageViewModel, {int? accountAssetIndex}) async {
+    log(C + 'updateAccountBalance accountIndex=$accountAssetIndex assetId=$assetId');
 
-    accountIndex ??= currentAccountIndex;
+    accountAssetIndex ??= currentAccountAssetIndex;
     // final addressBalanceCombos = await myAccountPageViewModel.addressBalanceCombos;
     final addressBalanceCombos = myAccountPageViewModel.addressWithASABalance;
     if (addressBalanceCombos.isNotEmpty) {
-      final combo = accountIndex < addressBalanceCombos.length ? addressBalanceCombos[accountIndex] : addressBalanceCombos.first;
+      final combo = addressBalanceCombos[accountAssetIndex];
       addressA = combo.item1;
       assetId = combo.item2.assetHolding.assetId;
       accountASABalance = combo.item2.assetHolding.amount;
-      accountALGOBalance = addressBalanceCombos[0].item2.assetHolding.amount;
+
+      // account asset combo with same address has ALGO balance
+      for (final a in addressBalanceCombos) {
+        if (a.item1 != addressA) continue;
+        accountALGOBalance = a.item2.assetHolding.amount;
+        break;
+      }
     }
-    log(C + 'accountIndex=$accountIndex');
+    log(C + 'accountIndex=$accountAssetIndex');
     log(C + 'addressBalanceCombos=$addressBalanceCombos');
     log(C + 'address=$addressA');
     log(C + 'assetId=$assetId');
@@ -610,7 +616,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   Future onAddBid(MyAccountPageViewModel myAccountPageViewModel) async {
-    minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
+    minAccountALGOBalance = speed.num == 0 ? 0 : await myAccountPageViewModel.getMinBalance(address: addressA!);
     if (!goodToAddBid()) return;
 
     final addBidPageViewModel = ref.read(addBidPageViewModelProvider(widget.B));

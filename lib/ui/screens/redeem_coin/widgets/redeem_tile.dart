@@ -27,7 +27,26 @@ class RedeemTile extends ConsumerWidget {
         future: ref.read(myAccountPageViewModelProvider).getFX(redeemCoinModel.assetId),
         builder: (BuildContext context, AsyncSnapshot<FXModel?> snapshot) {
           //Here we comment line if other wise overlay Ui not shown
-          // if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData)
+            return Container(
+              // margin: EdgeInsets.symmetric(vertical: 10),
+              // padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(2, 4),
+                    blurRadius: 8,
+                    color: Color.fromRGBO(0, 0, 0, 0.12),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                title: Text(''),
+                subtitle: Text(''),
+              ),
+            );
 
           final FXValue = snapshot.data;
 
