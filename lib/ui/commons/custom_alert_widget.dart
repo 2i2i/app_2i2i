@@ -38,24 +38,22 @@ class CustomAlertWidget {
       errorMessage,
     );
     if (errorStacktrace?.isNotEmpty ?? false) {
-      messageWidget = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 8),
-          Text(
-            errorMessage,
-          ),
-          SizedBox(height: 8),
-          Container(
-              decoration: BoxDecoration(color: Colors.red.shade200, borderRadius: BorderRadius.circular(12)),
-              margin: EdgeInsets.only(top: 8),
-              padding: EdgeInsets.all(8),
-              child: Text(
-                errorStacktrace!,
-                maxLines: 2,
-              )),
-          SizedBox(height: 8),
-        ],
+      messageWidget = SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 8),
+            Text(
+              errorStacktrace ?? '',
+              maxLines: 8,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
       );
     }
     var cupertinoDialog = CupertinoAlertDialog(
@@ -70,7 +68,7 @@ class CustomAlertWidget {
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(Keys.okay.tr(context)),
+          child: Text(Keys.okay.tr(context).toUpperCase()),
         ),
       ],
     );
@@ -86,7 +84,7 @@ class CustomAlertWidget {
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(Keys.okay.tr(context)),
+          child: Text(Keys.okay.tr(context).toUpperCase()),
         ),
       ],
     );

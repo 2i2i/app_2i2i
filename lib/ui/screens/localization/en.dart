@@ -9,7 +9,7 @@ class en {
       Keys.automatic: 'Automatic',
       Keys.shareQr: 'Share yourself',
       Keys.error: 'Error',
-      Keys.errorWhileAddBid: 'Error while adding bid, Try another account or reduce the max duration or reduce the speed',
+      Keys.errorWhileAddBid: 'Algorand Error',
       Keys.less: 'less',
       Keys.importance: 'Importance',
       Keys.chrony: 'Chrony',
