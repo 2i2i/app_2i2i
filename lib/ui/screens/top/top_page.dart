@@ -24,8 +24,8 @@ class _TopPageState extends State<TopPage> with SingleTickerProviderStateMixin {
     controller = TabController(length: 2, vsync: this);
   }
 
-  String valueStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX * meeting.duration / pow(10, FXValue.decimals)} ${FXValue.getName}';
-  String speedStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.FX / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
+  String valueStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num * meeting.duration / pow(10, FXValue.decimals)} ${FXValue.getName}';
+  String speedStat(TopMeeting meeting, FXModel FXValue) => '${meeting.speed.num / pow(10, FXValue.decimals)} ${FXValue.getName}/sec';
   String durationStat(TopMeeting meeting, FXModel FXValue) => secondsToSensibleTimePeriod(meeting.duration, context);
 
   @override
