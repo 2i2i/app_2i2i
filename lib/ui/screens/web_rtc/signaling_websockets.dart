@@ -6,7 +6,6 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import './utils/device_info.dart' if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart' if (dart.library.js) './utils/websocket_web.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
-
 enum SignalingState {
   ConnectionOpen,
   ConnectionClosed,

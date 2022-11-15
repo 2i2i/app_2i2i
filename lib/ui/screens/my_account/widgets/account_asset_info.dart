@@ -45,7 +45,6 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
   Balance balance;
 
-
   int get assetId => balance.assetHolding.assetId;
 
   // only used on refresh
@@ -290,7 +289,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
               margin: EdgeInsets.symmetric(vertical: 10),
               padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
               decoration: BoxDecoration(
-                color: (snapshot.data?.value != null) ? Theme.of(context).cardColor : Color(0xFFd3d3d3),
+                color: (snapshot.data?.value != null) ? Theme.of(context).cardColor : Theme.of(context).cardColor.withOpacity(0.5) /*Color(0xFFd3d3d3)*/,
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [
                   BoxShadow(

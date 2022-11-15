@@ -2,6 +2,7 @@ import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
 import 'package:app_2i2i/infrastructure/routes/app_routes.dart';
 import 'package:app_2i2i/ui/commons/profile_icon.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -113,7 +114,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         var appSettingModel = ref.read(appSettingProvider);
-        if (appSettingModel.updateRequired) {
+        if (appSettingModel.updateRequired && !kIsWeb) {
           return Padding(
             padding: const EdgeInsets.all(6),
             child: RotatedBox(

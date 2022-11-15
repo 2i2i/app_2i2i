@@ -41,7 +41,7 @@ class SimpleWebSocket {
     }
   }
 
-  close() {
+  closeSocket() {
     if (_socket != null) {
       _socket.close();
     }
