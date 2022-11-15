@@ -21,7 +21,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as ht;
+
+// import 'package:universal_html/html.dart' as ht;
 
 import 'infrastructure/commons/utils.dart';
 import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
@@ -35,7 +37,6 @@ import 'ui/screens/localization/app_localization.dart';
 final platform = MethodChannel('app.2i2i/notification');
 
 Future<void> main() async {
-  
   log('common main');
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,8 +110,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     if (kIsWeb) {
-      window.addEventListener('focus', onFocus);
-      window.addEventListener('blur', onBlur);
+      ht.window.addEventListener('focus', onFocus);
+      ht.window.addEventListener('blur', onBlur);
     }
 
     WidgetsBinding.instance.addObserver(this);
@@ -167,11 +168,11 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
     ref.read(appSettingProvider).setInternetStatus(result != ConnectivityResult.none);
   }
 
-  void onFocus(Event e) {
+  void onFocus(ht.Event e) {
     didChangeAppLifecycleState(AppLifecycleState.resumed);
   }
 
-  void onBlur(Event e) {
+  void onBlur(ht.Event e) {
     didChangeAppLifecycleState(AppLifecycleState.paused);
   }
 

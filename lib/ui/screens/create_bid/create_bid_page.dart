@@ -11,10 +11,12 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/add_bid_provider/add_bid_page_view_model.dart';
 import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:app_2i2i/ui/screens/app/wait_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/commons/theme.dart';
@@ -227,8 +229,9 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                     ),
                   ),
                   Container(
-                    constraints:
-                        myAccountPageViewModel.walletConnectAccounts.length > 0 ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / 1.8) : null,
+                    constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
+                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / (kIsWeb ? 5.2 : 1.8))
+                        : null,
                     child: Builder(
                       builder: (BuildContext context) {
                         if (myAccountPageViewModel.walletConnectAccounts.isNotEmpty) {
@@ -423,7 +426,10 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   backgroundColor: MaterialStateProperty.all(goodToAddBid() ? Theme.of(context).colorScheme.secondary : Theme.of(context).errorColor),
                 ),
                 child: Text(getConfirmSliderText(),
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: goodToAddBid() ? Theme.of(context).primaryColor : Theme.of(context).primaryColorDark)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: goodToAddBid() ? Theme.of(context).primaryColor : Theme.of(context).primaryColorDark)),
               ),
             ),
             ValueListenableBuilder(
@@ -533,7 +539,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     log(C + 'accountBalance=$accountASABalance');
     log(C + 'accountALGOBalance=$accountALGOBalance');
 
-
     final FXValueTmp = await myAccountPageViewModel.getFX(assetId);
     // log(FX + 'FXValueTmp=$FXValueTmp');
     if (FXValueTmp?.value == null) return;
@@ -545,7 +550,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
     if (addressA != null) minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
     log(C + 'minAccountALGOBalance=$minAccountALGOBalance');
-
 
     final feeALGO = (assetId == 0 ? 4 : 5) * AlgorandService.MIN_TXN_FEE; // 3 fess to unlock plus 1 xor 2 to send
 
@@ -660,7 +664,6 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   bool speedTooLow() => speed.num * FXValue.value! < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
 
   bool goodToAddBid() {
-
     log(C + 'goodToAddBid 0');
 
     if (userB == null) return false;

@@ -311,32 +311,35 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       Icons.navigate_next,
                     ),
                   ),
-                  ListTile(
-                    onTap: () async {
-                      if (appSettingModel.updateRequired && !Platform.isIOS) {
-                        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
-                      }
-                      if (Platform.isIOS) {
-                        await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
-                      }
-                    },
-                    title: Text(
-                      Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.currentVersion})" : ""),
-                      style: Theme.of(context).textTheme.subtitle1,
+                  Visibility(
+                    visible: !kIsWeb,
+                    child: ListTile(
+                      onTap: () async {
+                        if (!kIsWeb && appSettingModel.updateRequired && Platform.isAndroid) {
+                          await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
+                        }
+                        if (!kIsWeb && Platform.isIOS) {
+                          await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      title: Text(
+                        Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.currentVersion})" : ""),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      subtitle: appSettingModel.updateRequired
+                          ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                          : null,
+                      iconColor: Colors.amber,
+                      trailing: appSettingModel.updateRequired
+                          ? RotatedBox(
+                              quarterTurns: 1,
+                              child: Icon(
+                                Icons.arrow_circle_left_rounded,
+                              ),
+                            )
+                          : Text("${appSettingModel.currentVersion}",
+                              style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                     ),
-                    subtitle: appSettingModel.updateRequired
-                        ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
-                        : null,
-                    iconColor: Colors.amber,
-                    trailing: appSettingModel.updateRequired
-                        ? RotatedBox(
-                            quarterTurns: 1,
-                            child: Icon(
-                              Icons.arrow_circle_left_rounded,
-                            ),
-                          )
-                        : Text("${appSettingModel.currentVersion}",
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () => CustomAlertWidget.confirmDialog(

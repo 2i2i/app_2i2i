@@ -129,7 +129,7 @@ class Custom {
       }
       if (!isAvailable) {
         await launchUrl(
-            Uri.parse(Platform.isAndroid
+            Uri.parse(!kIsWeb && Platform.isAndroid
                 ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
                 : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
             mode: LaunchMode.externalApplication);

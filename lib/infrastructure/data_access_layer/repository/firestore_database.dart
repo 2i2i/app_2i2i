@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../models/bid_model.dart';
@@ -152,7 +153,7 @@ class FirestoreDatabase {
       path: FirestorePath.token(uid),
       data: {
         'token': token,
-        'isIos': Platform.isIOS,
+        'isIos': !kIsWeb && Platform.isIOS,
         'ts': FieldValue.serverTimestamp(),
       },
       merge: true,

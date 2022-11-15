@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
@@ -18,7 +19,7 @@ class FirebaseNotifications {
   }
 
   void firebaseCloudMessagingListeners() {
-    if (Platform.isIOS) FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
+    if (!kIsWeb && Platform.isIOS) FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       log("Handling a onMessage message: ${message.messageId}");
@@ -78,7 +79,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   //   imageUrl = data['imageUrl'];
   // }
   if (type.toLowerCase() == 'Call'.toLowerCase()) {
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await platform.invokeMethod('INCOMING_CALL', data);
     }
   }

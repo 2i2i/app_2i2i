@@ -26,7 +26,7 @@ class AppSettingModel extends ChangeNotifier {
   bool isAudioEnabled = true;
   bool isVideoEnabled = true;
   bool swapVideo = false;
-  late String currentVersion;
+  String? currentVersion;
 
   bool isInternetAvailable = true;
 
