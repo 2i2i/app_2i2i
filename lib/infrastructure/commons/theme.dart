@@ -206,7 +206,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: secondaryDarkColor,
+          foregroundColor: secondaryTextColor,
+          backgroundColor: secondaryDarkColor,
           padding: EdgeInsets.all(kIsWeb ? 22 : 14),
         ),
       ),

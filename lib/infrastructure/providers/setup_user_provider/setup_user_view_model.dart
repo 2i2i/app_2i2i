@@ -284,9 +284,7 @@ class SetupUserViewModel with ChangeNotifier {
             context: context,
             builder: (context) => ChooseAccountDialog(
               userIds: ids,
-              onSelectId: (String value) {
-                Navigator.of(context).pop(value);
-              },
+              onSelectId: (String value) => Navigator.of(context).pop(value),
             ),
             // barrierDismissible: false,
           );

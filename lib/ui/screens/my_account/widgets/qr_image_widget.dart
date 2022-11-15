@@ -17,24 +17,27 @@ class QrImagePage extends StatelessWidget {
       elevation: 0.0,
       backgroundColor: Colors.white,
       content: Container(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         width: MediaQuery.of(context).size.height * 0.4,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 10),
-            Text(
-              Keys.scanInWalletConnect.tr(context),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                    color: Colors.black,
-                  ),
+            Container(
+              height: kToolbarHeight,
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(top: 4),
+              child: Text(
+                Keys.scanInWalletConnect.tr(context),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Colors.black,
+                    ),
+              ),
             ),
-            SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
               child: QrWidget(
                 message: imageUrl,
                 logoSize: 60,
@@ -43,13 +46,30 @@ class QrImagePage extends StatelessWidget {
                 lightOnly: true,
               ),
             ),
-            TextButton(
-              style: TextButton.styleFrom(padding: EdgeInsets.zero, foregroundColor: Colors.black),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-              child: Text(Keys.close.tr(context).toUpperCase()),
-            )
+            Divider(),
+            Container(
+              height: kToolbarHeight,
+              width: MediaQuery.of(context).size.height * 0.4,
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
+                      ),
+                      child: Text(
+                        Keys.close.tr(context),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).primaryColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
