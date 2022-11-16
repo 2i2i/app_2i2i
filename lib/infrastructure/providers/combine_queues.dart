@@ -39,24 +39,24 @@ List<List<BidInPublic>> _splitByRules(List<BidInPublic> bidInsPublic) {
   return bidInsPublicSections;
 }
 
-int speedNumInALGO(BidInPublic bidIn) => (bidIn.speed.num * bidIn.FX).round();
+int speedNumInMicroALGO(BidInPublic bidIn) => (bidIn.speed.num * bidIn.FX).round();
 // due to FX, it would be near impossible to be a Chrony with if CHRONY_GAP == 0
 bool isChrony(BidInPublic bidIn) {
-  final speed = speedNumInALGO(bidIn);
-  final min = bidIn.rule.minSpeedALGO * (1.0 - CHRONY_GAP);
-  final max = bidIn.rule.minSpeedALGO * (1.0 + CHRONY_GAP);
-  return min <= speed && speed <= max;
+  final speedMicroAlgo = speedNumInMicroALGO(bidIn);
+  final min = bidIn.rule.minSpeedMicroALGO * (1.0 - CHRONY_GAP);
+  final max = bidIn.rule.minSpeedMicroALGO * (1.0 + CHRONY_GAP);
+  return min <= speedMicroAlgo && speedMicroAlgo <= max;
 }
 bool isHighRoller(BidInPublic bidIn) {
-  final speed = speedNumInALGO(bidIn);
-  final max = bidIn.rule.minSpeedALGO * (1.0 + CHRONY_GAP);
-  return max < speed;
+  final speedMicroAlgo = speedNumInMicroALGO(bidIn);
+  final max = bidIn.rule.minSpeedMicroALGO * (1.0 + CHRONY_GAP);
+  return max < speedMicroAlgo;
 }
 bool isEccentric(BidInPublic bidIn) => bidIn.FX == null; // TODO FX can null for eccentric
 bool isLurker(BidInPublic bidIn) {
-  final speed = speedNumInALGO(bidIn);
-  final min = bidIn.rule.minSpeedALGO * (1.0 - CHRONY_GAP);
-  return speed < min;
+  final speedMicroAlgo = speedNumInMicroALGO(bidIn);
+  final min = bidIn.rule.minSpeedMicroALGO * (1.0 - CHRONY_GAP);
+  return speedMicroAlgo < min;
 }
 
 List<BidInPublic> _combineQueuesCore(List<BidInPublic> bidInsPublic, List<int> loungeHistory, int loungeHistoryIndex) {
@@ -392,9 +392,11 @@ void combineQueuesTestRun() {
   final loungeHistory = testData['loungeHistory']; // 0: chrony, 1: highroller
   final loungeHistoryIndex = testData['loungeHistoryIndex'];
   final bidIns = combineQueues(bidInsPublic, loungeHistory, loungeHistoryIndex);
-  log('C: ${bidIns.where((e) => e.speed.num == e.rule.minSpeedALGO).length}');
-  log('H: ${bidIns.where((e) => e.speed.num != e.rule.minSpeedALGO).length}');
+  log('C: ${bidIns.where(isChrony).length}');
+  log('H: ${bidIns.where(isHighRoller).length}');
+  log('E: ${bidIns.where(isEccentric).length}');
+  log('L: ${bidIns.where(isLurker).length}');
   log('bidIns: ${bidIns.length}');
-  final result = bidIns.map((e) => (e.speed.num == e.rule.minSpeedALGO ? 'C' : 'H') + '_' + e.ts.microsecondsSinceEpoch.toString()).join(' ');
+  final result = bidIns.map((e) => (e.speed.num == e.rule.minSpeedMicroALGO ? 'C' : 'H') + '_' + e.ts.microsecondsSinceEpoch.toString()).join(' ');
   log(result);
 }

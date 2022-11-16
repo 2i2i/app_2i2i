@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
+import 'package:app_2i2i/infrastructure/providers/combine_queues.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -382,7 +383,7 @@ class Meeting extends Equatable {
   }) {
     return Meeting(
       id: id,
-      lounge: bidIn.public.speed.num == bidIn.public.rule.minSpeedALGO ? Lounge.chrony : Lounge.highroller,
+      lounge: isChrony(bidIn.public) ? Lounge.chrony : Lounge.highroller,
       active: true,
       settled: false,
       A: bidIn.private!.A,
