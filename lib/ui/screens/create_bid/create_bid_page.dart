@@ -525,7 +525,13 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
     final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
     final minSpeedAsset = minSpeedALGO / FXValue.value!;
-    return '${minSpeedAsset.toStringAsFixed(FXValue.decimals)} ${FXValue.getName}/s';
+    final powerOfTen = pow(10, FXValue.decimals);
+    final minSpeedBaseAsset = minSpeedAsset * powerOfTen;
+    final actualMinSpeedBaseAsset = minSpeedBaseAsset.ceil();
+    final actualMinSpeedAsset = actualMinSpeedBaseAsset / powerOfTen;
+    // log(R + 'minSpeedAsset=$minSpeedAsset FXValue.decimals=${FXValue.decimals}');
+    // log(R + 'minSpeedAsset=${minSpeedAsset.toStringAsFixed(FXValue.decimals)}');
+    return '${actualMinSpeedAsset.toStringAsFixed(FXValue.decimals)} ${FXValue.getName}/s';
   }
 
   String showValueInDecimals(int x) {

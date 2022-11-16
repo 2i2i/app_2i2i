@@ -15,9 +15,10 @@ const String A = 'A - ';
 const String B = 'B - ';
 const String C = 'C - ';
 const String D = 'D - ';
+const String R = 'R - ';
 
 void log(String message) {
-  // if (!message.startsWith(D)) return;
+  // if (!message.startsWith(R)) return;
   final now = DateTime.now().toUtc();
   final N = epochSecsNow();
   debugPrint('************* - $now ($N): $message');
