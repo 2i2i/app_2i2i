@@ -466,7 +466,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeedALGO / pow(10, 6)).toString(); // min speed is in ALGO
+      speedEditController.text = (user.rule.minSpeedMicroALGO / pow(10, 6)).toString(); // min speed is in ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -577,7 +577,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
     return '$minSpeedPerHourinALGO ${Keys.algoPerHr.tr(context)}';
   }
 
-  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round(); // min speed is in ALGO
+  int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round(); // min speed is in micro ALGO
 
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
@@ -638,7 +638,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final importance = findImportances(_importanceRatioValue!, lounge);
 
         Rule rule = Rule(
-          minSpeedALGO: getSpeedFromText(),
+          minSpeedMicroALGO: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
             Lounge.chrony: importance[Lounge.chrony]!,

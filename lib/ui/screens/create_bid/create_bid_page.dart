@@ -348,7 +348,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             controller: speedController,
                             title: Keys.speed.tr(context),
                             // hintText: '${pow(10, -FXValue.decimals)}',
-                            hintText: '${speed.num / pow(10, FXValue.decimals)}',
+                            // hintText: '${speed.num / pow(10, FXValue.decimals)}',
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,' + FXValue.decimals.toString() + '}')),
                             ],
@@ -391,15 +391,18 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             ),
                             onChanged: (String speedInput) {
                               final speedAsInt = getSpeedFromText(speedInput);
-                              if (speedAsInt >= (userB!.rule.minSpeedALGO / FXValue.value!).ceil()) {
+                              final minSpeedBaseAssetTmp = minSpeedBaseAsset();
+                              if (speedAsInt >= minSpeedBaseAssetTmp) {
                                 speed = Quantity(num: speedAsInt, assetId: speed.assetId);
+                              } else {
+                                speed = Quantity(num: minSpeedBaseAssetTmp, assetId: speed.assetId);
                               }
                               changeSpeedOrMaxDuration(myAccountPageViewModel);
                             },
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
-                              if (speedAsInt < userB!.rule.minSpeedALGO) {
-                                return '${Keys.minSupportIs.tr(context)} ${userB!.rule.minSpeedALGO / FXValue.value! / pow(10, FXValue.decimals)}';
+                              if (speedAsInt < minSpeedBaseAsset()) {
+                                return '${Keys.minSupportIs.tr(context)} ${minSpeedDecimalAsset()}';
                               }
                               return null;
                             },
@@ -513,6 +516,29 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     );
   }
 
+  int minSpeedBaseAsset()
+  {
+    final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
+    final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
+    final minSpeedAsset = minSpeedALGO / FXValue.value!;
+    final minSpeedBaseAsset = minSpeedAsset * pow(10, FXValue.decimals);
+    final minSpeedBaseAssetInt = minSpeedBaseAsset.ceil();
+    return minSpeedBaseAssetInt;
+  }
+  
+  String minSpeedDecimalAsset()
+  {
+    final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
+    final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
+    final minSpeedAsset = minSpeedALGO / FXValue.value!;
+    return minSpeedAsset.toString();
+  }
+
+  String showValueInDecimals(int x) {
+    final amountInDecimals = x / pow(10, FXValue.decimals);
+    return amountInDecimals.toString();
+  }
+
   void changeAccountAsset(MyAccountPageViewModel myAccountPageViewModel, {int? accountAssetIndex}) async {
     log(C + 'changeAccountAsset accountIndex=$accountAssetIndex assetId=$assetId');
 
@@ -545,8 +571,8 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     FXValue = FXValueTmp!;
     log(C + 'FXValue=$FXValue');
 
-    speed = Quantity(num: (userB?.rule.minSpeedALGO ?? 0 / FXValue.value!).ceil(), assetId: assetId);
-    speedController.text = (speed.num / pow(10, FXValue.decimals)).toString();
+    speed = Quantity(num: minSpeedBaseAsset(), assetId: assetId);
+    speedController.text = showValueInDecimals(speed.num);
 
     if (addressA != null) minAccountALGOBalance = await myAccountPageViewModel.getMinBalance(address: addressA!);
     log(C + 'minAccountALGOBalance=$minAccountALGOBalance');
@@ -598,7 +624,11 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     if (this.mounted) setState(() {});
   }
 
-  int getSpeedFromText(String value) => ((num.tryParse(value) ?? 0) * pow(10, FXValue.decimals)).round();
+  int getSpeedFromText(String value) {
+    final decimalSpeed = num.tryParse(value) ?? 0;
+    final baseSpeed = decimalSpeed * pow(10, FXValue.decimals);
+    return baseSpeed.round();
+  }
 
   Future<String> calcWaitTime(BuildContext context, MyAccountPageViewModel myAccountPageViewModel) async {
     if (amount.assetId != speed.assetId) throw Exception('amount.assetId != speed.assetId');
@@ -644,7 +674,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
 
   String getConfirmSliderText() {
     log(C + 'getConfirmSliderText amount.num=${amount.num} FXValue.decimals=${FXValue.decimals} FXValue.getName=${FXValue.getName}');
-    final amountStr = '${(amount.num / pow(10, FXValue.decimals)).toString()} ${FXValue.getName}';
+    final amountStr = '${showValueInDecimals(amount.num)} ${FXValue.getName}';
     log(C + 'getConfirmSliderText amountStr=${amountStr}');
 
     if (goodToAddBid()) return Keys.addBid.tr(context) + ' : ' + amountStr;
@@ -661,7 +691,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
   }
 
   // TODO userB?.rule.minSpeed ?? 0 is not good ~ if userB==null, need to catch that differently, not assume 0
-  bool speedTooLow() => speed.num * FXValue.value! < (userB?.rule.minSpeedALGO ?? 0) * (1.0 - CHRONY_GAP);
+  bool speedTooLow() => speed.num < minSpeedBaseAsset() * (1.0 - CHRONY_GAP);
 
   bool goodToAddBid() {
     log(C + 'goodToAddBid 0');

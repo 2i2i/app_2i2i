@@ -74,12 +74,12 @@ class Rule extends Equatable {
   const Rule({
     // set also in cloud function userCreated
     this.maxMeetingDuration = 300,
-    this.minSpeedALGO = 0,
+    this.minSpeedMicroALGO = 0,
     this.importance = defaultImportance,
   });
 
   final int maxMeetingDuration;
-  final int minSpeedALGO;
+  final int minSpeedMicroALGO;
   final Map<Lounge, int> importance;
 
   factory Rule.fromMap(Map<String, dynamic> data) {
@@ -95,7 +95,7 @@ class Rule extends Equatable {
 
     return Rule(
       maxMeetingDuration: maxMeetingDuration,
-      minSpeedALGO: minSpeedALGO,
+      minSpeedMicroALGO: minSpeedALGO,
       importance: importance,
     );
   }
@@ -103,7 +103,7 @@ class Rule extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'maxMeetingDuration': maxMeetingDuration,
-      'minSpeed': minSpeedALGO,
+      'minSpeed': minSpeedMicroALGO,
       'importance': importance.map((key, value) => MapEntry(key.toStringEnum(), value)),
     };
   }
@@ -111,7 +111,7 @@ class Rule extends Equatable {
   int importanceSize() => importance.values.reduce((value, element) => value + element);
 
   @override
-  List<Object> get props => [maxMeetingDuration, minSpeedALGO, importance];
+  List<Object> get props => [maxMeetingDuration, minSpeedMicroALGO, importance];
 }
 
 @immutable
