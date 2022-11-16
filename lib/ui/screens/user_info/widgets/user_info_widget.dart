@@ -330,7 +330,7 @@ class UserRulesWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '${(user.rule.minSpeedALGO / pow(10, 6))} A/sec', // min speed is in ALGO
+                  '${(user.rule.minSpeedMicroALGO / pow(10, 6))} A/sec', // min speed is in ALGO
                   style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary),
                 ),
                 SizedBox(height: 5),
