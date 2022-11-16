@@ -399,7 +399,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                             validator: (String? value) {
                               final speedAsInt = getSpeedFromText(value ?? '');
                               if (speedAsInt < minSpeedBaseAsset()) {
-                                return '${Keys.minSupportIs.tr(context)} ${minSpeedDecimalAsset()}';
+                                return '${Keys.minSupportIs.tr(context)} ${minSupportIsString()}';
                               }
                               return null;
                             },
@@ -520,12 +520,12 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     return minSpeedBaseAssetInt;
   }
   
-  String minSpeedDecimalAsset()
+  String minSupportIsString()
   {
     final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
     final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
     final minSpeedAsset = minSpeedALGO / FXValue.value!;
-    return minSpeedAsset.toString();
+    return '${minSpeedAsset.toStringAsFixed(FXValue.decimals)} ${FXValue.getName}/s';
   }
 
   String showValueInDecimals(int x) {

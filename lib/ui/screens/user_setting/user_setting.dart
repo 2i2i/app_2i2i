@@ -466,7 +466,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
 
-      speedEditController.text = (user.rule.minSpeedMicroALGO / pow(10, 6)).toString(); // min speed is in ALGO
+      speedEditController.text = (user.rule.minSpeedMicroALGO / pow(10, 6)).toString(); // min speed is in micro ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
       hourEditController.text = getHour(user.rule.maxMeetingDuration);
@@ -579,30 +579,26 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   int getSpeedFromText() => ((num.tryParse(speedEditController.text) ?? 0) * pow(10, 6)).round(); // min speed is in micro ALGO
 
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
   String getHour(int sec) {
     var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
     // String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     if (duration.inHours <= 0) {
       return '';
     }
     return "${twoDigits(duration.inHours)}";
   }
-
   String getMin(int sec) {
-    var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    final duration = Duration(seconds: sec);
+    final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     if (duration.inMinutes.remainder(60) <= 0) {
       return '';
     }
     return twoDigitMinutes;
   }
-
   String getSec(int sec) {
-    var duration = Duration(seconds: sec);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    final duration = Duration(seconds: sec);
+    final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     if (duration.inMinutes.remainder(60) <= 0) {
       return '';
     }
@@ -611,7 +607,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<void> onClickSave({required MyUserPageViewModel? myUserPageViewModel, required SetupUserViewModel? setupUserViewModel}) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    UserModel? user = myUserPageViewModel?.user;
+    final user = myUserPageViewModel?.user;
 
     if (setupUserViewModel?.socialLinksModel is SocialLinksModel) {
       String userName;
@@ -637,7 +633,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         final lounge = _importanceSliderMaxHalf <= _importanceSliderValue! ? Lounge.chrony : Lounge.highroller;
         final importance = findImportances(_importanceRatioValue!, lounge);
 
-        Rule rule = Rule(
+        final rule = Rule(
           minSpeedMicroALGO: getSpeedFromText(),
           maxMeetingDuration: seconds,
           importance: {
@@ -653,7 +649,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       FirebaseAuth.instance.currentUser?.updateDisplayName(userNameEditController.text);
 
       if (imageType == ImageType.ASSENT_IMAGE) {
-        String? firebaseImageUrl = await uploadImage();
+        final firebaseImageUrl = await uploadImage();
         if ((firebaseImageUrl ?? "").isNotEmpty) {
           user.imageUrl = firebaseImageUrl;
         }
@@ -668,9 +664,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<String> createDeepLinkUrl(String uid) async {
     try {
-      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final dynamicLinks = FirebaseDynamicLinks.instance;
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
+      final parameters = DynamicLinkParameters(
         uriPrefix: link,
         link: Uri.parse('https://about.2i2i.app?uid=$uid'),
         androidParameters: AndroidParameters(
@@ -700,11 +696,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
   Future<String?> uploadImage() async {
     try {
-      var datestamp = new DateFormat("yyyyMMdd'T'HHmmss");
-      String currentDate = datestamp.format(DateTime.now());
-      Reference reference = FirebaseStorage.instance.ref().child("/FCMImages/$currentDate");
-      UploadTask uploadTask = reference.putFile(File(imageUrl));
-      TaskSnapshot snapshot = await uploadTask;
+      final datestamp = new DateFormat("yyyyMMdd'T'HHmmss");
+      final currentDate = datestamp.format(DateTime.now());
+      final reference = FirebaseStorage.instance.ref().child("/FCMImages/$currentDate");
+      final uploadTask = reference.putFile(File(imageUrl));
+      final snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
       log("$e");
