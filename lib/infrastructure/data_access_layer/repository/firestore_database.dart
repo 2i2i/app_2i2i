@@ -44,7 +44,7 @@ class FirestoreDatabase {
         tags: [],
         rule: Rule(
           maxMeetingDuration: 300,
-          minSpeedALGO: 0,
+          minSpeedMicroALGO: 0,
           importance: {
             Lounge.chrony: 1,
             Lounge.highroller: 4,

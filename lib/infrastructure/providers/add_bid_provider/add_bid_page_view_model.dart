@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:algorand_dart/algorand_dart.dart';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_path.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
+import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -47,6 +49,17 @@ class AddBidPageViewModel {
     return secondsToSensibleTimePeriod(seconds.round());
   }*/
 
+
+  int minSpeedBaseAsset(userB, FXValue)
+  {
+    final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
+    final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
+    final minSpeedAsset = minSpeedALGO / FXValue.value!;
+    final minSpeedBaseAsset = minSpeedAsset * pow(10, FXValue.decimals);
+    final minSpeedBaseAssetInt = minSpeedBaseAsset.ceil();
+    return minSpeedBaseAssetInt;
+  }
+
   Future addBid({
     // required FireBaseMessagingService fireBaseMessaging,
     String? sessionId,
@@ -61,22 +74,21 @@ class AddBidPageViewModel {
         'addBid sessionId=$sessionId address=$address amount.assetId=${amount.assetId} amount.num=${amount.num} speed.assetId=${speed.assetId} speed.num=${speed.num} bidComment=$bidComment');
 
     // FX
-    double FXValue = 1;
+    FXModel FXValue = FXModel.ALGO();
     if (speed.assetId != 0) {
-      final FX = await database.getFX(speed.assetId); // TODO use Provider
-      FXValue = FX!.value!; // crash if no FX
+      FXValue = (await database.getFX(speed.assetId))!; // TODO use Provider
     }
 
     FocusScope.of(context!).unfocus();
     if (B.blocked.contains(A)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.cantBidUser.tr(context));
-    } else if (speed.num * FXValue < B.rule.minSpeedALGO) {
+    } else if (speed.num < minSpeedBaseAsset(B, FXValue)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.miniSupport.tr(context));
     } else if (speed.num != 0 && (sessionId?.isEmpty ?? true)) {
       await CustomAlertWidget.showErrorDialog(context, Keys.errorWhileAddBid.tr(context), errorStacktrace: Keys.noWalletFound.tr(context));
     } else {
       final net = AppConfig().ALGORAND_NET;
-      final String? addrA = speed.num == 0 ? null : address;
+      final addrA = speed.num == 0 ? null : address;
       final bidId = database.newDocId(path: FirestorePath.meetings()); // new bid id comes from meetings to avoid collision
 
       log(FX + 'addBid net=$net addrA=$addrA bidId=$bidId');
@@ -98,6 +110,9 @@ class AddBidPageViewModel {
           }
         }
 
+        final FXTmp = FXValue.value == null ? 1 : FXValue.value! * pow(10, 6 - FXValue.decimals);
+        final FX = FXTmp.toDouble();
+
         final bidOut = BidOut(
           id: bidId,
           B: B.id,
@@ -108,7 +123,7 @@ class AddBidPageViewModel {
           addrA: addrA,
           energy: amount.num,
           comment: bidComment,
-          FX: FXValue,
+          FX: FX,
         );
         final bidInPublic = BidInPublic(
           id: bidId,
@@ -118,7 +133,7 @@ class AddBidPageViewModel {
           ts: DateTime.now().toUtc(),
           rule: B.rule,
           energy: amount.num,
-          FX: FXValue,
+          FX: FX,
         );
         final bidInPrivate = BidInPrivate(
           id: bidId,
