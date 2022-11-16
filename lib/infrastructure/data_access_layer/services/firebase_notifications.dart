@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
 import '../../../common_main.dart';
+import '../repository/firestore_database.dart';
 
 class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -18,8 +19,38 @@ class FirebaseNotifications {
     firebaseCloudMessagingListeners();
   }
 
-  void firebaseCloudMessagingListeners() {
-    if (!kIsWeb && Platform.isIOS) FirebaseMessaging.instance.requestPermission(sound: true, badge: false, alert: true);
+  Future<void> firebaseCloudMessagingListeners() async {
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    switch (settings.authorizationStatus) {
+      case AuthorizationStatus.authorized:
+        print('User granted permission');
+        break;
+      case AuthorizationStatus.denied:
+        // TODO: Handle this case.
+        print('User granted permission denied');
+        break;
+      case AuthorizationStatus.notDetermined:
+        print('User granted permission notDetermined');
+        break;
+      case AuthorizationStatus.provisional:
+        print('User granted permission provisional');
+        break;
+    }
+
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       log("Handling a onMessage message: ${message.messageId}");
@@ -28,7 +59,18 @@ class FirebaseNotifications {
 
   Future<void> awesomeNotificationSetup() async {
     await Firebase.initializeApp();
-    await FirebaseMessaging.instance.getToken();
+
+    await FirebaseMessaging.instance.getToken().then((value) => log("Token $value"));
+
+    // Note: This callback is fired at each app startup and whenever a new
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      if (uid.isNotEmpty) {
+        FirestoreDatabase().updateToken(uid, fcmToken);
+      }
+    }).onError((err) {
+      log(err);
+    });
   }
 
   Future sendNotification(String token, Map data, bool isIos) async {
