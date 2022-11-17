@@ -5,6 +5,7 @@ import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
@@ -20,30 +21,32 @@ class FirebaseNotifications {
   }
 
   Future<void> firebaseCloudMessagingListeners() async {
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    if (!kIsWeb && Platform.isIOS) {
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
 
-    switch (settings.authorizationStatus) {
-      case AuthorizationStatus.authorized:
-        print('User granted permission');
-        break;
-      case AuthorizationStatus.denied:
-        // TODO: Handle this case.
-        print('User granted permission denied');
-        break;
-      case AuthorizationStatus.notDetermined:
-        print('User granted permission notDetermined');
-        break;
-      case AuthorizationStatus.provisional:
-        print('User granted permission provisional');
-        break;
+      switch (settings.authorizationStatus) {
+        case AuthorizationStatus.authorized:
+          print('User granted permission');
+          break;
+        case AuthorizationStatus.denied:
+          // TODO: Handle this case.
+          print('User granted permission denied');
+          break;
+        case AuthorizationStatus.notDetermined:
+          print('User granted permission notDetermined');
+          break;
+        case AuthorizationStatus.provisional:
+          print('User granted permission provisional');
+          break;
+      }
     }
 
     FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
