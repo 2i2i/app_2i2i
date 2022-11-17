@@ -49,9 +49,7 @@ class AddBidPageViewModel {
     return secondsToSensibleTimePeriod(seconds.round());
   }*/
 
-
-  int minSpeedBaseAsset(userB, FXValue)
-  {
+  int minSpeedBaseAsset(userB, FXValue) {
     final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
     final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
     final minSpeedAsset = minSpeedALGO / FXValue.value!;
@@ -147,12 +145,12 @@ class AddBidPageViewModel {
         BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
         await database.addBid(bidOut, bidIn);
 
-        TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
-        log(A + 'bUserTokenModel=$bUserTokenModel B.id=${B.id}');
-
-        if (bUserTokenModel is TokenModel) {
-          Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
-          await FirebaseNotifications().sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
+        List<TokenModel> bUserTokenModel = await database.getTokenFromId(B.id);
+        for (var tokenModel in bUserTokenModel) {
+          if (tokenModel.value.isNotEmpty) {
+            Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
+            await FirebaseNotifications().sendNotification((tokenModel.value), jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+          }
         }
 
         CustomAlertWidget.loader(false, context);

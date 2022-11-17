@@ -73,15 +73,15 @@ class MyUserPageViewModel {
     UserModel? firstUser;
     UserModel? secondUser;
 
-    TokenModel? firstUserTokenModel;
-    TokenModel? secondUserTokenModel;
+    List<TokenModel> firstUserTokenModels = [];
+    List<TokenModel> secondUserTokenModels = [];
 
     firstUser = bidIn.user;
-    firstUserTokenModel = await database.getTokenFromId(firstUser!.id);
+    firstUserTokenModels = await database.getTokenFromId(firstUser!.id);
 
     if (bidIns.length > 1) {
       secondUser = bidIns[1].user;
-      secondUserTokenModel = await database.getTokenFromId(secondUser!.id);
+      secondUserTokenModels = await database.getTokenFromId(secondUser!.id);
     }
 
     bool camera = true;
@@ -99,23 +99,26 @@ class MyUserPageViewModel {
       final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
       await database.acceptBid(meeting);
 
-      if (firstUserTokenModel is TokenModel) {
-        Map jsonDataCurrentUser = {
-          'route': Routes.lock,
-          'type': 'CALL',
-          "title": user.name,
-          "body": 'Incoming video call',
-          "meetingInfo": {
-            "meetingId": meeting.id,
-            "meetingUserA": meeting.A,
-            "meetingUserB": meeting.B,
-          }
-        };
-        await FirebaseNotifications().sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
-
-        if (secondUserTokenModel is TokenModel) {
+      for (var tokenModel in firstUserTokenModels) {
+        if (tokenModel.value.isNotEmpty) {
+          Map jsonDataCurrentUser = {
+            'route': Routes.lock,
+            'type': 'CALL',
+            "title": user.name,
+            "body": 'Incoming video call',
+            "meetingInfo": {
+              "meetingId": meeting.id,
+              "meetingUserA": meeting.A,
+              "meetingUserB": meeting.B,
+            }
+          };
+          await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+        }
+      }
+      for (var tokenModel in secondUserTokenModels) {
+        if (tokenModel.value.isNotEmpty) {
           Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
-          await FirebaseNotifications().sendNotification((secondUserTokenModel.token ?? ""), jsonDataNextUser, secondUserTokenModel.isIos ?? false);
+          await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataNextUser, tokenModel.operatingSystem == 'ios');
         }
       }
     }
