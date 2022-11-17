@@ -87,7 +87,7 @@ class FirestoreDatabase {
       // create meeting
 
       final meetingDocRef = _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
-      transaction.set(meetingDocRef, meeting.toMap());
+      transaction.set(meetingDocRef, meeting.toMap(isForNotification: false));
 
       // lock users
       final lockObj = {'meeting': meeting.id};
@@ -187,6 +187,7 @@ class FirestoreDatabase {
   }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
+    print(data);
     return _service
         .setData(
       path: FirestorePath.meeting(meetingId),

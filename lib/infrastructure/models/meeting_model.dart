@@ -48,11 +48,11 @@ class MeetingStatusWithTS {
   final MeetingStatus value;
   final DateTime ts;
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({required bool isForNotification}) {
     return {
       'value': value.toStringEnum(),
       // 'ts': FieldValue.serverTimestamp(), // this is not working, though its more what we need
-      'ts': ts,
+      'ts': isForNotification ? ts.toString() : ts,
     };
   }
 
@@ -308,8 +308,9 @@ class Meeting extends Equatable {
       energy[k] = data['energy'][k] as int?;
     }
 
-    final DateTime? start = data['start']?.toDate();
-    final DateTime? end = data['end']?.toDate();
+    final DateTime? start = toDateValue(data['start']);
+    final DateTime? end = toDateValue(data['end']);
+
     final int? duration = data['duration'];
 
     final FX = double.parse(data['FX'].toString());
@@ -416,7 +417,7 @@ class Meeting extends Equatable {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({required bool isForNotification}) {
     log('Meeting - toMap - net=$net');
     return {
       'active': active,
@@ -426,12 +427,12 @@ class Meeting extends Equatable {
       'addrA': addrA,
       'addrB': addrB,
       'energy': energy,
-      'start': start,
-      'end': end,
+      'start': isForNotification ? (start ?? DateTime.now()).toString() : start,
+      'end': isForNotification ? (end ?? DateTime.now()).toString() : end,
       'duration': duration,
       'txns': txns,
       'status': status.toStringEnum(),
-      'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
+      'statusHistory': statusHistory.map((s) => s.toMap(isForNotification: isForNotification)).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'room': room,
@@ -476,4 +477,19 @@ class RatingModel {
       'createdAt': createdAt,
     };
   }
+}
+
+DateTime? toDateValue(var value) {
+  if (value is String) {
+    return DateTime.tryParse(value)?.toLocal();
+  } else if (value is num) {
+    var n = value.toInt();
+    return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+  } else if (value is int) {
+    var n = value;
+    return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+  } else if (value is Timestamp) {
+    return value.toDate().toLocal();
+  }
+  return null;
 }
