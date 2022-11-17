@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -35,28 +35,28 @@ extension DateTimeExtension on DateTime {
   }
 }
 
-extension ParseToDate on Object {
-  DateTime? toDate() {
-    if (this is String) {
-      return DateTime.tryParse(this as String)?.toLocal();
-    } else if (this is num) {
-      var n = (this as num).toInt();
-      return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
-    } else if (this is int) {
-      var n = (this as int);
-      return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
-    } else if (this is Timestamp) {
-      return (this as Timestamp).toDate().toLocal();
-    }
-    return null;
-  }
-}
+// extension ParseToDate on Object {
+//   DateTime? toDate() {
+//     if (this is String) {
+//       return DateTime.tryParse(this as String)?.toLocal();
+//     } else if (this is num) {
+//       var n = (this as num).toInt();
+//       return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+//     } else if (this is int) {
+//       var n = (this as int);
+//       return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
+//     } else if (this is Timestamp) {
+//       return (this as Timestamp).toDate().toLocal();
+//     }
+//     return null;
+//   }
+// }
 
-extension ParseToTimeStamp on Timestamp {
-  DateTime? toDate() {
-    return this.toDate().toLocal();
-  }
-}
+// extension ParseToTimeStamp on Timestamp {
+//   DateTime? toDate() {
+//     return this.toDate().toLocal();
+//   }
+// }
 
 String secondsToSensibleTimePeriod(num secs, BuildContext context) {
   if (secs == 0) return Keys.zero.tr(context);
