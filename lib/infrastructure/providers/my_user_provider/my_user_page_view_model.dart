@@ -68,17 +68,12 @@ class MyUserPageViewModel {
   }
 
   Future acceptCall(List<BidIn> bidIns, String? addressOfUserB, BuildContext context) async {
-    BidIn bidIn = bidIns.first;
+    final bidIn = bidIns.first;
+    final firstUser = bidIn.user;
+    final firstUserTokenModels = await database.getTokenFromId(firstUser!.id);
 
-    UserModel? firstUser;
     UserModel? secondUser;
-
-    List<TokenModel> firstUserTokenModels = [];
     List<TokenModel> secondUserTokenModels = [];
-
-    firstUser = bidIn.user;
-    firstUserTokenModels = await database.getTokenFromId(firstUser!.id);
-
     if (bidIns.length > 1) {
       secondUser = bidIns[1].user;
       secondUserTokenModels = await database.getTokenFromId(secondUser!.id);
@@ -99,27 +94,25 @@ class MyUserPageViewModel {
       final meeting = Meeting.newMeeting(id: bidIn.public.id, B: user.id, addrB: addressOfUserB, bidIn: bidIn);
       await database.acceptBid(meeting);
 
-      for (var tokenModel in firstUserTokenModels) {
-        if (tokenModel.value.isNotEmpty) {
-          Map jsonDataCurrentUser = {
-            'route': Routes.lock,
-            'type': 'CALL',
-            "title": user.name,
-            "body": 'Incoming video call',
-            "meetingInfo": {
-              "meetingId": meeting.id,
-              "meetingUserA": meeting.A,
-              "meetingUserB": meeting.B,
-            }
-          };
-          await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
-        }
+      for (final tokenModel in firstUserTokenModels) {
+        if (tokenModel.value.isEmpty) continue;
+        final jsonDataCurrentUser = {
+          'route': Routes.lock,
+          'type': 'CALL',
+          'title': user.name,
+          'body': 'Incoming video call',
+          'meetingInfo': {
+            'meetingId': meeting.id,
+            'meetingUserA': meeting.A,
+            'meetingUserB': meeting.B,
+          }
+        };
+        await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
       }
-      for (var tokenModel in secondUserTokenModels) {
-        if (tokenModel.value.isNotEmpty) {
-          Map jsonDataNextUser = {"title": 'Hey ${secondUser?.name ?? ""} don\'t wait', "body": 'You are next in line'};
-          await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataNextUser, tokenModel.operatingSystem == 'ios');
-        }
+      for (final tokenModel in secondUserTokenModels) {
+        if (tokenModel.value.isEmpty) continue;
+        Map jsonDataNextUser = {'title': 'hi ${secondUser?.name ?? ''}', "body": 'you are next in line'};
+        await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataNextUser, tokenModel.operatingSystem == 'ios');
       }
     }
   }

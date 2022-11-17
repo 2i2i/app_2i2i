@@ -11,7 +11,7 @@ class FirestorePath {
 
   static String token(String uid, String token) => 'users/$uid/tokens/$token';
 
-  static String getToken(String uid) => 'users/$uid/tokens';
+  static String tokens(String uid) => 'users/$uid/tokens';
 
   static String shareUrl(String uid) => 'share/$uid';
 

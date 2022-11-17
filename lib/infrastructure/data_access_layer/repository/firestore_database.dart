@@ -158,11 +158,12 @@ class FirestoreDatabase {
       });
 
   Future<void> updateToken(String uid, String token) {
-    TokenModel tokenModel = TokenModel(
+    final tokenModel = TokenModel(
       value: token,
-      ts: Timestamp.now(),
-      operatingSystem: Platform.operatingSystem,
-      operatingSystemVersion: Platform.operatingSystemVersion,
+      // ts: FieldValue.serverTimestamp(),
+      // ts: Timestamp.now(),
+      // operatingSystem: Platform.operatingSystem,
+      // operatingSystemVersion: Platform.operatingSystemVersion,
     );
     return _service.setData(
       path: FirestorePath.token(uid, token),
@@ -369,7 +370,7 @@ class FirestoreDatabase {
   Future<List<TokenModel>> getTokenFromId(String uid) async {
     final snapshot = await _service
         .getCollectionData(
-      path: FirestorePath.getToken(uid),
+      path: FirestorePath.tokens(uid),
       builder: (Map<String, dynamic>? data, DocumentReference<Object?> documentID) {
         return TokenModel.fromJson(data ?? {});
       },
