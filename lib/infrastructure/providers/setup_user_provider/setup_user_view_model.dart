@@ -406,6 +406,9 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> signOutFromAuth() async {
     socialLinksModel = null;
     isLogged = false;
+    if (auth.currentUser?.uid.isNotEmpty ?? false) {
+      await FirestoreDatabase().removeToken(auth.currentUser!.uid);
+    }
     await googleSignIn.signOut();
     await auth.signOut();
     await storage.clear();

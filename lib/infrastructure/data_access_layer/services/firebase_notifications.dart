@@ -21,7 +21,7 @@ class FirebaseNotifications {
   }
 
   Future<void> firebaseCloudMessagingListeners() async {
-    if (!kIsWeb && Platform.isIOS) {
+    if (!kIsWeb) {
       NotificationSettings settings = await messaging.requestPermission(
         alert: true,
         announcement: false,

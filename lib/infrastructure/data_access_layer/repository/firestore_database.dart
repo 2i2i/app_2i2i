@@ -6,6 +6,7 @@ import 'package:app_2i2i/infrastructure/models/fx_model.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -157,20 +158,24 @@ class FirestoreDatabase {
       });
 
   Future<void> updateToken(String uid, String token) {
-    _service
-        .setData(
-      path: FirestorePath.token(uid),
-      data: {
-        'token': token,
-        'isIos': !kIsWeb && Platform.isIOS,
-        'ts': FieldValue.serverTimestamp(),
-      },
+    TokenModel tokenModel = TokenModel(
+      value: token,
+      ts: Timestamp.now(),
+      operatingSystem: Platform.operatingSystem,
+      operatingSystemVersion: Platform.operatingSystemVersion,
+    );
+    return _service.setData(
+      path: FirestorePath.token(uid, token),
+      data: tokenModel.toJson(),
       merge: true,
-    )
-        .catchError((onError) {
-      log("$E updateToken : $onError");
-    });
-    return Future.value();
+    );
+  }
+
+  Future<void> removeToken(String uid, [String? token]) async {
+    token ??= await FirebaseMessaging.instance.getToken();
+    if (token?.isNotEmpty ?? false) {
+      return _service.deleteData(path: FirestorePath.token(uid, token!));
+    }
   }
 
   Future<void>? updateUserHeartbeatFromForeground(String uid, {bool setStatus = false}) =>
@@ -361,15 +366,18 @@ class FirestoreDatabase {
     return FXModel.subjective(id: assetId);
   }
 
-  Future<TokenModel?> getTokenFromId(String uid) async {
-    final snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
+  Future<List<TokenModel>> getTokenFromId(String uid) async {
+    final snapshot = await _service
+        .getCollectionData(
+      path: FirestorePath.getToken(uid),
+      builder: (Map<String, dynamic>? data, DocumentReference<Object?> documentID) {
+        return TokenModel.fromJson(data ?? {});
+      },
+    )
+        .catchError((onError) {
       log("$E getTokenFromId : $onError");
     });
-    if (snapshot?.data() is Map) {
-      final data = snapshot!.data() as Map<String, dynamic>?;
-      return TokenModel.fromJson(data!);
-    }
-    return null;
+    return snapshot.toList();
   }
 
   Future<void> updateUser(UserModel user) {
