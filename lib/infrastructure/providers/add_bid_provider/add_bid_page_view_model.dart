@@ -149,7 +149,7 @@ class AddBidPageViewModel {
         for (var tokenModel in bUserTokenModel) {
           if (tokenModel.value.isNotEmpty) {
             Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
-            await FirebaseNotifications().sendNotification((tokenModel.value), jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+            await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
           }
         }
 
