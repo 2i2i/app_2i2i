@@ -48,11 +48,11 @@ class MeetingStatusWithTS {
   final MeetingStatus value;
   final DateTime ts;
 
-  Map<String, dynamic> toMap({required bool isForNotification}) {
+  Map<String, dynamic> toMap() {
     return {
       'value': value.toStringEnum(),
       // 'ts': FieldValue.serverTimestamp(), // this is not working, though its more what we need
-      'ts': isForNotification ? ts.toString() : ts,
+      'ts': ts,
     };
   }
 
@@ -122,7 +122,7 @@ class MeetingChanger {
 
   final FirestoreDatabase database;
 
-  Future endMeeting(Meeting meeting, MeetingStatus status) async {
+  Future endMeeting(Map<String, dynamic> meeting, MeetingStatus status) async {
     log(J + 'endMeeting - status=$status');
     final Map<String, dynamic> data = {
       'status': status.toStringEnum(),
@@ -417,7 +417,7 @@ class Meeting extends Equatable {
     );
   }
 
-  Map<String, dynamic> toMap({required bool isForNotification}) {
+  Map<String, dynamic> toMap() {
     log('Meeting - toMap - net=$net');
     return {
       'active': active,
@@ -427,12 +427,12 @@ class Meeting extends Equatable {
       'addrA': addrA,
       'addrB': addrB,
       'energy': energy,
-      'start': isForNotification ? (start ?? DateTime.now()).toString() : start,
-      'end': isForNotification ? (end ?? DateTime.now()).toString() : end,
+      'start': start,
+      'end': end,
       'duration': duration,
       'txns': txns,
       'status': status.toStringEnum(),
-      'statusHistory': statusHistory.map((s) => s.toMap(isForNotification: isForNotification)).toList(),
+      'statusHistory': statusHistory.map((s) => s.toMap()).toList(),
       'net': net.toStringEnum(),
       'speed': speed.toMap(),
       'room': room,

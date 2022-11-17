@@ -63,7 +63,7 @@ class MyUserPageViewModel {
       }
       CustomAlertWidget.loader(true, context);
       await acceptCall(bidIns, addressOfUserB, context);
-      // CustomAlertWidget.loader(false, context);
+      CustomAlertWidget.loader(false, context);
     }
   }
 
@@ -105,8 +105,11 @@ class MyUserPageViewModel {
           'type': 'CALL',
           "title": user.name,
           "body": 'Incoming video call',
-          "meetingId": bidIn.public.id,
-          "meetingData": meeting.toMap(isForNotification: true),
+          "meetingInfo": {
+            "meetingId": meeting.id,
+            "meetingUserA": meeting.A,
+            "meetingUserB": meeting.B,
+          }
         };
         await FirebaseNotifications().sendNotification((firstUserTokenModel.token ?? ""), jsonDataCurrentUser, firstUserTokenModel.isIos ?? false);
 

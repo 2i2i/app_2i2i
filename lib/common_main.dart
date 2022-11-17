@@ -122,17 +122,16 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
       platform.setMethodCallHandler((MethodCall methodCall) async {
-        Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingData']) as Map<String, dynamic>;
+        Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingInfo']) as Map<String, dynamic>;
         try {
           if (notificationData.isNotEmpty) {
-            Meeting meetingModel = Meeting.fromMap(notificationData, methodCall.arguments["meetingId"]);
             final meetingChanger = ref.read(meetingChangerProvider);
             switch (methodCall.method) {
               case 'CUT':
-                meetingChanger.endMeeting(meetingModel, MeetingStatus.END_A);
+                meetingChanger.endMeeting(notificationData, MeetingStatus.END_A);
                 break;
               case 'ANSWER':
-                await meetingChanger.acceptMeeting(meetingModel.id);
+                await meetingChanger.acceptMeeting(notificationData['meetingId']);
                 ref.read(lockedUserViewModelProvider);
                 break;
               case 'MUTE':
