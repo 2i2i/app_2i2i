@@ -248,6 +248,7 @@ class SetupUserViewModel with ChangeNotifier {
       await database.createUser(uid);
     } else if (userInfoModel!.url?.isEmpty ?? true) {
       userInfoModel!.url = await createDeepLinkUrl(uid);
+      await database.updateUser(userInfoModel!);
     }
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
