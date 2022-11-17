@@ -19,7 +19,6 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
 import '../../data_access_layer/services/logging.dart';
-import '../../models/token_model.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
