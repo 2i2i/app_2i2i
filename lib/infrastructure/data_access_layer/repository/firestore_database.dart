@@ -155,13 +155,7 @@ class FirestoreDatabase {
       });
 
   Future<void> updateToken(String uid, String token) {
-    final tokenModel = TokenModel(
-      value: token,
-      // ts: FieldValue.serverTimestamp(),
-      // ts: Timestamp.now(),
-      // operatingSystem: Platform.operatingSystem,
-      // operatingSystemVersion: Platform.operatingSystemVersion,
-    );
+    final tokenModel = TokenModel(value: token);
     return _service.setData(
       path: FirestorePath.token(uid, token),
       data: tokenModel.toJson(),

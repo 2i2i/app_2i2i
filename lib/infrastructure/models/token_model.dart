@@ -1,4 +1,3 @@
-// import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 
@@ -6,7 +5,6 @@ class TokenModel {
   final String operatingSystem = Platform.operatingSystem;
   final String operatingSystemVersion = Platform.operatingSystemVersion;
   String value;
-  // DateTime ts;
 
   TokenModel({required this.value});
 
