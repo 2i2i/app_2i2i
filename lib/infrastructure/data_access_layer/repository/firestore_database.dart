@@ -65,7 +65,7 @@ class FirestoreDatabase {
     userInfoMap['heartbeatForeground'] = FieldValue.serverTimestamp();
     await _service.firestore.collection(FirestorePath.users()).doc(createdUserModel.id).set(userInfoMap).catchError(
       (onError) {
-        print(onError);
+        log("$E createUser : $onError");
       },
     );
   }
@@ -87,7 +87,7 @@ class FirestoreDatabase {
       // create meeting
 
       final meetingDocRef = _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
-      transaction.set(meetingDocRef, meeting.toMap(isForNotification: false));
+      transaction.set(meetingDocRef, meeting.toMap());
 
       // lock users
       final lockObj = {'meeting': meeting.id};
@@ -107,7 +107,7 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      // log(onError.toString());
+      log("$E acceptBid : $onError");
     });
   }
 
@@ -122,6 +122,8 @@ class FirestoreDatabase {
       transaction.set(bidInPrivateRef, bidIn.private!.toMap(), SetOptions(merge: false));
 
       return Future.value();
+    }).catchError((onError) {
+      log("$E addBid : $onError");
     });
   }
 
@@ -138,17 +140,24 @@ class FirestoreDatabase {
       transaction.update(bidInPrivateRef, obj);
 
       return Future.value();
+    }).catchError((onError) {
+      log("$E cancelBid : $onError");
     });
   }
 
-  Future<void> updateDeviceInfo(String uid, Map<String, String?> data) => _service.setData(
+  Future<void> updateDeviceInfo(String uid, Map<String, String?> data) => _service
+          .setData(
         path: FirestorePath.device(uid),
         data: data,
         merge: true,
-      );
+      )
+          .catchError((onError) {
+        log("$E updateDeviceInfo : $onError");
+      });
 
   Future<void> updateToken(String uid, String token) {
-    _service.setData(
+    _service
+        .setData(
       path: FirestorePath.token(uid),
       data: {
         'token': token,
@@ -156,7 +165,10 @@ class FirestoreDatabase {
         'ts': FieldValue.serverTimestamp(),
       },
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      log("$E updateToken : $onError");
+    });
     return Future.value();
   }
 
@@ -182,12 +194,11 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      log('_updateUserHeartbeat $onError');
+      log("$E _updateUserHeartbeat : $onError");
     });
   }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    print(data);
     return _service
         .setData(
       path: FirestorePath.meeting(meetingId),
@@ -195,7 +206,7 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      log("$onError");
+      log("$E updateMeeting : $onError");
     });
   }
 
@@ -207,15 +218,15 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      log(onError.toString());
+      log("$E updateMeetingStatus : $onError");
     });
   }
 
-  Future meetingEndUnlockUser(Meeting meeting, Map<String, dynamic> data) async {
+  Future meetingEndUnlockUser(Map<String, dynamic> meeting, Map<String, dynamic> data) async {
     return _service.runTransaction((transaction) {
-      final userARef = _service.firestore.doc(FirestorePath.user(meeting.A));
-      final userBRef = _service.firestore.doc(FirestorePath.user(meeting.B));
-      final meetingRef = _service.firestore.doc(FirestorePath.meeting(meeting.id));
+      final userARef = _service.firestore.doc(FirestorePath.user(meeting['meetingUserA']));
+      final userBRef = _service.firestore.doc(FirestorePath.user(meeting['meetingUserB']));
+      final meetingRef = _service.firestore.doc(FirestorePath.meeting(meeting['meetingId']));
 
       final obj = {'meeting': null};
 
@@ -225,20 +236,28 @@ class FirestoreDatabase {
 
       return Future.value();
     }).catchError((onError) {
-      print(onError);
+      log("$E meetingEndUnlockUser : $onError");
     });
   }
 
-  Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) => _service.setData(
+  Future<void> updateUserNameAndBio(String uid, Map<String, dynamic> data) => _service
+          .setData(
         path: FirestorePath.user(uid),
         data: data,
         merge: true,
-      );
+      )
+          .catchError((onError) {
+        log("$E updateUserNameAndBio : $onError");
+      });
 
-  Future<void> addRating(String uid, String meetingId, RatingModel rating) => _service.setData(
+  Future<void> addRating(String uid, String meetingId, RatingModel rating) => _service
+          .setData(
         path: FirestorePath.newRating(uid, meetingId),
         data: rating.toMap(),
-      );
+      )
+          .catchError((onError) {
+        log("$E addRating : $onError");
+      });
 
   Stream<List<RatingModel>> getUserRatings(String uid) {
     return _service
@@ -251,34 +270,46 @@ class FirestoreDatabase {
     )
         .handleError(
       (value) {
-        log(value);
+        log("$E addRating : $value");
       },
     );
   }
 
-  Future<void> addBlocked(String uid, String targetUid) => _service.setData(
+  Future<void> addBlocked(String uid, String targetUid) => _service
+          .setData(
         path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayUnion([targetUid])
         },
         merge: true,
-      );
+      )
+          .catchError((onError) {
+        log("$E addBlocked : $onError");
+      });
 
-  Future<void> addFriend(String uid, String targetUid) => _service.setData(
+  Future<void> addFriend(String uid, String targetUid) => _service
+          .setData(
         path: FirestorePath.user(uid),
         data: {
           'friends': FieldValue.arrayUnion([targetUid])
         },
         merge: true,
-      );
+      )
+          .catchError((onError) {
+        log("$E addFriend : $onError");
+      });
 
-  Future<void> removeBlocked(String uid, String targetUid) => _service.setData(
+  Future<void> removeBlocked(String uid, String targetUid) => _service
+          .setData(
         path: FirestorePath.user(uid),
         data: {
           'blocked': FieldValue.arrayRemove([targetUid])
         },
         merge: true,
-      );
+      )
+          .catchError((onError) {
+        log("$E removeBlocked : $onError");
+      });
 
   Future<void> removeFriend(String uid, String targetUid) => _service.setData(
         path: FirestorePath.user(uid),
@@ -299,8 +330,8 @@ class FirestoreDatabase {
         return UserModel.fromMap(data, documentId);
       },
     )
-        .handleError((e) {
-      print(e);
+        .handleError((onError) {
+      log("$E userStream : $onError");
     });
   }
 
@@ -313,13 +344,15 @@ class FirestoreDatabase {
         return FXModel.objective(data, assetId);
       },
     )
-        .handleError((e) {
-      print(e);
+        .handleError((onError) {
+      log("$E FXStream : $onError");
     });
   }
 
   Future<FXModel?> getFX(int assetId) async {
-    final snapshot = await _service.getData(path: FirestorePath.FX(assetId));
+    final snapshot = await _service.getData(path: FirestorePath.FX(assetId)).catchError((onError) {
+      log("$E getFX : $onError");
+    });
     if (snapshot?.data() is Map) {
       final data = snapshot!.data() as Map<String, dynamic>?;
       return FXModel.objective(data!, assetId);
@@ -328,7 +361,9 @@ class FirestoreDatabase {
   }
 
   Future<TokenModel?> getTokenFromId(String uid) async {
-    final snapshot = await _service.getData(path: FirestorePath.token(uid));
+    final snapshot = await _service.getData(path: FirestorePath.token(uid)).catchError((onError) {
+      log("$E getTokenFromId : $onError");
+    });
     if (snapshot?.data() is Map) {
       final data = snapshot!.data() as Map<String, dynamic>?;
       return TokenModel.fromJson(data!);
@@ -344,12 +379,14 @@ class FirestoreDatabase {
       merge: true,
     )
         .catchError((onError) {
-      print(onError);
+      log("$E updateUser : $onError");
     });
   }
 
   Future<AppVersionModel?> getAppVersion() async {
-    final snapshot = await _service.getData(path: FirestorePath.appVersion());
+    final snapshot = await _service.getData(path: FirestorePath.appVersion()).catchError((onError) {
+      log("$E getAppVersion : $onError");
+    });
     if (snapshot?.data() is Map) {
       final data = snapshot?.data() as Map<String, dynamic>?;
       return AppVersionModel.fromJson(data!);
@@ -358,7 +395,9 @@ class FirestoreDatabase {
   }
 
   Future<UserModel?> getUser(String uid) async {
-    final documentSnapshot = await _service.getData(path: FirestorePath.user(uid));
+    final documentSnapshot = await _service.getData(path: FirestorePath.user(uid)).catchError((onError) {
+      log("$E getUser : $onError");
+    });
     if (documentSnapshot?.exists ?? false) {
       final id = documentSnapshot!.id;
       final data = documentSnapshot.data();
@@ -374,17 +413,22 @@ class FirestoreDatabase {
   }
 
   Stream<int?> numMeetingsStream() {
-    return _service.documentStream(
+    return _service
+        .documentStream(
       path: FirestorePath.numMeetings(),
       builder: (data, documentId) {
         if (data == null) return null;
         return data['numMeetings'] as int;
       },
-    );
+    )
+        .handleError((onError) {
+      log("$E numMeetingsStream : $onError");
+    });
   }
 
   Future<List> checkAddressAvailable(String address) async {
-    final documentSnapshot = await _service.getCollectionGroupData(
+    final documentSnapshot = await _service
+        .getCollectionGroupData(
       path: FirestorePath.alograndAccountPath(),
       queryBuilder: (query) => query.where('id', isEqualTo: address).orderBy('ts', descending: true),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
@@ -396,7 +440,10 @@ class FirestoreDatabase {
           }
         }
       },
-    );
+    )
+        .catchError((onError) {
+      log("$E checkAddressAvailable : $onError");
+    });
     if (documentSnapshot.isNotEmpty) {
       return documentSnapshot.toList();
     }
@@ -404,13 +451,17 @@ class FirestoreDatabase {
   }
 
   Future<List> checkInstaUserAvailable(SocialLinksModel socialLinksModel) async {
-    final documentSnapshot = await _service.getCollectionData(
+    final documentSnapshot = await _service
+        .getCollectionData(
       path: FirestorePath.users(),
       queryBuilder: (query) => query.where('socialLinks', arrayContains: socialLinksModel.toJson()),
       builder: (Map<String, dynamic>? data, DocumentReference documentID) {
         return documentID.id;
       },
-    );
+    )
+        .catchError((onError) {
+      log("$E checkInstaUserAvailable : $onError");
+    });
     if (documentSnapshot.isNotEmpty) {
       return documentSnapshot.toList();
     }
@@ -427,8 +478,8 @@ class FirestoreDatabase {
       },
       queryBuilder: tags.isEmpty ? null : (query) => query.where('tags', arrayContainsAny: tags),
     )
-        .handleError((error) {
-      log(error);
+        .handleError((onError) {
+      log("$E usersStream : $onError");
     });
   }
 
@@ -447,26 +498,34 @@ class FirestoreDatabase {
     )
         .handleError(
       (onError) {
-        log("$onError");
+        log("$E redeemCoinStream : $onError");
       },
     );
   }
 
-  Stream<Room> roomStream({required String meetingId}) => _service.documentStream(
+  Stream<Room> roomStream({required String meetingId}) => _service
+          .documentStream(
         path: FirestorePath.room(meetingId),
         builder: (data, documentId) => Room.fromMap(data, meetingId),
-      );
+      )
+          .handleError((onError) {
+        log("$E roomStream : $onError");
+      });
 
   Stream<List<RTCIceCandidate>> iceCandidatesStream({
     required String meetingId,
     required String subCollectionName,
   }) {
-    return _service.collectionAddedStream(
+    return _service
+        .collectionAddedStream(
       path: FirestorePath.iceCandidates(meetingId, subCollectionName),
       builder: (data, documentId) {
         return RTCIceCandidate(data!['candidate'], data['sdpMid'], data['sdpMlineIndex']);
       },
-    );
+    )
+        .handleError((onError) {
+      log("$E iceCandidatesStream : $onError");
+    });
   }
 
   Stream<List<BidInPublic>> bidInsPublicStream({required String uid}) {
@@ -477,7 +536,7 @@ class FirestoreDatabase {
       queryBuilder: (query) => query.where('active', isEqualTo: true).orderBy('ts'),
     )
         .handleError((onError) {
-      log('\n\n\n\n ---=== ${onError} \n\n\n');
+      log("$E bidInsPublicStream : $onError");
     });
   }
 
@@ -488,8 +547,8 @@ class FirestoreDatabase {
       builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
       queryBuilder: (query) => query.where('active', isEqualTo: true),
     )
-        .handleError((err) {
-      print("----------> $err");
+        .handleError((onError) {
+      log("$E bidInsPrivateStream : $onError");
     });
   }
 
@@ -501,24 +560,36 @@ class FirestoreDatabase {
       queryBuilder: (query) => query.where('active', isEqualTo: true),
     )
         .handleError((onError) {
-      log(onError.toString());
+      log("$E bidOutsStream : $onError");
     });
   }
 
-  Stream<BidOut> getBidOut({required String uid, required String bidId}) => _service.documentStream(
+  Stream<BidOut> getBidOut({required String uid, required String bidId}) => _service
+          .documentStream(
         path: FirestorePath.bidOut(uid, bidId),
         builder: (data, documentId) => BidOut.fromMap(data, documentId),
-      );
+      )
+          .handleError((onError) {
+        log("$E getBidOut : $onError");
+      });
 
-  Stream<BidInPublic> getBidInPublic({required String uid, required String bidId}) => _service.documentStream(
+  Stream<BidInPublic> getBidInPublic({required String uid, required String bidId}) => _service
+          .documentStream(
         path: FirestorePath.bidInPublic(uid, bidId),
         builder: (data, documentId) => BidInPublic.fromMap(data, documentId),
-      );
+      )
+          .handleError((onError) {
+        log("$E getBidInPublic : $onError");
+      });
 
-  Stream<BidInPrivate> getBidInPrivate({required String uid, required String bidId}) => _service.documentStream(
+  Stream<BidInPrivate> getBidInPrivate({required String uid, required String bidId}) => _service
+          .documentStream(
         path: FirestorePath.bidInPrivate(uid, bidId),
         builder: (data, documentId) => BidInPrivate.fromMap(data, documentId),
-      );
+      )
+          .handleError((onError) {
+        log("$E getBidInPrivate : $onError");
+      });
 
   Stream<Meeting> meetingStream({required String id}) {
     return _service
@@ -528,7 +599,7 @@ class FirestoreDatabase {
               return Meeting.fromMap(data, documentId);
             })
         .handleError((onError) {
-      log(onError.toString());
+      log("$E meetingStream : $onError");
     });
   }
 
@@ -539,11 +610,14 @@ class FirestoreDatabase {
         queryBuilder: (query) => query.orderBy('value', descending: true),
       )
           .handleError((onError) {
-        log(onError.toString());
+    log("$E topStream : $onError");
         return [];
       });
+
   Stream<List<TopMeeting>> topValuesStream() => topStream(FirestorePath.topValues());
+
   Stream<List<TopMeeting>> topSpeedsStream() => topStream(FirestorePath.topSpeeds());
+
   Stream<List<TopMeeting>> topDurationsStream() => topStream(FirestorePath.topDurations());
 
   // Future<void> setMeeting(Meeting meeting) => _service.setData(
@@ -572,21 +646,29 @@ class FirestoreDatabase {
       },
     )
         .handleError((onError) {
-      log(onError.toString());
+      log("$E meetingHistory : $onError");
     });
   }
 
   //chat
   Stream<List<ChatModel>> getChat(String uid) {
-    return _service.collectionStream(
+    return _service
+        .collectionStream(
       path: FirestorePath.chat(uid),
       builder: (data, documentId) => ChatModel.fromMap(data!),
       queryBuilder: (query) => query.orderBy('ts', descending: true).limit(100),
-    );
+    )
+        .handleError((onError) {
+      log("$E getChat : $onError");
+    });
   }
 
-  Future<void> addChat(String uid, ChatModel chat) => _service.setData(
+  Future<void> addChat(String uid, ChatModel chat) => _service
+          .setData(
         path: FirestorePath.chat(uid) + '/' + _service.newDocId(path: FirestorePath.chat(uid)),
         data: chat.toMap(),
-      );
+      )
+          .catchError((onError) {
+        log("$E addChat : $onError");
+      });
 }
