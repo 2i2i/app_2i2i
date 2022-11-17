@@ -161,7 +161,10 @@ class FirestoreDatabase {
       path: FirestorePath.token(uid, token),
       data: tokenModel.toJson(),
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      log("$E updateToken : $onError");
+    });
   }
 
   Future<void> removeToken(String uid, [String? token]) async {
