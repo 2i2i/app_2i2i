@@ -6,8 +6,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/instagram_service.dart';
 import 'package:app_2i2i/infrastructure/providers/setup_user_provider/setup_user_view_model.dart';
 import 'package:app_2i2i/ui/screens/instagram_login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -46,16 +44,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(setupUserViewModelProvider).checkLogin();
-      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
-      if (uid.isNotEmpty) {
-        return await FirebaseMessaging.instance
-            .getToken(
-                // vapidKey: dotenv.env['TOKEN_KEY'].toString(),
-                )
-            .then((String? token) {
-          if (token is String) return FirestoreDatabase().updateToken(uid, token);
-        });
-      }
     });
     super.initState();
   }

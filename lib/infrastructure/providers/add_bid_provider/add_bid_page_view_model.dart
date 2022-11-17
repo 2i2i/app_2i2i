@@ -19,7 +19,6 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
 import '../../data_access_layer/services/logging.dart';
-import '../../models/token_model.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
@@ -49,9 +48,7 @@ class AddBidPageViewModel {
     return secondsToSensibleTimePeriod(seconds.round());
   }*/
 
-
-  int minSpeedBaseAsset(userB, FXValue)
-  {
+  int minSpeedBaseAsset(userB, FXValue) {
     final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
     final minSpeedALGO = minSpeedMicroALGO / pow(10, 6);
     final minSpeedAsset = minSpeedALGO / FXValue.value!;
@@ -144,15 +141,15 @@ class AddBidPageViewModel {
           txns: txns,
         );
 
-        BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
+        final bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
         await database.addBid(bidOut, bidIn);
 
-        TokenModel? bUserTokenModel = await database.getTokenFromId(B.id);
-        log(A + 'bUserTokenModel=$bUserTokenModel B.id=${B.id}');
-
-        if (bUserTokenModel is TokenModel) {
-          Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
-          await FirebaseNotifications().sendNotification((bUserTokenModel.token ?? ""), jsonDataCurrentUser, bUserTokenModel.isIos ?? false);
+        final bUserTokenModels = await database.getTokenFromId(B.id);
+        for (final tokenModel in bUserTokenModels) {
+          if (tokenModel.value.isNotEmpty) {
+            final jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
+            await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+          }
         }
 
         CustomAlertWidget.loader(false, context);

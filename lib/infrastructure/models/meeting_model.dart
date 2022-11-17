@@ -122,7 +122,7 @@ class MeetingChanger {
 
   final FirestoreDatabase database;
 
-  Future endMeeting(Meeting meeting, MeetingStatus status) async {
+  Future endMeeting(Map<String, dynamic> meeting, MeetingStatus status) async {
     log(J + 'endMeeting - status=$status');
     final Map<String, dynamic> data = {
       'status': status.toStringEnum(),
@@ -310,6 +310,7 @@ class Meeting extends Equatable {
 
     final DateTime? start = data['start']?.toDate();
     final DateTime? end = data['end']?.toDate();
+
     final int? duration = data['duration'];
 
     final FX = double.parse(data['FX'].toString());

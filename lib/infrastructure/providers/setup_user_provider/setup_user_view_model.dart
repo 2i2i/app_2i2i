@@ -246,7 +246,9 @@ class SetupUserViewModel with ChangeNotifier {
     userInfoModel = await getUserInfoModel(uid);
     if (userInfoModel == null) {
       await database.createUser(uid);
-      await createDeepLinkUrl(uid);
+    } else if (userInfoModel!.url?.isEmpty ?? true) {
+      userInfoModel!.url = await createDeepLinkUrl(uid);
+      await database.updateUser(userInfoModel!);
     }
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
@@ -407,6 +409,9 @@ class SetupUserViewModel with ChangeNotifier {
   Future<void> signOutFromAuth() async {
     socialLinksModel = null;
     isLogged = false;
+    if (auth.currentUser?.uid.isNotEmpty ?? false) {
+      await FirestoreDatabase().removeToken(auth.currentUser!.uid);
+    }
     await googleSignIn.signOut();
     await auth.signOut();
     await storage.clear();
