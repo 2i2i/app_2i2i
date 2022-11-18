@@ -19,7 +19,6 @@ import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
 import '../../data_access_layer/services/firebase_notifications.dart';
 import '../../data_access_layer/services/logging.dart';
-import '../../models/token_model.dart';
 
 class AddBidPageViewModel {
   AddBidPageViewModel({
@@ -142,14 +141,14 @@ class AddBidPageViewModel {
           txns: txns,
         );
 
-        BidIn bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
+        final bidIn = BidIn(public: bidInPublic, private: bidInPrivate);
         await database.addBid(bidOut, bidIn);
 
-        List<TokenModel> bUserTokenModel = await database.getTokenFromId(B.id);
-        for (var tokenModel in bUserTokenModel) {
+        final bUserTokenModels = await database.getTokenFromId(B.id);
+        for (final tokenModel in bUserTokenModels) {
           if (tokenModel.value.isNotEmpty) {
-            Map jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
-            await FirebaseNotifications().sendNotification((tokenModel.value), jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+            final jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
+            await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
           }
         }
 

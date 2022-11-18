@@ -308,8 +308,8 @@ class Meeting extends Equatable {
       energy[k] = data['energy'][k] as int?;
     }
 
-    final DateTime? start = toDateValue(data['start']);
-    final DateTime? end = toDateValue(data['end']);
+    final DateTime? start = data['start']?.toDate();
+    final DateTime? end = data['end']?.toDate();
 
     final int? duration = data['duration'];
 
@@ -477,19 +477,4 @@ class RatingModel {
       'createdAt': createdAt,
     };
   }
-}
-
-DateTime? toDateValue(var value) {
-  if (value is String) {
-    return DateTime.tryParse(value)?.toLocal();
-  } else if (value is num) {
-    var n = value.toInt();
-    return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
-  } else if (value is int) {
-    var n = value;
-    return DateTime.fromMillisecondsSinceEpoch(n).toLocal();
-  } else if (value is Timestamp) {
-    return value.toDate().toLocal();
-  }
-  return null;
 }

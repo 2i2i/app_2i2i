@@ -66,7 +66,7 @@ class FirebaseNotifications {
     await FirebaseMessaging.instance.getToken().then((value) => log("Token $value"));
 
     // Note: This callback is fired at each app startup and whenever a new
-    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       if (uid.isNotEmpty) {
         FirestoreDatabase().updateToken(uid, fcmToken);
@@ -76,11 +76,11 @@ class FirebaseNotifications {
     });
   }
 
-  Future sendNotification(String token, Map data, bool isIos) async {
+  Future sendNotification(String token, Map data, bool isIOS) async {
     var notification = {};
     Map notificationMap = {};
 
-    if (isIos || data['type'].toString().toLowerCase() != 'Call'.toLowerCase()) {
+    if (isIOS || data['type'].toString().toLowerCase() != 'Call'.toLowerCase()) {
       notification['title'] = data['title'];
       notification['body'] = data['body'];
       notificationMap['notification'] = notification;
