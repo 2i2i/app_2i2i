@@ -9,7 +9,9 @@ class FirestorePath {
 
   static String alograndAccountPath() => 'algorand_accounts';
 
-  static String token(String uid) => 'tokens/$uid';
+  static String token(String uid, String token) => 'users/$uid/tokens/$token';
+
+  static String tokens(String uid) => 'users/$uid/tokens';
 
   static String shareUrl(String uid) => 'share/$uid';
 

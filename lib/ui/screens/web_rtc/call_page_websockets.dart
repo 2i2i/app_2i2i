@@ -420,7 +420,12 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
     // _inCalling = false;
     _session = null;
 
-    if (endReason is MeetingStatus) await widget.meetingChanger.endMeeting(widget.meeting, endReason);
+    if (endReason is MeetingStatus)
+      await widget.meetingChanger.endMeeting({
+        "meetingId": widget.meeting.id,
+        "meetingUserA": widget.meeting.A,
+        "meetingUserB": widget.meeting.B,
+      }, endReason);
 
     if (Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');
