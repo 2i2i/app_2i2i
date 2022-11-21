@@ -146,9 +146,9 @@ class AddBidPageViewModel {
 
         final bUserTokenModels = await database.getTokenFromId(B.id);
         for (final tokenModel in bUserTokenModels) {
-          if (tokenModel.value.isNotEmpty) {
+          if (tokenModel.value?.isNotEmpty ?? false) {
             final jsonDataCurrentUser = {"title": "2i2i", "body": Keys.someOneTalk.tr(context)};
-            await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+            await FirebaseNotifications().sendNotification(tokenModel.value!, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
           }
         }
 
