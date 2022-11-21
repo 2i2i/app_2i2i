@@ -95,7 +95,7 @@ class MyUserPageViewModel {
       await database.acceptBid(meeting);
 
       for (final tokenModel in firstUserTokenModels) {
-        if (tokenModel.value?.isEmpty ?? true) continue;
+        if (tokenModel.value.isEmpty) continue;
         final jsonDataCurrentUser = {
           'route': Routes.lock,
           'type': 'CALL',
@@ -107,12 +107,12 @@ class MyUserPageViewModel {
             'meetingUserB': meeting.B,
           }
         };
-        await FirebaseNotifications().sendNotification(tokenModel.value!, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
+        await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataCurrentUser, tokenModel.operatingSystem == 'ios');
       }
       for (final tokenModel in secondUserTokenModels) {
-        if (tokenModel.value?.isEmpty ?? true) continue;
+        if (tokenModel.value.isEmpty) continue;
         Map jsonDataNextUser = {'title': 'hi ${secondUser?.name ?? ''}', "body": 'you are next in line'};
-        await FirebaseNotifications().sendNotification(tokenModel.value!, jsonDataNextUser, tokenModel.operatingSystem == 'ios');
+        await FirebaseNotifications().sendNotification(tokenModel.value, jsonDataNextUser, tokenModel.operatingSystem == 'ios');
       }
     }
   }

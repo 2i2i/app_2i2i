@@ -1,25 +1,24 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TokenModel {
-  String? operatingSystem;
+  String operatingSystem;
+  String operatingSystemVersion;
+  String value;
 
-  String? operatingSystemVersion;
-  String? value;
+  TokenModel({required this.operatingSystem, required this.operatingSystemVersion, required this.value});
 
-  TokenModel({required this.value});
+  factory TokenModel.fromJson(Map<String, dynamic> json) {
+    final value = json['value'];
+    final operatingSystemVersion = json['operatingSystemVersion'];
+    final operatingSystem = json['operatingSystem'];
 
-  TokenModel.fromJson(Map<String, dynamic> json) {
-    value = json['value'];
-    operatingSystemVersion = json['operatingSystemVersion'];
-    operatingSystem = json['operatingSystem'];
+    return TokenModel(operatingSystem: operatingSystem, operatingSystemVersion: operatingSystemVersion, value: value);
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'operatingSystem': operatingSystem ?? Platform.operatingSystem,
-      'operatingSystemVersion': operatingSystemVersion ?? Platform.operatingSystemVersion,
+      'operatingSystem': operatingSystem,
+      'operatingSystemVersion': operatingSystemVersion,
       'value': value,
       'ts': FieldValue.serverTimestamp(),
     };
