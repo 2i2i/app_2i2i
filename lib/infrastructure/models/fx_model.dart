@@ -1,3 +1,4 @@
+import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -31,7 +32,7 @@ class FXModel {
 
   FXModel.objective(Map<String, dynamic> json, int docId)
       : id = docId,
-        ts = json['ts'].toDate(),
+        ts = (json['ts'] as Object?).toDateValue(),
         value = double.parse(json['value'].toString()),
         decimals = int.parse(json['decimals'].toString()),
         name = json['name'],
@@ -39,6 +40,8 @@ class FXModel {
         iconUrl = json['iconUrl'];
 
   String get getName => name ?? (unitname ?? id.toString());
+
   bool get isSubjective => value == null;
+
   bool get isObjective => !isSubjective;
 }

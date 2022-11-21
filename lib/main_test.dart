@@ -17,7 +17,12 @@ import 'dart:async';
 
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// DEBUG
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -28,10 +33,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-// DEBUG
-// import 'package:cloud_functions/cloud_functions.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 // DEBUG
 
 import 'common_main.dart';
@@ -60,9 +61,9 @@ Future<void> main() async {
   FirebaseNotifications();
 
   // DEBUG
-  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
-  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   // DEBUG
 
   // await _initializeAdmin();
