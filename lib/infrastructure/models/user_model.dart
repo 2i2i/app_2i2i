@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/chat_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -234,8 +233,8 @@ class UserModel extends Equatable {
     final String? imageUrl = data['imageUrl'];
     final double rating = double.tryParse(data['rating'].toString()) ?? 1;
     final int numRatings = int.tryParse(data['numRatings'].toString()) ?? 0;
-    final DateTime? heartbeatBackground = (data['heartbeatBackground'] as Object?).toDateValue();
-    final DateTime? heartbeatForeground = (data['heartbeatForeground'] as Object?).toDateValue();
+    final DateTime? heartbeatBackground = (data['heartbeatBackground'] as Timestamp?)?.toDate();
+    final DateTime? heartbeatForeground = (data['heartbeatForeground'] as Timestamp?)?.toDate();
     final Rule rule = data.containsKey('rule') && data['rule'] != null ? Rule.fromMap(data['rule']) : Rule();
     final int loungeHistoryIndex = data['loungeHistoryIndex'] ?? 0;
 

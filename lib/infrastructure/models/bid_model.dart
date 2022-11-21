@@ -1,4 +1,3 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -185,7 +184,7 @@ class BidInPublic extends Equatable {
     final bool active = data['active'];
     final Quantity speed = Quantity.fromMap(data['speed']);
     final AlgorandNet net = AlgorandNet.values.firstWhere((e) => e.toStringEnum() == data['net']);
-    final DateTime ts = (data['ts'] as Object?).toDateValue(defaultVal: DateTime.now())!;
+    final DateTime ts = (data['ts'] as Timestamp).toDate();
     final Rule rule = Rule.fromMap(data['rule']);
     int energy = data['energy'];
     final double FX = double.parse(data['FX'].toString());

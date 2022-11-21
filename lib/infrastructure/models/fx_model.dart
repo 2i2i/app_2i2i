@@ -1,4 +1,4 @@
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -32,7 +32,7 @@ class FXModel {
 
   FXModel.objective(Map<String, dynamic> json, int docId)
       : id = docId,
-        ts = (json['ts'] as Object?).toDateValue(),
+        ts = (json['ts'] as Timestamp).toDate(),
         value = double.parse(json['value'].toString()),
         decimals = int.parse(json['decimals'].toString()),
         name = json['name'],

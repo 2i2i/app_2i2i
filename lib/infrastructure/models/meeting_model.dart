@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/firestore_database.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -108,7 +107,7 @@ class TopMeeting extends Equatable {
     final B = data['B'] as String;
     final nameA = data['nameA'] as String;
     final nameB = data['nameB'] as String;
-    final DateTime ts = (data['ts'] as Object?).toDateValue(defaultVal: DateTime.now())!;
+    final DateTime ts = (data['ts'] as Timestamp).toDate();
     final value = double.parse(data['value'].toString());
     final FX = double.parse(data['FX'].toString());
     final duration = data['duration'] as int;
@@ -309,8 +308,8 @@ class Meeting extends Equatable {
       energy[k] = data['energy'][k] as int?;
     }
 
-    final DateTime? start = (data['start'] as Object?).toDateValue();
-    final DateTime? end = (data['end'] as Object?).toDateValue();
+    final DateTime? start = (data['start'] as Timestamp?)?.toDate();
+    final DateTime? end = (data['end'] as Timestamp?)?.toDate();
 
     final int? duration = data['duration'];
 
@@ -324,7 +323,7 @@ class Meeting extends Equatable {
     final MeetingStatus status = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == data['status']);
     final List<MeetingStatusWithTS> statusHistory = List<MeetingStatusWithTS>.from(data['statusHistory'].map((item) {
       final value = MeetingStatus.values.firstWhere((e) => e.toStringEnum() == item['value']);
-      DateTime ts = (item['ts'] as Object?).toDateValue(defaultVal: DateTime.now())!;
+      DateTime ts = (item['ts'] as Timestamp?)?.toDate() ?? (Timestamp.now().toDate());
       return MeetingStatusWithTS(value: value, ts: ts);
     }));
 
