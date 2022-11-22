@@ -29,6 +29,11 @@ class Custom {
     );
   }
 
+  // static double webWidth(BuildContext context) => (MediaQuery.of(context).size.width / 2.5);
+  static double webWidth(BuildContext context) => 500;
+
+  static double webHeight(BuildContext context) => 844;
+
   static Future<void> deepLinks(
     BuildContext context,
     bool mounted,
