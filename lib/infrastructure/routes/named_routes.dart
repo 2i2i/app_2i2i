@@ -314,8 +314,8 @@ class NamedRoutes {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(
-              width: 500,
-              height: 844,
+              width: Custom.webWidth(context),
+              height: Custom.webHeight(context),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: widget,

@@ -7,7 +7,6 @@ import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_se
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/ui/layout/responsive_layout_builder.dart';
-import 'package:app_2i2i/ui/layout/scale_factors.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -121,29 +120,31 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       ref.read(appSettingProvider).getLocal(widget.local);
       await ref.read(appSettingProvider).checkIfUpdateAvailable();
 
-      platform.setMethodCallHandler((MethodCall methodCall) async {
-        Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingInfo']) as Map<String, dynamic>;
-        try {
-          if (notificationData.isNotEmpty) {
-            final meetingChanger = ref.read(meetingChangerProvider);
-            switch (methodCall.method) {
-              case 'CUT':
-                meetingChanger.endMeeting(notificationData, MeetingStatus.END_A);
-                break;
-              case 'ANSWER':
-                await meetingChanger.acceptMeeting(notificationData['meetingId']);
-                ref.read(lockedUserViewModelProvider);
-                break;
-              case 'MUTE':
-                break;
-              default:
-                throw MissingPluginException('notImplemented');
+      if (!kIsWeb) {
+        platform.setMethodCallHandler((MethodCall methodCall) async {
+          Map<String, dynamic> notificationData = jsonDecode(methodCall.arguments['meetingInfo']) as Map<String, dynamic>;
+          try {
+            if (notificationData.isNotEmpty) {
+              final meetingChanger = ref.read(meetingChangerProvider);
+              switch (methodCall.method) {
+                case 'CUT':
+                  meetingChanger.endMeeting(notificationData, MeetingStatus.END_A);
+                  break;
+                case 'ANSWER':
+                  await meetingChanger.acceptMeeting(notificationData['meetingId']);
+                  ref.read(lockedUserViewModelProvider);
+                  break;
+                case 'MUTE':
+                  break;
+                default:
+                  throw MissingPluginException('notImplemented');
+              }
             }
+          } catch (e) {
+            log("$e");
           }
-        } catch (e) {
-          log("$e");
-        }
-      });
+        });
+      }
     });
     Custom.deepLinks(context, mounted);
     super.initState();
@@ -237,25 +238,25 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
           child: ResponsiveLayoutBuilder(
             small: (BuildContext, Widget? child) {
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.smallScaleFactor),
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
                 child: widget ?? Container(),
               );
             },
             large: (BuildContext, Widget? child) {
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.largeScaleFactor),
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
                 child: widget ?? Container(),
               );
             },
             xLarge: (BuildContext, Widget? child) {
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.xLargeScaleFactor),
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
                 child: widget ?? Container(),
               );
             },
             medium: (BuildContext, Widget? child) {
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: DeviceScaleFactors.mediumScaleFactor),
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
                 child: widget ?? Container(),
               );
             },

@@ -21,6 +21,7 @@ import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../infrastructure/commons/theme.dart';
 import '../../../infrastructure/providers/my_account_provider/my_account_page_view_model.dart';
+import '../../commons/custom.dart';
 import '../../commons/custom_alert_widget.dart';
 import '../../commons/custom_text_field.dart';
 import '../my_account/widgets/account_asset_info.dart';
@@ -230,7 +231,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                   ),
                   Container(
                     constraints: myAccountPageViewModel.walletConnectAccounts.length > 0
-                        ? BoxConstraints(minHeight: 150, maxHeight: MediaQuery.of(context).size.width / (kIsWeb ? 5.2 : 1.8))
+                        ? BoxConstraints(minHeight: 160, maxHeight: Custom.webWidth(context) / 2.25)
                         : null,
                     child: Builder(
                       builder: (BuildContext context) {
@@ -245,6 +246,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
                               final address = addressBalanceCombos[index].item1;
                               final balance = addressBalanceCombos[index].item2;
                               return Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),

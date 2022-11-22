@@ -306,7 +306,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
         return Container(
           margin: EdgeInsets.symmetric(vertical: 10),
-          padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+          padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 0),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10.0),
