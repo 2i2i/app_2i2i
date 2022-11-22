@@ -527,7 +527,7 @@ class _CreateBidPageState extends ConsumerState<CreateBidPage> with SingleTicker
     final minSpeedBaseAssetInt = minSpeedBaseAsset.ceil();
     return minSpeedBaseAssetInt;
   }
-  
+
   String minSpeedDecimalAsset()
   {
     final minSpeedMicroALGO = userB?.rule.minSpeedMicroALGO ?? 0;
