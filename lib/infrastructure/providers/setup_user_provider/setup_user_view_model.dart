@@ -100,8 +100,8 @@ class SetupUserViewModel with ChangeNotifier {
           firebaseUser = await auth.signInWithCredential(credential);
         }
 
-        socialLinksModel =
-            SocialLinksModel(userName: googleSignInAccount.email, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
+        socialLinksModel = SocialLinksModel(
+            userName: googleSignInAccount.displayName, userEmail: googleSignInAccount.email, accountName: 'Google', userId: googleSignInAccount.id);
 
         String? uid = firebaseUser.user?.uid;
         if (uid is String) await signInProcess(uid, socialLinkModel: socialLinksModel);
