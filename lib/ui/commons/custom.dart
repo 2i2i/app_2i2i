@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../infrastructure/commons/utils.dart';
@@ -74,6 +76,41 @@ class Custom {
         log("$e");
       }
     }
+  }
+
+  static Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      if (kIsWeb) {
+        return 'http://localhost:51226/user/$uid';
+      }
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: link,
+        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
+        androidParameters: AndroidParameters(
+          packageName: 'app.i2i2',
+          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+        ),
+        iosParameters: IOSParameters(
+            bundleId: 'app.2i2i',
+            fallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
+            ipadBundleId: 'app.2i2i',
+            appStoreId: '1609689141'),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
   }
 
   static void handleURI(Uri? uri, String userId) {
