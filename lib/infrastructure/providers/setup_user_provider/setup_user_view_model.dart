@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/walletconnect_account.dart';
 import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
@@ -249,7 +250,7 @@ class SetupUserViewModel with ChangeNotifier {
       await database.createUser(uid);
     }
 
-    if ((userInfoModel?.url?.isEmpty ?? false) || (Uri.parse(userInfoModel?.url ?? "").host == 'test.2i2i.app' && !kIsWeb)) {
+    if ((userInfoModel?.url?.isEmpty ?? false) || (Uri.parse(userInfoModel?.url ?? "").host == AppConfig.hostUrl && !kIsWeb)) {
       userInfoModel!.url = await Custom.createDeepLinkUrl(uid);
       await database.updateUser(userInfoModel!);
     }

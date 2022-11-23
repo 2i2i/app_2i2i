@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../infrastructure/commons/app_config.dart';
 import '../../infrastructure/commons/utils.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
 import '../../infrastructure/providers/all_providers.dart';
@@ -81,23 +82,23 @@ class Custom {
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
       if (kIsWeb) {
-        return 'http://localhost:51226/user/$uid';
+        return '${AppConfig.hostUrl}/user/$uid';
       }
       final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
       final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: link,
-        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
+        link: Uri.parse('${AppConfig.hostUrl}?uid=$uid'),
         androidParameters: AndroidParameters(
-          packageName: 'app.i2i2',
-          fallbackUrl: Uri.parse('https://about.2i2i.app'),
+          packageName: AppConfig.androidAppId,
+          fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
         ),
         iosParameters: IOSParameters(
-            bundleId: 'app.2i2i',
-            fallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadBundleId: 'app.2i2i',
-            appStoreId: '1609689141'),
+            bundleId: AppConfig.iosAppId,
+            fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+            ipadFallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+            ipadBundleId: AppConfig.iosAppId,
+            appStoreId: AppConfig.appStoreId),
         navigationInfoParameters: const NavigationInfoParameters(
           forcedRedirectEnabled: false,
         ),
