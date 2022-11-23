@@ -13,4 +13,9 @@ class AppConfig {
   int RINGPAGEDURATION = 30;
 
   AlgorandNet ALGORAND_NET = Firebase.app().options.projectId == 'app-2i2i' ? AlgorandNet.mainnet : AlgorandNet.testnet;
+
+  static final String hostUrl = "https://about.2i2i.app";
+  static final String androidAppId = "app.i2i2";
+  static final String iosAppId = "app.2i2i";
+  static final String appStoreId = "1609689141";
 }

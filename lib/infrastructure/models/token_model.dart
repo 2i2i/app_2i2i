@@ -8,7 +8,6 @@ class TokenModel {
 
   factory TokenModel.fromJson(Map<String, dynamic> json) {
     final value = json['value'];
-    final operatingSystemVersion = json['operatingSystemVersion'];
     final operatingSystem = json['operatingSystem'];
 
     return TokenModel(operatingSystem: operatingSystem, value: value);
