@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
@@ -154,7 +155,7 @@ class FirestoreDatabase {
       });
 
   Future<void> updateToken(String uid, String token) {
-    final tokenModel = TokenModel(value: token);
+    final tokenModel = TokenModel(value: token, operatingSystemVersion: Platform.operatingSystemVersion, operatingSystem: Platform.operatingSystem);
     return _service.setData(
       path: FirestorePath.token(uid, token),
       data: tokenModel.toJson(),
