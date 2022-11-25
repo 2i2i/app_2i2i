@@ -30,6 +30,7 @@ import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
+import 'ui/screens/app/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
 
 final platform = MethodChannel('app.2i2i/notification');
@@ -234,8 +235,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         // return TestScreen();
         return ScrollConfiguration(
           behavior: MyBehavior(),
-          child:
-              widget! /*ResponsiveLayoutBuilder(
+          child: widget ??
+              WaitPage() /*ResponsiveLayoutBuilder(
             small: (BuildContext, Widget? child) {
               return MediaQuery(
                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
