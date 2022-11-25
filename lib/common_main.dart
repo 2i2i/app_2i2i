@@ -6,7 +6,6 @@ import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
-import 'package:app_2i2i/ui/layout/responsive_layout_builder.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -235,7 +234,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
         // return TestScreen();
         return ScrollConfiguration(
           behavior: MyBehavior(),
-          child: ResponsiveLayoutBuilder(
+          child:
+              widget! /*ResponsiveLayoutBuilder(
             small: (BuildContext, Widget? child) {
               return MediaQuery(
                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
@@ -260,7 +260,8 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
                 child: widget ?? Container(),
               );
             },
-          ),
+          )*/
+          ,
         );
       },
       supportedLocales: const [

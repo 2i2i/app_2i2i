@@ -51,7 +51,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
     });
 
     startRingAudio();
-    platform.invokeMethod('ANSWER', "ANSWER");
+
+    if (!kIsWeb) platform.invokeMethod('ANSWER', "ANSWER");
     super.initState();
   }
 
@@ -284,13 +285,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
                               color: Colors.white.withOpacity(0.3),
                               child: InkWell(
                                 onTap: () async {
-                                  isClicked = true;
-                                  if (mounted) {
-                                    setState(() {});
+                                  try {
+                                    isClicked = true;
+                                    if (mounted) {
+                                      setState(() {});
+                                    }
+                                    final finishFuture = await finishTimer();
+                                    final acceptMeetingFuture = await ringingPageViewModel.acceptMeeting();
+                                  } catch (e) {
+                                    print(e);
                                   }
-                                  final finishFuture = finishTimer();
-                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                  await Future.wait([finishFuture, acceptMeetingFuture]);
                                 },
                                 child: CircleAvatar(
                                     radius: kToolbarHeight,
