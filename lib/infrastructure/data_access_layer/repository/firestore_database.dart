@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:io';
 
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
@@ -16,9 +15,6 @@ import 'package:app_2i2i/infrastructure/models/token_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -93,7 +89,7 @@ class FirestoreDatabase {
       // create meeting
 
       final meetingDocRef = _service.firestore.collection(FirestorePath.meetings()).doc(meeting.id);
-      transaction.set(meetingDocRef, meeting.toMap(isForNotification: false));
+      transaction.set(meetingDocRef, meeting.toMap());
 
       // lock users
       final lockObj = {'meeting': meeting.id};
