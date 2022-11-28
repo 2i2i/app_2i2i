@@ -28,6 +28,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,16 +55,21 @@ Future<void> main() async {
   //             appId: "1:347734179578:web:f9c11616c64e12c643d343",
   //             measurementId: "G-BXKG3DRTJ4")
   //         : null);
+
   await Firebase.initializeApp(
-      options: kIsWeb
-          ? FirebaseOptions(
-              apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
-              authDomain: "app-2i2i.firebaseapp.com",
-              projectId: "app-2i2i",
-              storageBucket: "app-2i2i.appspot.com",
-              messagingSenderId: "347734179578",
-              appId: "1:347734179578:web:f9c11616c64e12c643d343")
-          : null);
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // await Firebase.initializeApp(
+  //     options: kIsWeb
+  //         ? FirebaseOptions(
+  //             apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+  //             authDomain: "app-2i2i.firebaseapp.com",
+  //             projectId: "app-2i2i",
+  //             storageBucket: "app-2i2i.appspot.com",
+  //             messagingSenderId: "347734179578",
+  //             appId: "1:347734179578:web:f9c11616c64e12c643d343")
+  //         : null);
 
   await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 

@@ -1,16 +1,31 @@
-importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js");
+// import { initializeApp } from 'firebase/app';
+
+// importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
+// importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js");
+
+// const firebaseConfig = {
+//   apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+//   authDomain: "app-2i2i.firebaseapp.com",
+//   // databaseURL: "",
+//   projectId: "app-2i2i",
+//   storageBucket: "app-2i2i.appspot.com",
+//   messagingSenderId: "347734179578",
+//   appId: "1:347734179578:web:f9c11616c64e12c643d343",
+// }
+
+// const app = initializeApp(firebaseConfig);
+
 
 // main
-firebase.initializeApp({
-  apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
-  authDomain: "app-2i2i.firebaseapp.com",
-  // databaseURL: "",
-  projectId: "app-2i2i",
-  storageBucket: "app-2i2i.appspot.com",
-  messagingSenderId: "347734179578",
-  appId: "1:347734179578:web:f9c11616c64e12c643d343",
-});
+// firebase.initializeApp({
+//   apiKey: "AIzaSyDx8E8sAtlaDZveourRnfJcQkpJCF3pPcc",
+//   authDomain: "app-2i2i.firebaseapp.com",
+//   // databaseURL: "",
+//   projectId: "app-2i2i",
+//   storageBucket: "app-2i2i.appspot.com",
+//   messagingSenderId: "347734179578",
+//   appId: "1:347734179578:web:f9c11616c64e12c643d343",
+// });
 
 // test
 // firebase.initializeApp({
@@ -24,12 +39,12 @@ firebase.initializeApp({
 // });
 
 // Necessary to receive background messages:
-const messaging = firebase.messaging();
+// const messaging = firebase.messaging();
 
 // Optional:
-messaging.onBackgroundMessage((m) => {
-  console.log("onBackgroundMessage", m);
-});
+// messaging.onBackgroundMessage((m) => {
+//   console.log("onBackgroundMessage", m);
+// });
 
 // messaging.onMessage((m) => {
 //   console.log("onMessage", m);

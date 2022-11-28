@@ -47,10 +47,11 @@
               "client_type": 3
             },
             {
-              "client_id": "347734179578-va15h9l2g4f0dm4mmgt3gns5u9k9fbff.apps.googleusercontent.com",
+              "client_id": "347734179578-q66t59heeh98emoiaqrhhsn61lurbvsj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "app.2i2i"
+                "bundle_id": "app.2i2i",
+                "app_store_id": "1609689141"
               }
             }
           ]

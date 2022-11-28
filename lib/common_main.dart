@@ -35,57 +35,57 @@ import 'ui/screens/localization/app_localization.dart';
 
 final platform = MethodChannel('app.2i2i/notification');
 
-Future<void> main() async {
-  log('common main');
+// Future<void> main() async {
+//   log('common main');
 
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  if (!kIsWeb) {
-    await Firebase.initializeApp();
-    await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
-  } else {
-    await Firebase.initializeApp(
-        options: FirebaseOptions(
-            apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
-            authDomain: "i2i-test.firebaseapp.com",
-            projectId: "i2i-test",
-            storageBucket: "i2i-test.appspot.com",
-            messagingSenderId: "453884442411",
-            appId: "1:453884442411:web:dad8591e5125eb8998776e"));
-  }
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await dotenv.load(fileName: ".env");
+//   if (!kIsWeb) {
+//     await Firebase.initializeApp();
+//     await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
+//   } else {
+//     await Firebase.initializeApp(
+//         options: FirebaseOptions(
+//             apiKey: "AIzaSyCOTTyRjSkGaao_86k4JyNla0JX-iSSlTs",
+//             authDomain: "i2i-test.firebaseapp.com",
+//             projectId: "i2i-test",
+//             storageBucket: "i2i-test.appspot.com",
+//             messagingSenderId: "453884442411",
+//             appId: "1:453884442411:web:dad8591e5125eb8998776e"));
+//   }
 
-  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+//   await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+//   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  FirebaseNotifications();
+//   FirebaseNotifications();
 
-  if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
-    return SentryFlutter.init((options) {
-      options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
-    }, appRunner: () {
-      FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-        FlutterSecureStorage().read(key: 'language').then((local) {
-          return runApp(
-            ProviderScope(
-              child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
-            ),
-          );
-        });
-      });
-    });
-  } else {
-    return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
-      FlutterSecureStorage().read(key: 'language').then((local) {
-        return runApp(
-          ProviderScope(
-            child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
-          ),
-        );
-      });
-    });
-  }
-}
+//   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
+//     return SentryFlutter.init((options) {
+//       options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
+//     }, appRunner: () {
+//       FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+//         FlutterSecureStorage().read(key: 'language').then((local) {
+//           return runApp(
+//             ProviderScope(
+//               child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+//             ),
+//           );
+//         });
+//       });
+//     });
+//   } else {
+//     return FlutterSecureStorage().read(key: 'theme_mode').then((value) {
+//       FlutterSecureStorage().read(key: 'language').then((local) {
+//         return runApp(
+//           ProviderScope(
+//             child: MainWidget(local ?? 'en', themeMode: value ?? "AUTO"),
+//           ),
+//         );
+//       });
+//     });
+//   }
+// }
 
 class MainWidget extends ConsumerStatefulWidget {
   final String themeMode;
