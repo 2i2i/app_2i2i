@@ -62,8 +62,9 @@ class MyUserPageViewModel {
         if (!addresses.isEmpty) addressOfUserB = addresses.first;
       }
       CustomAlertWidget.loader(true, context);
-      await acceptCall(bidIns, addressOfUserB, context);
-      CustomAlertWidget.loader(false, context);
+      await acceptCall(bidIns, addressOfUserB, context).then((value) {
+        CustomAlertWidget.loader(false, context);
+      });
     }
   }
 

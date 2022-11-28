@@ -310,12 +310,12 @@ class NamedRoutes {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         ref.watch(lockedUserViewModelProvider); // lockedUserViewModelProvider just needs to run
-        if (kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+        if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android && kIsWeb) {
           return FittedBox(
             fit: BoxFit.scaleDown,
             child: SizedBox(
-              width: 500,
-              height: 844,
+              width: Custom.webWidth(context),
+              height: Custom.webHeight(context),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: widget,

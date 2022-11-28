@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +51,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
     });
 
     startRingAudio();
-    platform.invokeMethod('ANSWER', "ANSWER");
+
+    if (!kIsWeb) platform.invokeMethod('ANSWER', "ANSWER");
     super.initState();
   }
 
@@ -98,7 +100,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
 
     await stopRingAudio();
 
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await platform.invokeMethod('CUT_CALL');
     }
   }
@@ -283,13 +285,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
                               color: Colors.white.withOpacity(0.3),
                               child: InkWell(
                                 onTap: () async {
-                                  isClicked = true;
-                                  if (mounted) {
-                                    setState(() {});
+                                  try {
+                                    isClicked = true;
+                                    if (mounted) {
+                                      setState(() {});
+                                    }
+                                    final finishFuture = await finishTimer();
+                                    final acceptMeetingFuture = await ringingPageViewModel.acceptMeeting();
+                                  } catch (e) {
+                                    print(e);
                                   }
-                                  final finishFuture = finishTimer();
-                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                  await Future.wait([finishFuture, acceptMeetingFuture]);
                                 },
                                 child: CircleAvatar(
                                     radius: kToolbarHeight,

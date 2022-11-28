@@ -124,7 +124,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   //   imageUrl = data['imageUrl'];
   // }
   if (type.toLowerCase() == 'Call'.toLowerCase()) {
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await platform.invokeMethod('INCOMING_CALL', data);
     }
   }

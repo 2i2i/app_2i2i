@@ -133,7 +133,7 @@ class RedeemTile extends ConsumerWidget {
               // margin: EdgeInsets.symmetric(vertical: 10),
               // padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
               decoration: BoxDecoration(
-                color: !isSubjective ? Theme.of(context).cardColor : Color(0xFFd3d3d3),
+                color: !isSubjective ? Theme.of(context).cardColor : Theme.of(context).cardColor.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [
                   BoxShadow(
