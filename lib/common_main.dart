@@ -1,30 +1,30 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:app_2i2i/infrastructure/commons/app_config.dart';
+// import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
-import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
+// import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_app_check/firebase_app_check.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart' as ht;
 
 // import 'package:universal_html/html.dart' as ht;
 
-import 'infrastructure/commons/utils.dart';
-import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
+// import 'infrastructure/commons/utils.dart';
+// import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
 import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
@@ -233,37 +233,38 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       debugShowCheckedModeBanner: false,
       builder: (context, widget) {
         // return TestScreen();
-        return ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: widget ??
-              WaitPage() /*ResponsiveLayoutBuilder(
-            small: (BuildContext, Widget? child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-                child: widget ?? Container(),
-              );
-            },
-            large: (BuildContext, Widget? child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-                child: widget ?? Container(),
-              );
-            },
-            xLarge: (BuildContext, Widget? child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-                child: widget ?? Container(),
-              );
-            },
-            medium: (BuildContext, Widget? child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-                child: widget ?? Container(),
-              );
-            },
-          )*/
-          ,
-        );
+        return widget ?? WaitPage();
+        // return ScrollConfiguration(
+        //   behavior: MyBehavior(),
+        //   child: widget ??
+        //       WaitPage() /*ResponsiveLayoutBuilder(
+        //     small: (BuildContext, Widget? child) {
+        //       return MediaQuery(
+        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+        //         child: widget ?? Container(),
+        //       );
+        //     },
+        //     large: (BuildContext, Widget? child) {
+        //       return MediaQuery(
+        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+        //         child: widget ?? Container(),
+        //       );
+        //     },
+        //     xLarge: (BuildContext, Widget? child) {
+        //       return MediaQuery(
+        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+        //         child: widget ?? Container(),
+        //       );
+        //     },
+        //     medium: (BuildContext, Widget? child) {
+        //       return MediaQuery(
+        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+        //         child: widget ?? Container(),
+        //       );
+        //     },
+        //   )*/
+        //   ,
+        // );
       },
       supportedLocales: const [
         Locale('en', ''),
