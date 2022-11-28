@@ -32,7 +32,7 @@ class QrImagePage extends StatelessWidget {
                 Keys.scanInWalletConnect.tr(context),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Colors.black,
+                      color: Theme.of(context).iconTheme.color,
                     ),
               ),
             ),

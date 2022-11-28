@@ -40,7 +40,7 @@ class ja {
       Keys.scanQr: 'QRをスキャン',
       Keys.about: 'だいたい',
       Keys.aboutPageUrl: 'https://about.2i2i.app',
-      Keys.scanInWalletConnect: '使用する WalletConnect\n(e.g. Algorand Wallet)',
+      Keys.scanInWalletConnect: '使用する WalletConnect\n(e.g. Pera Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'わかった',
       Keys.talk: 'トーク',
