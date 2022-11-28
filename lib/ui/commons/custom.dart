@@ -148,7 +148,10 @@ class Custom {
             if (!value) {
               Navigator.of(context).pop();
             }
-            return QrImagePage(imageUrl: url);
+            return QrImagePage(
+              imageUrl: url,
+              color: Colors.black,
+            );
           },
         ),
         barrierDismissible: true,
