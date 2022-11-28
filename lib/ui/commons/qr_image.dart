@@ -52,7 +52,7 @@ class QrWidget extends ConsumerWidget {
               // color: lightOnly?Colors.black:Theme.of(context).canvasColor,
               data: message,
               version: QrVersions.auto,
-              color: Colors.black,
+              color: Theme.of(context).iconTheme.color,
               eyeStyle: QrEyeStyle(
                 eyeShape: QrEyeShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
