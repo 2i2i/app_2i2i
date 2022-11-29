@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +51,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
-          ? null
+          ? (kIsWeb ? AppBar(
+        leading: Container(),
+              toolbarHeight: 20,
+              title: Text('web app is in alpha version'),
+              titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
+              centerTitle: true,
+              backgroundColor: Colors.green,
+            ) : null)
           : AppBar(
         leading: Container(),
               toolbarHeight: 20,
