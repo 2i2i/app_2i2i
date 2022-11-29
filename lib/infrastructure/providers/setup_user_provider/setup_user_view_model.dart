@@ -232,15 +232,18 @@ class SetupUserViewModel with ChangeNotifier {
     return userInfoModel;
   }
 
-  Future updateFirebaseMessagingToken(String uid) async {
+  Future updateFirebaseMessagingToken([String? uid]) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging
-        .getToken(
-            // vapidKey: dotenv.env['TOKEN_KEY'].toString()
-            )
-        .then((String? token) {
-      if (token is String) return database.updateToken(uid, token);
-    });
+    uid ??= FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      return messaging
+          .getToken(
+              // vapidKey: dotenv.env['TOKEN_KEY'].toString()
+              )
+          .then((String? token) {
+        if (token is String) return database.updateToken(uid!, token);
+      });
+    }
   }
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
@@ -263,7 +266,7 @@ class SetupUserViewModel with ChangeNotifier {
     } else {
       userInfoModel?.socialLinks = [];
     }
-    await updateFirebaseMessagingToken(uid);
+    // await updateFirebaseMessagingToken(uid);
     await updateDeviceInfo(uid);
     isLogged = true;
     storage.write('isLogged', "1");

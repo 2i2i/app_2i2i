@@ -21,7 +21,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(searchFilterProvider.state).state = <String>[];
+      ref.read(searchFilterProvider.notifier).state = <String>[];
+      bool isExist = ref.read(userChangerProvider)?.userModel?.name.isNotEmpty ?? false;
+      if (isExist) {
+        ref.read(setupUserViewModelProvider).updateFirebaseMessagingToken();
+      }
     });
     super.initState();
   }
@@ -48,7 +52,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         onPressed: () {
                           _searchController.text = '';
                           _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state = <String>[];
+                          ref.watch(searchFilterProvider.notifier).state = <String>[];
                         },
                         iconSize: 20,
                         icon: Icon(

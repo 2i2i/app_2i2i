@@ -18,12 +18,12 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // DEBUG
@@ -34,7 +34,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'common_main.dart';
 import 'firebase_options.dart';
-import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,10 +70,9 @@ Future<void> main() async {
   // FirebaseAppCheck.instance.getToken().then((value) {
   //   print(value);
   // });
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  FirebaseNotifications();
-
+  // FirebaseNotifications();
+  usePathUrlStrategy();
   //region DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
@@ -82,7 +80,7 @@ Future<void> main() async {
   //endregion DEBUG
 
   // await _initializeAdmin();
-  
+
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
       options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';

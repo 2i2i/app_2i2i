@@ -88,17 +88,18 @@ class Custom {
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
       final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: link,
-        link: Uri.parse('${AppConfig.hostUrl}?uid=$uid'),
+        link: Uri.parse('${AppConfig.hostUrl}/users/$uid'),
         androidParameters: AndroidParameters(
           packageName: AppConfig.androidAppId,
           fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
         ),
         iosParameters: IOSParameters(
-            bundleId: AppConfig.iosAppId,
-            fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
-            ipadFallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
-            ipadBundleId: AppConfig.iosAppId,
-            appStoreId: AppConfig.appStoreId),
+          bundleId: AppConfig.iosAppId,
+          fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+          ipadFallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+          ipadBundleId: AppConfig.iosAppId,
+          appStoreId: AppConfig.appStoreId,
+        ),
         navigationInfoParameters: const NavigationInfoParameters(
           forcedRedirectEnabled: false,
         ),

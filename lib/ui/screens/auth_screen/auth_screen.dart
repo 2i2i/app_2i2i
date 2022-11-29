@@ -36,13 +36,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final database = ref.watch(databaseProvider);
       UserModel? userModel = await database.getUser(uid);
       if (userModel?.name.isEmpty ?? false) {
-        CustomAlertWidget.showBottomSheet(context,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: UserSetting(fromBottomSheet: true),
-            ),
-            enableDrag: false,
-            isDismissible: false);
+        CustomAlertWidget.showBottomSheet(
+          context,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: UserSetting(fromBottomSheet: true),
+          ),
+          enableDrag: false,
+          isDismissible: false,
+        );
       }
     }
   }
@@ -51,16 +53,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
-          ? (kIsWeb ? AppBar(
-        leading: Container(),
-              toolbarHeight: 20,
-              title: Text('web app is in alpha version'),
-              titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
-              centerTitle: true,
-              backgroundColor: Colors.green,
-            ) : null)
+          ? (kIsWeb
+              ? AppBar(
+                  leading: Container(),
+                  toolbarHeight: 20,
+                  title: Text('web app is in alpha version'),
+                  titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
+                  centerTitle: true,
+                  backgroundColor: Colors.green,
+                )
+              : null)
           : AppBar(
-        leading: Container(),
+              leading: Container(),
               toolbarHeight: 20,
               title: Text(AlgorandNet.testnet.name + ' - v1.1.7' + (widget.updateAvailable ? ' - update: reload page' : '')),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),

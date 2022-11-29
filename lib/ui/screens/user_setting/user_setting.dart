@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -401,7 +402,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     CustomAlertWidget.loader(true, context);
                     await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                     CustomAlertWidget.loader(false, context);
+                    var obj = ref.read(setupUserViewModelProvider);
                     Navigator.of(context).pop();
+                    FirebaseNotifications();
+                    await obj.updateFirebaseMessagingToken();
                   }
                 },
                 child: Text(

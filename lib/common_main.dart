@@ -21,8 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart' as ht;
 
-// import 'package:universal_html/html.dart' as ht;
-
 // import 'infrastructure/commons/utils.dart';
 // import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
@@ -32,7 +30,6 @@ import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
 import 'ui/screens/app/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
-
 final platform = MethodChannel('app.2i2i/notification');
 
 // Future<void> main() async {

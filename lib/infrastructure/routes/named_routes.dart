@@ -34,7 +34,6 @@ class NamedRoutes {
   static bool updateAvailable = false;
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
-    // urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
     redirect: (context, state) {
       bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;

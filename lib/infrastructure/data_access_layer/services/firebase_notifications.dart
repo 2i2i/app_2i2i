@@ -16,6 +16,7 @@ class FirebaseNotifications {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   FirebaseNotifications() {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     awesomeNotificationSetup();
     firebaseCloudMessagingListeners();
   }

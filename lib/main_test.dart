@@ -18,13 +18,14 @@ import 'dart:async';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // DEBUG
@@ -34,7 +35,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 // DEBUG
 
 import 'common_main.dart';
-import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,10 +54,8 @@ Future<void> main() async {
           : null);
   // await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-  FirebaseNotifications();
-
+  // FirebaseNotifications();
+  usePathUrlStrategy();
   // DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
