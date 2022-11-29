@@ -60,7 +60,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
   Future<void> dispose() async {
     Future.delayed(Duration.zero, () async {
       _subscription?.cancel();
-      await finishTimer();
+      finishTimer();
     });
     super.dispose();
   }
@@ -68,13 +68,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void setTimer(RingingPageViewModel model) {
     if (timer != null) return;
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
-    timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
-        final finishFuture = finishTimer();
-        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
-        await Future.wait([finishFuture, endMeetingFuture]);
-      }
-    });
+    timer = Timer(
+      Duration(seconds: AppConfig().RINGPAGEDURATION),
+      () async {
+        if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
+          finishTimer();
+          model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
+        }
+      },
+    );
   }
 
   Future<void> startRingAudio() async {
@@ -92,16 +94,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
   }
 
-  Future<void> finishTimer() async {
+  void finishTimer() {
     if (timer?.isActive ?? false) {
       timer?.cancel();
     }
     timer = null;
 
-    await stopRingAudio();
+    stopRingAudio();
 
     if (!kIsWeb && Platform.isIOS) {
-      await platform.invokeMethod('CUT_CALL');
+      platform.invokeMethod('CUT_CALL');
     }
   }
 
@@ -285,17 +287,12 @@ class RingingPageState extends ConsumerState<RingingPage> {
                               color: Colors.white.withOpacity(0.3),
                               child: InkWell(
                                 onTap: () async {
-                                  try {
-                                    isClicked = true;
-                                    if (mounted) {
-                                      setState(() {});
-                                    }
-                                    final finishFuture = finishTimer();
-                                    final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                    await Future.wait([finishFuture, acceptMeetingFuture]);
-                                  } catch (e) {
-                                    print(e);
+                                  isClicked = true;
+                                  if (mounted) {
+                                    setState(() {});
                                   }
+                                  finishTimer();
+                                  ringingPageViewModel.acceptMeeting();
                                 },
                                 child: CircleAvatar(
                                     radius: kToolbarHeight,
