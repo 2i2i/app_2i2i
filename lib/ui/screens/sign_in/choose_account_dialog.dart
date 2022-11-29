@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_network/image_network.dart';
 
 class ChooseAccountDialog extends ConsumerStatefulWidget {
   final List userIds;
@@ -41,13 +42,15 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
           onTap: () => widget.onSelectId.call(uid),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(40),
-            child: CachedNetworkImage(
-              imageUrl: userModel.imageUrl ?? '',
+            child: ImageNetwork(
+              image: userModel.imageUrl ?? '',
+              imageCache: CachedNetworkImageProvider(userModel.imageUrl ?? ''),
               width: 35,
               height: 35,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => CupertinoActivityIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              onLoading: const CupertinoActivityIndicator(),
+              onError: const Icon(Icons.error),
+              fitWeb: BoxFitWeb.cover,
+              fitAndroidIos: BoxFit.cover,
             ),
           ),
           title: Text(userModel.name),
