@@ -5,8 +5,9 @@ import '../../../commons/qr_image.dart';
 
 class QrImagePage extends StatelessWidget {
   final String imageUrl;
+  final Color? color;
 
-  const QrImagePage({Key? key, required this.imageUrl}) : super(key: key);
+  const QrImagePage({Key? key, required this.imageUrl, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,7 @@ class QrImagePage extends StatelessWidget {
                 imageSize: 280,
                 hideLogo: true,
                 lightOnly: true,
+                color: color,
               ),
             ),
             Divider(),

@@ -137,7 +137,10 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
             if (!value) {
               Navigator.of(context).pop();
             }
-            return QrImagePage(imageUrl: _displayUri);
+            return QrImagePage(
+              imageUrl: _displayUri,
+              color: Colors.black,
+            );
           },
         ),
         barrierDismissible: true,

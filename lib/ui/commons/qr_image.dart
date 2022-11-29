@@ -12,12 +12,14 @@ class QrWidget extends ConsumerWidget {
   final String message;
   final bool? hideLogo;
   final bool lightOnly;
+  final Color? color;
 
   const QrWidget({
     Key? key,
     this.imageSize,
     this.logoSize,
     this.hideLogo,
+    this.color,
     required this.message,
     this.lightOnly = false,
   }) : super(key: key);
@@ -52,7 +54,8 @@ class QrWidget extends ConsumerWidget {
               // color: lightOnly?Colors.black:Theme.of(context).canvasColor,
               data: message,
               version: QrVersions.auto,
-              color: Theme.of(context).iconTheme.color,
+              color: color ?? Theme.of(context).iconTheme.color,
+
               eyeStyle: QrEyeStyle(
                 eyeShape: QrEyeShape.circle,
                 // color: Theme.of(context).colorScheme.secondary,
