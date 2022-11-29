@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_network/image_network.dart';
@@ -125,7 +124,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           borderRadius: BorderRadius.circular(borderRadius ?? 20),
           child: ImageNetwork(
             image: widget.stringPath,
-            imageCache: CachedNetworkImageProvider(widget.stringPath),
+            imageCache: NetworkImage(widget.stringPath),
             width: widget.radius,
             height: widget.radius,
             onLoading: const CupertinoActivityIndicator(),
