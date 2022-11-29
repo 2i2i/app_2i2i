@@ -1,6 +1,5 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +43,7 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
             borderRadius: BorderRadius.circular(40),
             child: ImageNetwork(
               image: userModel.imageUrl ?? '',
-              imageCache: CachedNetworkImageProvider(userModel.imageUrl ?? ''),
+              imageCache: NetworkImage(userModel.imageUrl ?? ''),
               width: 35,
               height: 35,
               onLoading: const CupertinoActivityIndicator(),
