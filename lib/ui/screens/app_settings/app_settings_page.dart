@@ -377,7 +377,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     return Row(
                       children: [
                         Visibility(
-                          visible: !list.contains('google.com'),
+                          visible: !list.contains('google.com') && !kIsWeb,
                           child: FloatingActionButton.small(
                             onPressed: () async {
                               await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);

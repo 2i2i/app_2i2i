@@ -209,7 +209,6 @@ class FirestoreDatabase {
   }
 
   Future<void> updateMeeting(String meetingId, Map<String, dynamic> data) {
-    print(data);
     return _service
         .setData(
       path: FirestorePath.meeting(meetingId),

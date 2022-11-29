@@ -290,8 +290,9 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                     if (mounted) {
                                       setState(() {});
                                     }
-                                    final finishFuture = await finishTimer();
-                                    final acceptMeetingFuture = await ringingPageViewModel.acceptMeeting();
+                                    final finishFuture = finishTimer();
+                                    final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
+                                    await Future.wait([finishFuture, acceptMeetingFuture]);
                                   } catch (e) {
                                     print(e);
                                   }

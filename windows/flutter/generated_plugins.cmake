@@ -3,8 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus_windows
-  flutter_secure_storage_windows
+        connectivity_plus
+        flutter_secure_storage_windows
   flutter_webrtc
   permission_handler_windows
   sentry_flutter

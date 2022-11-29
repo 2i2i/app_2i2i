@@ -99,8 +99,8 @@ class AlgorandService {
 
     if (amount.assetId == 0) {
       final payTxn = await (PaymentTransactionBuilder()
-            ..sender = Address.fromAlgorandAddress(address)
-            ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
+            ..sender = Address.fromAlgorandAddress(address: address)
+            ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
             ..amount = 3 * MIN_TXN_FEE + amount.num // 3 fess to unlock
             ..suggestedParams = params
             ..noteText = note)
@@ -111,8 +111,8 @@ class AlgorandService {
     }
     else {
       final payTxn = await (PaymentTransactionBuilder()
-            ..sender = Address.fromAlgorandAddress(address)
-            ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
+            ..sender = Address.fromAlgorandAddress(address: address)
+            ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
             ..amount = 3 * MIN_TXN_FEE // 3 fess to unlock
             ..suggestedParams = params)
           .build();
@@ -121,12 +121,12 @@ class AlgorandService {
       log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
 
       final axferTxn = await (AssetTransferTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address)
-          ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
-          ..amount = amount.num
-          ..assetId = amount.assetId
-          ..suggestedParams = params
-          ..noteText = note)
+            ..sender = Address.fromAlgorandAddress(address: address)
+            ..receiver = Address.fromAlgorandAddress(address: SYSTEM_ACCOUNT[net]!)
+            ..amount = amount.num
+            ..assetId = amount.assetId
+            ..suggestedParams = params
+            ..noteText = note)
         .build();
         txns.add(axferTxn);
         result['axfer'] = axferTxn.id;

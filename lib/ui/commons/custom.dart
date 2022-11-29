@@ -82,7 +82,7 @@ class Custom {
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
       if (kIsWeb) {
-        return '${AppConfig.hostUrl}/user/$uid';
+        return '${AppConfig.hostUrl}/users/$uid';
       }
       final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
