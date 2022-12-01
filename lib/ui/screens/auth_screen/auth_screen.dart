@@ -52,7 +52,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: false //AppConfig().ALGORAND_NET == AlgorandNet.mainnet
+      appBar: AppConfig().ALGORAND_NET == AlgorandNet.mainnet
           ? (kIsWeb
               ? AppBar(
                   leading: Container(),
@@ -66,8 +66,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           : AppBar(
               leading: Container(),
               toolbarHeight: 20,
-              title: Text('ALLOW NOTIFICATIONS TO USE PLS ~ web app is in ALPHA version'),
-              // title: Text(AlgorandNet.testnet.name + ' - v1.1.7' + (widget.updateAvailable ? ' - update: reload page' : '')),
+              title: Text(AlgorandNet.testnet.name + ' - v1.1.7' + (widget.updateAvailable ? ' - update: reload page' : '')),
               titleTextStyle: Theme.of(context).textTheme.bodyText2?.copyWith(color: Theme.of(context).cardColor),
               centerTitle: true,
               backgroundColor: Colors.green,
