@@ -20,29 +20,29 @@ class ChooseAccountDialog extends ConsumerStatefulWidget {
 class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: SimpleDialog(
-        title: Text('Multiple accounts'),
-        contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-        alignment: Alignment.centerLeft,
-        children: List.generate(widget.userIds.length + 1, (index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24),
-              child: Text('Choose any account using which you want to sing in.'),
-            );
-          }
-          index = index - 1;
-          String uid = widget.userIds.elementAt(index);
-          var user = ref.watch(userProvider(uid));
-          if (user.value is! UserModel) {
-            return LinearProgressIndicator();
-          }
-          UserModel userModel = user.value!;
-          return ListTile(
-            onTap: () => widget.onSelectId.call(uid),
-            leading: ClipRRect(
+    return SimpleDialog(
+      title: Text('Multiple accounts'),
+      contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+      alignment: Alignment.centerLeft,
+      children: List.generate(widget.userIds.length + 1, (index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24),
+            child: Text('Choose any account using which you want to sing in.'),
+          );
+        }
+        index = index - 1;
+        String uid = widget.userIds.elementAt(index);
+        var user = ref.watch(userProvider(uid));
+        if (user.value is! UserModel) {
+          return LinearProgressIndicator();
+        }
+        UserModel userModel = user.value!;
+        return ListTile(
+          onTap: () => widget.onSelectId.call(uid),
+          leading: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(40),
               child: ImageNetwork(
                 image: userModel.imageUrl ?? '',
@@ -55,10 +55,10 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
                 fitAndroidIos: BoxFit.cover,
               ),
             ),
-            title: Text(userModel.name),
-          );
-        }),
-      ),
+          ),
+          title: Text(userModel.name),
+        );
+      }),
     );
   }
 }
