@@ -35,6 +35,8 @@ class Custom {
   // static double webWidth(BuildContext context) => (MediaQuery.of(context).size.width / 2.5);
   static double webWidth(BuildContext context) => 500;
 
+  static double webDialogWidth(BuildContext context) => 400;
+
   static double webHeight(BuildContext context) => 844;
 
   static Future<void> deepLinks(
@@ -82,21 +84,21 @@ class Custom {
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
       if (kIsWeb) {
-        return '${AppConfig.hostUrl}/users/$uid';
+        return '${AppConfig.webHostUrl}/users/$uid';
       }
       final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
       final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
       final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: link,
-        link: Uri.parse('${AppConfig.hostUrl}/users/$uid'),
+        link: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}/user/$uid'),
         androidParameters: AndroidParameters(
           packageName: AppConfig.androidAppId,
-          fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+          fallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
         ),
         iosParameters: IOSParameters(
           bundleId: AppConfig.iosAppId,
-          fallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
-          ipadFallbackUrl: Uri.parse('${AppConfig.hostUrl}'),
+          fallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
+          ipadFallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
           ipadBundleId: AppConfig.iosAppId,
           appStoreId: AppConfig.appStoreId,
         ),

@@ -18,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
+import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -111,7 +112,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      context.pushNamed(
+                        Routes.userSetting.nameFromPath(),
+                        extra: {AppConfig.isTapForHashTags: true},
+                      );
                       currentIndex.value = 4;
                     },
                     title: Text(

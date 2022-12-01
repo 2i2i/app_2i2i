@@ -27,8 +27,9 @@ import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
+  final bool isTapForHashTags;
 
-  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet, this.isTapForHashTags = false}) : super(key: key);
 
   @override
   _UserSettingState createState() => _UserSettingState();
@@ -40,6 +41,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
+  var bioTextFocus = FocusNode();
+
   RichTextController bioTextController = RichTextController(
     patternMatchMap: {RegExp(r"(?:#)[a-zA-Z0-9]+"): TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)},
     onMatch: (List<String> match) {},
@@ -157,6 +160,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 LengthLimitingTextInputFormatter(200),
               ],
               controller: bioTextController,
+              focusNode: bioTextFocus,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
@@ -470,7 +474,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       UserModel user = userAsyncValue.value!;
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
-
       speedEditController.text = (user.rule.minSpeedMicroALGO / pow(10, 6)).toString(); // min speed is in ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
@@ -494,6 +497,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         x = 2.0 - _importanceRatioValue!;
       }
       _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
+    }
+    if (widget.isTapForHashTags) {
+      bioTextFocus.requestFocus();
     }
     setState(() {});
   }

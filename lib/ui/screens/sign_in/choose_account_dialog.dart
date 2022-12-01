@@ -23,7 +23,7 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
     return SimpleDialog(
       title: Text('Multiple accounts'),
       contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       children: List.generate(widget.userIds.length + 1, (index) {
         if (index == 0) {
           return Padding(

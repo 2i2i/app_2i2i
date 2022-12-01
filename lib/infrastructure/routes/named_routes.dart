@@ -27,6 +27,7 @@ import 'package:go_router/go_router.dart';
 import '../../ui/screens/auth_screen/auth_screen.dart';
 import '../../ui/screens/redeem_coin/redeem_coin_page.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
+import '../commons/app_config.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -176,9 +177,13 @@ class NamedRoutes {
         name: Routes.userSetting.nameFromPath(),
         path: Routes.userSetting,
         pageBuilder: (context, state) {
+          bool isTapForHashTags = state.extra != null ? (state.extra as Map)[AppConfig.isTapForHashTags] ?? false : false;
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(UserSetting(fromBottomSheet: false)),
+            child: getView(UserSetting(
+              fromBottomSheet: false,
+              isTapForHashTags: isTapForHashTags,
+            )),
           );
         },
       ),
