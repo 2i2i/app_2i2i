@@ -83,8 +83,7 @@ class Custom {
 
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
-      final host = 'https://app-2i2i.web.app';
-      // final host = 'http://localhost:54589/';
+      final host = dotenv.env['host'].toString();
       final link = Uri.parse('$host/user/$uid');
       if (kIsWeb) {
         return link.toString();
