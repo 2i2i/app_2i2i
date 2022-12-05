@@ -33,8 +33,8 @@
     <application
         android:name="com.app.i2i2.MyApplication"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"
-        android:label="2i2i">
+        android:label="2i2i"
+        android:usesCleartextTraffic="true">
         <activity
             android:name="app.i2i2.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -61,17 +61,34 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <data
+                    android:host="about.2i2i.app/user"
+                    android:scheme="https" />
+
+                <data
+                    android:host="i2i2.page.link"
+                    android:scheme="https" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+                <data
+                    android:host="about.2i2i.app/user"
+                    android:scheme="https" />
+
+                <data
+                    android:host="i2i2.page.link"
+                    android:scheme="https" />
                 <data
                     android:host="twoitwoi.com"
                     android:scheme="test" />

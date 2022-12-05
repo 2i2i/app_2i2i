@@ -18,6 +18,8 @@ ValueNotifier<String> userIdNav = ValueNotifier("");
 bool _initialUriIsHandled = false;
 
 class Custom {
+  static RegExp regExpDynamicLink = RegExp('^https{0,1}:\/\/app-2i2i\.web\.app(\/.*){0,1}\$');
+
   static getBoxDecoration(BuildContext context, {Color? color, double radius = 10, BorderRadiusGeometry? borderRadius}) {
     return BoxDecoration(
       color: color ?? Theme.of(context).cardColor,
@@ -39,10 +41,8 @@ class Custom {
 
   static double webHeight(BuildContext context) => 844;
 
-  static Future<void> deepLinks(
-    BuildContext context,
-    bool mounted,
-  ) async {
+  static Future<void> deepLinks(BuildContext context,
+      bool mounted,) async {
     if (!kIsWeb) {
       try {
         if (!_initialUriIsHandled) {
@@ -68,11 +68,11 @@ class Custom {
           if (uri.queryParameters['uid'] is String) {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            isUserLocked.refresh();
           } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
             String userId = uri.pathSegments.last;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            isUserLocked.refresh();
           }
         });
       } catch (e) {
@@ -83,22 +83,27 @@ class Custom {
 
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
+      final host = 'https://app-2i2i.web.app';
+      // final host = 'http://localhost:54589/';
+      final link = Uri.parse('$host/user/$uid');
       if (kIsWeb) {
-        return '${AppConfig.webHostUrl}/users/$uid';
+        return link.toString();
       }
+
       final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+      final uriPrefix = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+
       final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: link,
-        link: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}/user/$uid'),
+        uriPrefix: uriPrefix,
+        link: link,
         androidParameters: AndroidParameters(
           packageName: AppConfig.androidAppId,
-          fallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
+          fallbackUrl: Uri.tryParse(host),
         ),
         iosParameters: IOSParameters(
           bundleId: AppConfig.iosAppId,
-          fallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
-          ipadFallbackUrl: Uri.parse('${dotenv.env['DYNAMIC_LINK_HOST']}'),
+          fallbackUrl: Uri.tryParse(host),
+          ipadFallbackUrl: Uri.tryParse(host),
           ipadBundleId: AppConfig.iosAppId,
           appStoreId: AppConfig.appStoreId,
         ),
@@ -118,23 +123,27 @@ class Custom {
   }
 
   static void handleURI(Uri? uri, String userId) {
-    if (uri?.queryParameters['link'] is String) {
+    final result = regExpDynamicLink.hasMatch(uri.toString());
+    if (result == true && uri != null && uri.pathSegments.isNotEmpty) {
+      userId = uri.pathSegments.last;
+      userIdNav.value = userId;
+      isUserLocked.refresh();
+    } else if (uri?.queryParameters['link'] is String) {
       var link = uri!.queryParameters['link'];
       if (link?.isNotEmpty ?? false) {
         uri = Uri.parse(link!);
       }
-    }
-    if (uri != null) {
+    } else if (uri != null) {
       print('uri init ${uri.pathSegments}');
       if (uri.queryParameters['uid'] is String) {
         userId = uri.queryParameters['uid'] as String;
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        isUserLocked.refresh();
       } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
         String userId = uri.pathSegments.last;
         print(userId);
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        isUserLocked.refresh();
       }
     }
   }

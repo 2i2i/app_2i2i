@@ -25,7 +25,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // DEBUG
@@ -55,7 +54,8 @@ Future<void> main() async {
   // await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: '6LcASwUeAAAAAE354ZxtASprrBMOGULn4QoqUnze');
 
   // FirebaseNotifications();
-  usePathUrlStrategy();
+  // usePathUrlStrategy();
+  // setUrlStrategy(PathUrlStrategy());
   // DEBUG
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8081);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
