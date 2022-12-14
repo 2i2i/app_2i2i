@@ -75,6 +75,9 @@
                 <data
                     android:host="2i2i.app"
                     android:scheme="https" />
+                <data
+                    android:host="www.2i2i.app"
+                    android:scheme="https" />
 
             </intent-filter>
 
