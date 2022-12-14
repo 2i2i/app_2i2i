@@ -29,14 +29,14 @@
             <data android:scheme="https" />
         </intent>
     </queries>
-
+    <!--    android:name="com.app.i2i2.MyApplication"-->
     <application
         android:name="com.app.i2i2.MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="2i2i"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="app.i2i2.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
@@ -48,32 +48,10 @@
             android:turnScreenOn="true"
             android:windowSoftInputMode="adjustResize">
 
-            <meta-data
-                android:name="google_analytics_adid_collection_enabled"
-                android:value="false" />
-            <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme" />
-            <meta-data
-                android:name="flutter_deeplinking_enabled"
-                android:value="true" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <data
-                    android:host="about.2i2i.app/user"
-                    android:scheme="https" />
-
-                <data
-                    android:host="i2i2.page.link"
-                    android:scheme="https" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="FLUTTER_NOTIFICATION_CLICK" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
             <intent-filter>
@@ -83,16 +61,38 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="about.2i2i.app/user"
+                    android:host="test.2i2i.app"
                     android:scheme="https" />
-
                 <data
                     android:host="i2i2.page.link"
                     android:scheme="https" />
                 <data
-                    android:host="twoitwoi.com"
-                    android:scheme="test" />
+                    android:host="2i2i.page.link"
+                    android:scheme="https" />
+                <data
+                    android:host="about.2i2i.app/user"
+                    android:scheme="https" />
+                <data
+                    android:host="2i2i.app"
+                    android:scheme="https" />
+
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+
+            <meta-data
+                android:name="google_analytics_adid_collection_enabled"
+                android:value="false" />
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
 
         </activity>
 

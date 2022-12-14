@@ -512,7 +512,6 @@ class SignalingWebSockets {
   Future<void> _closeSession(Session session) async {
     for (MediaStreamTrack element in (_localStream?.getTracks() ?? [])) {
       element.stop();
-      element.dispose();
     }
     await _localStream?.dispose();
     _localStream = null;

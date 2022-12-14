@@ -35,9 +35,9 @@ class NamedRoutes {
   static bool updateAvailable = false;
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
-    urlPathStrategy: UrlPathStrategy.path,
+    // urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
-    redirect: (state) {
+    redirect: (context, state) {
       bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;
       if (isTrue && userIdNav.value.isNotEmpty) {
         previousRouteLocation = Routes.user;
@@ -78,7 +78,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(TestScreen()),
           // child: getView(InstagramLogin()),
         ),
       ),

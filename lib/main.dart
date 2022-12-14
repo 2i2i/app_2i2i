@@ -24,6 +24,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 // DEBUG
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -79,7 +80,7 @@ Future<void> main() async {
   //endregion DEBUG
 
   // await _initializeAdmin();
-
+  setPathUrlStrategy();
   if (AppConfig().ALGORAND_NET == AlgorandNet.mainnet) {
     return SentryFlutter.init((options) {
       options.dsn = 'https://4a4d45710a98413eb686d20da5705ea0@o1014856.ingest.sentry.io/5980109';
