@@ -95,6 +95,7 @@ class _AccountSelectionPageState extends ConsumerState<AccountSelectionPage> {
                                   ],
                                 ),
                                 child: ListTile(
+                                  minVerticalPadding: 10,
                                   title: Text('$address', style: Theme.of(context).textTheme.bodyMedium),
                                 ),
                               ),

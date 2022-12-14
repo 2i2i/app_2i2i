@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:universal_html/html.dart' as html;
 
 import '../../../../infrastructure/commons/keys.dart';
 import '../../../../infrastructure/data_access_layer/accounts/abstract_account.dart';
@@ -17,7 +19,6 @@ import '../../../../infrastructure/models/fx_model.dart';
 import '../../../../infrastructure/providers/all_providers.dart';
 import '../../../../infrastructure/routes/app_routes.dart';
 import '../../../commons/custom_alert_widget.dart';
-
 class AccountAssetInfo extends ConsumerStatefulWidget {
   final bool? shrinkwrap;
   final int index;
@@ -44,7 +45,6 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
   _AccountAssetInfoState(this.balance);
 
   Balance balance;
-
 
   int get assetId => balance.assetHolding.assetId;
 
@@ -196,6 +196,10 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
                       child: IconButton(
                         icon: Icon(Icons.credit_card_rounded, color: iconColor(context)),
                         onPressed: () async {
+                          if (kIsWeb) {
+                            html.window.open('https://changenow.io', 'new tab');
+                            return;
+                          }
                           context.pushNamed(Routes.webView.nameFromPath(), params: {'walletAddress': widget.address});
                         },
                       ),
@@ -290,7 +294,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
               margin: EdgeInsets.symmetric(vertical: 10),
               padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
               decoration: BoxDecoration(
-                color: (snapshot.data?.value != null) ? Theme.of(context).cardColor : Color(0xFFd3d3d3),
+                color: (snapshot.data?.value != null) ? Theme.of(context).cardColor : Theme.of(context).cardColor.withOpacity(0.5) /*Color(0xFFd3d3d3)*/,
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [
                   BoxShadow(
@@ -307,7 +311,7 @@ class _AccountAssetInfoState extends ConsumerState<AccountAssetInfo> {
 
         return Container(
           margin: EdgeInsets.symmetric(vertical: 10),
-          padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 8),
+          padding: EdgeInsets.only(top: 14, left: 14, right: 14, bottom: 0),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10.0),

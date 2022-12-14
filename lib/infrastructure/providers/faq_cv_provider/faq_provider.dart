@@ -31,7 +31,7 @@ class FAQProviderModel extends ChangeNotifier {
         tags: [
           'Host',
         ],
-        description: 'Hosts shared their time with Guests and receive coins. The Host sets the minimum coins they require in exchange for its time. the Host also set the max duration per meeting. the Host also sets the importance of Chrony vs HighRoller vs Eccentric'),
+        description: 'Hosts shared their time with Guests and receive energy. The Host sets the minimum coins they require in exchange for its time. the Host also set the max duration per meeting. the Host also sets the importance of Chrony vs HighRoller vs Eccentric'),
     FAQDataModel(
         title: 'What is a Crony?',
         tags: [
@@ -98,7 +98,7 @@ class FAQProviderModel extends ChangeNotifier {
           'teacher',
         ],
         description:
-            'If you have fans, let your fans out-support each other to see you live. Literally anyone with internet can receive coins just by talking about whatever. Maybe you are a teacher - students can offer support for your time. Or you are just bored and willing to listen to someone; someone will value that and offer support for your time.\nOn the other hand, if you need to talk with someone right now: once we have lots of users on 2i2i, you will find them. Whatever you need, right now.'),
+            'If you have fans, let your fans out-support each other to see you live. Literally anyone with internet can receive energy just by talking about whatever. Maybe you are a teacher - students can offer support for your time. Or you are just bored and willing to listen to someone; someone will value that and offer support for your time.\nOn the other hand, if you need to talk with someone right now: once we have lots of users on 2i2i, you will find them. Whatever you need, right now.'),
     FAQDataModel(
         title: 'Is 2i2i only for **live** video calls?',
         tags: [

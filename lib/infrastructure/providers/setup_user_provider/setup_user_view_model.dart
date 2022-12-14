@@ -6,7 +6,6 @@ import 'package:app_2i2i/ui/screens/sign_in/choose_account_dialog.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/entity/auth_result.dart';
 import 'package:twitter_login/twitter_login.dart';
 
+import '../../../ui/commons/custom.dart';
 import '../../data_access_layer/accounts/abstract_account.dart';
 import '../../data_access_layer/repository/algorand_service.dart';
 import '../../data_access_layer/repository/firestore_database.dart';
@@ -231,25 +231,32 @@ class SetupUserViewModel with ChangeNotifier {
     return userInfoModel;
   }
 
-  Future updateFirebaseMessagingToken(String uid) async {
+  Future updateFirebaseMessagingToken([String? uid]) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    return messaging
-        .getToken(
-            // vapidKey: dotenv.env['TOKEN_KEY'].toString()
-            )
-        .then((String? token) {
-      if (token is String) return database.updateToken(uid, token);
-    });
+    uid ??= FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      return messaging
+          .getToken(
+              // vapidKey: dotenv.env['TOKEN_KEY'].toString()
+              )
+          .then((String? token) {
+        if (token is String) return database.updateToken(uid!, token);
+      });
+    }
   }
 
   Future signInProcess(String uid, {SocialLinksModel? socialLinkModel}) async {
     userInfoModel = await getUserInfoModel(uid);
+
     if (userInfoModel == null) {
       await database.createUser(uid);
-    } else if (userInfoModel!.url?.isEmpty ?? true) {
-      userInfoModel!.url = await createDeepLinkUrl(uid);
+    }
+
+    if ((userInfoModel?.url?.isEmpty ?? false) || (Uri.parse(userInfoModel?.url ?? "").host == dotenv.env['DYNAMIC_LINK_HOST'] && !kIsWeb)) {
+      userInfoModel!.url = await Custom.createDeepLinkUrl(uid);
       await database.updateUser(userInfoModel!);
     }
+
     if (socialLinkModel is SocialLinksModel) {
       userInfoModel?.socialLinks.add(socialLinkModel);
       if ((userInfoModel?.name ?? "").isNotEmpty) {
@@ -258,7 +265,7 @@ class SetupUserViewModel with ChangeNotifier {
     } else {
       userInfoModel?.socialLinks = [];
     }
-    await updateFirebaseMessagingToken(uid);
+    // await updateFirebaseMessagingToken(uid);
     await updateDeviceInfo(uid);
     isLogged = true;
     storage.write('isLogged', "1");
@@ -284,9 +291,7 @@ class SetupUserViewModel with ChangeNotifier {
             context: context,
             builder: (context) => ChooseAccountDialog(
               userIds: ids,
-              onSelectId: (String value) {
-                Navigator.of(context).pop(value);
-              },
+              onSelectId: (String value) => Navigator.of(context).pop(value),
             ),
             // barrierDismissible: false,
           );
@@ -447,38 +452,6 @@ class SetupUserViewModel with ChangeNotifier {
       yesButtonTextStyle: TextStyle(color: Theme.of(mainContext).errorColor),
       noButtonTextStyle: TextStyle(color: Theme.of(mainContext).colorScheme.secondary),
     );
-  }
-
-  Future<String> createDeepLinkUrl(String uid) async {
-    try {
-      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: link,
-        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
-        androidParameters: AndroidParameters(
-          packageName: 'app.i2i2',
-          fallbackUrl: Uri.parse('https://about.2i2i.app'),
-        ),
-        iosParameters: IOSParameters(
-            bundleId: 'app.2i2i',
-            fallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadBundleId: 'app.2i2i',
-            appStoreId: '1609689141'),
-        navigationInfoParameters: const NavigationInfoParameters(
-          forcedRedirectEnabled: false,
-        ),
-      );
-      final shortUri = await dynamicLinks.buildShortLink(parameters);
-      if (shortUri.shortUrl.toString().isNotEmpty) {
-        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
-      }
-      return shortUri.shortUrl.toString();
-    } catch (e) {
-      print(e);
-    }
-    return "";
   }
 
   Future<void> unLink(BuildContext context) async {

@@ -125,6 +125,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   Custom.signInButton(
                                     label: 'Google',
                                     icon: 'assets/google.png',
+                                    isVisibleIf: !kIsWeb,
                                     onPressed: () async {
                                       await ref.read(setupUserViewModelProvider).signInWithGoogle(context);
                                     },

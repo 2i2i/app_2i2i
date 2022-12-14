@@ -18,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 
+import '../../../infrastructure/commons/app_config.dart';
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -111,7 +112,10 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
-                      context.pushNamed(Routes.userSetting.nameFromPath());
+                      context.pushNamed(
+                        Routes.userSetting.nameFromPath(),
+                        extra: {AppConfig.isTapForHashTags: true},
+                      );
                       currentIndex.value = 4;
                     },
                     title: Text(
@@ -311,32 +315,35 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                       Icons.navigate_next,
                     ),
                   ),
-                  ListTile(
-                    onTap: () async {
-                      if (appSettingModel.updateRequired && !Platform.isIOS) {
-                        await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
-                      }
-                      if (Platform.isIOS) {
-                        await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
-                      }
-                    },
-                    title: Text(
-                      Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.currentVersion})" : ""),
-                      style: Theme.of(context).textTheme.subtitle1,
+                  Visibility(
+                    visible: !kIsWeb,
+                    child: ListTile(
+                      onTap: () async {
+                        if (!kIsWeb && appSettingModel.updateRequired && Platform.isAndroid) {
+                          await launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=app.i2i2'), mode: LaunchMode.externalApplication);
+                        }
+                        if (!kIsWeb && Platform.isIOS) {
+                          await launchUrl(Uri.parse('https://itunes.apple.com/app/id1609689141'), mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      title: Text(
+                        Keys.appVersion.tr(context) + (appSettingModel.updateRequired ? " (${appSettingModel.currentVersion})" : ""),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      subtitle: appSettingModel.updateRequired
+                          ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
+                          : null,
+                      iconColor: Colors.amber,
+                      trailing: appSettingModel.updateRequired
+                          ? RotatedBox(
+                              quarterTurns: 1,
+                              child: Icon(
+                                Icons.arrow_circle_left_rounded,
+                              ),
+                            )
+                          : Text("${appSettingModel.currentVersion}",
+                              style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                     ),
-                    subtitle: appSettingModel.updateRequired
-                        ? Text(Keys.updateAvailable.tr(context), style: Theme.of(context).textTheme.caption?.copyWith(color: Colors.amber))
-                        : null,
-                    iconColor: Colors.amber,
-                    trailing: appSettingModel.updateRequired
-                        ? RotatedBox(
-                            quarterTurns: 1,
-                            child: Icon(
-                              Icons.arrow_circle_left_rounded,
-                            ),
-                          )
-                        : Text("${appSettingModel.currentVersion}",
-                            style: Theme.of(context).textTheme.caption?.copyWith(color: Theme.of(context).disabledColor)),
                   ),
                   ListTile(
                     onTap: () => CustomAlertWidget.confirmDialog(
@@ -374,7 +381,7 @@ class _AppSettingPageState extends ConsumerState<AppSettingPage> with TickerProv
                     return Row(
                       children: [
                         Visibility(
-                          visible: !list.contains('google.com'),
+                          visible: !list.contains('google.com') && !kIsWeb,
                           child: FloatingActionButton.small(
                             onPressed: () async {
                               await signUpViewModel.signInWithGoogle(context, linkWithCredential: true);

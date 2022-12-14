@@ -21,7 +21,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(searchFilterProvider.state).state = <String>[];
+      ref.read(searchFilterProvider.notifier).state = <String>[];
+      bool isExist = ref.read(userChangerProvider)?.userModel?.name.isNotEmpty ?? false;
+      if (isExist) {
+        ref.read(setupUserViewModelProvider).updateFirebaseMessagingToken();
+      }
     });
     super.initState();
   }
@@ -48,7 +52,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         onPressed: () {
                           _searchController.text = '';
                           _searchController.clear();
-                          ref.watch(searchFilterProvider.state).state = <String>[];
+                          ref.watch(searchFilterProvider.notifier).state = <String>[];
                         },
                         iconSize: 20,
                         icon: Icon(
@@ -63,7 +67,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               onChanged: (value) {
                 value = value.trim().toLowerCase();
-                ref.watch(searchFilterProvider.state).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
+                ref.watch(searchFilterProvider.notifier).state = value.isEmpty ? <String>[] : value.split(RegExp(r'\s'));
               },
             ),
           ),
@@ -105,7 +109,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildContents(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(searchFilterProvider.state).state;
+    final filter = ref.watch(searchFilterProvider.notifier).state;
     final mainUserID = ref.watch(myUIDProvider)!;
     var userListProvider = ref.watch(searchUsersStreamProvider);
     if (haveToWait(userListProvider)) {

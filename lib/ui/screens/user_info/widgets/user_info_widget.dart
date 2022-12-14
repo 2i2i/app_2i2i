@@ -91,12 +91,12 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             ),
             Expanded(
               child: ListTile(
-                onTap: isCurrentUser
-                    ? () {
-                        context.pushNamed(Routes.userSetting.nameFromPath());
-                        currentIndex.value = 1;
-                      }
-                    : null,
+                onTap: () {
+                  if (isCurrentUser) {
+                    context.pushNamed(Routes.userSetting.nameFromPath());
+                    currentIndex.value = 1;
+                  }
+                },
                 title: RichText(
                   maxLines: 3,
                   text: new TextSpan(
@@ -120,46 +120,49 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     ],
                   ),
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkResponse(
-                      onTap: widget.onTapChat,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: Icon(Icons.chat_outlined, size: 25),
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.onTapWallet != null,
-                      child: InkResponse(
-                        onTap: widget.onTapWallet,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          child: Icon(Icons.attach_money, size: 25),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.user.url?.isNotEmpty ?? false,
-                      child: InkResponse(
-                        onTap: widget.onTapQr,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          child: Icon(Icons.qr_code, size: 25),
-                        ),
-                      ),
-                    ),
-                    if (widget.onTapFav != null)
+                trailing: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       InkResponse(
-                        onTap: widget.onTapFav,
+                        onTap: widget.onTapChat,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          child: Icon(widget.isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                              color: widget.isFav ? Colors.red : Colors.grey, size: 25),
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(Icons.chat_outlined, size: 25),
                         ),
                       ),
-                  ],
+                      Visibility(
+                        visible: widget.onTapWallet != null,
+                        child: InkResponse(
+                          onTap: widget.onTapWallet,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            child: Icon(Icons.attach_money, size: 25),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: widget.user.url?.isNotEmpty ?? false,
+                        child: InkResponse(
+                          onTap: widget.onTapQr,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            child: Icon(Icons.qr_code, size: 25),
+                          ),
+                        ),
+                      ),
+                      if (widget.onTapFav != null)
+                        InkResponse(
+                          onTap: widget.onTapFav,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            child: Icon(widget.isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                color: widget.isFav ? Colors.red : Colors.grey, size: 25),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

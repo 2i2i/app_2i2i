@@ -1,6 +1,8 @@
 import 'dart:typed_data';
-import 'package:dio/dio.dart' as dio;
+
 import 'package:algorand_dart/algorand_dart.dart';
+import 'package:dio/dio.dart' as dio;
+
 import '../repository/algorand_service.dart';
 import '../repository/secure_storage_service.dart';
 import '../services/logging.dart';
@@ -69,24 +71,21 @@ class AccountService {
     try {
       final balanceALGOFuture = algorandLib.client[net]!.getBalance(address);
 
-      final accountInfoFuture =
-          algorandLib.client[net]!.getAccountByAddress(address);
+      final accountInfoFuture = algorandLib.client[net]!.getAccountByAddress(address);
 
-      final futureResults =
-          await Future.wait([balanceALGOFuture, accountInfoFuture]);
+      final futureResults = await Future.wait([balanceALGOFuture, accountInfoFuture]);
       // final futureResults = await Future.wait([balanceALGOFuture]);
 
       final balanceALGO = futureResults[0] as int;
 
+      final assetHoldings = (futureResults[1] as AccountInformation).assets;
 
-    final assetHoldings = (futureResults[1] as AccountInformation).assets;
+      log('assetHoldings=$assetHoldings');
 
-    log('assetHoldings=$assetHoldings');
+      final algoAssetHolding = AssetHolding(amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
 
-    final algoAssetHolding = AssetHolding(amount: balanceALGO, assetId: 0, creator: '', isFrozen: false);
-
-    // return [algoAssetHolding];
-    return [algoAssetHolding, ...assetHoldings]; // ALGO always first
+      // return [algoAssetHolding];
+      return [algoAssetHolding, ...assetHoldings]; // ALGO always first
     } on AlgorandException catch (ex) {
       final cause = ex.cause;
       if (cause is dio.DioError) {
@@ -121,7 +120,7 @@ class AccountService {
 
   Future<List<String>> getAllWalletConnectAccounts() async {
     String? val = await storage.read(WalletConnectAccount.STORAGE_KEY);
-    return val == null ? [] : val.split(',');
+    return (val == null || val.isEmpty) ? [] : val.split(',');
   }
 
   Future<Map<String, List<String>>> getAllWalletAddress() async {

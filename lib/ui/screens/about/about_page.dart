@@ -51,7 +51,7 @@ class AboutPage extends StatelessWidget {
             '• If the bid is accepted by the user, a smart contract keeps and distributes the coins at the end of the call, according to the call duration.'
           ]),
           paragraph(context, 'Target audience', [
-            '• Anyone with an internet connection can receive coins by talking.',
+            '• Anyone with an internet connection can receive energy by talking.',
             '• Examples include: tutors, people with fans, someone with an ear to listen, etc.'
           ]),
           paragraph(

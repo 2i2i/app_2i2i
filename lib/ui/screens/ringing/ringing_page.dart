@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/app_config.dart';
 import 'package:app_2i2i/ui/screens/ringing/ripples_animation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +51,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
     });
 
     startRingAudio();
-    platform.invokeMethod('ANSWER', "ANSWER");
+
+    if (!kIsWeb) platform.invokeMethod('ANSWER', "ANSWER");
     super.initState();
   }
 
@@ -58,7 +60,7 @@ class RingingPageState extends ConsumerState<RingingPage> {
   Future<void> dispose() async {
     Future.delayed(Duration.zero, () async {
       _subscription?.cancel();
-      await finishTimer();
+      finishTimer();
     });
     super.dispose();
   }
@@ -66,13 +68,15 @@ class RingingPageState extends ConsumerState<RingingPage> {
   void setTimer(RingingPageViewModel model) {
     if (timer != null) return;
     if (model.meeting.status != MeetingStatus.ACCEPTED_B) return;
-    timer = Timer(Duration(seconds: AppConfig().RINGPAGEDURATION), () async {
-      if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
-        final finishFuture = finishTimer();
-        final endMeetingFuture = model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
-        await Future.wait([finishFuture, endMeetingFuture]);
-      }
-    });
+    timer = Timer(
+      Duration(seconds: AppConfig().RINGPAGEDURATION),
+      () async {
+        if (mounted && model.meeting.status != MeetingStatus.RECEIVED_REMOTE_A) {
+          finishTimer();
+          model.endMeeting(MeetingStatus.END_TIMER_RINGING_PAGE);
+        }
+      },
+    );
   }
 
   Future<void> startRingAudio() async {
@@ -90,16 +94,16 @@ class RingingPageState extends ConsumerState<RingingPage> {
     }
   }
 
-  Future<void> finishTimer() async {
+  void finishTimer() {
     if (timer?.isActive ?? false) {
       timer?.cancel();
     }
     timer = null;
 
-    await stopRingAudio();
+    stopRingAudio();
 
-    if (Platform.isIOS) {
-      await platform.invokeMethod('CUT_CALL');
+    if (!kIsWeb && Platform.isIOS) {
+      platform.invokeMethod('CUT_CALL');
     }
   }
 
@@ -287,9 +291,8 @@ class RingingPageState extends ConsumerState<RingingPage> {
                                   if (mounted) {
                                     setState(() {});
                                   }
-                                  final finishFuture = finishTimer();
-                                  final acceptMeetingFuture = ringingPageViewModel.acceptMeeting();
-                                  await Future.wait([finishFuture, acceptMeetingFuture]);
+                                  finishTimer();
+                                  ringingPageViewModel.acceptMeeting();
                                 },
                                 child: CircleAvatar(
                                     radius: kToolbarHeight,

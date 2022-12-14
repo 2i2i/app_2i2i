@@ -40,7 +40,7 @@ class es {
       Keys.scanQr: 'Escanear QR',
       Keys.about: 'Sobre',
       Keys.aboutPageUrl: 'https://about.2i2i.app',
-      Keys.scanInWalletConnect: 'Usar WalletConnect\n(e.g. Algorand Wallet)',
+      Keys.scanInWalletConnect: 'Usar WalletConnect\n(e.g. Pera Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
       Keys.talk: 'Hablar',

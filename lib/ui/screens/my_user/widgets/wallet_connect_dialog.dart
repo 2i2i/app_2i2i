@@ -36,8 +36,9 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: EdgeInsets.all(kToolbarHeight),
+      width: kIsWeb ? 500 : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -136,7 +137,10 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
             if (!value) {
               Navigator.of(context).pop();
             }
-            return QrImagePage(imageUrl: _displayUri);
+            return QrImagePage(
+              imageUrl: _displayUri,
+              color: Colors.black,
+            );
           },
         ),
         barrierDismissible: true,
@@ -160,7 +164,7 @@ class _WalletConnectDialogState extends ConsumerState<WalletConnectDialog> {
       }
       if (!isAvailable) {
         await launchUrl(
-            Uri.parse(Platform.isAndroid
+            Uri.parse(!kIsWeb && Platform.isAndroid
                 ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
                 : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
             mode: LaunchMode.externalApplication);

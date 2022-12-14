@@ -6,7 +6,6 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import './utils/device_info.dart' if (dart.library.js) './utils/device_info_web.dart';
 import './utils/websocket.dart' if (dart.library.js) './utils/websocket_web.dart';
 import '../../../infrastructure/data_access_layer/services/logging.dart';
-
 enum SignalingState {
   ConnectionOpen,
   ConnectionClosed,
@@ -505,15 +504,15 @@ class SignalingWebSockets {
       return peerId == ids[0] || peerId == ids[1];
     });
     if (session != null) {
-      _closeSession(session);
+      // _closeSession(session);
       onCallStateChange?.call(session, CallState.CallStateBye);
     }
   }
 
   Future<void> _closeSession(Session session) async {
-    _localStream?.getTracks().forEach((element) async {
-      await element.stop();
-    });
+    for (MediaStreamTrack element in (_localStream?.getTracks() ?? [])) {
+      element.stop();
+    }
     await _localStream?.dispose();
     _localStream = null;
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/ui/commons/custom.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -22,8 +23,12 @@ class CustomAlertWidget {
       context: context,
       useRootNavigator: useRootNavigator,
       enableDrag: enableDrag,
+      constraints: BoxConstraints(
+        maxWidth: kIsWeb ? 400 : MediaQuery.of(context).size.width,
+      ),
       isScrollControlled: true,
       backgroundColor: backgroundColor ?? Theme.of(context).canvasColor,
+      // backgroundColor: Colors.white,
       builder: (BuildContext context) => WillPopScope(
           onWillPop: () {
             return Future.value(isDismissible);
@@ -63,7 +68,10 @@ class CustomAlertWidget {
           color: Theme.of(context).errorColor,
         ),
       ),
-      content: messageWidget,
+      content: Container(
+        child: messageWidget,
+        constraints: BoxConstraints(maxWidth: Custom.webDialogWidth(context)),
+      ),
       actions: [
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
@@ -79,7 +87,10 @@ class CustomAlertWidget {
           color: Theme.of(context).errorColor,
         ),
       ),
-      content: messageWidget,
+      content: Container(
+        child: messageWidget,
+        constraints: BoxConstraints(maxWidth: Custom.webDialogWidth(context)),
+      ),
       actions: [
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
@@ -89,7 +100,7 @@ class CustomAlertWidget {
       ],
     );
     return Future.delayed(Duration.zero).then((value) async {
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         await showCupertinoDialog(
           context: context,
           builder: (context) => cupertinoDialog,
@@ -150,7 +161,7 @@ class CustomAlertWidget {
         ),
       ],
     );
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       await showCupertinoDialog(
         context: context,
         builder: (context) => cupertinoDialog,

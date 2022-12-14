@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/app_version_model.dart';
 import 'package:app_2i2i/infrastructure/models/bid_model.dart';
@@ -15,7 +16,9 @@ import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 import 'firestore_path.dart';
 import 'firestore_service.dart';
 
@@ -155,12 +158,21 @@ class FirestoreDatabase {
       });
 
   Future<void> updateToken(String uid, String token) {
-    final tokenModel = TokenModel(value: token, operatingSystemVersion: Platform.operatingSystemVersion, operatingSystem: Platform.operatingSystem);
-    return _service.setData(
+    final tokenModel;
+    if (kIsWeb) {
+      tokenModel = TokenModel(value: token, operatingSystem: 'web');
+    } else {
+      tokenModel = TokenModel(value: token, operatingSystem: Platform.operatingSystem);
+    }
+    return _service
+        .setData(
       path: FirestorePath.token(uid, token),
       data: tokenModel.toJson(),
       merge: true,
-    );
+    )
+        .catchError((onError) {
+      log("$E updateToken : $onError");
+    });
   }
 
   Future<void> removeToken(String uid, [String? token]) async {

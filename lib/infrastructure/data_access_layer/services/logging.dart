@@ -15,6 +15,7 @@ const String A = 'A - ';
 const String B = 'B - ';
 const String C = 'C - ';
 const String D = 'D - ';
+const String WEB = 'WEB - ';
 
 void log(String message) {
   // if (!message.startsWith(D)) return;

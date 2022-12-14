@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../infrastructure/commons/app_config.dart';
 import '../../infrastructure/commons/utils.dart';
 import '../../infrastructure/data_access_layer/services/logging.dart';
 import '../../infrastructure/providers/all_providers.dart';
@@ -15,6 +18,8 @@ ValueNotifier<String> userIdNav = ValueNotifier("");
 bool _initialUriIsHandled = false;
 
 class Custom {
+  static RegExp regExpDynamicLink = RegExp('^https{0,1}:\/\/app-2i2i\.web\.app(\/.*){0,1}\$');
+
   static getBoxDecoration(BuildContext context, {Color? color, double radius = 10, BorderRadiusGeometry? borderRadius}) {
     return BoxDecoration(
       color: color ?? Theme.of(context).cardColor,
@@ -29,10 +34,15 @@ class Custom {
     );
   }
 
-  static Future<void> deepLinks(
-    BuildContext context,
-    bool mounted,
-  ) async {
+  // static double webWidth(BuildContext context) => (MediaQuery.of(context).size.width / 2.5);
+  static double webWidth(BuildContext context) => 500;
+
+  static double webDialogWidth(BuildContext context) => 400;
+
+  static double webHeight(BuildContext context) => 844;
+
+  static Future<void> deepLinks(BuildContext context,
+      bool mounted,) async {
     if (!kIsWeb) {
       try {
         if (!_initialUriIsHandled) {
@@ -58,11 +68,11 @@ class Custom {
           if (uri.queryParameters['uid'] is String) {
             userId = uri.queryParameters['uid'] as String;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            isUserLocked.refresh();
           } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
             String userId = uri.pathSegments.last;
             userIdNav.value = userId;
-            isUserLocked.notifyListeners();
+            isUserLocked.refresh();
           }
         });
       } catch (e) {
@@ -71,24 +81,68 @@ class Custom {
     }
   }
 
+  static Future<String> createDeepLinkUrl(String uid) async {
+    try {
+      final host = dotenv.env['host'].toString();
+      final link = Uri.parse('$host/user/$uid');
+      if (kIsWeb) {
+        return link.toString();
+      }
+
+      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+      final uriPrefix = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: uriPrefix,
+        link: link,
+        androidParameters: AndroidParameters(
+          packageName: AppConfig.androidAppId,
+          fallbackUrl: Uri.tryParse(host),
+        ),
+        iosParameters: IOSParameters(
+          bundleId: AppConfig.iosAppId,
+          fallbackUrl: Uri.tryParse(host),
+          ipadFallbackUrl: Uri.tryParse(host),
+          ipadBundleId: AppConfig.iosAppId,
+          appStoreId: AppConfig.appStoreId,
+        ),
+        navigationInfoParameters: const NavigationInfoParameters(
+          forcedRedirectEnabled: false,
+        ),
+      );
+      final shortUri = await dynamicLinks.buildShortLink(parameters);
+      if (shortUri.shortUrl.toString().isNotEmpty) {
+        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+      }
+      return shortUri.shortUrl.toString();
+    } catch (e) {
+      print(e);
+    }
+    return "";
+  }
+
   static void handleURI(Uri? uri, String userId) {
-    if (uri?.queryParameters['link'] is String) {
+    final result = regExpDynamicLink.hasMatch(uri.toString());
+    if (result == true && uri != null && uri.pathSegments.isNotEmpty) {
+      userId = uri.pathSegments.last;
+      userIdNav.value = userId;
+      isUserLocked.refresh();
+    } else if (uri?.queryParameters['link'] is String) {
       var link = uri!.queryParameters['link'];
       if (link?.isNotEmpty ?? false) {
         uri = Uri.parse(link!);
       }
-    }
-    if (uri != null) {
+    } else if (uri != null) {
       print('uri init ${uri.pathSegments}');
       if (uri.queryParameters['uid'] is String) {
         userId = uri.queryParameters['uid'] as String;
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        isUserLocked.refresh();
       } else if (uri.pathSegments.contains('share') || uri.pathSegments.contains('user')) {
         String userId = uri.pathSegments.last;
         print(userId);
         userIdNav.value = userId;
-        isUserLocked.notifyListeners();
+        isUserLocked.refresh();
       }
     }
   }
@@ -105,7 +159,10 @@ class Custom {
             if (!value) {
               Navigator.of(context).pop();
             }
-            return QrImagePage(imageUrl: url);
+            return QrImagePage(
+              imageUrl: url,
+              color: Colors.black,
+            );
           },
         ),
         barrierDismissible: true,
@@ -129,7 +186,7 @@ class Custom {
       }
       if (!isAvailable) {
         await launchUrl(
-            Uri.parse(Platform.isAndroid
+            Uri.parse(!kIsWeb && Platform.isAndroid
                 ? 'https://play.google.com/store/apps/details?id=com.algorand.android'
                 : 'https://apps.apple.com/us/app/pera-algo-wallet/id1459898525'),
             mode: LaunchMode.externalApplication);
