@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
@@ -41,8 +42,10 @@ class Custom {
 
   static double webHeight(BuildContext context) => 844;
 
-  static Future<void> deepLinks(BuildContext context,
-      bool mounted,) async {
+  static Future<void> deepLinks(
+    BuildContext context,
+    bool mounted,
+  ) async {
     if (!kIsWeb) {
       try {
         if (!_initialUriIsHandled) {
@@ -83,38 +86,44 @@ class Custom {
 
   static Future<String> createDeepLinkUrl(String uid) async {
     try {
-      final host = dotenv.env['host'].toString();
-      final link = Uri.parse('$host/user/$uid');
-      if (kIsWeb) {
-        return link.toString();
-      }
+      HttpsCallable function = FirebaseFunctions.instance.httpsCallable('getDeepLink');
+      final result = await function.call({'id': uid});
+      if (result.data is Map && result.data['url'] is String) {
+        return result.data['url'];
+      } else {
+        final host = dotenv.env['host'].toString();
+        final link = Uri.parse('$host/user/$uid');
+        if (kIsWeb) {
+          return link.toString();
+        }
 
-      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-      final uriPrefix = dotenv.env['DYNAMIC_LINK_HOST'].toString();
+        final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+        final uriPrefix = dotenv.env['DYNAMIC_LINK_HOST'].toString();
 
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: uriPrefix,
-        link: link,
-        androidParameters: AndroidParameters(
-          packageName: AppConfig.androidAppId,
-          fallbackUrl: Uri.tryParse(host),
-        ),
-        iosParameters: IOSParameters(
-          bundleId: AppConfig.iosAppId,
-          fallbackUrl: Uri.tryParse(host),
-          ipadFallbackUrl: Uri.tryParse(host),
-          ipadBundleId: AppConfig.iosAppId,
-          appStoreId: AppConfig.appStoreId,
-        ),
-        navigationInfoParameters: const NavigationInfoParameters(
-          forcedRedirectEnabled: false,
-        ),
-      );
-      final shortUri = await dynamicLinks.buildShortLink(parameters);
-      if (shortUri.shortUrl.toString().isNotEmpty) {
-        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+        final DynamicLinkParameters parameters = DynamicLinkParameters(
+          uriPrefix: uriPrefix,
+          link: link,
+          androidParameters: AndroidParameters(
+            packageName: AppConfig.androidAppId,
+            fallbackUrl: Uri.tryParse(host),
+          ),
+          iosParameters: IOSParameters(
+            bundleId: AppConfig.iosAppId,
+            fallbackUrl: Uri.tryParse(host),
+            ipadFallbackUrl: Uri.tryParse(host),
+            ipadBundleId: AppConfig.iosAppId,
+            appStoreId: AppConfig.appStoreId,
+          ),
+          navigationInfoParameters: const NavigationInfoParameters(
+            forcedRedirectEnabled: false,
+          ),
+        );
+        final shortUri = await dynamicLinks.buildShortLink(parameters);
+        if (shortUri.shortUrl.toString().isNotEmpty) {
+          FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
+        }
+        return shortUri.shortUrl.toString();
       }
-      return shortUri.shortUrl.toString();
     } catch (e) {
       print(e);
     }
