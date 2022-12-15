@@ -1,8 +1,8 @@
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/ui/layout/spacings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../infrastructure/commons/keys.dart';
 import '../../../infrastructure/providers/all_providers.dart';
@@ -78,9 +78,14 @@ class NoBidPage extends ConsumerWidget {
                   Visibility(
                     visible: message?.isNotEmpty ?? false,
                     child: IconButton(
-                        onPressed: () => Share.share('${Keys.joinInvite.tr(context)}\n$message'),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: '$message'));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Copied Link!')),
+                          );
+                        } /*=> Share.share('${Keys.joinInvite.tr(context)}\n$message')*/,
                         icon: Icon(
-                          Icons.share,
+                          Icons.copy,
                           size: 20,
                         )),
                   ),

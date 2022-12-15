@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:math';
+
 import 'package:app_2i2i/infrastructure/commons/keys.dart';
 import 'package:app_2i2i/infrastructure/commons/theme.dart';
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
+import 'package:app_2i2i/infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/services/logging.dart';
 import 'package:app_2i2i/infrastructure/models/social_links_model.dart';
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
@@ -13,20 +15,21 @@ import 'package:app_2i2i/ui/commons/custom_alert_widget.dart';
 import 'package:app_2i2i/ui/commons/custom_profile_image_view.dart';
 import 'package:app_2i2i/ui/screens/create_bid/top_card_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rich_text_controller/rich_text_controller.dart';
+
+import '../../commons/custom.dart';
 import 'image_pick_option_widget.dart';
 
 class UserSetting extends ConsumerStatefulWidget {
   final bool? fromBottomSheet;
+  final bool isTapForHashTags;
 
-  UserSetting({Key? key, this.fromBottomSheet}) : super(key: key);
+  UserSetting({Key? key, this.fromBottomSheet, this.isTapForHashTags = false}) : super(key: key);
 
   @override
   _UserSettingState createState() => _UserSettingState();
@@ -38,6 +41,8 @@ class _UserSettingState extends ConsumerState<UserSetting> {
   TextEditingController hourEditController = TextEditingController();
   TextEditingController minuteEditController = TextEditingController();
   TextEditingController secondEditController = TextEditingController();
+  var bioTextFocus = FocusNode();
+
   RichTextController bioTextController = RichTextController(
     patternMatchMap: {RegExp(r"(?:#)[a-zA-Z0-9]+"): TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)},
     onMatch: (List<String> match) {},
@@ -155,6 +160,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                 LengthLimitingTextInputFormatter(200),
               ],
               controller: bioTextController,
+              focusNode: bioTextFocus,
               textInputAction: TextInputAction.newline,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               minLines: 4,
@@ -344,23 +350,23 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                               child: _importanceSliderValue == null
                                   ? Container()
                                   : Slider(
-                                min: 0,
-                                max: (_importanceSliderMaxHalf * 2.0),
-                                value: _importanceSliderValue!,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _importanceSliderValue = value;
-                                    _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
-                                        (_importanceSliderMaxHalf * 2.0 - 2.0) /
-                                        _importanceSliderMaxHalf +
-                                        2.0;
-                                    // log(X +
-                                    //     '_importanceSliderValue=$_importanceSliderValue');
-                                    // log(X +
-                                    //     '_importanceRatioValue=$_importanceRatioValue');
-                                  });
-                                },
-                              ),
+                                      min: 0,
+                                      max: (_importanceSliderMaxHalf * 2.0),
+                                      value: _importanceSliderValue!,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _importanceSliderValue = value;
+                                          _importanceRatioValue = (_importanceSliderValue! - _importanceSliderMaxHalf).abs() *
+                                                  (_importanceSliderMaxHalf * 2.0 - 2.0) /
+                                                  _importanceSliderMaxHalf +
+                                              2.0;
+                                          // log(X +
+                                          //     '_importanceSliderValue=$_importanceSliderValue');
+                                          // log(X +
+                                          //     '_importanceRatioValue=$_importanceRatioValue');
+                                        });
+                                      },
+                                    ),
                             ),
                           ),
                         ),
@@ -400,7 +406,10 @@ class _UserSettingState extends ConsumerState<UserSetting> {
                     CustomAlertWidget.loader(true, context);
                     await onClickSave(myUserPageViewModel: myUserPageViewModel, setupUserViewModel: signUpViewModel);
                     CustomAlertWidget.loader(false, context);
+                    var obj = ref.read(setupUserViewModelProvider);
                     Navigator.of(context).pop();
+                    FirebaseNotifications();
+                    await obj.updateFirebaseMessagingToken();
                   }
                 },
                 child: Text(
@@ -465,7 +474,6 @@ class _UserSettingState extends ConsumerState<UserSetting> {
       UserModel user = userAsyncValue.value!;
       userNameEditController.text = user.name;
       bioTextController.text = user.bio;
-
       speedEditController.text = (user.rule.minSpeedMicroALGO / pow(10, 6)).toString(); // min speed is in ALGO
       secondEditController.text = getSec(user.rule.maxMeetingDuration);
       minuteEditController.text = getMin(user.rule.maxMeetingDuration);
@@ -480,7 +488,7 @@ class _UserSettingState extends ConsumerState<UserSetting> {
 
       // importance
       final c = user.rule.importance[Lounge.chrony]!;
-      final h = user.rule.importance[Lounge.highroller]!; 
+      final h = user.rule.importance[Lounge.highroller]!;
       final N = c + h;
       _importanceRatioValue = N / c;
       double x = _importanceRatioValue! - 2.0;
@@ -489,6 +497,9 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         x = 2.0 - _importanceRatioValue!;
       }
       _importanceSliderValue = (x / (_importanceSliderMaxHalf * 2.0 - 2.0) + 1.0) * _importanceSliderMaxHalf;
+    }
+    if (widget.isTapForHashTags) {
+      bioTextFocus.requestFocus();
     }
     setState(() {});
   }
@@ -659,43 +670,11 @@ class _UserSettingState extends ConsumerState<UserSetting> {
         }
       }
 
-      user.url = await createDeepLinkUrl(user.id);
+      user.url = await Custom.createDeepLinkUrl(user.id);
       await myUserPageViewModel?.database.updateUser(user).then((value) {
         CustomAlertWidget.showToastMessage(context, "User saved successfully");
       });
     }
-  }
-
-  Future<String> createDeepLinkUrl(String uid) async {
-    try {
-      final FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-      final link = dotenv.env['DYNAMIC_LINK_HOST'].toString();
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: link,
-        link: Uri.parse('https://about.2i2i.app?uid=$uid'),
-        androidParameters: AndroidParameters(
-          packageName: 'app.i2i2',
-          fallbackUrl: Uri.parse('https://about.2i2i.app'),
-        ),
-        iosParameters: IOSParameters(
-            bundleId: 'app.2i2i',
-            fallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadFallbackUrl: Uri.parse('https://about.2i2i.app'),
-            ipadBundleId: 'app.2i2i',
-            appStoreId: '1609689141'),
-        navigationInfoParameters: const NavigationInfoParameters(
-          forcedRedirectEnabled: false,
-        ),
-      );
-      final shortUri = await dynamicLinks.buildShortLink(parameters);
-      if (shortUri.shortUrl.toString().isNotEmpty) {
-        FirebaseAuth.instance.currentUser!.updatePhotoURL(shortUri.shortUrl.toString());
-      }
-      return shortUri.shortUrl.toString();
-    } catch (e) {
-      print(e);
-    }
-    return "";
   }
 
   Future<String?> uploadImage() async {

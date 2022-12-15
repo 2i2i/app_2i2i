@@ -217,7 +217,7 @@ class Keys {
   static const String muted = 'muted';
   static const String walletConnect = 'Wallet Connect';
   static const String connect = 'Connect';
-  static const String receiveSendCoin = 'Please first connect an account to send/receive coins.';
+  static const String receiveSendCoin = 'Please first connect an account to send/receive energy.';
   static const String cantBidUser = 'You can not bid to this user';
   static const String miniSupport = 'Minimum speed is greater then Maximum Support';
   static const String noWalletFound = 'No wallet account found.';
@@ -232,8 +232,8 @@ class Keys {
   static const String signInWithInstagram = 'Sign in with Instagram';
 
   static const String walletDesMsg1 =
-      'To receive coins, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.';
-  static const String walletDesMsg2 = 'You have connected an account. Now you can receive coins. Click Talk to connect with your Guest.';
+      'To receive energy, you need to connect an account. Click on Connect to to connect a WalletConnect account in your wallet app. Afterwards return to 2i2i.';
+  static const String walletDesMsg2 = 'You have connected an account. Now you can receive energy. Click Talk to connect with your Guest.';
 
   static const String acceptBid = 'Accept Bid';
   static const String startTalk = 'Start to Talk';

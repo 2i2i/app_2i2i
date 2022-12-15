@@ -40,7 +40,7 @@ class ko {
       Keys.scanQr: '주사 QR',
       Keys.about: '에 대한',
       Keys.aboutPageUrl: 'https://about.2i2i.app',
-      Keys.scanInWalletConnect: '사용 WalletConnect\n(e.g. Algorand Wallet)',
+      Keys.scanInWalletConnect: '사용 WalletConnect\n(e.g. Pera Wallet)',
       Keys.appName: '2i2i',
       Keys.ok: 'OK',
       Keys.talk: '말',

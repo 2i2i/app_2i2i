@@ -40,7 +40,11 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(myUIDProvider);
-    final userProviderRef = ref.watch(userProvider(uid!));
+
+    if (uid == null) {
+      return WaitPage();
+    }
+    final userProviderRef = ref.watch(userProvider(uid));
     if (userProviderRef is AsyncError || userProviderRef is AsyncLoading) {
       return WaitPage();
     }
@@ -94,8 +98,7 @@ class _MyUserPageState extends ConsumerState<MyUserPage> with SingleTickerProvid
                   onTapWallet: () {
                     context.pushNamed(Routes.account.nameFromPath());
                   },
-                  onTapChat: () =>
-                      CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent, isDismissible: true),
+                  onTapChat: () => CustomAlertWidget.showBottomSheet(context, child: ChatWidget(user: user), backgroundColor: Colors.transparent, isDismissible: true),
                   isFav: true,
                 ),
               ],

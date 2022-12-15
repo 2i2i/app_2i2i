@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_network/image_network.dart';
 
 enum ImageType {
   ASSENT_IMAGE,
@@ -122,13 +122,15 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       case ImageType.NETWORK_IMAGE:
         return ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius ?? 20),
-          child: CachedNetworkImage(
-            imageUrl: widget.stringPath,
+          child: ImageNetwork(
+            image: widget.stringPath,
+            imageCache: NetworkImage(widget.stringPath),
             width: widget.radius,
             height: widget.radius,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => CupertinoActivityIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            onLoading: const CupertinoActivityIndicator(),
+            onError: const Icon(Icons.error),
+            fitWeb: BoxFitWeb.cover,
+            fitAndroidIos: BoxFit.cover,
           ),
         );
       case ImageType.NAME_IMAGE:
