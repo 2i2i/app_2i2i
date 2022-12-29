@@ -504,15 +504,15 @@ class SignalingWebSockets {
       return peerId == ids[0] || peerId == ids[1];
     });
     if (session != null) {
-      _closeSession(session);
+      // _closeSession(session);
       onCallStateChange?.call(session, CallState.CallStateBye);
     }
   }
 
   Future<void> _closeSession(Session session) async {
-    _localStream?.getTracks().forEach((element) async {
-      await element.stop();
-    });
+    for (MediaStreamTrack element in (_localStream?.getTracks() ?? [])) {
+      element.stop();
+    }
     await _localStream?.dispose();
     _localStream = null;
 

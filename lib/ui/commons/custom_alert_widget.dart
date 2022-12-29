@@ -68,7 +68,10 @@ class CustomAlertWidget {
           color: Theme.of(context).errorColor,
         ),
       ),
-      content: messageWidget,
+      content: Container(
+        child: messageWidget,
+        constraints: BoxConstraints(maxWidth: Custom.webDialogWidth(context)),
+      ),
       actions: [
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),
@@ -84,7 +87,10 @@ class CustomAlertWidget {
           color: Theme.of(context).errorColor,
         ),
       ),
-      content: messageWidget,
+      content: Container(
+        child: messageWidget,
+        constraints: BoxConstraints(maxWidth: Custom.webDialogWidth(context)),
+      ),
       actions: [
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.secondary),

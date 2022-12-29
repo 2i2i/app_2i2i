@@ -21,8 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_html/html.dart' as ht;
 
-// import 'package:universal_html/html.dart' as ht;
-
 // import 'infrastructure/commons/utils.dart';
 // import 'infrastructure/data_access_layer/services/firebase_notifications.dart';
 import 'infrastructure/models/meeting_model.dart';
@@ -30,9 +28,7 @@ import 'infrastructure/providers/all_providers.dart';
 import 'infrastructure/providers/ringing_provider/ringing_page_view_model.dart';
 import 'infrastructure/routes/named_routes.dart';
 import 'ui/commons/custom.dart';
-import 'ui/screens/app/wait_page.dart';
 import 'ui/screens/localization/app_localization.dart';
-
 final platform = MethodChannel('app.2i2i/notification');
 
 // Future<void> main() async {
@@ -231,41 +227,6 @@ class _MainWidgetState extends ConsumerState<MainWidget> with WidgetsBindingObse
       scrollBehavior: AppScrollBehavior(),
       title: '2i2i',
       debugShowCheckedModeBanner: false,
-      builder: (context, widget) {
-        // return TestScreen();
-        return widget ?? WaitPage();
-        // return ScrollConfiguration(
-        //   behavior: MyBehavior(),
-        //   child: widget ??
-        //       WaitPage() /*ResponsiveLayoutBuilder(
-        //     small: (BuildContext, Widget? child) {
-        //       return MediaQuery(
-        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-        //         child: widget ?? Container(),
-        //       );
-        //     },
-        //     large: (BuildContext, Widget? child) {
-        //       return MediaQuery(
-        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-        //         child: widget ?? Container(),
-        //       );
-        //     },
-        //     xLarge: (BuildContext, Widget? child) {
-        //       return MediaQuery(
-        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-        //         child: widget ?? Container(),
-        //       );
-        //     },
-        //     medium: (BuildContext, Widget? child) {
-        //       return MediaQuery(
-        //         data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-        //         child: widget ?? Container(),
-        //       );
-        //     },
-        //   )*/
-        //   ,
-        // );
-      },
       supportedLocales: const [
         Locale('en', ''),
         Locale('zh', ''),

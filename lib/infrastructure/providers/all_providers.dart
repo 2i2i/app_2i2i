@@ -1,6 +1,7 @@
 // TODO break up file into multiple files
 
 import 'dart:async';
+
 import 'package:app_2i2i/infrastructure/commons/utils.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/accounts/abstract_account.dart';
 import 'package:app_2i2i/infrastructure/data_access_layer/repository/algorand_service.dart';
@@ -71,7 +72,7 @@ final searchUsersStreamProvider = StreamProvider.autoDispose<List<UserModel?>>((
   // log('usersStreamProvider');
   final database = ref.watch(databaseProvider);
   // log('usersStreamProvider - database=$database');
-  final filter = ref.watch(searchFilterProvider.state).state;
+  final filter = ref.watch(searchFilterProvider);
   return database.usersStream(tags: filter);
 });
 

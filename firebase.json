@@ -9,10 +9,6 @@
     "appAssociation": "AUTO",
     "rewrites": [
       {
-        "source": "/user/**",
-        "dynamicLinks": true
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

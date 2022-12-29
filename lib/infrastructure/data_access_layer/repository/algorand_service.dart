@@ -121,12 +121,12 @@ class AlgorandService {
       log(FX + 'lockCoins - payTxn.id=${payTxn.id}');
 
       final axferTxn = await (AssetTransferTransactionBuilder()
-          ..sender = Address.fromAlgorandAddress(address)
-          ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
-          ..amount = amount.num
-          ..assetId = amount.assetId
-          ..suggestedParams = params
-          ..noteText = note)
+            ..sender = Address.fromAlgorandAddress(address)
+            ..receiver = Address.fromAlgorandAddress(SYSTEM_ACCOUNT[net]!)
+            ..amount = amount.num
+            ..assetId = amount.assetId
+            ..suggestedParams = params
+            ..noteText = note)
         .build();
         txns.add(axferTxn);
         result['axfer'] = axferTxn.id;

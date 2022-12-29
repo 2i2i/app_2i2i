@@ -27,6 +27,7 @@ import 'package:go_router/go_router.dart';
 import '../../ui/screens/auth_screen/auth_screen.dart';
 import '../../ui/screens/redeem_coin/redeem_coin_page.dart';
 import '../../ui/screens/sign_in/sign_in_page.dart';
+import '../commons/app_config.dart';
 import 'app_routes.dart';
 
 class NamedRoutes {
@@ -34,9 +35,9 @@ class NamedRoutes {
   static bool updateAvailable = false;
   static ValueNotifier<Map> showRating = ValueNotifier<Map>({'show': false});
   static GoRouter router = GoRouter(
-    urlPathStrategy: UrlPathStrategy.path,
+    // urlPathStrategy: UrlPathStrategy.path,
     refreshListenable: isUserLocked,
-    redirect: (state) {
+    redirect: (context, state) {
       bool isTrue = previousRouteLocation != '/user/${userIdNav.value}' && previousRouteLocation != Routes.user;
       if (isTrue && userIdNav.value.isNotEmpty) {
         previousRouteLocation = Routes.user;
@@ -77,7 +78,6 @@ class NamedRoutes {
         pageBuilder: (context, state) => NoTransitionPage<void>(
           key: state.pageKey,
           child: getView(SearchPage()),
-          // child: getView(TestScreen()),
           // child: getView(InstagramLogin()),
         ),
       ),
@@ -177,9 +177,13 @@ class NamedRoutes {
         name: Routes.userSetting.nameFromPath(),
         path: Routes.userSetting,
         pageBuilder: (context, state) {
+          bool isTapForHashTags = state.extra != null ? (state.extra as Map)[AppConfig.isTapForHashTags] ?? false : false;
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: getView(UserSetting(fromBottomSheet: false)),
+            child: getView(UserSetting(
+              fromBottomSheet: false,
+              isTapForHashTags: isTapForHashTags,
+            )),
           );
         },
       ),

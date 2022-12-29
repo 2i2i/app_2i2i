@@ -472,8 +472,9 @@ class _CallPageWebsocketsState extends ConsumerState<CallPageWebsockets> {
             _muteAudio();
           }
           log(K + '_signaling?.onCallStateChange - widget.meeting.status=${widget.meeting.status}');
-          if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A)
+          if (amA && widget.meeting.status == MeetingStatus.ACCEPTED_A) {
             return widget.meetingChanger.roomCreatedMeeting(widget.meeting.id, _session!.sid + '-' + _session!.pid);
+          }
 
           break;
         case CallState.CallStateBye:

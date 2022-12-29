@@ -5,5 +5,10 @@ class IsUserLocked extends ValueNotifier {
 
   void changeValue(newValue) {
     value = newValue;
+    notifyListeners();
+  }
+
+  void refresh() {
+    notifyListeners();
   }
 }

@@ -1,9 +1,9 @@
 import 'package:app_2i2i/infrastructure/models/user_model.dart';
 import 'package:app_2i2i/infrastructure/providers/all_providers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_network/image_network.dart';
 
 class ChooseAccountDialog extends ConsumerStatefulWidget {
   final List userIds;
@@ -23,6 +23,7 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
     return SimpleDialog(
       title: Text('Multiple accounts'),
       contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+      alignment: Alignment.center,
       children: List.generate(widget.userIds.length + 1, (index) {
         if (index == 0) {
           return Padding(
@@ -39,15 +40,20 @@ class ChooseAccountState extends ConsumerState<ChooseAccountDialog> {
         UserModel userModel = user.value!;
         return ListTile(
           onTap: () => widget.onSelectId.call(uid),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(40),
-            child: CachedNetworkImage(
-              imageUrl: userModel.imageUrl ?? '',
-              width: 35,
-              height: 35,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => CupertinoActivityIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+          leading: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: ImageNetwork(
+                image: userModel.imageUrl ?? '',
+                imageCache: NetworkImage(userModel.imageUrl ?? ''),
+                width: 35,
+                height: 35,
+                onLoading: const CupertinoActivityIndicator(),
+                onError: const Icon(Icons.error),
+                fitWeb: BoxFitWeb.cover,
+                fitAndroidIos: BoxFit.cover,
+              ),
             ),
           ),
           title: Text(userModel.name),
